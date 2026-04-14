@@ -1,0 +1,73 @@
+# written by HYDROLIB-core 1.0.0
+
+[General]
+fileVersion = 2.01
+fileType    = extForce
+
+[Boundary]
+quantity     = waterlevelbnd
+locationFile = Stagnone_dxy01_15m.pli
+forcingFile  = F:/StagnoneDT/model/dflowfm/waterlevelbnd_constant_Stagnone_dxy01_15m.bc
+
+[Boundary]
+quantity     = waterlevelbnd
+locationFile = Stagnone_dxy01_15m.pli
+forcingFile  = F:/StagnoneDT/model/dflowfm/tide_tpxo80_opendap_Stagnone_dxy01_15m.bc
+
+[Boundary]
+quantity     = waterlevelbnd
+locationFile = Stagnone_dxy01_15m.pli
+forcingFile  = F:/StagnoneDT/model/dflowfm/waterlevelbnd_CMEMS_Stagnone_dxy01_15m.bc
+
+[Boundary]
+quantity     = salinitybnd
+locationFile = Stagnone_dxy01_15m.pli
+forcingFile  = F:/StagnoneDT/model/dflowfm/salinitybnd_CMEMS_Stagnone_dxy01_15m.bc
+
+[Boundary]
+quantity     = temperaturebnd
+locationFile = Stagnone_dxy01_15m.pli
+forcingFile  = F:/StagnoneDT/model/dflowfm/temperaturebnd_CMEMS_Stagnone_dxy01_15m.bc
+
+[Boundary]
+quantity     = tracerbndTracer1
+locationFile = Mozia.pli
+forcingFile  = F:/StagnoneDT/model/dflowfm/Tracer1.bc
+
+[Boundary]
+quantity     = uxuyadvectionvelocitybnd
+locationFile = Stagnone_dxy01_15m.pli
+forcingFile  = F:/StagnoneDT/model/dflowfm/uxuyadvectionvelocitybnd_CMEMS_Stagnone_dxy01_15m.bc
+
+[Meteo]
+quantity            = windx                                # Name of the quantity. See UM Section C.5.3
+forcingFile         = era5_u10n_20250701to20250710_ERA5.nc # Name of file containing the forcing for this meteo quantity.
+forcingVariableName = u10n                                 # Variable name used in forcingfile associated with this forcing. See UM Section C.5.3
+forcingFileType     = netcdf                               # Type of forcingFile.
+interpolationMethod = linearSpaceTime                      # Type of (spatial) interpolation.
+operand             = O                                    # How this data is combined with previous data for the same quantity (if any).
+
+[Meteo]
+quantity            = windy                                # Name of the quantity. See UM Section C.5.3
+forcingFile         = era5_v10n_20250701to20250710_ERA5.nc # Name of file containing the forcing for this meteo quantity.
+forcingVariableName = v10n                                 # Variable name used in forcingfile associated with this forcing. See UM Section C.5.3
+forcingFileType     = netcdf                               # Type of forcingFile.
+interpolationMethod = linearSpaceTime                      # Type of (spatial) interpolation.
+operand             = O                                    # How this data is combined with previous data for the same quantity (if any).
+
+[Meteo]
+quantity            = airpressure                         # Name of the quantity. See UM Section C.5.3
+forcingFile         = era5_msl_20250701to20250710_ERA5.nc # Name of file containing the forcing for this meteo quantity.
+forcingVariableName = msl                                 # Variable name used in forcingfile associated with this forcing. See UM Section C.5.3
+forcingFileType     = netcdf                              # Type of forcingFile.
+interpolationMethod = linearSpaceTime                     # Type of (spatial) interpolation.
+operand             = O                                   # How this data is combined with previous data for the same quantity (if any).
+
+[Meteo]
+quantity            = charnock                             # Name of the quantity. See UM Section C.5.3
+forcingFile         = era5_chnk_20250701to20250710_ERA5.nc # Name of file containing the forcing for this meteo quantity.
+forcingVariableName = chnk                                 # Variable name used in forcingfile associated with this forcing. See UM Section C.5.3
+forcingFileType     = netcdf                               # Type of forcingFile.
+interpolationMethod = linearSpaceTime                      # Type of (spatial) interpolation.
+operand             = O                                    # How this data is combined with previous data for the same quantity (if any).
+
