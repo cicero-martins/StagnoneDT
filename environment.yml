@@ -1,0 +1,12 @@
+name: dfm_tools_env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+    - dfm_tools[examples]
+    - pystac-client
+    - rioxarray
+    - scikit-learn
+    - ipykernel
