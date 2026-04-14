@@ -42,3 +42,7 @@ desktop.ini
 *.tmp
 *.bak
 *~
+
+# Microsoft Office lock files (created when docs are open)
+~$*
+
