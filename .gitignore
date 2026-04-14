@@ -1,0 +1,44 @@
+# Credentials — NEVER commit
+.env
+
+# Model outputs (re-generable, large: ~16-23 GB each)
+model/*/output/
+model/*/*.cache
+
+# Heavy raw data (download on-demand via notebooks)
+data/raw/satellite/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.ipynb_checkpoints/
+.jupyter/
+
+# Virtual envs (if created locally)
+venv/
+.venv/
+env/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VS Code local (preserve shared .vscode/ if present)
+.vscode/launch.json
+.vscode/settings.local.json
+
+# Claude Code local state
+.claude/
+
+# Empty notebook at root (no purpose)
+/StagnoneDT.ipynb
+
+# Temporary files
+*.tmp
+*.bak
+*~
