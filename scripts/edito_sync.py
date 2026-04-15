@@ -211,6 +211,49 @@ def cmd_sync_code(args):
     print(f'Uploaded {len(files)} file(s).')
 
 
+def cmd_pull_code(args):
+    """Mirror s3://<bucket>/CODE/ down into the local project root.
+    Useful when notebooks/scripts were edited on another machine via the EDITO JupyterLab.
+    Overwrites local files. Skips files outside notebooks/, scripts/, data/processed/.
+    """
+    s3 = get_client()
+    prefix = args.prefix.rstrip('/') + '/'
+    paginator = s3.get_paginator('list_objects_v2')
+    objs = []
+    for page in paginator.paginate(Bucket=BUCKET, Prefix=prefix):
+        for obj in page.get('Contents', []):
+            rel = obj['Key'][len(prefix):]
+            if not rel:
+                continue
+            objs.append((obj['Key'], rel, obj['Size'], obj.get('LastModified')))
+
+    if not objs:
+        print(f'Nothing under s3://{BUCKET}/{prefix}')
+        return
+
+    print(f'Source: s3://{BUCKET}/{prefix}')
+    print(f'Target: {PROJECT_ROOT}')
+    print(f'Files:  {len(objs)}   total {human(sum(o[2] for o in objs))}')
+
+    if args.dry_run:
+        print('\nWould pull:')
+        for key, rel, size, mtime in objs:
+            local = PROJECT_ROOT / rel
+            status = 'NEW' if not local.exists() else (
+                'SAME-SIZE' if local.stat().st_size == size else 'CHANGED'
+            )
+            mt = mtime.strftime('%Y-%m-%d %H:%M') if mtime else '?'
+            print(f'  [{status:9s}] {human(size):>10}  {mt}  {rel}')
+        return
+
+    for i, (key, rel, size, _) in enumerate(objs, 1):
+        local = PROJECT_ROOT / rel
+        local.parent.mkdir(parents=True, exist_ok=True)
+        s3.download_file(BUCKET, key, str(local))
+        print(f'[{i:3d}/{len(objs)}] {human(size):>10}  {rel}')
+    print(f'Pulled {len(objs)} file(s).')
+
+
 def cmd_download_his(args):
     """Fetch *_his.nc from DFM_OUTPUT/ to local model dir."""
     s3 = get_client()
@@ -257,6 +300,11 @@ def main():
     s.add_argument('--prefix', default='CODE')
     s.add_argument('--dry-run', action='store_true')
     s.set_defaults(func=cmd_sync_code)
+
+    s = sub.add_parser('pull-code', help='Mirror CODE/ from S3 back into local project')
+    s.add_argument('--prefix', default='CODE')
+    s.add_argument('--dry-run', action='store_true')
+    s.set_defaults(func=cmd_pull_code)
 
     s = sub.add_parser('download-his', help='Pull *_his.nc from DFM_OUTPUT/ to local')
     s.add_argument('--output-prefix', default=DEFAULT_OUTPUT_PREFIX)
