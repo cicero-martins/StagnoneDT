@@ -3,7 +3,21 @@
 
 # Model outputs (re-generable, large: ~16-23 GB each)
 model/*/output/
+model/*/DFM_OUTPUT_*/
+model/*/DFM_OUTPUT*/
 model/*/*.cache
+
+# SWAN hotstart and intermediate files
+model/*/wave/hot_*.nc
+model/*/wave/*.sta
+model/*/wave/PRINT
+model/*/wave/PRINT-*
+model/*/wave/swaninit
+model/*/wave/*.log
+model/*/wave/*.prt
+
+# Restart files (re-generable from model runs)
+model/*/*_rst.nc
 
 # Heavy raw data (download on-demand via notebooks)
 data/raw/satellite/
