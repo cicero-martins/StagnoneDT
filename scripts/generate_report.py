@@ -317,18 +317,19 @@ def write_methodology(doc):
 
     add_heading(doc, '3.3 Model version comparison', level=2)
     add_table(doc,
-              header=['Feature', 'v01', 'v02', 'v03'],
+              header=['Feature', 'v01', 'v02', 'v03', 'v03a'],
               rows=[
-                  ['Datum offset (WL BC)', '0.0 m', '+0.42 m', '+0.42 m'],
-                  ['Obs points BS / AE', 'drying issues', 'always-wet cells', 'always-wet cells'],
-                  ['Central 3D obs', 'none', 'C1, C2, C3 added', 'C1, C2, C3 added'],
-                  ['Wind forcing', 'ERA5 only', 'blended ERA5 + in-situ', 'blended ERA5 + in-situ'],
-                  ['Initial salinity', 'uniform 37.5 psu', 'uniform 37.5 psu', '42 psu interior, 37.5 offshore'],
-                  ['Passive tracer', 'no', 'no', 'yes (residence time)'],
-                  ['SWAN wave coupling', 'no', 'no', 'yes'],
-                  ['Simulation period', 'Jul 1–10 (9 d)', '9 d', '≥30 d (pending BC download)'],
+                  ['Datum offset (WL BC)', '0.0 m', '+0.42 m', '+0.42 m', '+0.42 m'],
+                  ['Obs points BS / AE', 'drying', 'always-wet', 'always-wet', 'always-wet'],
+                  ['Central 3D obs', 'none', 'C1, C2, C3', 'C1, C2, C3', 'C1, C2, C3'],
+                  ['Wind forcing', 'ERA5 only', 'blended', 'blended', 'blended'],
+                  ['Initial salinity', 'uniform 37.5', 'uniform 37.5', 'attempted 42 interior (not applied — nudging)', 'attempted 42 interior (still not applied)'],
+                  ['Passive tracer', 'no', 'no', 'yes', 'yes'],
+                  ['SWAN wave coupling', 'no', 'no', 'intended (constant BC, single grid)', 'yes, nested: outer 800 m + inner 100 m'],
+                  ['Simulation period', 'Jul 1–10', '9 d', '9 d', '9 d'],
+                  ['Execution', 'local, seq.', 'EDITO, seq.', 'EDITO, 4× MPI', 'local, 4× MPI'],
               ],
-              col_widths_cm=[4, 4, 4, 4.5])
+              col_widths_cm=[3, 3, 3, 3, 3])
 
     add_heading(doc, '3.4 Data inputs', level=2)
     inputs = [
@@ -496,11 +497,69 @@ def write_results(doc):
     add_heading(doc, '5.3 v02 on EDITO', level=2)
     add_para(doc,
              'After the power-outage incident, v02 was migrated to EDITO. Upload path: 140 MB '
-             'of inputs to s3://oidc-cmartinsjr/DFM_INPUT/ via boto3. The run is currently '
-             'executing; expected wall-clock ~2-3 hours for the full 9-day window on EDITO\'s '
-             'provisioned resources.')
+             'of inputs to s3://oidc-cmartinsjr/DFM_INPUT/ via boto3. v02 completed the 9-day '
+             'run on EDITO and produced dramatically improved WL metrics (RMSE 6-7× lower than '
+             'v01, bias near zero, Willmott ~0.85 at BocaNord). The +0.42 m datum offset fixed '
+             'the systematic bias; BocaSud still shows residual RMSE ~0.10 m and Willmott 0.66 '
+             '(under investigation).')
 
-    add_heading(doc, '5.4 Wind blending', level=2)
+    add_heading(doc, '5.4 v03 on EDITO (coupled waves + tracer)', level=2)
+    add_para(doc,
+             'v03 added three upgrades over v02: passive residence-time tracer, attempted '
+             'hypersaline salinity initial field (42 psu interior), and intended SWAN wave '
+             'coupling. Ran on EDITO with nPart=4 MPI processes; completed the 9-day window '
+             'in ~5 hours wall-clock. Outputs: partitioned his.nc + 4× map.nc (~9.6 GB each).')
+    add_para(doc,
+             'Findings: (a) WL metrics unchanged vs v02 — waves had negligible impact on '
+             'water level in this microtidal regime; (b) hypersaline initial field NOT applied — '
+             'salinity stayed at ~37.7 psu interior (the nudging file or CMEMS salinitybnd '
+             'overrides the XYZ initial field); (c) tracer decay successful: e-folding time '
+             'τ ≈ 3.9 d at C1_Central (interior), 4.6 d at C3_SouthCenter, <1 d near inlets. '
+             'This is the first concrete estimate of lagoon residence time.')
+
+    add_heading(doc, '5.5 v03a local (nested SWAN active + 4× MPI)', level=2)
+    add_para(doc,
+             'v03a is the authoritative version: inputs were updated on the office computer '
+             '(inner SWAN grid regenerated at 121×221 @ 100 m, simulation bumped to full 9 days '
+             'with daily restart files), then locally we added the outer SWAN grid at 69×54 '
+             '@ ~800 m covering the entire FM domain, with NestedInDomain=1 on the inner — '
+             'now the full FM domain has wave coupling instead of just the lagoon.')
+    add_para(doc,
+             'Two non-obvious fixes were required for SWAN-WAVE to accept the grids: (a) the '
+             '.dep files must use FORTRAN fixed-width format "12 values per line, %17.7e", '
+             'exactly matching the inner file that worked; any extra whitespace triggers a '
+             'misleading "Premature end of file" error; (b) both depth files must be padded '
+             'to (MC+1)×(NC+1) with -99 fill values in the extra row and column (end-of-row/'
+             'column markers required by the Delft3D-WAVE parser).')
+    add_para(doc,
+             'The run completed 9 days locally in 5h38min on a Ryzen 5 3600 (6 physical / '
+             '12 logical cores, 16 GB RAM) with 4 MPI processes. Total output: 27 GB across '
+             'four map.nc partitions plus SWAN output on both grids.')
+    add_para(doc, 'Results:', bold=True)
+    add_para(doc,
+             '(1) WL metrics essentially identical to v02 / v03 (±0.002 m RMSE, ±0.01 Willmott), '
+             'confirming the waves contribute negligibly to the water level signal. (2) '
+             'Hypersaline salinity STILL not applied — same 37.7 psu throughout the lagoon. '
+             'The fix of setting initialSalinity=0.0 in the MDU did not help, suggesting the '
+             'nudging file or boundary condition is overriding. Requires investigation of the '
+             'iniWithNudge flag and the nudge_salinity_temperature initial condition file. '
+             '(3) Tracer decay consistent with v03 EDITO: τ ≈ 3.0 d at C1_Central and 3.7 d at '
+             'C3_SouthCenter — residence time estimate robust across runs.')
+    add_para(doc, 'Key achievement:', bold=True)
+    add_para(doc,
+             'The model runs end-to-end locally with FM + nested SWAN coupling via DIMR, '
+             'producing consistent validation metrics and usable tracer time series. This '
+             'establishes a reliable baseline for subsequent scenario runs (canal discharge, '
+             'wind ensemble, seagrass roughness) without relying on EDITO compute availability.')
+    add_figure(doc, FIGURES_DIR / 'v03a_wl_validation.png',
+               'v03a water-level validation at BN/BS/AE. Metrics essentially identical to v02 '
+               'and v03.')
+    add_figure(doc, FIGURES_DIR / 'v03a_salinity_check.png',
+               'v03a surface salinity evolution — the hypersaline initial condition (target '
+               '42 psu) is not being applied; interior stays at ~37.7 psu throughout. Red '
+               'dotted line is the intended interior value.')
+
+    add_heading(doc, '5.6 Wind blending', level=2)
     add_para(doc,
              'The ERA5+in-situ wind blend (notebook 11) produces a composite field used from '
              'v02 onward. Inside a 3 km radius of each in-situ station, the IDW interpolation '
@@ -578,13 +637,15 @@ def write_status(doc):
     add_heading(doc, '7.1 Status snapshot', level=2)
     rows = [
         ['v01 baseline', 'Complete', '9-day run, 4 h wall-clock locally'],
-        ['v02 (local)', 'Interrupted at 70%', 'Power outage; partial output intact (6.3 d)'],
-        ['v02 (EDITO)', 'Running', 'After run_model.sh fix; full 9-d expected'],
-        ['v03 build', 'Complete (notebook 14)', 'Pending v02 validation before launch'],
-        ['EDITO workflow', 'Operational', 'S3 sync script + JupyterLab post-processing'],
-        ['Notebook 12 (particles)', 'Framework ready', 'Gated on v02 or later with July 8-9 window'],
-        ['Notebook 13 (residence)', 'Methodology + stub ready', 'Gated on v03 with ≥30-day BC'],
-        ['Notebook 15 (EDITO post)', 'Complete', 'Validated streaming of map.nc via s3fs'],
+        ['v02 (local)', 'Partial', 'Power outage at 70% (6.3 d simulated intact)'],
+        ['v02 (EDITO)', 'Complete', 'Full 9-d; RMSE 6-7× better than v01'],
+        ['v03 (EDITO)', 'Complete', 'FM+SWAN intended, tracer working, salinity not applied'],
+        ['v03a (local)', 'Complete', '9-d run in 5h38min on 4 MPI; nested SWAN active'],
+        ['EDITO workflow', 'Operational', 'S3 sync + JupyterLab + MinIO compat fixes'],
+        ['Local parallel run', 'Operational', '4× MPI on Ryzen 5 3600 + SWAN wave.dll'],
+        ['Residence time estimate', 'First result', 'τ ≈ 3-4 d interior; consistent v03/v03a'],
+        ['Hypersaline salinity', 'Not applied', 'Nudging file overrides XYZ — v04 fix needed'],
+        ['Notebook 12 (particles)', 'Framework ready', 'Can now run on v03 or v03a map.nc'],
     ]
     add_table(doc,
               header=['Component', 'Status', 'Notes'],
@@ -593,12 +654,12 @@ def write_status(doc):
 
     add_heading(doc, '7.2 Immediate next steps', level=2)
     for step in [
-        'Monitor v02 completion on EDITO; inspect outputs vs v01 reference.',
-        'If v02 validates cleanly: run notebook 14 to rebuild v03 with current polygon, upload via edito_sync.py, launch delft3dfm_run_docker.',
-        'Resolve pod CPU allocation for nPart=4 (check Datalab UI advanced options, else use Process API).',
-        'Download extended CMEMS + ERA5 (Jul 1 – Aug 15 2025) for the residence-time run.',
-        'Run notebook 15 post-processing on v02 outputs; produce v01 vs v02 comparison figures.',
-        'Execute particle-tracking notebook 12 against v02 (or v03) outputs covering the drifter campaign.',
+        'Debug hypersaline initial condition: check iniWithNudge flag in the MDU and the nudge_salinity_temperature file — build v04 where the XYZ override actually takes effect.',
+        'Analyze v03a SWAN output: read wavm-stagnone-swan_grid.nc (inner) and wavm-stagnone-swan_grid_outer.nc (outer) to check Hs, Tp, direction across the domain.',
+        'Run particle-tracking (notebook 12) against v03 or v03a velocities, covering the July 8-9 drifter campaign window.',
+        'Download extended CMEMS + ERA5 (Jul 1 – Aug 15 2025) for a ≥30-day residence-time run to let the tracer decay further.',
+        'Upgrade SWAN boundary conditions from constant parametric to CMEMS MEDSEA_MULTIYEAR_WAV_006_012 time series (current BC: Hs=0.5 m, Tp=5 s, Dir=270° on the west).',
+        'Resolve EDITO bucket quota and re-run the full pipeline on EDITO for cross-validation with the local v03a run.',
     ]:
         doc.add_paragraph(step, style='List Number')
 
