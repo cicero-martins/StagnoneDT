@@ -23,8 +23,12 @@ import os
 import sys
 from pathlib import Path
 
+# botocore >= 1.36 adds checksum headers MinIO rejects — disable BEFORE boto3 import
+os.environ.setdefault('AWS_REQUEST_CHECKSUM_CALCULATION', 'WHEN_REQUIRED')
+os.environ.setdefault('AWS_RESPONSE_CHECKSUM_VALIDATION', 'WHEN_REQUIRED')
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-V02_DIR = PROJECT_ROOT / 'model' / 'dflowfm_v02'
+MODEL_DIR = PROJECT_ROOT / 'model' / 'dflowfm_v03'  # default model version for upload/download
 DOT_ENV = PROJECT_ROOT / '.env'
 
 BUCKET = 'oidc-cmartinsjr'
@@ -67,9 +71,19 @@ def load_credentials() -> dict:
 
 def get_client():
     import boto3
+    from botocore.config import Config
     creds = load_credentials()
     endpoint = creds.pop('endpoint_url')
-    return boto3.client('s3', endpoint_url=endpoint, **creds)
+    # botocore >= 1.35 adds x-amz-sdk-checksum-algorithm headers by default on PUTs;
+    # MinIO at EDITO rejects these and closes the connection → force "when_required".
+    config = Config(
+        retries={'max_attempts': 5, 'mode': 'adaptive'},
+        connect_timeout=30,
+        read_timeout=120,
+        request_checksum_calculation='when_required',
+        response_checksum_validation='when_required',
+    )
+    return boto3.client('s3', endpoint_url=endpoint, config=config, **creds)
 
 
 def iter_local_files(root: Path):
@@ -127,11 +141,11 @@ def cmd_clean(prefix: str, confirm: bool):
         if ans != 'y':
             print('Aborted.')
             return
-    # boto3 delete_objects accepts 1000 keys per call
-    for i in range(0, len(keys), 1000):
-        batch = [{'Key': k} for k in keys[i:i + 1000]]
-        s3.delete_objects(Bucket=BUCKET, Delete={'Objects': batch, 'Quiet': True})
-        print(f'  deleted {min(i + 1000, len(keys))} / {len(keys)}')
+    # MinIO rejects batch delete_objects (MissingContentMD5) — delete one by one
+    for i, k in enumerate(keys, 1):
+        s3.delete_object(Bucket=BUCKET, Key=k)
+        if i % 50 == 0 or i == len(keys):
+            print(f'  deleted {i} / {len(keys)}')
     print('Done.')
 
 
@@ -158,7 +172,10 @@ def cmd_upload(args):
     for i, (p, rel) in enumerate(files, 1):
         key = prefix + rel
         size = p.stat().st_size
-        s3.upload_file(str(p), BUCKET, key)
+        # Use put_object (single HTTP request) instead of upload_file (multipart + threads)
+        # — MinIO at EDITO closes multipart connections on large files.
+        with open(p, 'rb') as f:
+            s3.put_object(Bucket=BUCKET, Key=key, Body=f.read())
         uploaded_b += size
         print(f'[{i:3d}/{len(files)}] {human(size):>10}  {key}   ({uploaded_b/total_b*100:.1f}%)')
     print(f'Uploaded {len(files)} file(s), {human(uploaded_b)}.')
@@ -206,7 +223,8 @@ def cmd_sync_code(args):
         return
     s3 = get_client()
     for i, (p, rel) in enumerate(files, 1):
-        s3.upload_file(str(p), BUCKET, prefix + rel)
+        with open(p, 'rb') as f:
+            s3.put_object(Bucket=BUCKET, Key=prefix + rel, Body=f.read())
         print(f'[{i:3d}/{len(files)}] {rel}')
     print(f'Uploaded {len(files)} file(s).')
 
@@ -258,7 +276,7 @@ def cmd_download_his(args):
     """Fetch *_his.nc from DFM_OUTPUT/ to local model dir."""
     s3 = get_client()
     prefix = args.output_prefix.rstrip('/') + '/'
-    dst = V02_DIR / 'output'
+    dst = MODEL_DIR / 'output'
     dst.mkdir(parents=True, exist_ok=True)
     paginator = s3.get_paginator('list_objects_v2')
     found = 0
@@ -291,7 +309,7 @@ def main():
     s.set_defaults(func=lambda a: cmd_clean(DEFAULT_OUTPUT_PREFIX, confirm=not a.yes))
 
     s = sub.add_parser('upload', help='Upload v02 inputs to DFM_INPUT/')
-    s.add_argument('--model-dir', default=str(V02_DIR))
+    s.add_argument('--model-dir', default=str(MODEL_DIR))
     s.add_argument('--prefix', default=DEFAULT_INPUT_PREFIX)
     s.add_argument('--dry-run', action='store_true')
     s.set_defaults(func=cmd_upload)
