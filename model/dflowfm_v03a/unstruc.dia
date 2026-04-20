@@ -1,0 +1,4 @@
+* 1.2.184.057d2f7ceeafda462a1b4e598efa4ce4f0c97cc5
+* Source: all/release/2026.01
+* File creation date: 14:04:41, 20-04-2026
+** INFO   : Command: "C:\Program Files\Deltares\Delft3D FM Suite 2026.01 HMWQ\plugins\DeltaShell.Dimr\kernels\x64\bin\dflowfm-cli.exe"  --partition:ndomains=4:icgsolver=6 Stagnone_dxy01_15m.mdu
