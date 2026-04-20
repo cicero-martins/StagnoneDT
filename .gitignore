@@ -7,7 +7,7 @@ model/*/DFM_OUTPUT_*/
 model/*/DFM_OUTPUT*/
 model/*/*.cache
 
-# SWAN hotstart and intermediate files
+# SWAN hotstart and intermediate files (all regenerated at runtime)
 model/*/wave/hot_*.nc
 model/*/wave/*.sta
 model/*/wave/PRINT
@@ -15,6 +15,17 @@ model/*/wave/PRINT-*
 model/*/wave/swaninit
 model/*/wave/*.log
 model/*/wave/*.prt
+model/*/wave/BOTNOW
+model/*/wave/CURNOW
+model/*/wave/WNDNOW
+model/*/wave/INPUT
+model/*/wave/NEST*
+model/*/wave/SWANIN_*
+model/*/wave/TMP_*
+model/*/wave/swn-diag.*
+model/*/wave/wavm-*.dat
+model/*/wave/wavm-*.def
+model/*/wave/wavm-*.nc
 
 # Restart files (re-generable from model runs)
 model/*/*_rst.nc
