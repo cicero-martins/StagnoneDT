@@ -1,0 +1,145 @@
+[WaveFileInformation]
+   FileVersion           = 02.00
+
+[General]
+   ProjectName           = stagnone
+   ProjectNr             = 01
+   Description           = Stagnone — nested SWAN: outer ~400m (full FM domain) + inner ~100m (lagoon)
+   OnlyInputVerify       = false
+   SimMode               = stationary
+   DirConvention         = nautical
+   ReferenceDate         = 2025-01-01
+   WindSpeed             = 0.00
+   WindDir               = 0.00
+
+[TimePoint]
+   Time                  = 0.0000000e+000
+   WaterLevel            = 0.0000000e+000
+   VelocityX             = 0.0000000e+000
+   VelocityY             = 0.0000000e+000
+
+[Constants]
+   WaterLevelCorrection  = 0.0
+   Gravity               = 9.81
+   WaterDensity          = 1025.0
+   NorthDir              = 90.0
+   MinimumDepth          = 0.05
+
+[Processes]
+   GenModePhys           = 3
+   Breaking              = true
+   BreakAlpha            = 1.0
+   BreakGamma            = 0.73
+   Triads                = false
+   TriadsAlpha           = 0.1
+   TriadsBeta            = 2.2
+   WaveSetup             = false
+   BedFriction           = jonswap
+   BedFricCoef           = 0.067
+   Diffraction           = false
+   DiffracCoef           = 0.2
+   DiffracSteps          = 5
+   DiffracProp           = true
+   WindGrowth            = true
+   WhiteCapping          = Komen
+   Quadruplets           = true
+   Refraction            = true
+   FreqShift             = true
+   WaveForces            = dissipation 3d
+
+[Numerics]
+   DirSpaceCDD           = 0.5
+   FreqSpaceCSS          = 0.5
+   RChHsTm01             = 0.02
+   RChMeanHs             = 0.02
+   RChMeanTm01           = 0.02
+   PercWet               = 98.0
+   MaxIter               = 15
+
+[Output]
+   TestOutputLevel       = 0
+   TraceCalls            = false
+   UseHotFile            = true
+   WriteCOM              = true
+   MapWriteInterval      = 1800
+   COMWriteInterval      = 600
+   MapWriteNetCDF        = true
+   COMFile               = ../DFM_OUTPUT_Stagnone_dxy01_15m/Stagnone_dxy01_15m_com.nc
+   LocationsFile         = stagnone_wave_locs.loc
+
+[Domain]
+   Grid                  = swan_grid_outer.grd
+   BedLevel              = swan_bathy_outer.dep
+   DirSpace              = circle
+   NDir                  = 24
+   StartDir              = 0.0
+   EndDir                = 0.0
+   FreqMin               = 0.05
+   FreqMax               = 1.0
+   NFreq                 = 24
+   Output                = true
+   FlowBedLevel          = 2
+   FlowWaterLevel        = 2
+   FlowVelocity          = 2
+   FlowWind              = 2
+
+[Domain]
+   Grid                  = swan_grid.grd
+   BedLevel              = swan_bathy.dep
+   DirSpace              = circle
+   NDir                  = 24
+   StartDir              = 0.0
+   EndDir                = 0.0
+   FreqMin               = 0.05
+   FreqMax               = 1.0
+   NFreq                 = 24
+   Output                = true
+   FlowBedLevel          = 2
+   FlowWaterLevel        = 2
+   FlowVelocity          = 2
+   FlowWind              = 2
+
+[Boundary]
+   Name                  = offshore_west
+   Definition            = orientation
+   Orientation           = west
+   SpectrumSpec          = parametric
+   SpShapeType           = jonswap
+   PeriodType            = peak
+   DirSpreadType         = power
+   PeakEnhanceFac        = 3.3
+   GaussSpread           = 0.01
+   WaveHeight            = 0.5
+   Period                = 5.0
+   Direction             = 270.0
+   DirSpreading          = 4.0
+
+[Boundary]
+   Name                  = offshore_south
+   Definition            = orientation
+   Orientation           = south
+   SpectrumSpec          = parametric
+   SpShapeType           = jonswap
+   PeriodType            = peak
+   DirSpreadType         = power
+   PeakEnhanceFac        = 3.3
+   GaussSpread           = 0.01
+   WaveHeight            = 0.3
+   Period                = 4.0
+   Direction             = 180.0
+   DirSpreading          = 4.0
+
+[Boundary]
+   Name                  = offshore_north
+   Definition            = orientation
+   Orientation           = north
+   SpectrumSpec          = parametric
+   SpShapeType           = jonswap
+   PeriodType            = peak
+   DirSpreadType         = power
+   PeakEnhanceFac        = 3.3
+   GaussSpread           = 0.01
+   WaveHeight            = 0.3
+   Period                = 4.0
+   Direction             = 0.0
+   DirSpreading          = 4.0
