@@ -1,0 +1,62 @@
+[General]
+fileVersion           = 1.01                
+fileType              = boundConds          
+
+[Forcing]
+name                  = Mozia_0001          
+function              = timeSeries          
+timeInterpolation     = linear              
+quantity              = time                
+unit                  = seconds since 2025-01-01 00:00:00
+quantity              = tracerbndTracer1    
+unit                  = -
+15638400  0   
+15681600  0   
+15724800  0   
+15768000  0   
+15811200  0   
+15854400  0   
+15897600  0   
+15940800  0   
+15984000  0   
+16027200  0   
+16070400  0   
+16113600  0   
+16156800  0   
+16243140  0   
+16243200  1000
+16246800  0   
+16329540  0   
+16329600  1000
+16333200  0   
+16416000  0
+
+[Forcing]
+name                  = Mozia_0002          
+function              = timeSeries          
+timeInterpolation     = linear              
+quantity              = time                
+unit                  = seconds since 2025-01-01 00:00:00
+quantity              = tracerbndTracer1    
+unit                  = -
+15638400  0   
+15681600  0   
+15724800  0   
+15768000  0   
+15811200  0   
+15854400  0   
+15897600  0   
+15940800  0   
+15984000  0   
+16027200  0   
+16070400  0   
+16113600  0   
+16156800  0   
+16243140  0   
+16243200  1000
+16246800  0   
+16329540  0   
+16329600  1000
+16333200  0   
+16416000  0
+

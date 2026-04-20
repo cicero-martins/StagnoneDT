@@ -1,0 +1,100 @@
+ $***************************** HEADING *********************************                                                                                                                                                                                        
+ $                                                                                                                                                                                                                                                               
+ PROJECT  'stagnone        '  '01  '
+     '                                                                        '
+     '                                                                        '
+     '                                                                        '
+ $                                                                                                                                                                                                                                                               
+ $***************************** MODEL INPUT *****************************                                                                                                                                                                                        
+ $                                                                                                                                                                                                                                                               
+ SET   LEVEL =   0.00  NOR =  90.00    DEPMIN =   0.05 _                                                                                                                                                                                                         
+        MAXMES = 1000   MAXERR = 2 _                                                                                                                                                                                                                             
+       GRAV =    9.81  RHO =  1025.00  INRHOG =      1 _                                                                                                                                                                                                         
+       NAUT                                                                                                                                                                                                                                                      
+ $                                                                                                                                                                                                                                                               
+ MODE NONST                                                                                                                                                                                                                                                      
+ COORD SPHE                                                                                                                                                                                                                                                      
+ CGRID CURV  120  220 EXCEPT   0.00000000000000000E+00   0.00000000000000000E+00   _                                                                                                                                                                             
+       CIR                         24       0.05       1.00   24                                                                                                                                                                                                 
+ $                                                                                                                                                                                                                                                               
+ READ COOR 1. 'TMP_grid2swan02' _                                                                                                                                                                                                                                
+  4   0   1 FREE                                                                                                                                                                                                                                                 
+ $                                                                                                                                                                                                                                                               
+ INPGRID _                                                   
+ BOTTOM CURV 0. 0.  120  220                                                                                                                                                                                                                                     
+ READINP BOTTOM 1.0   'BOTNOW' 4 0 FREE
+ INPGRID _                                                   
+ CURREN CURV 0. 0.  120  220
+ READ CUR FAC= 1.    _
+ 'CURNOW'  IDLA=4 FREE
+ $
+ INPGRID _                                                   
+ WIND CURV 0. 0.    120  220
+ READ WIN FAC=   1.00      _
+ 'WNDNOW'  IDLA=4 FREE
+ $                                                                                                                                                                                                                                                               
+ $                                                                                                                                                                                                                                                               
+ $                                                                                                                                                                                                                                                               
+ BOUN NEST 'NEST002' CLOSED                                                                                                                                                                                                                                      
+ INITIAL HOTSTART 'hot_2_20250701_085000.nc' NETCDF                                                                                                                                                                                                              
+ $                                                                                                                                                                                                                                                               
+ GEN3 KOMEN DRAG WU                                                                                                                                                                                                                                              
+ BREAK CON       1.00    0.73                                                                                                                                                                                                                                    
+ FRIC JON       0.0670                                                                                                                                                                                                                                           
+ WCAP KOMEN delta=1                                                                                                                                                                                                                                              
+ LIM  10 1                                                                                                                                                                                                                                                       
+ NUM DIR cdd=   0.50 SIGIM css=   0.50
+ $                                                                                                                                                                                                                                                               
+ NUM ACCUR        0.020    0.020    0.020   98.000   15
+ $                                                                                                                                                                                                                                                               
+ $***************************** OUTPUT REQUEST **************************                                                                                                                                                                                        
+ $                                                                                                                                                                                                                                                               
+OUTPUT OPTIONS SPEC ndec=8
+ QUANTITY HSIGN   excv=-999.0
+ QUANTITY DIR     excv=-999.0
+ QUANTITY TM01    excv=-999.0
+ QUANTITY DEPTH   excv=-999.0
+ QUANTITY VELOC   excv=-999.0
+ QUANTITY TRANSP  excv=-999.0
+ QUANTITY DSPR    excv=-999.0
+ QUANTITY DISSIP  excv=-999.0
+ QUANTITY LEAK    excv=-999.0
+ QUANTITY QB      excv=-999.0
+ QUANTITY XP      excv=-999.0
+ QUANTITY YP      excv=-999.0
+ QUANTITY DIST    excv=-999.0
+ QUANTITY UBOT    excv=-999.0
+ QUANTITY STEEPW  excv=-999.0
+ QUANTITY WLENGTH excv=-999.0
+ QUANTITY FORCES  excv=-999.0
+ QUANTITY RTP     excv=-999.0
+ QUANTITY PDIR    excv=-999.0
+ QUANTITY WIND    excv=-999.0
+ QUANTITY TPS     excv=-999.0
+ QUANTITY TM02    excv=-999.0
+ QUANTITY TMM10   excv=-999.0
+ QUANTITY DHSIGN  excv=-999.0
+ QUANTITY DRTM01  excv=-999.0
+ QUANTITY SETUP   excv=-999.0
+ QUANTITY DISSURF excv=-999.0
+ QUANTITY DISWCAP excv=-999.0
+ QUANTITY DISBOT  excv=-999.0
+ QUANTITY DISVEG  excv=-999.0
+ QUANTITY NPLANTS excv=-999.0
+ $ 
+ TABLE 'COMPGRID' NOHEAD 'SWANOUT1'  _                                                                                                                                                                                                                           
+  HSIGN    DIR      TM01     DEPTH    VELOC    TRANSP _
+  DSPR     DISSIP   LEAK     QB       XP       YP     _
+  DIST     UBOT     STEEPW   WLENGTH  FORCES   RTP    _
+  PDIR     WIND   
+ $                                                                                                                                                                                                                                                               
+ TABLE 'COMPGRID' NOHEAD 'SWANOUT2'  _                                                                                                                                                                                                                           
+  TPS      TM02     TMM10    DHSIGN   DRTM01   SETUP   _
+  DISSURF  DISWCAP  DISBOT   DISVEG   NPLANTS
+ $                                                                                                                                                                                                                                                               
+ $                                                                                                                                                                                                                                                               
+ $                                                                                                                                                                                                                                                               
+ SPEC 'COMPGRID' RELATIVE 'hot_2_20250701_090000.nc' MDGRID                                                                                                                                                                                                      
+ TEST  ITEST=   0  ITRACE=   0                                                                                                                                                                                                                                   
+ COMPUTE STAT   20250701.090000                                                                                                                                                                                                                                  
+ STOP                                                                                                                                                                                                                                                            
