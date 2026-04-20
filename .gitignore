@@ -33,6 +33,9 @@ model/*/*_rst.nc
 # Heavy raw data (download on-demand via notebooks)
 data/raw/satellite/
 
+# Regenerable regridded model output (~50 MB, rebuild via scripts/regrid_v03a_for_opendrift.py)
+data/processed/v03a_surface_current.nc
+
 # Python
 __pycache__/
 *.pyc
