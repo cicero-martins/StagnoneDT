@@ -102,117 +102,90 @@
 
 [Boundary]
    Name             = west_seg1
-   Definition       = xy
-   StartCoord       = (11.9500, 37.6900)
-   EndCoord         = (11.9500, 37.8173)
-   SpectrumSpec     = parametric
-   SpShapeType      = jonswap
-   PeriodType       = peak
-   DirSpreadType    = power
-   PeakEnhanceFac   = 3.3
-   GaussSpread      = 0.01
-   TimeseriesFile   = west_seg1.bct
+   Definition       = xy-coordinates
+   StartCoordX      = 11.9500
+   EndCoordX        = 11.9500
+   StartCoordY      = 37.6900
+   EndCoordY        = 37.8173
+   SpectrumSpec     = from file
+   Spectrum         = west_seg1.bnd
 
 [Boundary]
    Name             = west_seg2
-   Definition       = xy
-   StartCoord       = (11.9500, 37.8173)
-   EndCoord         = (11.9500, 37.9446)
-   SpectrumSpec     = parametric
-   SpShapeType      = jonswap
-   PeriodType       = peak
-   DirSpreadType    = power
-   PeakEnhanceFac   = 3.3
-   GaussSpread      = 0.01
-   TimeseriesFile   = west_seg2.bct
+   Definition       = xy-coordinates
+   StartCoordX      = 11.9500
+   EndCoordX        = 11.9500
+   StartCoordY      = 37.8173
+   EndCoordY        = 37.9446
+   SpectrumSpec     = from file
+   Spectrum         = west_seg2.bnd
 
 [Boundary]
    Name             = west_seg3
-   Definition       = xy
-   StartCoord       = (11.9500, 37.9446)
-   EndCoord         = (11.9500, 38.0716)
-   SpectrumSpec     = parametric
-   SpShapeType      = jonswap
-   PeriodType       = peak
-   DirSpreadType    = power
-   PeakEnhanceFac   = 3.3
-   GaussSpread      = 0.01
-   TimeseriesFile   = west_seg3.bct
+   Definition       = xy-coordinates
+   StartCoordX      = 11.9500
+   EndCoordX        = 11.9500
+   StartCoordY      = 37.9446
+   EndCoordY        = 38.0716
+   SpectrumSpec     = from file
+   Spectrum         = west_seg3.bnd
 
 [Boundary]
    Name             = south_seg1
-   Definition       = xy
-   StartCoord       = (11.9500, 37.6900)
-   EndCoord         = (12.1563, 37.6900)
-   SpectrumSpec     = parametric
-   SpShapeType      = jonswap
-   PeriodType       = peak
-   DirSpreadType    = power
-   PeakEnhanceFac   = 3.3
-   GaussSpread      = 0.01
-   TimeseriesFile   = south_seg1.bct
+   Definition       = xy-coordinates
+   StartCoordX      = 11.9500
+   EndCoordX        = 12.1563
+   StartCoordY      = 37.6900
+   EndCoordY        = 37.6900
+   SpectrumSpec     = from file
+   Spectrum         = south_seg1.bnd
 
 [Boundary]
    Name             = south_seg2
-   Definition       = xy
-   StartCoord       = (12.1563, 37.6900)
-   EndCoord         = (12.3625, 37.6900)
-   SpectrumSpec     = parametric
-   SpShapeType      = jonswap
-   PeriodType       = peak
-   DirSpreadType    = power
-   PeakEnhanceFac   = 3.3
-   GaussSpread      = 0.01
-   TimeseriesFile   = south_seg2.bct
+   Definition       = xy-coordinates
+   StartCoordX      = 12.1563
+   EndCoordX        = 12.3625
+   StartCoordY      = 37.6900
+   EndCoordY        = 37.6900
+   SpectrumSpec     = from file
+   Spectrum         = south_seg2.bnd
 
 [Boundary]
    Name             = south_seg3
-   Definition       = xy
-   StartCoord       = (12.3625, 37.6900)
-   EndCoord         = (12.5688, 37.6900)
-   SpectrumSpec     = parametric
-   SpShapeType      = jonswap
-   PeriodType       = peak
-   DirSpreadType    = power
-   PeakEnhanceFac   = 3.3
-   GaussSpread      = 0.01
-   TimeseriesFile   = south_seg3.bct
+   Definition       = xy-coordinates
+   StartCoordX      = 12.3625
+   EndCoordX        = 12.5688
+   StartCoordY      = 37.6900
+   EndCoordY        = 37.6900
+   SpectrumSpec     = from file
+   Spectrum         = south_seg3.bnd
 
 [Boundary]
    Name             = north_seg1
-   Definition       = xy
-   StartCoord       = (11.9500, 38.0716)
-   EndCoord         = (12.1563, 38.0716)
-   SpectrumSpec     = parametric
-   SpShapeType      = jonswap
-   PeriodType       = peak
-   DirSpreadType    = power
-   PeakEnhanceFac   = 3.3
-   GaussSpread      = 0.01
-   TimeseriesFile   = north_seg1.bct
+   Definition       = xy-coordinates
+   StartCoordX      = 11.9500
+   EndCoordX        = 12.1563
+   StartCoordY      = 38.0716
+   EndCoordY        = 38.0716
+   SpectrumSpec     = from file
+   Spectrum         = north_seg1.bnd
 
 [Boundary]
    Name             = north_seg2
-   Definition       = xy
-   StartCoord       = (12.1563, 38.0716)
-   EndCoord         = (12.3625, 38.0716)
-   SpectrumSpec     = parametric
-   SpShapeType      = jonswap
-   PeriodType       = peak
-   DirSpreadType    = power
-   PeakEnhanceFac   = 3.3
-   GaussSpread      = 0.01
-   TimeseriesFile   = north_seg2.bct
+   Definition       = xy-coordinates
+   StartCoordX      = 12.1563
+   EndCoordX        = 12.3625
+   StartCoordY      = 38.0716
+   EndCoordY        = 38.0716
+   SpectrumSpec     = from file
+   Spectrum         = north_seg2.bnd
 
 [Boundary]
    Name             = north_seg3
-   Definition       = xy
-   StartCoord       = (12.3625, 38.0716)
-   EndCoord         = (12.5688, 38.0716)
-   SpectrumSpec     = parametric
-   SpShapeType      = jonswap
-   PeriodType       = peak
-   DirSpreadType    = power
-   PeakEnhanceFac   = 3.3
-   GaussSpread      = 0.01
-   TimeseriesFile   = north_seg3.bct
+   Definition       = xy-coordinates
+   StartCoordX      = 12.3625
+   EndCoordX        = 12.5688
+   StartCoordY      = 38.0716
+   EndCoordY        = 38.0716
+   SpectrumSpec     = from file
+   Spectrum         = north_seg3.bnd
