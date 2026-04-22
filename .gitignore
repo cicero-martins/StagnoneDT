@@ -1,6 +1,12 @@
 # Credentials — NEVER commit
 .env
 
+# Ad-hoc/throwaway scripts (often contain signed URLs / temporary tokens)
+scripts/_*
+
+# EDITO run logs captured locally during debugging (useful transient artifacts, not repo-worthy)
+output/delft3d-run-docker-*.txt
+
 # Model outputs (re-generable, large: ~16-23 GB each)
 model/*/output/
 model/*/DFM_OUTPUT_*/
