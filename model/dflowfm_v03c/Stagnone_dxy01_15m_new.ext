@@ -1,0 +1,98 @@
+# written by HYDROLIB-core 1.0.0
+
+[General]
+fileVersion = 2.01
+fileType    = extForce
+
+[Boundary]
+quantity     = waterlevelbnd
+locationFile = Stagnone_dxy01_15m.pli
+forcingFile  = waterlevelbnd_constant_Stagnone_dxy01_15m.bc
+
+[Boundary]
+quantity     = waterlevelbnd
+locationFile = Stagnone_dxy01_15m.pli
+forcingFile  = tide_tpxo80_opendap_Stagnone_dxy01_15m.bc
+
+[Boundary]
+quantity     = waterlevelbnd
+locationFile = Stagnone_dxy01_15m.pli
+forcingFile  = waterlevelbnd_CMEMS_Stagnone_dxy01_15m.bc
+
+[Boundary]
+quantity     = salinitybnd
+locationFile = Stagnone_dxy01_15m.pli
+forcingFile  = salinitybnd_CMEMS_Stagnone_dxy01_15m.bc
+
+[Boundary]
+quantity     = temperaturebnd
+locationFile = Stagnone_dxy01_15m.pli
+forcingFile  = temperaturebnd_CMEMS_Stagnone_dxy01_15m.bc
+
+[Boundary]
+quantity     = uxuyadvectionvelocitybnd
+locationFile = Stagnone_dxy01_15m.pli
+forcingFile  = uxuyadvectionvelocitybnd_CMEMS_Stagnone_dxy01_15m.bc
+
+[Meteo]
+quantity            = windx                                # Name of the quantity. See UM Section C.5.3
+forcingFile         = wind_blended_u10n_20250701to20250710.nc # Name of file containing the forcing for this meteo quantity.
+forcingVariableName = u10n                                 # Variable name used in forcingfile associated with this forcing. See UM Section C.5.3
+forcingFileType     = netcdf                               # Type of forcingFile.
+interpolationMethod = linearSpaceTime                      # Type of (spatial) interpolation.
+operand             = O                                    # How this data is combined with previous data for the same quantity (if any).
+
+[Meteo]
+quantity            = windy                                # Name of the quantity. See UM Section C.5.3
+forcingFile         = wind_blended_v10n_20250701to20250710.nc # Name of file containing the forcing for this meteo quantity.
+forcingVariableName = v10n                                 # Variable name used in forcingfile associated with this forcing. See UM Section C.5.3
+forcingFileType     = netcdf                               # Type of forcingFile.
+interpolationMethod = linearSpaceTime                      # Type of (spatial) interpolation.
+operand             = O                                    # How this data is combined with previous data for the same quantity (if any).
+
+[Meteo]
+quantity            = airpressure                         # Name of the quantity. See UM Section C.5.3
+forcingFile         = era5_msl_20250701to20250710_ERA5.nc # Name of file containing the forcing for this meteo quantity.
+forcingVariableName = msl                                 # Variable name used in forcingfile associated with this forcing. See UM Section C.5.3
+forcingFileType     = netcdf                              # Type of forcingFile.
+interpolationMethod = linearSpaceTime                     # Type of (spatial) interpolation.
+operand             = O                                   # How this data is combined with previous data for the same quantity (if any).
+
+[Meteo]
+quantity            = charnock                             # Name of the quantity. See UM Section C.5.3
+forcingFile         = era5_chnk_20250701to20250710_ERA5.nc # Name of file containing the forcing for this meteo quantity.
+forcingVariableName = chnk                                 # Variable name used in forcingfile associated with this forcing. See UM Section C.5.3
+forcingFileType     = netcdf                               # Type of forcingFile.
+interpolationMethod = linearSpaceTime                      # Type of (spatial) interpolation.
+operand             = O                                    # How this data is combined with previous data for the same quantity (if any).
+
+
+[Boundary]
+    quantity              = tracerbndlagoon_tracer
+    locationFile          = Stagnone_dxy01_15m.pli
+    forcingFile           = tracer_zero.bc
+
+# --- v03c: turbidity dispersion pulses (rain event on day 3) ---
+# Airport Birgi (12.468, 37.917): ~1000 m³ over 2 h -> 0.139 m³/s
+[Lateral]
+id                   = turbid_airport
+name                 = Turbid pulse — Birgi airport drainage
+locationFile         = turbid_airport.pli
+discharge            = turbid_airport_discharge.bc
+
+[Boundary]
+quantity             = tracerbndturbid_airport
+locationFile         = turbid_airport.pli
+forcingFile          = turbid_airport_tracer.bc
+
+# Saltpans di Trapani (12.507, 37.997): ~10000 m³ over 2 h -> 1.389 m³/s
+[Lateral]
+id                   = turbid_saltpans
+name                 = Turbid pulse — Trapani saltpans outflow
+locationFile         = turbid_saltpans.pli
+discharge            = turbid_saltpans_discharge.bc
+
+[Boundary]
+quantity             = tracerbndturbid_saltpans
+locationFile         = turbid_saltpans.pli
+forcingFile          = turbid_saltpans_tracer.bc
