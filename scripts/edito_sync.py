@@ -6,7 +6,8 @@ Usage (from dfm_tools_env or any env with boto3 + python-dotenv):
     python scripts/edito_sync.py clean-output
     python scripts/edito_sync.py clean-input
     python scripts/edito_sync.py upload [--model-dir PATH] [--prefix DFM_INPUT] [--dry-run]
-    python scripts/edito_sync.py download-his [--output-prefix DFM_OUTPUT]
+    python scripts/edito_sync.py download-his [--output-prefix DFM_OUTPUT] [--model-dir PATH]
+    python scripts/edito_sync.py download-subset [--model-dir PATH]
 
 Credentials are read in order:
   1. Environment variables: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY,
@@ -293,6 +294,30 @@ def cmd_download_his(args):
         print(f'No *_his.nc found under s3://{BUCKET}/{prefix}')
 
 
+def cmd_download_subset(args):
+    """Fetch all files under DFM_OUTPUT_SUBSET/ to local model dir."""
+    s3 = get_client()
+    prefix = args.output_prefix.rstrip('/') + '/'
+    model_dir = Path(args.model_dir).resolve() if args.model_dir else MODEL_DIR
+    dst = model_dir / 'output'
+    dst.mkdir(parents=True, exist_ok=True)
+    paginator = s3.get_paginator('list_objects_v2')
+    found = 0
+    for page in paginator.paginate(Bucket=BUCKET, Prefix=prefix):
+        for obj in page.get('Contents', []):
+            k = obj['Key']
+            # Skip folder marker
+            if k == prefix or k.endswith('/'):
+                continue
+            local = dst / Path(k).name
+            print(f'Downloading {k} -> {local}  ({human(obj["Size"])})')
+            s3.download_file(BUCKET, k, str(local))
+            found += 1
+    if not found:
+        print(f'Nothing found under s3://{BUCKET}/{prefix}  '
+              f'(run notebook 20 on EDITO first to generate the subset)')
+
+
 def main():
     ap = argparse.ArgumentParser(description='EDITO Datalab sync helper')
     sub = ap.add_subparsers(dest='cmd', required=True)
@@ -329,6 +354,12 @@ def main():
     s.add_argument('--output-prefix', default=DEFAULT_OUTPUT_PREFIX)
     s.add_argument('--model-dir', default=None, help='Target local model dir (default: model/dflowfm_v03)')
     s.set_defaults(func=cmd_download_his)
+
+    s = sub.add_parser('download-subset',
+                       help='Pull everything under DFM_OUTPUT_SUBSET/ to local (EDITO-side subsets)')
+    s.add_argument('--output-prefix', default='DFM_OUTPUT_SUBSET')
+    s.add_argument('--model-dir', default=None, help='Target local model dir (default: model/dflowfm_v03)')
+    s.set_defaults(func=cmd_download_subset)
 
     args = ap.parse_args()
     args.func(args)
