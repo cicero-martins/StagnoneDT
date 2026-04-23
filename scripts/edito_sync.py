@@ -5,6 +5,7 @@ Usage (from dfm_tools_env or any env with boto3 + python-dotenv):
     python scripts/edito_sync.py list
     python scripts/edito_sync.py clean-output
     python scripts/edito_sync.py clean-input
+    python scripts/edito_sync.py clean-code [--prefix CODE]
     python scripts/edito_sync.py upload [--model-dir PATH] [--prefix DFM_INPUT] [--dry-run]
     python scripts/edito_sync.py download-his [--output-prefix DFM_OUTPUT] [--model-dir PATH]
     python scripts/edito_sync.py download-subset [--model-dir PATH]
@@ -390,6 +391,11 @@ def main():
     s = sub.add_parser('clean-output', help=f'Delete all under {DEFAULT_OUTPUT_PREFIX}/')
     s.add_argument('--yes', action='store_true', help='Skip confirmation')
     s.set_defaults(func=lambda a: cmd_clean(DEFAULT_OUTPUT_PREFIX, confirm=not a.yes))
+
+    s = sub.add_parser('clean-code', help='Delete all under CODE/ (use before sync-code if renames happened)')
+    s.add_argument('--prefix', default='CODE')
+    s.add_argument('--yes', action='store_true', help='Skip confirmation')
+    s.set_defaults(func=lambda a: cmd_clean(a.prefix, confirm=not a.yes))
 
     s = sub.add_parser('upload', help='Upload v02 inputs to DFM_INPUT/')
     s.add_argument('--model-dir', default=str(MODEL_DIR))
