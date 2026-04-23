@@ -74,6 +74,8 @@ Se C1 for negativo: documenta no roadmap e pula C2. v03d fica sem morph.
 
 **Deliverable**: memória `hdf5_coupling_resolution.md` com o workaround (ou confirmação de bug conhecido).
 
+**Resultado D (2026-04-23)**: **resolvido**. Testes locais com 2h sim em `model/dflowfm_v03c_hdftest_*/` isolaram a causa: **`ncFormat = 3` elimina os HDF errors e restaura time-varying waves**. Matrix de 4 tests (baseline/nc3/nolock/serial) provou que nem MPI concurrency nem HDF5_USE_FILE_LOCKING resolvem isoladamente — só classic netCDF corta de raiz. Trade-off: limite 2GB por arquivo. Mitigação combinando wrimap_* reductions + mapInterval=1800 faz 9 dias caber. Detalhes em [hdf5_coupling_resolution](../../.claude/projects/c--Users-Unipa-Documents-StagnoneDT/memory/hdf5_coupling_resolution.md).
+
 ## Trilha E — v03d consolidation
 
 Puxa de A + C2 (se positivo) + D (se resolveu):
