@@ -8,7 +8,7 @@
 
 ## 1. Current Approach and Limitations
 
-The current implementation (`notebooks/03_satellite_roughness.ipynb`) uses:
+The current implementation (`notebooks/01_input_satellite_roughness.ipynb`) uses:
 - Single Sentinel-2 L2A scene (Sep 2024, 10 m)
 - Threshold classification on Green/Blue ratio + NDVI → 4 classes
 - Fixed Manning n per class: bare sand (0.020), sparse Cymodocea (0.035), dense Posidonia (0.050), rock (0.028)

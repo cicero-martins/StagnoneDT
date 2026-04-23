@@ -9,7 +9,7 @@
 - **Rodando agora no EDITO** via `delft3dfmrun-docker` (5ª tentativa bem-sucedida após 4 falhas de config). Progrediu para sim-time `2025-07-01 03:40` após ~17 min de real-time — ritmo esperado (~8 min por dia de sim).
 - **Questão estrutural identificada**: erro HDF5 na reabertura do com.nc pelo SWAN após iteração 1 — pre-existente em v03/v03b, impede variação temporal das ondas no acoplamento. Não bloqueia a simulação; tema para investigação separada.
 
-## 1. Validação v03b ([notebook 18](../notebooks/18_v03b_validation.ipynb))
+## 1. Validação v03b ([notebook 21_valid_v03b](../notebooks/21_valid_v03b.ipynb))
 
 Estruturado em 5 seções: 1) verificação de input/setup, 2) nível do mar vs tide gauge Trapani + GTSM, 3) ondas vs CMEMS (adaptado — sem dados in situ disponíveis), 4) salinidade, 5) tracer. Seção Summary consolida achados.
 
@@ -91,7 +91,7 @@ ERROR: time_read(0.00000E+00) is not equal to curtime(0.15639E+08)
 
 **Após conclusão do run:**
 1. Download de output (script `edito_sync.py download-his` + map/com via mc)
-2. Rodar [notebook 18](../notebooks/18_v03b_validation.ipynb) adaptado ao v03c — verificar:
+2. Rodar [notebook 21_valid_v03b](../notebooks/21_valid_v03b.ipynb) adaptado ao v03c — verificar:
    - Salinidade inicial = 42 ppt no interior do lagoon ✓ (esperado com `iniWithNudge=0`)
    - Tracers turbid_airport / turbid_saltpans com padrão de dispersão plausível a partir do dia 3
    - Ondas: confirmar `hwav.std()=0` (limitação conhecida) e documentar explicitamente
@@ -107,7 +107,7 @@ ERROR: time_read(0.00000E+00) is not equal to curtime(0.15639E+08)
 | Arquivo | Descrição |
 |---|---|
 | [model/dflowfm_v03c/](../model/dflowfm_v03c/) | Modelo v03c completo (pronto para rerun) |
-| [notebooks/18_v03b_validation.ipynb](../notebooks/18_v03b_validation.ipynb) | Validação v03b (reaproveitável para v03c) |
+| [notebooks/21_valid_v03b.ipynb](../notebooks/21_valid_v03b.ipynb) | Validação v03b (reaproveitável para v03c) |
 | [figures/v03b_*.png](../figures/) | Plots de validação (3 séries + métricas) |
 | [data/processed/validation_metrics_v03b.csv](../data/processed/validation_metrics_v03b.csv) | Métricas quantitativas |
 | [docs/progress_report_2026-04-22.md](progress_report_2026-04-22.md) | Este relatório |

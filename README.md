@@ -10,9 +10,9 @@
 | v02 model (calibration fixes) | Running on EDITO |
 | v03 model (waves + tracer + hypersaline) | Built, pending v02 validation |
 | EDITO deployment | Functional — `delft3dfm_run_docker` process |
-| Particle tracking (notebook 12) | Framework ready, execution pending |
-| Residence time (notebook 13) | Methodology + post-processing ready |
-| Post-processing on EDITO (notebook 15) | Streaming workflow validated |
+| Particle tracking (`32_analysis_particle_tracking`) | Framework ready, execution pending |
+| Residence time (`33_analysis_residence_time`) | Methodology + post-processing ready |
+| Post-processing on EDITO (`40_util_edito_postproc`) | Streaming workflow validated |
 
 ## Site description
 
@@ -74,23 +74,18 @@ The lagoon is a protected area. Despite its shallow depth, significant vertical 
 
 ## Notebook catalog
 
-Main workflow in `notebooks/`:
+Notebooks live in `notebooks/`, organized in thematic numeric blocks. See [`notebooks/README.md`](notebooks/README.md) for the full index, per-version tree, and recommended reading order. Compact view:
 
-| # | Notebook | Purpose |
-|---|----------|---------|
-| 01 | `01_domain_mesh.ipynb` | Evaluate mesh quality, domain extent, boundary adequacy |
-| 03 | `03_satellite_roughness.ipynb` | Sentinel-2 seagrass classification → Manning roughness |
-| 04 | `04_hydro_model_3d.ipynb` | Fix Model B config → running v01 3D hydrodynamic model |
-| 05 | `05_wave_coupling.ipynb` | SWAN setup + DIMR coupling to FM |
-| 06 | `06_insitu_data.ipynb` | QC 3 WL stations + 2 wind stations; CET→UTC; 3 m → 10 m wind |
-| 08 | `08_postprocessing.ipynb` | Model vs obs comparison, Willmott skill, time series |
-| 09 | `09_diagnostics.ipynb` | v01 diagnostics: datum bias, drying, 3D structure |
-| 10 | `10_build_v02.ipynb` | Apply v01 lessons → build v02 config (offset, cells, obs) |
-| 11 | `11_blended_wind.ipynb` | Blend ERA5 (outside) + in-situ (inside) wind via IDW |
-| 12 | `12_particle_tracking.ipynb` | Reproduce July 2025 Stokes drifter deploys via Lagrangian tracking |
-| 13 | `13_residence_time.ipynb` | Lagoon residence time: Eulerian passive tracer + Knudsen check |
-| 14 | `14_build_v03.ipynb` | Build v03: waves + tracer + hypersaline salinity + extended period |
-| 15 | `15_edito_postprocess_setup.ipynb` | EDITO JupyterLab post-processing via s3fs (no map.nc download) |
+| Block | Notebooks | Role |
+|-------|-----------|------|
+| `00–09` | `00_setup_domain_mesh`, `01_input_satellite_roughness`, `02_input_insitu_wl_wind`, `03_input_blended_wind`, `04_input_cmems_waves` | Setup + input forcing (cross-cutting) |
+| `10–19` | `10_build_v01`, `11_build_v02`, `12_build_v03`, `13_build_v03_wave_coupling` | Model configuration per version |
+| `20–29` | `20_valid_v01_wl`, `21_valid_v03b`, `22_valid_v03c` | Run validation against in-situ / satellite |
+| `30–39` | `30_analysis_v01_diagnostics`, `32_analysis_particle_tracking`, `33_analysis_residence_time` | Science analyses |
+| `40–49` | `40_util_edito_postproc`, `41_util_edito_map_subset` | EDITO-side tooling |
+| `archive/` | `03b_roughness_alternatives`, `16_bocasud_investigation` | Experimental / one-off (preserved in git) |
+
+**Convention for new notebooks**: `<NN>_<role>_<version?>_<slug>.ipynb` — role is one of `setup`/`input`/`build`/`valid`/`analysis`/`util`; version tag (`v03c`, `v04`, etc.) only when tied to a specific model revision.
 
 ## EDITO deployment
 
@@ -106,7 +101,7 @@ python scripts/edito_sync.py sync-code
 # On EDITO Datalab UI: New process → delft3dfm_run_docker
 # The service runs `bash run_model.sh` from s3://<user-bucket>/DFM_INPUT/
 
-# Post-processing: launch JupyterLab on EDITO, run notebook 15
+# Post-processing: launch JupyterLab on EDITO, run 40_util_edito_postproc (or 41_util_edito_map_subset)
 ```
 
 Full operational guide: [docs/EDITO_WORKFLOW.md](docs/EDITO_WORKFLOW.md)
@@ -144,22 +139,23 @@ Sequence for a fresh run:
 1. **Setup env** (above).
 2. **Get Delft3D FM** installed (or use EDITO).
 3. **Verify reference models** exist: `oldModel/input/` (A), `oldModel/Stagnone_py_lagoon3D.dsproj_data/` (B), `oldModel/Stagnone_justLagoon/` (lagoon polygon source).
-4. **Run notebooks in order** for the data pipeline:
-   - Notebook 06 → QC in-situ data → `data/processed/`
-   - Notebook 11 → blended wind NetCDFs → `model/dflowfm_v02/`
-   - Notebook 03 → Sentinel-2 roughness (optional for v02)
-5. **Build model** (v02 or v03):
-   - Notebook 10 → builds v02
-   - Notebook 14 → builds v03 from v02
+4. **Input forcing** (`00–09` block):
+   - `02_input_insitu_wl_wind` → QC in-situ data → `data/processed/`
+   - `03_input_blended_wind` → blended wind NetCDFs → `model/dflowfm_v02/`
+   - `01_input_satellite_roughness` → Sentinel-2 roughness (optional for v02+)
+   - `04_input_cmems_waves` → CMEMS wave BCs for v03b+
+5. **Build model** (`10–19` block):
+   - `11_build_v02` → v02 from v01 lessons
+   - `12_build_v03` → v03 from v02
 6. **Run**:
    - Local: `cd model/dflowfm_v02 && run_model.bat`
    - EDITO: `python scripts/edito_sync.py upload --model-dir model/dflowfm_v02`, then launch via Datalab UI
-7. **Post-process**:
-   - Local: notebooks 08, 09
-   - EDITO: notebook 15 (streams map.nc via s3fs)
+7. **Validate + analyze** (`20–39` blocks):
+   - Local post-processing: `20_valid_v01_wl`, `21_valid_v03b`, `22_valid_v03c`, `30_analysis_v01_diagnostics`
+   - EDITO post-processing: `40_util_edito_postproc` (streams map.nc via s3fs), `41_util_edito_map_subset` (slices 57 GB → ~200 MB)
 8. **Research extensions**:
-   - Notebook 12 for particle tracking
-   - Notebook 13 for residence time
+   - `32_analysis_particle_tracking` — OpenDrift on v03a surface currents
+   - `33_analysis_residence_time` — Eulerian tracer + Knudsen
 
 ## Project structure
 
