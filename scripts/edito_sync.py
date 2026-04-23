@@ -276,7 +276,8 @@ def cmd_download_his(args):
     """Fetch *_his.nc from DFM_OUTPUT/ to local model dir."""
     s3 = get_client()
     prefix = args.output_prefix.rstrip('/') + '/'
-    dst = MODEL_DIR / 'output'
+    model_dir = Path(args.model_dir).resolve() if args.model_dir else MODEL_DIR
+    dst = model_dir / 'output'
     dst.mkdir(parents=True, exist_ok=True)
     paginator = s3.get_paginator('list_objects_v2')
     found = 0
@@ -326,6 +327,7 @@ def main():
 
     s = sub.add_parser('download-his', help='Pull *_his.nc from DFM_OUTPUT/ to local')
     s.add_argument('--output-prefix', default=DEFAULT_OUTPUT_PREFIX)
+    s.add_argument('--model-dir', default=None, help='Target local model dir (default: model/dflowfm_v03)')
     s.set_defaults(func=cmd_download_his)
 
     args = ap.parse_args()
