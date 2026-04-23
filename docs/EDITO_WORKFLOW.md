@@ -29,8 +29,8 @@ python scripts/edito_sync.py sync-code
 
 # 6. Post-process on EDITO JupyterLab (recommended for large map.nc):
 #    - Start JupyterLab service from the catalog
-#    - In JupyterLab, pull code: see notebook 15 cell 2 (it uses boto3 to mirror CODE/)
-#    - Run notebook 15 to validate S3 access + streaming of map.nc
+#    - In JupyterLab, pull code: see notebook 40_util_edito_postproc cell 2 (it uses boto3 to mirror CODE/)
+#    - Run notebook 40_util_edito_postproc to validate S3 access + streaming of map.nc
 
 # 7. Download small artefacts locally
 python scripts/edito_sync.py download-his
@@ -42,7 +42,7 @@ python scripts/edito_sync.py download-his
 - **Parallel runs** (`nPart > 1`) need `<process></process>` tag inside `<component>` in `dimr_config.xml` AND pod CPU request ≥ `nPart`.
 - **Credentials expire** (usually 24h session). When `upload` fails with 403, refresh `.env` from the EDITO storage settings page.
 - **Never re-upload while a run is active** — overwrites files being read by the pod.
-- **Never download `map.nc` locally** — use s3fs streaming from EDITO JupyterLab (notebook 15).
+- **Never download `map.nc` locally** — use s3fs streaming from EDITO JupyterLab (notebook 40_util_edito_postproc).
 
 ## Cost / storage strategy
 
