@@ -8,6 +8,7 @@ Usage (from dfm_tools_env or any env with boto3 + python-dotenv):
     python scripts/edito_sync.py upload [--model-dir PATH] [--prefix DFM_INPUT] [--dry-run]
     python scripts/edito_sync.py download-his [--output-prefix DFM_OUTPUT] [--model-dir PATH]
     python scripts/edito_sync.py download-subset [--model-dir PATH]
+    python scripts/edito_sync.py download-map [--model-dir PATH] [--partitions 0,1]
 
 Credentials are read in order:
   1. Environment variables: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY,
@@ -294,6 +295,62 @@ def cmd_download_his(args):
         print(f'No *_his.nc found under s3://{BUCKET}/{prefix}')
 
 
+def cmd_download_map(args):
+    """Fetch *_map.nc (large, ~14 GB per partition) from DFM_OUTPUT/ to local model dir.
+
+    Supports --partitions 0,1,2,3 filter and skips files already present with matching size.
+    """
+    s3 = get_client()
+    prefix = args.output_prefix.rstrip('/') + '/'
+    model_dir = Path(args.model_dir).resolve() if args.model_dir else MODEL_DIR
+    dst = model_dir / 'output'
+    dst.mkdir(parents=True, exist_ok=True)
+
+    # Parse partition filter (default: all)
+    want_parts = None
+    if args.partitions:
+        want_parts = {p.strip().zfill(4) for p in args.partitions.split(',') if p.strip()}
+
+    paginator = s3.get_paginator('list_objects_v2')
+    todo = []
+    for page in paginator.paginate(Bucket=BUCKET, Prefix=prefix):
+        for obj in page.get('Contents', []):
+            k = obj['Key']
+            if not k.endswith('_map.nc'):
+                continue
+            if want_parts is not None:
+                # Extract "000N" from "..._000N_map.nc"
+                stem = Path(k).stem  # e.g., Stagnone_dxy01_15m_0000_map
+                part_id = stem.rsplit('_', 1)[-1] if stem.endswith(('0', '1', '2', '3')) else None
+                if part_id is None or part_id[-4:] not in want_parts:
+                    # Try splitting by _<digits>_map at end more robustly
+                    parts = stem.split('_')
+                    if len(parts) >= 2 and parts[-1].isdigit() and parts[-1].zfill(4) in want_parts:
+                        pass
+                    else:
+                        continue
+            todo.append((k, obj['Size']))
+
+    if not todo:
+        print(f'No *_map.nc found under s3://{BUCKET}/{prefix}')
+        return
+
+    total = sum(s for _, s in todo)
+    print(f'Found {len(todo)} map file(s), {human(total)} total.')
+
+    done = 0
+    for i, (k, size) in enumerate(todo, 1):
+        local = dst / Path(k).name
+        if local.exists() and local.stat().st_size == size:
+            print(f'[{i}/{len(todo)}] [skip] {local.name} already present ({human(size)})')
+            done += 1
+            continue
+        print(f'[{i}/{len(todo)}] [pull] {k}  ({human(size)}) ...', flush=True)
+        s3.download_file(BUCKET, k, str(local))
+        done += 1
+    print(f'Done: {done}/{len(todo)} files in {dst}')
+
+
 def cmd_download_subset(args):
     """Fetch all files under DFM_OUTPUT_SUBSET/ to local model dir."""
     s3 = get_client()
@@ -360,6 +417,14 @@ def main():
     s.add_argument('--output-prefix', default='DFM_OUTPUT_SUBSET')
     s.add_argument('--model-dir', default=None, help='Target local model dir (default: model/dflowfm_v03)')
     s.set_defaults(func=cmd_download_subset)
+
+    s = sub.add_parser('download-map',
+                       help='Pull *_map.nc (large, ~14 GB/partition) from DFM_OUTPUT/ to local')
+    s.add_argument('--output-prefix', default=DEFAULT_OUTPUT_PREFIX)
+    s.add_argument('--model-dir', default=None, help='Target local model dir (default: model/dflowfm_v03)')
+    s.add_argument('--partitions', default=None,
+                   help='Comma-separated partition ids to fetch (e.g., 0,1). Default: all.')
+    s.set_defaults(func=cmd_download_map)
 
     args = ap.parse_args()
     args.func(args)
