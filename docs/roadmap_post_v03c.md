@@ -57,6 +57,8 @@ Se C1 for negativo: documenta no roadmap e pula C2. v03d fica sem morph.
 
 **XBeach fora**: já decidido — é modelo de surf zone, não aplicável a lagoon sheltered.
 
+**Resultado C1 (2026-04-23)**: morph **aprovado** para v03d. Ver [notebook 31_analysis_resuspension_feasibility](../notebooks/31_analysis_resuspension_feasibility.ipynb). Evidências: (a) iter-1 SWAN já reporta u_orb = 0.186 m/s em BocaNord (acima do fine-sand threshold 0.14); (b) offshore peak Hs = 2.05 m (2025-07-09) → inlet u_orb 0.7-1.7 m/s — excede sand threshold >30% do tempo mesmo com atenuação 30%; (c) S2 scene 2025-10-06 mostra evento de ressuspensão visualmente confirmado (PI). Interior marginal mas mobiliza silt + clay. **C2 segue**: habilitar `[Morphology]` + 2 frações (sand d50 150µm, silt d50 30µm).
+
 ## Trilha D — HDF5 coupling debug (local)
 
 **Escopo:** destravar a limitação de ondas constantes no acoplamento FM+SWAN Online with FLOW.
