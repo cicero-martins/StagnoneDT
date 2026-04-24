@@ -1,6 +1,6 @@
 # Stagnone di Marsala — Digital Twin
 
-3D coupled wave-hydrodynamic Delft3D FM + SWAN digital twin of the Stagnone di Marsala lagoon (Sicily, Italy). The coupled runs are planned to execute on the **EDITO Datalab platform** (Delft3D FM is natively available there via the `delft3dfmrun-docker` service), with a GitHub Actions (or similar CI) workflow orchestrating the build / upload / launch cycle from the repository.
+3D coupled wave-hydrodynamic Delft3D FM + SWAN digital twin of the Stagnone di Marsala lagoon (Sicily, Italy). The coupled runs are planned to execute on the EDITO Datalab platform (Delft3D FM is natively available there via the `delft3dfmrun-docker` service), with a GitHub Actions (or similar CI) workflow orchestrating the build / upload / launch cycle from the repository.
 
 This repository serves as the computational base for an ongoing **PhD project** at the Università degli Studi di Palermo. The aim is to answer the research questions listed below — 3D hydrodynamics under wind forcing, lagoon residence time, inlet exchange with the open Mediterranean, seagrass-driven bottom roughness and wave attenuation, episodic turbidity sources, and sediment resuspension — contributing to the doctoral thesis and related peer-reviewed publications.
 
