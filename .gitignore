@@ -7,6 +7,9 @@ scripts/_*
 # HDF5 coupling debug test directories (Trilha D local tests, regenerable)
 model/dflowfm_*_hdftest_*/
 
+# Planet multi-date composite (regenerable via scripts/planet_mosaic_composite.py, ~3.7 GB)
+data/processed/planet_composite_*.nc
+
 # EDITO run logs captured locally during debugging (useful transient artifacts, not repo-worthy)
 output/delft3d-run-docker-*.txt
 
