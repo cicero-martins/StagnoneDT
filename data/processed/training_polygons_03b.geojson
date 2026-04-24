@@ -1118,6 +1118,135 @@
           ]
         ]
       }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "style": {
+          "stroke": true,
+          "color": "#F5DEB3",
+          "weight": 2,
+          "opacity": 0.5,
+          "fill": true,
+          "fillColor": "#F5DEB3",
+          "fillOpacity": 0.35,
+          "clickable": true
+        },
+        "class": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              12.45708,
+              37.899985
+            ],
+            [
+              12.45708,
+              37.900662
+            ],
+            [
+              12.457938,
+              37.900662
+            ],
+            [
+              12.457938,
+              37.899985
+            ],
+            [
+              12.45708,
+              37.899985
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "style": {
+          "stroke": true,
+          "color": "#F5DEB3",
+          "weight": 2,
+          "opacity": 0.5,
+          "fill": true,
+          "fillColor": "#F5DEB3",
+          "fillOpacity": 0.35,
+          "clickable": true
+        },
+        "class": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              12.46562,
+              37.895074
+            ],
+            [
+              12.46562,
+              37.895142
+            ],
+            [
+              12.465663,
+              37.895142
+            ],
+            [
+              12.465663,
+              37.895074
+            ],
+            [
+              12.46562,
+              37.895074
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "style": {
+          "stroke": true,
+          "color": "#F5DEB3",
+          "weight": 2,
+          "opacity": 0.5,
+          "fill": true,
+          "fillColor": "#F5DEB3",
+          "fillOpacity": 0.35,
+          "clickable": true
+        },
+        "class": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              12.465835,
+              37.8946
+            ],
+            [
+              12.465835,
+              37.894905
+            ],
+            [
+              12.466264,
+              37.894905
+            ],
+            [
+              12.466264,
+              37.8946
+            ],
+            [
+              12.465835,
+              37.8946
+            ]
+          ]
+        ]
+      }
     }
   ]
 }
