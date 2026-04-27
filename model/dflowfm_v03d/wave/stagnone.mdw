@@ -102,90 +102,82 @@
 
 [Boundary]
    Name             = west_seg1
-   Definition       = xy-coordinates
-   StartCoordX      = 11.9500
-   EndCoordX        = 11.9500
-   StartCoordY      = 37.6900
-   EndCoordY        = 37.8173
+   Definition       = grid-coordinates
+   StartCoordM      = 0
+   EndCoordM        = 0
+   StartCoordN      = 0
+   EndCoordN        = 18
    SpectrumSpec     = from file
    Spectrum         = west_seg1.bnd
-
 [Boundary]
    Name             = west_seg2
-   Definition       = xy-coordinates
-   StartCoordX      = 11.9500
-   EndCoordX        = 11.9500
-   StartCoordY      = 37.8173
-   EndCoordY        = 37.9446
+   Definition       = grid-coordinates
+   StartCoordM      = 0
+   EndCoordM        = 0
+   StartCoordN      = 18
+   EndCoordN        = 35
    SpectrumSpec     = from file
    Spectrum         = west_seg2.bnd
-
 [Boundary]
    Name             = west_seg3
-   Definition       = xy-coordinates
-   StartCoordX      = 11.9500
-   EndCoordX        = 11.9500
-   StartCoordY      = 37.9446
-   EndCoordY        = 38.0716
+   Definition       = grid-coordinates
+   StartCoordM      = 0
+   EndCoordM        = 0
+   StartCoordN      = 35
+   EndCoordN        = 53
    SpectrumSpec     = from file
    Spectrum         = west_seg3.bnd
-
 [Boundary]
    Name             = south_seg1
-   Definition       = xy-coordinates
-   StartCoordX      = 11.9500
-   EndCoordX        = 12.1563
-   StartCoordY      = 37.6900
-   EndCoordY        = 37.6900
+   Definition       = grid-coordinates
+   StartCoordM      = 0
+   EndCoordM        = 23
+   StartCoordN      = 0
+   EndCoordN        = 0
    SpectrumSpec     = from file
    Spectrum         = south_seg1.bnd
-
 [Boundary]
    Name             = south_seg2
-   Definition       = xy-coordinates
-   StartCoordX      = 12.1563
-   EndCoordX        = 12.3625
-   StartCoordY      = 37.6900
-   EndCoordY        = 37.6900
+   Definition       = grid-coordinates
+   StartCoordM      = 23
+   EndCoordM        = 45
+   StartCoordN      = 0
+   EndCoordN        = 0
    SpectrumSpec     = from file
    Spectrum         = south_seg2.bnd
-
 [Boundary]
    Name             = south_seg3
-   Definition       = xy-coordinates
-   StartCoordX      = 12.3625
-   EndCoordX        = 12.5688
-   StartCoordY      = 37.6900
-   EndCoordY        = 37.6900
+   Definition       = grid-coordinates
+   StartCoordM      = 45
+   EndCoordM        = 68
+   StartCoordN      = 0
+   EndCoordN        = 0
    SpectrumSpec     = from file
    Spectrum         = south_seg3.bnd
-
 [Boundary]
    Name             = north_seg1
-   Definition       = xy-coordinates
-   StartCoordX      = 11.9500
-   EndCoordX        = 12.1563
-   StartCoordY      = 38.0716
-   EndCoordY        = 38.0716
+   Definition       = grid-coordinates
+   StartCoordM      = 0
+   EndCoordM        = 23
+   StartCoordN      = 53
+   EndCoordN        = 53
    SpectrumSpec     = from file
    Spectrum         = north_seg1.bnd
-
 [Boundary]
    Name             = north_seg2
-   Definition       = xy-coordinates
-   StartCoordX      = 12.1563
-   EndCoordX        = 12.3625
-   StartCoordY      = 38.0716
-   EndCoordY        = 38.0716
+   Definition       = grid-coordinates
+   StartCoordM      = 23
+   EndCoordM        = 45
+   StartCoordN      = 53
+   EndCoordN        = 53
    SpectrumSpec     = from file
    Spectrum         = north_seg2.bnd
-
 [Boundary]
    Name             = north_seg3
-   Definition       = xy-coordinates
-   StartCoordX      = 12.3625
-   EndCoordX        = 12.5688
-   StartCoordY      = 38.0716
-   EndCoordY        = 38.0716
+   Definition       = grid-coordinates
+   StartCoordM      = 45
+   EndCoordM        = 68
+   StartCoordN      = 53
+   EndCoordN        = 53
    SpectrumSpec     = from file
    Spectrum         = north_seg3.bnd
