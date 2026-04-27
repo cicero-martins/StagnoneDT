@@ -80,15 +80,16 @@ COMWriteInterval     = 600     # 10 min coupling
 
 ## Isolation — test matrix (2-hour sim, same MDU/MDW except the noted variable)
 
-| Test                    | `ncFormat` | MPI partitions | `HDF5_USE_FILE_LOCKING` | `AppendCOM` | MDW boundary def      | HDF errors in log | `hwav` unique values |
-|-------------------------|:----------:|:--------------:|:-----------------------:|:-----------:|:---------------------:|:-----------------:|:--------------------:|
-| baseline                | 4          | 4              | ON                      | false       | xy-coordinates        | 1796              | 2                    |
-| **nc3 (classic)**       | **3**      | **4**          | **ON**                  | **false**   | xy-coordinates        | **0**             | **12-13 (fixed)**    |
-| nolock                  | 4          | 4              | FALSE                   | false       | xy-coordinates        | 429               | 2                    |
-| serial                  | 4          | 1              | ON                      | false       | xy-coordinates        | 429               | 2                    |
-| append                  | 4          | 4              | ON                      | true        | xy-coordinates        | 1672              | 2                    |
-| nc5 (silent→nc3)        | 5          | 4              | ON                      | false       | xy-coordinates        | 0                 | 12-13                |
-| **mn-coords**           | 4          | 4              | ON                      | false       | **grid-coordinates**  | **44**            | 2                    |
+| Test                    | `ncFormat` | MPI partitions | `HDF5_USE_FILE_LOCKING` | `AppendCOM` | MDW boundary def      | COMWriteInterval | HDF errors in log | `hwav` unique values |
+|-------------------------|:----------:|:--------------:|:-----------------------:|:-----------:|:---------------------:|:----------------:|:-----------------:|:--------------------:|
+| baseline                | 4          | 4              | ON                      | false       | xy-coordinates        | 600 s            | 1796              | 2                    |
+| **nc3 (classic)**       | **3**      | **4**          | **ON**                  | **false**   | xy-coordinates        | 600 s            | **0**             | **12-13 (fixed)**    |
+| nolock                  | 4          | 4              | FALSE                   | false       | xy-coordinates        | 600 s            | 429               | 2                    |
+| serial                  | 4          | 1              | ON                      | false       | xy-coordinates        | 600 s            | 429               | 2                    |
+| append                  | 4          | 4              | ON                      | true        | xy-coordinates        | 600 s            | 1672              | 2                    |
+| nc5 (silent→nc3)        | 5          | 4              | ON                      | false       | xy-coordinates        | 600 s            | 0                 | 12-13                |
+| **mn-coords**           | 4          | 4              | ON                      | false       | **grid-coordinates**  | 600 s            | **44**            | 2                    |
+| **coupling-interval**   | 4          | 4              | ON                      | false       | xy-coordinates        | **1200 s**       | **780**           | **2**                |
 
 **Observations:**
 
@@ -97,6 +98,7 @@ COMWriteInterval     = 600     # 10 min coupling
 3. `AppendCOM = true` (suggested by the D-Waves manual as an alternative data-write semantics) does not help — error count and `hwav` stay at baseline.
 4. FM accepts `ncFormat = 5` without error but silently writes NETCDF3_CLASSIC output (verified via `nc_inq_format`). So `ncFormat` only officially supports 3 or 4.
 5. **Switching the MDW boundary definitions from `xy-coordinates` to the manual-recommended `grid-coordinates` (M/N indices) drops the HDF error count by ~40× (1796 → 44) but still leaves `hwav` constant after iteration 1.** SWAN is still called every coupling step (12 wave.Update entries in the 2-hour log), but the com.nc reopen-for-write step fails just as it does with xy-coordinates — the failure is logged less verbosely. This isolates the bug further: it is not about how the boundaries are declared in the MDW; it is strictly about the HDF5 write-after-read access pattern when SWAN serialises its output back to a NetCDF-4 / HDF5 com.nc that D-Flow FM has open. (We will adopt grid-coordinates anyway as a manual-conformance / log-noise hygiene fix in v03d.)
+6. **Doubling the coupling interval from 600 s to 1200 s** (matching the 20-minute convention used by Choo et al. 2024 *Investigation of Coastal Effects of Current-Wave Coupling during a Typhoon Event using Delft3D-FM*) **does not restore time-varying waves**. Total error count drops from 1796 → 780 because there are simply fewer wave.Update cycles per run (6 vs 12), but the per-cycle failure pattern is unchanged — every cycle after iteration 1 still produces the same HDF + cascade-`Not a valid ID` block. **This rules out a timing/race-condition root cause**: spacing the FM-side flush and the SWAN-side reopen further apart in wall-clock time does not help. The bug is in the access pattern itself, not in concurrency.
 
 ## Our provisional workaround, and why we cannot rely on it
 
