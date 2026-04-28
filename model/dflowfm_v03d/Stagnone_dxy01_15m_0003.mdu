@@ -177,7 +177,7 @@ saliMax                        = -999.0  # Limit for salinity to max value [ppt]
 saliMin                        = 0.0     # Limit for salinity to min value [ppt]
 heat_eachStep                  = 1       # '1=heat each timestep, 0=heat each usertimestep
 nudgeTimeUni                   = 3600.0  # Uniform nudge relaxation time [s]
-iniWithNudge                   = 2       # Initialize salinity and temperature with nudge variables (0: no, 1: yes, 2: only initialize, no nudging)
+iniWithNudge                   = 0       # v03c: set to 0 so initialFields.ini XYZ hypersaline is actually applied (was 2 = overwritten by nudge file)
 secondaryFlow                  = 0       # Secondary flow (0: no, 1: yes)
 betaSpiral                     = 0.0     # Weight factor of the spiral flow intensity on flow dispersion stresses
 
@@ -263,7 +263,7 @@ hisFile                           =                            # History output 
 hisInterval                       = 600.0                      # History output times, given as 'interval' 'start period' 'end period'
 xlsInterval                       = 0.0                        # Interval between XLS history [Dd HH:MM:SS.ZZZ]
 mapFile                           =                            # Map file output file *_map.nc in NetCDF format
-mapInterval                       = 1800.0                     # Map file output times, given as 'interval' 'start period' 'end period'
+mapInterval                       = 1800.0                     # v03d: 30 min - to fit nc3 2 GB/file limit for local test (was 900 s)
 rstInterval                       = 86400.0                    # Restart file output times, given as 'interval' 'start period' 'end period'
 mapFormat                         = 4                          # Map file format (1: NetCDF, 2: Tecplot, 3: NetCFD and Tecplot)
 ncFormat                          = 3                          # Format for all NetCDF output files (3: classic, 4: NetCDF4+HDF5).
