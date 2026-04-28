@@ -217,7 +217,7 @@ autoTimestep            = 3              # 0 = no, 1 = 2D (hor. out), 3=3D (hor.
 autoTimestepNoStruct    = 0              # Exclude structure links (and neighbours) from time step limitation (0 = no, 1 = yes).
 autoTimestepNoQout      = 1              # Exclude negative qin terms from time step limitation (0 = no, 1 = yes).
 tStart                  = 0.0            # Start time w.r.t. RefDate [TUnit].
-tStop                   = 777600.0       # Stop time w.r.t. RefDate [TUnit].
+tStop                   = 259200.0       # Stop time w.r.t. RefDate [TUnit].
 startDateTime           = 20250701000000 # Computation start datetime [yyyymmddhhmmss]
 stopDateTime            = 20250710000000 # Computation stop datetime [yyyymmddhhmmss]
 updateRoughnessInterval = 86400.0        # Update interval for time dependent roughness parameters [s].
@@ -263,10 +263,10 @@ hisFile                           =                            # History output 
 hisInterval                       = 600.0                      # History output times, given as 'interval' 'start period' 'end period'
 xlsInterval                       = 0.0                        # Interval between XLS history [Dd HH:MM:SS.ZZZ]
 mapFile                           =                            # Map file output file *_map.nc in NetCDF format
-mapInterval                       = 900.0                      # v03c: 15 min output (was 1800 s = 30 min) — finer temporal sampling for waves/tracers
+mapInterval                       = 1800.0                     # v03d: 30 min - to fit nc3 2 GB/file limit for local test (was 900 s)
 rstInterval                       = 86400.0                    # Restart file output times, given as 'interval' 'start period' 'end period'
 mapFormat                         = 4                          # Map file format (1: NetCDF, 2: Tecplot, 3: NetCFD and Tecplot)
-ncFormat                          = 4                          # Format for all NetCDF output files (3: classic, 4: NetCDF4+HDF5).
+ncFormat                          = 3                          # Format for all NetCDF output files (3: classic, 4: NetCDF4+HDF5).
 ncNoUnlimited                     = 0                          # Write full-length time-dimension instead of unlimited dimension (1: yes, 0: no). (Might require NcFormat=4.)
 ncNoForcedFlush                   = 0                          # Do not force flushing of map-like files every output timestep (1: yes, 0: no).
 ncWriteLatLon                     = 0                          # Write extra lat-lon coordinates for all projected coordinate variables in each NetCDF file (for CF-compliancy) (1: yes, 0: no).
