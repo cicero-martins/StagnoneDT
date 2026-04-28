@@ -9,6 +9,7 @@ model/dflowfm_*_hdftest_*/
 model/dflowfm_*_bcfix_test/
 model/dflowfm_*_mntest/
 model/dflowfm_*_couplintv_test/
+model/dflowfm_*_waveonly_test/
 
 # Planet multi-date composite (regenerable via scripts/planet_mosaic_composite.py, ~3.7 GB)
 data/processed/planet_composite_*.nc
