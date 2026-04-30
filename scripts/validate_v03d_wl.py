@@ -70,18 +70,18 @@ def main():
     times = pd.to_datetime(ds.time.values)
     wl = ds['waterlevel'].values  # (time, station)
 
-    # Three windows for fair comparison:
-    # - "full"      : entire 9-day run (matches v03c's window)
-    # - "clean"     : day 1 12:00 to day 3 23:50 (post-spinup, pre-wave-freeze)
-    # - "post-frz"  : day 4 onwards (after wave coupling froze)
+    # Three windows. After the dimr-config fix (commit 1082232), wave coupling
+    # runs all 9 days; the day-4 boundary is kept only for cross-comparison
+    # against the prior broken run.
     spinup_end = pd.Timestamp('2025-07-01T12:00')
-    freeze_t = pd.Timestamp('2025-07-04T00:00')
+    day4_t = pd.Timestamp('2025-07-04T00:00')
     sim_end = pd.Timestamp('2025-07-10T00:00')
 
     windows = {
-        'full': (pd.Timestamp('2025-07-01T00:00'), sim_end),
-        'clean (1.5d-3d, post-spinup, pre-freeze)': (spinup_end, freeze_t),
-        'post-freeze (4d-9d)': (freeze_t, sim_end),
+        'full 9d (incl. spin-up)': (pd.Timestamp('2025-07-01T00:00'), sim_end),
+        'post-spinup days 1.5-9 (full coupled)': (spinup_end, sim_end),
+        'days 1.5-3 (early coupled, ref)': (spinup_end, day4_t),
+        'days 4-9 (late coupled, storm event)': (day4_t, sim_end),
     }
 
     all_rows = []
@@ -95,7 +95,6 @@ def main():
         ax.plot(mod_anom.index, mod_anom.values, label='v03d model (mean-removed)', color='C0', lw=0.8)
         ax.plot(obs[name].index, obs[name].values, label='in-situ (mean-removed)', color='C3', lw=0.8, alpha=0.8)
         ax.axvline(spinup_end, color='gray', ls=':', lw=0.7, alpha=0.6)
-        ax.axvline(freeze_t, color='black', ls='--', lw=0.9, alpha=0.7)
         ax.grid(alpha=0.3)
         ax.set_ylabel('WL anomaly [m]')
 
@@ -108,15 +107,15 @@ def main():
             m['Station'] = name
             m['Window'] = w_name
             all_rows.append(m)
-            if w_name == 'clean (1.5d-3d, post-spinup, pre-freeze)':
-                title_parts.append(f'CLEAN window: RMSE={m.get("RMSE", float("nan")):.3f} m, '
+            if w_name == 'post-spinup days 1.5-9 (full coupled)':
+                title_parts.append(f'1.5-9d post-spinup: RMSE={m.get("RMSE", float("nan")):.3f} m, '
                                    f'Corr={m.get("Corr", float("nan")):.3f}, '
                                    f'std_m/std_o={m.get("Std_mod", float("nan"))/m.get("Std_obs", float("nan")):.2f}')
         ax.set_title(' — '.join(title_parts))
         ax.legend(loc='upper right', fontsize=8)
 
     axes[-1].xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
-    plt.suptitle('v03d 9-day run: WL validation. Dotted = end of spin-up (12h). Dashed = wave-coupling freeze (day 4).')
+    plt.suptitle('v03d 9-day run (wave-coupling fix applied): WL validation at lagoon stations. Dotted = end of spin-up (12h).')
     plt.tight_layout()
     out = Path('figures/v03d_wl_validation_lagoon.png')
     plt.savefig(out, dpi=110)
@@ -129,11 +128,12 @@ def main():
 
     # Print comparison vs v03c (full window) AND v03d clean window
     print()
-    print('=== v03c (TPXO+CMEMS bug) vs v03d (BC fix) ===')
+    print('=== v03c (TPXO+CMEMS bug) vs v03d (BC fix + wave-coupling fix) ===')
     v03c = pd.read_csv('data/processed/validation_metrics_v03c.csv').set_index('Station')
-    for w_label, w_key in [('full 9d', 'full'),
-                             ('clean (1.5d-3d)', 'clean (1.5d-3d, post-spinup, pre-freeze)'),
-                             ('post-freeze (4d-9d)', 'post-freeze (4d-9d)')]:
+    for w_label, w_key in [('full 9d', 'full 9d (incl. spin-up)'),
+                             ('post-spinup 1.5-9d', 'post-spinup days 1.5-9 (full coupled)'),
+                             ('early 1.5-3d', 'days 1.5-3 (early coupled, ref)'),
+                             ('late 4-9d (storm)', 'days 4-9 (late coupled, storm event)')]:
         print()
         print(f'--- v03d window: {w_label} ---')
         print(f'{"Station":<14} {"RMSE v03c":>10} {"RMSE v03d":>10} | '
