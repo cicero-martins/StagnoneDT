@@ -95,7 +95,59 @@ Sem o +0.4208 m, o modelo opera com WL médio ~42 cm abaixo do MSL referenciado 
 
 3. **Validação contra in-situ**: comparar o modelo (referenciado ao MSL do FM bathy) contra gauges (referenciados ao zero local) **sem corrigir um ou outro** produz bias artificial. O offset de +0.4208 m alinha os dois referenciais para que a comparação seja válida em termos absolutos (não apenas em anomalia).
 
-## 4. Validação a posteriori — v03d (julho/2025, 9 dias)
+## 4. Sensibilidade do sistema ao offset — análise hipsométrica
+
+A laguna do Stagnone tem profundidade média ~1.2 m e área ~3.2 km² (laguna rasa propriamente dita, restringida a `bedlevel > -3 m`). Um offset de ±0.42 m representa fração significativa da coluna d'água. A análise hipsométrica computa o impacto direto do offset em variáveis derivadas:
+
+| Métrica (laguna rasa, 269 cells, 3.23 km²) | Sem offset (WL=−0.35 m) | Com offset (WL=+0.07 m) | Δ |
+|---|---|---|---|
+| Wet area | 3.11 km² | 3.23 km² | +3.7% |
+| **Volume** | 3.36 × 10⁶ m³ | 4.71 × 10⁶ m³ | **+40.2%** |
+| Mean depth (wet) | 0.88 m | 1.23 m | +35 cm |
+
+A área molhada quase não muda (a maioria das células já está submersa em ambas as configurações), mas o **volume cresce 40%**. Em uma laguna rasa, isto se propaga para várias variáveis derivadas:
+
+| Quantidade derivada | Dependência | Impacto qualitativo do offset |
+|---|---|---|
+| Tempo de residência $\tau = V/Q$ | $\propto V$ | ~40% maior com offset |
+| Diluição de hipersalina | $\propto V$ | ~40% mais lenta com offset |
+| Wave dissipation in-lagoon | $\propto 1/h$ | ~25% mais dissipação sem offset |
+| Bed shear stress $\tau_b$ (current) | $\propto 1/h$ | ~30% maior sem offset (mais ressuspensão) |
+| Tide celerity $c = \sqrt{gh}$ | $\propto \sqrt{h}$ | +17% celerity com offset |
+| Estratificação salinidade | aumenta com h | mais coluna para estratificar com offset |
+
+**Conclusão da análise de sensibilidade**: o offset matter substancialmente para variáveis físicas dependentes de volume e profundidade. A calibração empírica é defendível porque foi feita contra **observações reais** dos gauges (que carregam o datum local correto, mesmo que não-formalizado). Mas a sensibilidade do sistema reforça a importância de **reduzir a incerteza datum-related em v04** via:
+
+- Cota IGM95 dos gauges via GNSS RTK (±2 cm em vez de ±20-30 cm atual)
+- MDT formal CNES-CLS22 (±3-5 cm em vez de estimativa qualitativa de ±15 cm)
+- Validação cruzada contra Marettimo ISPRA RMN (datum oficial documentado)
+
+A incerteza propagada de ±20-30 cm no offset (cenário atual) → ±10% no volume → ±10% nos tempos de residência e diluição. Reduzir para ±5 cm de incerteza datum → ±2% no volume → ±2% nas variáveis derivadas.
+
+A figura `figures/v03d_offset_hypsometry_impact.png` mostra as curvas hipsométricas (wet area e volume vs WL) com as duas operating points marcadas.
+
+## 5. Bias residual após o offset (validação a posteriori v03d)
+
+Após aplicar o +0.4208 m, a comparação ABSOLUTA (não mean-removed) entre modelo e in-situ na janela post-spinup (1.5d–9d) mostra:
+
+| Estação | mean_model | mean_obs | bias residual (m−o) |
+|---|---|---|---|
+| BocaNord | +0.161 m | +0.074 m | +0.087 m |
+| BocaSud | +0.096 m | +0.131 m | −0.035 m |
+| AltaVilaEst | +0.094 m | +0.029 m | +0.065 m |
+| Marettimo (ISPRA) | +0.238 m | +0.130 m | +0.108 m |
+| **Mean** | — | — | **+0.056 m** |
+| Std (entre estações) | — | — | 0.055 m |
+
+**Interpretação:**
+
+- O bias absoluto caiu de −42 cm (v01 sem offset) para +5.6 cm (v03d com offset) — redução de **~7×**.
+- O bias residual médio (+5.6 cm) é da ordem de magnitude do **wave-setup time-mean** que agora está ativo no v03d (não estava em v01 quando o coupling estava quebrado). Sítios mais expostos a swell (Marettimo offshore +11 cm, BocaNord +9 cm) têm os maiores bias positivos; o sítio abrigado BocaSud é o único negativo (−4 cm).
+- A heterogeneidade entre estações (±5.5 cm 1-sigma) reflete tanto efeitos físicos reais (wave-setup espacialmente variável) quanto a incerteza datum dos gauges (±10-30 cm, item 2.2).
+
+**Decisão:** manter +0.4208 m no v03d. O resíduo de 5.6 cm é (i) da magnitude do wave-setup esperado, e (ii) menor que a incerteza dos gauges não-formalizados. Re-calibrar para zero o residual neste momento seria over-fitting.
+
+## 6. Validação a posteriori — v03d (julho/2025, 9 dias)
 
 Run v03d completou com waves time-varying e BC fix (TPXO removido). Métricas WL contra in-situ na janela limpa (12h de spin-up + dia 3, antes do freeze do dia 4 que foi resolvido em commit `1082232`):
 
@@ -108,7 +160,7 @@ Run v03d completou com waves time-varying e BC fix (TPXO removido). Métricas WL
 
 A consistência das métricas em **quatro estações independentes** (3 lagunares + 1 offshore) com std_mod/std_obs entre 0.90 e 1.23 confirma que o offset, somado à correção de superposição BC (TPXO removido), produz um WL absoluto coerente com as observações. A amplitude do sinal é preservada (correlação > 0.81 em todas) e o bias após mean-removal é virtualmente zero.
 
-## 5. Limitações e plano de aprimoramento
+## 7. Limitações e plano de aprimoramento
 
 ### Limitações da abordagem atual
 
@@ -123,11 +175,13 @@ A consistência das métricas em **quatro estações independentes** (3 lagunare
 3. **Validação contra Marettimo ISPRA RMN** como datum de referência absoluta — Marettimo é da rede oficial e tem datum IGM95 documentado.
 4. **Análise de sensibilidade** ±10 cm no offset para quantificar o impacto sobre o tempo de residência e dinâmica salina.
 
-## 6. Conclusão para o supervisor
+## 8. Conclusão para o supervisor
 
 O offset constante de +0.4208 m é **calibração empírica** com fundamentação física defensável. Os componentes identificáveis (MDT do Mediterrâneo, bias do produto CMEMS `zos`, datum local dos gauges, pressão atmosférica média) somam ~−0.22 m, explicando aproximadamente metade do bias observado. A diferença residual reflete imprecisão na separação dos componentes e efeitos secundários do wetting/drying.
 
-A validação no run v03d (9 dias, julho/2025) contra **quatro estações independentes** confirma que o offset, em conjunto com a remoção da dupla contagem do TPXO (Trilha B), produz amplitude e fase de WL coerentes com observações in-situ (`std_mod/std_obs` entre 0.90 e 1.23, RMSE ~3–5 cm).
+A validação no run v03d (9 dias, julho/2025) contra **quatro estações independentes** confirma que o offset, em conjunto com a remoção da dupla contagem do TPXO (Trilha B), produz amplitude e fase de WL coerentes com observações in-situ. Métricas de amplitude/fase (mean-removed): `std_mod/std_obs` entre 0.90 e 1.23, RMSE 3–5 cm, correlação > 0.81 em 4 estações. Bias absoluto residual médio: +5.6 cm (vs −42 cm em v01 sem offset).
+
+**Sensibilidade**: a análise hipsométrica (§4) mostra que o offset altera o **volume da laguna em +40%** e a **profundidade média em +35 cm** — não-trivial em sistema raso (mean depth ~1.2 m). Isto reforça a importância do refino datum em v04, mas não invalida a calibração atual: a comparação contra observações reais é o critério mais robusto disponível enquanto os datums dos gauges não estiverem formalizados.
 
 A abordagem é defensável publicar nesta forma para o run de demonstração v03d. Para uma versão de referência publicável (v04), o plano é substituir o offset constante empírico por uma decomposição formal: MDT do CNES-CLS22 + datum dos gauges medido por GNSS RTK + validação cruzada contra Marettimo ISPRA.
 
