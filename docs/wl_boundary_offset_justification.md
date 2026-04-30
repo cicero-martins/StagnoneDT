@@ -44,9 +44,11 @@ The Mediterranean Sea has an MDT permanently below the global geoid (EGM2008) by
 
 ### 2.2 Datum of the ISPRA tide gauges (Italian zero)
 
-Italian tide gauges of the ISPRA-RMN network report water height **referenced to the local station datum** ("zero idrometrico"), usually aligned to **Quota IGM95** (Istituto Geografico Militare 1995, based on Genova levelling) or to an installation benchmark. This datum does not correspond rigorously to local MSL: it is typically **+0.10 to +0.40 m above the instantaneous MSL**, depending on when the gauge was installed and on historical adjustments.
+Italian tide gauges of the ISPRA-RMN network (Rete Mareografica Nazionale, 36 stations) report water height **referenced to the local station datum** ("zero idrometrico"), usually aligned to **Quota IGM95** (Istituto Geografico Militare 1995, based on Genova levelling) or to an installation benchmark. This datum does not correspond rigorously to local MSL: it is typically **+0.10 to +0.40 m above the instantaneous MSL**, depending on when the gauge was installed and on historical adjustments.
 
-For the Stagnone bocche gauges (BocaNord/BocaSud) and AltaVilaEst, the local documentation does not specify the exact datum (these are academic/monitoring gauges, not part of the main ISPRA network); they were installed by the project collaborators and the "zero" was placed near the floating buoy at the surface during deployment. The vertical distance from "zero" to the true MSL on the day of installation can reach ±0.40 m.
+**Important correction (post-investigation):** the Marettimo gauge used in this work is **NOT part of the RMN** but of the more recent **SiAM** network (Sistema d'Allertamento Maremoti, operational since May 2021). SiAM uses piezometric Keller pressure transducers and the gauge identifier is `ISPRA_TA-Marettimo_S` (data accessible through the JRC TAD server, https://webcritech.jrc.ec.europa.eu/TAD_server/Device/658, and through the ISPRA Polaris platform tsunami.isprambiente.it/polaris). The SiAM gauges are deployed primarily for tsunami detection (anomaly relative to predicted tide), and the **vertical reference frame is not publicly documented** in the same way as the RMN gauges. The PDF "New stations for SiAM rev 2g" states the SiAM network is "linked with the Italian National tide gauge network (RMN)" but does not specify the harmonisation procedure.
+
+For the Stagnone bocche gauges (BocaNord/BocaSud) and AltaVilaEst, the local documentation does not specify the exact datum either (these are academic/monitoring gauges, not part of either ISPRA network); they were installed by the project collaborators and the "zero" was placed near the floating buoy at the surface during deployment. The vertical distance from "zero" to the true MSL on the day of installation can reach ±0.40 m.
 
 **Estimated contribution to the bias:** **+0.10 to +0.40 m** (sign: gauges report values above the "true" MSL).
 
@@ -156,7 +158,7 @@ The v03d run completed with time-varying waves and the BC fix (TPXO removed). WL
 | BocaNord | **1.02** | 0.034 m | 0.952 | Amplitude and phase essentially perfect |
 | BocaSud | **1.03** | 0.048 m | 0.906 | Same |
 | AltaVilaEst | **1.23** | 0.050 m | 0.808 | Slightly over-amplitude (shallow site, possible wave-setup contribution) |
-| Marettimo offshore (ISPRA RMN) | **0.90** | 0.031 m | 0.886 | Slightly under-amplitude, within the expected range for an offshore gauge |
+| Marettimo offshore (ISPRA SiAM, see §2.2) | **0.90** | 0.031 m | 0.886 | Slightly under-amplitude, within the expected range for a piezometric tsunami-alert gauge whose absolute datum is not publicly documented |
 
 The consistency of the metrics across **four independent stations** (3 in the lagoon + 1 offshore) with std_mod/std_obs between 0.90 and 1.23 confirms that the offset, combined with the BC-superposition correction (TPXO removed), produces an absolute WL coherent with the observations. The signal amplitude is preserved (correlation > 0.81 at all stations) and the post-mean-removal bias is virtually zero.
 
@@ -171,9 +173,10 @@ The consistency of the metrics across **four independent stations** (3 in the la
 ### Plan for future versions (v04+)
 
 1. **Topographic survey of the gauges**: measure the IGM95 elevation of the BN/BS/AE stations to fix the datum (one morning of fieldwork with a GNSS RTK receiver).
-2. **Formal MDT from CNES-CLS22**: extract pointwise MDT at the 51 boundary nodes (linear interpolation on a 1/8° grid) and apply as a spatially-varying offset instead of a constant.
-3. **Validation against Marettimo ISPRA RMN** as the absolute datum reference — Marettimo is part of the official network and has documented IGM95 datum.
-4. **Sensitivity analysis** of ±10 cm in the offset to quantify the impact on residence time and salinity dynamics.
+2. **Formal MDT from CMEMS**: download the static product `SEALEVEL_MED_PHY_MDT_L4_STATIC_008_066` (Mediterranean Sea Mean Dynamic Topography, 0.0417° resolution, 1993-2012 reference period, free with CMEMS account at https://data.marine.copernicus.eu/product/SEALEVEL_MED_PHY_MDT_L4_STATIC_008_066/description). Extract pointwise MDT at the 51 boundary nodes and apply as a spatially-varying offset instead of a single constant. Alternative: AVISO+ MDT_CNES_CLS22 product (similar accuracy, https://www.aviso.altimetry.fr/en/data/products/auxiliary-products/mdt/mdt-mediterranean.html).
+3. **Validation against an RMN gauge near the domain** — Marettimo turned out to be SiAM (not RMN, see §2.2), so its datum is not publicly available. The closest RMN-network gauges with documented IGM95 datum are **Trapani**, **Porto Empedocle**, **Palermo**, and **Lampedusa**. Trapani is closest (~30 km NE) but the most relevant offshore reference would be **Porto Empedocle** (similarly exposed to the Sicily Channel). Contact ISPRA to obtain the IGM95 elevation of the chosen RMN station's hydrometric zero.
+4. **Direct contact with ISPRA-SiAM** (responsible: Maurizio Ferla, ISPRA-CN-COS) to obtain the calibration metadata of the Marettimo gauge (sensor depth + reference benchmark) — would unlock its use as an offshore validation point with absolute datum.
+5. **Sensitivity analysis** of ±10 cm in the offset to quantify the impact on residence time and salinity dynamics.
 
 ## 8. Conclusion for the supervisor
 
@@ -189,7 +192,9 @@ The approach is defensible to publish in this form for the v03d demonstration ru
 
 ## Suggested references
 
-- **CMEMS MDT product**: AVISO+ MDT_CNES_CLS22 — https://www.aviso.altimetry.fr/en/data/products/auxiliary-products/mdt.html
+- **CMEMS Mediterranean MDT product**: SEALEVEL_MED_PHY_MDT_L4_STATIC_008_066 (1993-2012 reference, 0.0417° resolution) — https://data.marine.copernicus.eu/product/SEALEVEL_MED_PHY_MDT_L4_STATIC_008_066/description
+- **AVISO+ MDT product**: MDT-Mediterranean — https://www.aviso.altimetry.fr/en/data/products/auxiliary-products/mdt/mdt-mediterranean.html
+- **ISPRA SiAM tsunami alert network**: https://tsunami.isprambiente.it/polaris (Marettimo gauge ID `ISPRA_TA-Marettimo_S`, JRC TAD device 658)
 - **Mediterranean MDT**: Pinardi et al. (2014), "Mediterranean Sea large-scale low-frequency ocean variability and water mass formation rates from 1987 to 2007: A retrospective analysis", *Progress in Oceanography*, 132, 318-332.
 - **CMEMS MEDSEA reanalysis PUM**: PUM EU.COPERNICUS-MARINE.MDS-FOREC-MED-PHY (Marine Copernicus product manual, latest version).
 - **Italian gauge datum (IGM95)**: ISPRA-RMN tide gauge network documentation, https://www.mareografico.it
