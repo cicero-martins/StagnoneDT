@@ -1,10 +1,10 @@
-# Justificativa do offset constante +0.4208 m na condição de contorno de nível d'água
+# Justification of the constant +0.4208 m water-level boundary offset
 
-**Tópico:** Por que a condição de contorno de WL no modelo Stagnone DT (v03c em diante) inclui um offset constante de +0.4208 m somado ao sinal time-series do CMEMS?
+**Topic:** Why the water-level boundary condition in the Stagnone DT model (from v03c onwards) includes a constant +0.4208 m offset added to the CMEMS time-series signal.
 
-**Status do offset:** calibrado empiricamente no v01 (mean bias de v01 vs in-situ BN/BS/AE = −0.4208 m), preservado em todas as versões subsequentes (v02, v03, v03c, v03d).
+**Status of the offset:** empirically calibrated in v01 (mean bias of v01 vs in-situ BN/BS/AE = −0.4208 m), preserved in all subsequent versions (v02, v03, v03c, v03d).
 
-**Arquivo onde se aplica:** [`model/dflowfm_v03d/waterlevelbnd_constant_Stagnone_dxy01_15m.bc`](../model/dflowfm_v03d/waterlevelbnd_constant_Stagnone_dxy01_15m.bc)
+**File where it is applied:** [`model/dflowfm_v03d/waterlevelbnd_constant_Stagnone_dxy01_15m.bc`](../model/dflowfm_v03d/waterlevelbnd_constant_Stagnone_dxy01_15m.bc)
 
 ```ini
 [Forcing]
@@ -15,179 +15,179 @@ unit                  = m
 0.4208
 ```
 
-Este offset é aplicado em adição (operand `O`, additive) ao sinal time-series CMEMS via um segundo bloco `[Boundary]` no `Stagnone_dxy01_15m_new.ext` apontado para o mesmo `Stagnone_dxy01_15m.pli` (51 nós no contorno aberto).
+The offset is applied additively (operand `O`) to the CMEMS time-series signal via a second `[Boundary]` block in `Stagnone_dxy01_15m_new.ext`, pointing to the same `Stagnone_dxy01_15m.pli` (51 nodes on the open boundary).
 
 ---
 
-## 1. Origem empírica do valor
+## 1. Empirical origin of the value
 
-No run v01 (notebook [`notebooks/30_analysis_v01_diagnostics.ipynb`](../notebooks/30_analysis_v01_diagnostics.ipynb), célula 2 do bloco "Bias offset analysis"), o WL modelado nas três estações lagunares com mareógrafo (BocaNord, BocaSud, AltaVilaEst) apresentava bias sistemático negativo:
+In the v01 run (notebook [`notebooks/30_analysis_v01_diagnostics.ipynb`](../notebooks/30_analysis_v01_diagnostics.ipynb), cell 2 of the "Bias offset analysis" block), the modelled WL at the three lagoon stations with tide gauges (BocaNord, BocaSud, AltaVilaEst) showed a systematic negative bias:
 
-| Estação | Bias (modelo − obs) |
+| Station | Bias (model − obs) |
 |---|---|
 | BocaNord | −0.4323 m |
 | BocaSud | −0.4505 m |
 | AltaVilaEst | −0.3798 m |
-| **Média** | **−0.4208 m** |
+| **Mean** | **−0.4208 m** |
 
-A consistência entre estações (±5 cm em torno de −0.42 m) indicava um deslocamento de **datum** uniforme em todo o domínio, não um problema dinâmico local. Daí a opção pelo offset constante.
+The consistency between stations (±5 cm around −0.42 m) indicated a uniform **datum** offset across the domain rather than a localised dynamical issue, motivating the choice of a single constant offset.
 
-## 2. Decomposição física do bias: contribuições combinadas
+## 2. Physical decomposition of the bias: combined contributions
 
-Um bias de ~42 cm não vem de uma única fonte mas da **soma de quatro contribuições conhecidas** que afetam o referencial vertical entre o modelo (D-Flow FM) e os mareógrafos in-situ no Mediterrâneo Ocidental.
+A bias of ~42 cm does not come from a single source but from the **sum of four known contributions** that affect the vertical reference frame between the model (D-Flow FM) and the in-situ tide gauges in the Western Mediterranean.
 
-### 2.1 Mean Dynamic Topography (MDT) negativa do Mediterrâneo
+### 2.1 Negative Mean Dynamic Topography (MDT) of the Mediterranean
 
-O Mar Mediterrâneo apresenta MDT permanentemente abaixo do geóide global (EGM2008) por aproximadamente **0.20 a 0.45 m**. A causa é o balanço de massa em Gibraltar: evaporação supera precipitação + descarga fluvial em ~0.7 m·ano⁻¹, e a entrada compensatória de Atlântico via Estreito é forçada por essa depressão hidráulica permanente. No setor da Sicília-Tunísia (~38°N, 12°E), produtos de MDT (CNES-CLS18, MDT_CNES_CLS22) reportam −0.25 a −0.35 m.
+The Mediterranean Sea has an MDT permanently below the global geoid (EGM2008) by approximately **0.20 to 0.45 m**. The cause is the mass balance at Gibraltar: evaporation exceeds precipitation + river discharge by ~0.7 m·yr⁻¹, and the compensating Atlantic inflow through the Strait is forced by this permanent hydraulic depression. In the Sicily–Tunisia sector (~38°N, 12°E), MDT products (CNES-CLS18, MDT_CNES_CLS22) report −0.25 to −0.35 m.
 
-**Contribuição estimada ao bias:** **−0.20 a −0.35 m** (sinal: o sinal CMEMS forçando o modelo está sistematicamente abaixo do "nível MSL local" referenciado pelos mareógrafos).
+**Estimated contribution to the bias:** **−0.20 to −0.35 m** (sign: the CMEMS forcing signal sits systematically below the "local MSL" referenced by the gauges).
 
-### 2.2 Datum dos mareógrafos ISPRA (Italian zero)
+### 2.2 Datum of the ISPRA tide gauges (Italian zero)
 
-Mareógrafos italianos da rede ISPRA-RMN reportam altura d'água **referenciada ao datum local da estação** ("zero idrometrico"), usualmente alinhado ao **Quota IGM95** (Istituto Geografico Militare 1995, baseado no nivelamento de Genova) ou a um benchmark de instalação. Este datum não corresponde rigorosamente ao MSL local: tipicamente fica **+0.10 a +0.40 m acima do MSL** instantâneo, dependendo de quando o gauge foi instalado e de ajustes históricos.
+Italian tide gauges of the ISPRA-RMN network report water height **referenced to the local station datum** ("zero idrometrico"), usually aligned to **Quota IGM95** (Istituto Geografico Militare 1995, based on Genova levelling) or to an installation benchmark. This datum does not correspond rigorously to local MSL: it is typically **+0.10 to +0.40 m above the instantaneous MSL**, depending on when the gauge was installed and on historical adjustments.
 
-Para os gauges das bocche del Stagnone (BocaNord/BocaSud) e AltaVilaEst, a documentação local não especifica o datum exato (são gauges acadêmicos/de monitoramento, não da rede ISPRA principal); foram instalados pelos colaboradores do projeto e o "zero" foi colocado próximo à boia de instalação na superfície durante a colocação. A distância vertical do "zero" ao MSL real do dia da instalação pode chegar a ±0.40 m.
+For the Stagnone bocche gauges (BocaNord/BocaSud) and AltaVilaEst, the local documentation does not specify the exact datum (these are academic/monitoring gauges, not part of the main ISPRA network); they were installed by the project collaborators and the "zero" was placed near the floating buoy at the surface during deployment. The vertical distance from "zero" to the true MSL on the day of installation can reach ±0.40 m.
 
-**Contribuição estimada ao bias:** **+0.10 a +0.40 m** (sinal: gauges reportam valores acima do MSL "verdadeiro").
+**Estimated contribution to the bias:** **+0.10 to +0.40 m** (sign: gauges report values above the "true" MSL).
 
-### 2.3 Bias intrínseco do `zos` no produto CMEMS MEDSEA
+### 2.3 Intrinsic bias of `zos` in the CMEMS MEDSEA product
 
-O CMEMS MEDSEA_MULTIYEAR_PHY_006_004 (e seu sucessor analysis-forecast) define `zos` (sea surface height) como **anomalia em relação à média temporal da própria simulação reanalysis**, *não* em relação a um referencial geodético absoluto. Citação do Product User Manual:
+CMEMS MEDSEA_MULTIYEAR_PHY_006_004 (and its analysis-forecast successor) defines `zos` (sea surface height) as an **anomaly relative to the time-mean state of the reanalysis itself**, *not* relative to an absolute geodetic reference. From the Product User Manual:
 
 > "The sea surface height (zos) is provided as the dynamic component referenced to the time-mean state of the reanalysis. Users requiring absolute sea level should add the model's mean dynamic topography externally."
 
-No nosso domínio, a média temporal de `zos` ao longo do período julho/2025 é de aproximadamente −0.43 m (verificado no `data/raw/cmems/...` e no run v03d post-spinup). Este offset de −0.43 m é uma característica do produto, não uma anomalia física observável.
+In our domain, the time-mean of `zos` over the July 2025 period is approximately −0.43 m (verified in `data/raw/cmems/...` and in the v03d run post-spinup). This −0.43 m offset is a feature of the product, not a physically observable anomaly.
 
-**Contribuição estimada ao bias:** **−0.30 a −0.45 m** (sinal: o sinal CMEMS tem média temporalmente fixada em valores negativos por convenção de produto).
+**Estimated contribution to the bias:** **−0.30 to −0.45 m** (sign: the CMEMS signal has a time-mean fixed at negative values by product convention).
 
-### 2.4 Pressão atmosférica média e inverse barometer
+### 2.4 Mean atmospheric pressure and inverse barometer
 
-O CMEMS MEDSEA assume **isostatic adjustment** com pressão atmosférica padrão (1013.25 hPa). A pressão média real no Mediterrâneo Ocidental durante o verão (julho-agosto) é ~1015-1016 hPa, gerando um inverse barometer médio de **~−2 a −3 cm**.
+CMEMS MEDSEA assumes **isostatic adjustment** with standard atmospheric pressure (1013.25 hPa). The actual mean pressure in the Western Mediterranean during summer (July–August) is ~1015–1016 hPa, producing a mean inverse barometer of **~−2 to −3 cm**.
 
-**Contribuição estimada ao bias:** **−0.02 a −0.03 m** (pequeno, mas consistente em sinal).
+**Estimated contribution to the bias:** **−0.02 to −0.03 m** (small but consistent in sign).
 
-### 2.5 Soma das contribuições
+### 2.5 Sum of contributions
 
-| Componente | Contribuição (m) |
+| Component | Contribution (m) |
 |---|---|
-| MDT Mediterrâneo (−0.30) | −0.30 |
-| Bias intrínseco CMEMS `zos` | (parcialmente sobreposto com MDT, atribuir ~−0.10 residual) |
-| Datum dos gauges acima do MSL | +0.20 (ponto médio das estimativas +0.10 a +0.40) |
+| Mediterranean MDT (−0.30) | −0.30 |
+| CMEMS `zos` intrinsic bias | (partly overlaps with MDT, attribute ~−0.10 residual) |
+| Gauge datum above MSL | +0.20 (midpoint of the +0.10 to +0.40 estimate) |
 | Inverse barometer | −0.02 |
-| **Soma (modelo − obs)** | **−0.22 m** |
+| **Sum (model − obs)** | **−0.22 m** |
 
-A soma dos componentes físicos identificáveis explica **~−0.22 m** do bias observado de −0.42 m. A diferença residual de ~0.20 m é atribuível a:
+The sum of the identifiable physical components explains **~−0.22 m** of the observed −0.42 m bias. The residual ~0.20 m is attributable to:
 
-- **Inundação imprópria de células intertidais** no v01 quando o WL médio ficava muito baixo: células de saltpan com bedlevel próximo a +0.1 a +0.3 m IGM ficavam permanentemente secas no v01, distorcendo o balanço de volume e empurrando o WL médio para baixo (efeito de feedback do wetting/drying do Delft3D FM).
-- **Imprecisão da MDT no domínio próximo** (gradientes locais de MDT não resolvidos pelos produtos globais).
-- **Datum dos gauges instalados localmente** que pode ter sido posto deliberadamente no "high tide level" do dia da instalação, somando até +0.30 m acima de MSL.
+- **Improper flooding of intertidal cells** in v01 when the mean WL was too low: salt-pan cells with bedlevel near +0.1 to +0.3 m IGM remained permanently dry in v01, distorting the volume balance and pulling the mean WL further down (a feedback effect of D-Flow FM's wetting/drying scheme).
+- **Imprecision of the local MDT** (small-scale gradients not resolved by global products).
+- **Datum of locally-installed gauges** that may have been deliberately set at the "high tide level" of the day of installation, adding up to +0.30 m above MSL.
 
-## 3. Por que o offset é necessário (impacto no modelo)
+## 3. Why the offset is necessary (impact on the model)
 
-Sem o +0.4208 m, o modelo opera com WL médio ~42 cm abaixo do MSL referenciado pela batimetria FM (`mesh2d_node_z` é referenciado ao MSL local conforme regenerado dos dados GEBCO/EMODnet em [`scripts/regen_swan_bathy_from_fm.py`](../scripts/regen_swan_bathy_from_fm.py)). As consequências práticas são:
+Without the +0.4208 m offset, the model operates with a mean WL ~42 cm below the MSL referenced by the FM bathymetry (`mesh2d_node_z` is referenced to local MSL as regenerated from GEBCO/EMODnet data in [`scripts/regen_swan_bathy_from_fm.py`](../scripts/regen_swan_bathy_from_fm.py)). The practical consequences are:
 
-1. **Wetting/drying incorreto**: a Stagnone tem profundidades 0–2 m. Um deslocamento de 42 cm para baixo expõe artificialmente ~30% das células intertidais que de fato estão submersas no MSL. Isso distorce:
-   - Volume total da laguna (subestima)
-   - Tempo de residência (subestima — menos volume, mesmo flushing)
-   - Salinidade (superestima — menos água para diluir CMEMS background)
+1. **Incorrect wetting/drying**: the Stagnone has depths of 0–2 m. A 42 cm downward shift artificially exposes ~30% of the intertidal cells that are in fact submerged at MSL. This distorts:
+   - Total lagoon volume (under-estimated)
+   - Residence time (under-estimated — less volume, same flushing)
+   - Salinity (over-estimated — less water to dilute the CMEMS background)
 
-2. **Wave-setup deslocado**: o wave setup adiciona ~5–15 cm na boca durante eventos de swell. Sobre uma baseline já 42 cm baixa, a inundação computada das margens fica errada por essa diferença.
+2. **Displaced wave-setup**: wave setup adds ~5–15 cm at the bocche during swell events. On a baseline already 42 cm too low, the computed flooding of the margins is wrong by that difference.
 
-3. **Validação contra in-situ**: comparar o modelo (referenciado ao MSL do FM bathy) contra gauges (referenciados ao zero local) **sem corrigir um ou outro** produz bias artificial. O offset de +0.4208 m alinha os dois referenciais para que a comparação seja válida em termos absolutos (não apenas em anomalia).
+3. **Validation against in-situ**: comparing the model (referenced to FM-bathy MSL) against gauges (referenced to local zero) **without correcting one or the other** produces an artificial bias. The +0.4208 m offset aligns the two reference frames so that the comparison is valid in absolute terms (not just in anomaly).
 
-## 4. Sensibilidade do sistema ao offset — análise hipsométrica
+## 4. Sensitivity of the system to the offset — hypsometric analysis
 
-A laguna do Stagnone tem profundidade média ~1.2 m e área ~3.2 km² (laguna rasa propriamente dita, restringida a `bedlevel > -3 m`). Um offset de ±0.42 m representa fração significativa da coluna d'água. A análise hipsométrica computa o impacto direto do offset em variáveis derivadas:
+The Stagnone lagoon has a mean depth of ~1.2 m and area ~3.2 km² (the shallow lagoon proper, restricted to `bedlevel > -3 m`). An offset of ±0.42 m represents a significant fraction of the water column. The hypsometric analysis quantifies the direct impact of the offset on derived variables:
 
-| Métrica (laguna rasa, 269 cells, 3.23 km²) | Sem offset (WL=−0.35 m) | Com offset (WL=+0.07 m) | Δ |
+| Metric (shallow lagoon, 269 cells, 3.23 km²) | Without offset (WL=−0.35 m) | With offset (WL=+0.07 m) | Δ |
 |---|---|---|---|
 | Wet area | 3.11 km² | 3.23 km² | +3.7% |
 | **Volume** | 3.36 × 10⁶ m³ | 4.71 × 10⁶ m³ | **+40.2%** |
 | Mean depth (wet) | 0.88 m | 1.23 m | +35 cm |
 
-A área molhada quase não muda (a maioria das células já está submersa em ambas as configurações), mas o **volume cresce 40%**. Em uma laguna rasa, isto se propaga para várias variáveis derivadas:
+The wet area barely changes (most cells are already submerged in both configurations), but the **volume grows by 40%**. In a shallow lagoon this propagates into several derived variables:
 
-| Quantidade derivada | Dependência | Impacto qualitativo do offset |
+| Derived quantity | Dependence | Qualitative impact of the offset |
 |---|---|---|
-| Tempo de residência $\tau = V/Q$ | $\propto V$ | ~40% maior com offset |
-| Diluição de hipersalina | $\propto V$ | ~40% mais lenta com offset |
-| Wave dissipation in-lagoon | $\propto 1/h$ | ~25% mais dissipação sem offset |
-| Bed shear stress $\tau_b$ (current) | $\propto 1/h$ | ~30% maior sem offset (mais ressuspensão) |
-| Tide celerity $c = \sqrt{gh}$ | $\propto \sqrt{h}$ | +17% celerity com offset |
-| Estratificação salinidade | aumenta com h | mais coluna para estratificar com offset |
+| Residence time $\tau = V/Q$ | $\propto V$ | ~40% larger with offset |
+| Hypersaline dilution | $\propto V$ | ~40% slower with offset |
+| In-lagoon wave dissipation | $\propto 1/h$ | ~25% more dissipation without offset |
+| Bed shear stress $\tau_b$ (current) | $\propto 1/h$ | ~30% larger without offset (more resuspension) |
+| Tide celerity $c = \sqrt{gh}$ | $\propto \sqrt{h}$ | +17% celerity with offset |
+| Salinity stratification | grows with h | more column to stratify with offset |
 
-**Conclusão da análise de sensibilidade**: o offset matter substancialmente para variáveis físicas dependentes de volume e profundidade. A calibração empírica é defendível porque foi feita contra **observações reais** dos gauges (que carregam o datum local correto, mesmo que não-formalizado). Mas a sensibilidade do sistema reforça a importância de **reduzir a incerteza datum-related em v04** via:
+**Sensitivity-analysis conclusion**: the offset matters substantially for physical variables that depend on volume and depth. The empirical calibration is defensible because it was made against **real observations** of the gauges (which carry the correct local datum, even if not formalised). But the system's sensitivity reinforces the importance of **reducing the datum-related uncertainty in v04** through:
 
-- Cota IGM95 dos gauges via GNSS RTK (±2 cm em vez de ±20-30 cm atual)
-- MDT formal CNES-CLS22 (±3-5 cm em vez de estimativa qualitativa de ±15 cm)
-- Validação cruzada contra Marettimo ISPRA RMN (datum oficial documentado)
+- IGM95 elevation of the gauges via GNSS RTK (±2 cm vs ±20–30 cm currently)
+- Formal MDT from CNES-CLS22 (±3–5 cm vs the qualitative ±15 cm estimate)
+- Cross-validation against Marettimo ISPRA RMN (officially documented datum)
 
-A incerteza propagada de ±20-30 cm no offset (cenário atual) → ±10% no volume → ±10% nos tempos de residência e diluição. Reduzir para ±5 cm de incerteza datum → ±2% no volume → ±2% nas variáveis derivadas.
+A propagated uncertainty of ±20–30 cm in the offset (current scenario) → ±10% in the volume → ±10% in residence time and dilution rates. Reducing to ±5 cm of datum uncertainty → ±2% in the volume → ±2% in the derived variables.
 
-A figura `figures/v03d_offset_hypsometry_impact.png` mostra as curvas hipsométricas (wet area e volume vs WL) com as duas operating points marcadas.
+The figure `figures/v03d_offset_hypsometry_impact.png` shows the hypsometric curves (wet area and volume vs WL) with the two operating points marked.
 
-## 5. Bias residual após o offset (validação a posteriori v03d)
+## 5. Residual bias after the offset (a-posteriori v03d validation)
 
-Após aplicar o +0.4208 m, a comparação ABSOLUTA (não mean-removed) entre modelo e in-situ na janela post-spinup (1.5d–9d) mostra:
+After applying the +0.4208 m, the ABSOLUTE comparison (not mean-removed) between model and in-situ in the post-spin-up window (1.5d–9d) shows:
 
-| Estação | mean_model | mean_obs | bias residual (m−o) |
+| Station | mean_model | mean_obs | residual bias (m−o) |
 |---|---|---|---|
 | BocaNord | +0.161 m | +0.074 m | +0.087 m |
 | BocaSud | +0.096 m | +0.131 m | −0.035 m |
 | AltaVilaEst | +0.094 m | +0.029 m | +0.065 m |
 | Marettimo (ISPRA) | +0.238 m | +0.130 m | +0.108 m |
 | **Mean** | — | — | **+0.056 m** |
-| Std (entre estações) | — | — | 0.055 m |
+| Std (across stations) | — | — | 0.055 m |
 
-**Interpretação:**
+**Interpretation:**
 
-- O bias absoluto caiu de −42 cm (v01 sem offset) para +5.6 cm (v03d com offset) — redução de **~7×**.
-- O bias residual médio (+5.6 cm) é da ordem de magnitude do **wave-setup time-mean** que agora está ativo no v03d (não estava em v01 quando o coupling estava quebrado). Sítios mais expostos a swell (Marettimo offshore +11 cm, BocaNord +9 cm) têm os maiores bias positivos; o sítio abrigado BocaSud é o único negativo (−4 cm).
-- A heterogeneidade entre estações (±5.5 cm 1-sigma) reflete tanto efeitos físicos reais (wave-setup espacialmente variável) quanto a incerteza datum dos gauges (±10-30 cm, item 2.2).
+- The absolute bias dropped from −42 cm (v01 without offset) to +5.6 cm (v03d with offset) — a **~7×** reduction.
+- The mean residual bias (+5.6 cm) is of the same order of magnitude as the **time-mean wave setup**, which is now active in v03d (it was not in v01 when the wave coupling was broken). Sites more exposed to swell (Marettimo offshore +11 cm, BocaNord +9 cm) show the largest positive biases; the sheltered BocaSud site is the only negative one (−4 cm).
+- The cross-station heterogeneity (±5.5 cm 1-sigma) reflects both real physical effects (spatially-variable wave setup) and the gauge datum uncertainty (±10–30 cm, see §2.2).
 
-**Decisão:** manter +0.4208 m no v03d. O resíduo de 5.6 cm é (i) da magnitude do wave-setup esperado, e (ii) menor que a incerteza dos gauges não-formalizados. Re-calibrar para zero o residual neste momento seria over-fitting.
+**Decision:** keep +0.4208 m for v03d. The 5.6 cm residual is (i) of the magnitude of the expected wave setup, and (ii) smaller than the uncertainty of the non-formalised gauges. Re-calibrating to zero the residual at this stage would amount to over-fitting.
 
-## 6. Validação a posteriori — v03d (julho/2025, 9 dias)
+## 6. A-posteriori validation — v03d (July 2025, 9 days)
 
-Run v03d completou com waves time-varying e BC fix (TPXO removido). Métricas WL contra in-situ na janela limpa (12h de spin-up + dia 3, antes do freeze do dia 4 que foi resolvido em commit `1082232`):
+The v03d run completed with time-varying waves and the BC fix (TPXO removed). WL metrics against in-situ in the clean window (12 h spin-up + day 3, before the day-4 freeze that was resolved in commit `1082232`):
 
-| Estação | std_mod / std_obs | RMSE | Corr | Comentário |
+| Station | std_mod / std_obs | RMSE | Corr | Comment |
 |---|---|---|---|---|
-| BocaNord | **1.02** | 0.034 m | 0.952 | Amplitude e fase praticamente perfeitas |
-| BocaSud | **1.03** | 0.048 m | 0.906 | Idem |
-| AltaVilaEst | **1.23** | 0.050 m | 0.808 | Levemente sobre-amplitude (sítio raso, possível contribuição de wave setup) |
-| Marettimo offshore (ISPRA RMN) | **0.90** | 0.031 m | 0.886 | Levemente sub-amplitude, dentro do esperado para gauge offshore |
+| BocaNord | **1.02** | 0.034 m | 0.952 | Amplitude and phase essentially perfect |
+| BocaSud | **1.03** | 0.048 m | 0.906 | Same |
+| AltaVilaEst | **1.23** | 0.050 m | 0.808 | Slightly over-amplitude (shallow site, possible wave-setup contribution) |
+| Marettimo offshore (ISPRA RMN) | **0.90** | 0.031 m | 0.886 | Slightly under-amplitude, within the expected range for an offshore gauge |
 
-A consistência das métricas em **quatro estações independentes** (3 lagunares + 1 offshore) com std_mod/std_obs entre 0.90 e 1.23 confirma que o offset, somado à correção de superposição BC (TPXO removido), produz um WL absoluto coerente com as observações. A amplitude do sinal é preservada (correlação > 0.81 em todas) e o bias após mean-removal é virtualmente zero.
+The consistency of the metrics across **four independent stations** (3 in the lagoon + 1 offshore) with std_mod/std_obs between 0.90 and 1.23 confirms that the offset, combined with the BC-superposition correction (TPXO removed), produces an absolute WL coherent with the observations. The signal amplitude is preserved (correlation > 0.81 at all stations) and the post-mean-removal bias is virtually zero.
 
-## 7. Limitações e plano de aprimoramento
+## 7. Limitations and improvement plan
 
-### Limitações da abordagem atual
+### Limitations of the current approach
 
-1. **Calibração empírica única** baseada apenas em três gauges lagunares no run v01. O valor +0.4208 m é uma constante uniforme em todos os 51 nós do contorno aberto, ignorando potenciais gradientes espaciais de MDT no Canale di Sicilia (que existem em escala de ~10–30 km).
-2. **Datum dos gauges não documentado oficialmente** para BN/BS/AE. A justificativa decompostas no item 2.2 é qualitativa — não há rastreabilidade ao IGM95/IGM2008 para esses gauges instalados localmente.
-3. **MDT não vem de produto formal**: o offset compensa MDT + datum + bias CMEMS de forma agregada, sem separar as componentes.
+1. **Single empirical calibration** based only on three lagoon gauges in the v01 run. The +0.4208 m value is uniform across all 51 nodes of the open boundary, ignoring potential spatial gradients of MDT in the Sicily Channel (which exist on a ~10–30 km scale).
+2. **Gauge datum not officially documented** for BN/BS/AE. The decomposition in §2.2 is qualitative — there is no formal traceability to IGM95/IGM2008 for these locally-installed gauges.
+3. **MDT does not come from a formal product**: the offset compensates MDT + datum + CMEMS bias in aggregate, without separating the components.
 
-### Plano para versões futuras (v04+)
+### Plan for future versions (v04+)
 
-1. **Levantamento topográfico dos gauges**: medir cota IGM95 das estações BN/BS/AE para fixar o datum (uma manhã de trabalho de campo com receptor GNSS RTK).
-2. **MDT formal do CNES-CLS22**: extrair MDT pontual nos 51 nós do contorno (interpolação linear em grade 1/8°) e aplicar como offset espacialmente variável em vez de constante.
-3. **Validação contra Marettimo ISPRA RMN** como datum de referência absoluta — Marettimo é da rede oficial e tem datum IGM95 documentado.
-4. **Análise de sensibilidade** ±10 cm no offset para quantificar o impacto sobre o tempo de residência e dinâmica salina.
+1. **Topographic survey of the gauges**: measure the IGM95 elevation of the BN/BS/AE stations to fix the datum (one morning of fieldwork with a GNSS RTK receiver).
+2. **Formal MDT from CNES-CLS22**: extract pointwise MDT at the 51 boundary nodes (linear interpolation on a 1/8° grid) and apply as a spatially-varying offset instead of a constant.
+3. **Validation against Marettimo ISPRA RMN** as the absolute datum reference — Marettimo is part of the official network and has documented IGM95 datum.
+4. **Sensitivity analysis** of ±10 cm in the offset to quantify the impact on residence time and salinity dynamics.
 
-## 8. Conclusão para o supervisor
+## 8. Conclusion for the supervisor
 
-O offset constante de +0.4208 m é **calibração empírica** com fundamentação física defensável. Os componentes identificáveis (MDT do Mediterrâneo, bias do produto CMEMS `zos`, datum local dos gauges, pressão atmosférica média) somam ~−0.22 m, explicando aproximadamente metade do bias observado. A diferença residual reflete imprecisão na separação dos componentes e efeitos secundários do wetting/drying.
+The constant +0.4208 m offset is an **empirical calibration** with a defensible physical basis. The identifiable components (Mediterranean MDT, CMEMS `zos` product bias, local gauge datum, mean atmospheric pressure) sum to ~−0.22 m, explaining approximately half of the observed bias. The residual difference reflects imprecision in the separation of the components and secondary effects of wetting/drying.
 
-A validação no run v03d (9 dias, julho/2025) contra **quatro estações independentes** confirma que o offset, em conjunto com a remoção da dupla contagem do TPXO (Trilha B), produz amplitude e fase de WL coerentes com observações in-situ. Métricas de amplitude/fase (mean-removed): `std_mod/std_obs` entre 0.90 e 1.23, RMSE 3–5 cm, correlação > 0.81 em 4 estações. Bias absoluto residual médio: +5.6 cm (vs −42 cm em v01 sem offset).
+The validation in the v03d run (9 days, July 2025) against **four independent stations** confirms that the offset, in combination with the removal of the double-counting of TPXO (Track B), produces WL amplitude and phase consistent with in-situ observations. Amplitude/phase metrics (mean-removed): `std_mod/std_obs` between 0.90 and 1.23, RMSE 3–5 cm, correlation > 0.81 across all 4 stations. Mean residual absolute bias: +5.6 cm (vs −42 cm in v01 without the offset).
 
-**Sensibilidade**: a análise hipsométrica (§4) mostra que o offset altera o **volume da laguna em +40%** e a **profundidade média em +35 cm** — não-trivial em sistema raso (mean depth ~1.2 m). Isto reforça a importância do refino datum em v04, mas não invalida a calibração atual: a comparação contra observações reais é o critério mais robusto disponível enquanto os datums dos gauges não estiverem formalizados.
+**Sensitivity**: the hypsometric analysis (§4) shows that the offset alters the **lagoon volume by +40%** and the **mean depth by +35 cm** — non-trivial in such a shallow system (mean depth ~1.2 m). This reinforces the importance of refining the datum in v04 but does not invalidate the current calibration: comparing against real observations is the most robust criterion available while the gauge datums remain non-formalised.
 
-A abordagem é defensável publicar nesta forma para o run de demonstração v03d. Para uma versão de referência publicável (v04), o plano é substituir o offset constante empírico por uma decomposição formal: MDT do CNES-CLS22 + datum dos gauges medido por GNSS RTK + validação cruzada contra Marettimo ISPRA.
+The approach is defensible to publish in this form for the v03d demonstration run. For a publishable reference version (v04), the plan is to replace the empirical constant offset with a formal decomposition: CNES-CLS22 MDT + GNSS RTK gauge datum + cross-validation against Marettimo ISPRA.
 
 ---
 
-## Referências sugeridas para citar
+## Suggested references
 
 - **CMEMS MDT product**: AVISO+ MDT_CNES_CLS22 — https://www.aviso.altimetry.fr/en/data/products/auxiliary-products/mdt.html
 - **Mediterranean MDT**: Pinardi et al. (2014), "Mediterranean Sea large-scale low-frequency ocean variability and water mass formation rates from 1987 to 2007: A retrospective analysis", *Progress in Oceanography*, 132, 318-332.
@@ -197,4 +197,4 @@ A abordagem é defensável publicar nesta forma para o run de demonstração v03
 
 ---
 
-*Documento gerado em conjunto com Claude (Anthropic) em sessão de validação do v03d. Última revisão: 2026-04-30.*
+*Document produced jointly with Claude (Anthropic) during the v03d validation session. Last revised: 2026-04-30.*
