@@ -1,115 +1,115 @@
 # Roadmap — post-v03c (2026-04-23)
 
-Plano de trabalho consolidado após validação do v03c. Quatro trilhas
-ortogonais convergem em **v03d** como próximo major.
+Consolidated work plan after v03c validation. Four orthogonal tracks
+converge on **v03d** as the next major.
 
-## Trilha A — Tracers via buffer inicial
+## Track A — Tracers via initial buffer
 
-**Escopo:** substituir laterals + tracer .bc pelo padrão `lagoon_tracer_init.xyz`
-(init via XYZ + `initialFields.ini`). Remove a complexidade de lateral + .pli
-que falhou para o ponto do aeroporto.
+**Scope:** replace laterals + tracer .bc by the `lagoon_tracer_init.xyz`
+pattern (init via XYZ + `initialFields.ini`). Removes the lateral + .pli
+complexity that failed for the airport point.
 
-**Implementação:**
+**Implementation:**
 
-1. Script utilitário em `scripts/make_tracer_buffers.py` — recebe (lon, lat, radius_m, name), gera XYZ com valor 1.0 nas células do mesh FM dentro do buffer circular (via shapely + pyproj em UTM 33N). Saída: `model/dflowfm_v03d/turbid_airport_init.xyz` e `turbid_saltpans_init.xyz`.
-2. Buffers de 500 m de raio, centrados em `(12.468, 37.917)` airport e `(12.507, 37.997)` saltpans.
-3. No `initialFields.ini` do v03d, adicionar duas entradas `[Initial]` referenciando os XYZs com `operand = A`, `averagingType = mean`, seguindo o padrão de `lagoon_tracer_init.xyz`.
-4. **Remover** do `new.ext`: blocos `[Lateral]` + `[Boundary]` tracerbnd de turbid_airport e turbid_saltpans. Remover `turbid_*.pli`, `turbid_*_discharge.bc`, `turbid_*_tracer.bc` do diretório v03d.
-5. Validação mínima: `lateral_geom_node_count` some do his.nc (não há mais lateral); `turbid_airport.max()` e `turbid_saltpans.max()` no t=0 devem ser 1.0.
+1. Utility script in `scripts/make_tracer_buffers.py` — takes (lon, lat, radius_m, name), generates an XYZ with value 1.0 in the FM mesh cells inside the circular buffer (via shapely + pyproj in UTM 33N). Output: `model/dflowfm_v03d/turbid_airport_init.xyz` and `turbid_saltpans_init.xyz`.
+2. 500 m radius buffers, centred on `(12.468, 37.917)` airport and `(12.507, 37.997)` salt pans.
+3. In v03d's `initialFields.ini`, add two `[Initial]` entries referencing the XYZs with `operand = A`, `averagingType = mean`, following the pattern of `lagoon_tracer_init.xyz`.
+4. **Remove** from `new.ext`: `[Lateral]` + `[Boundary]` tracerbnd blocks for turbid_airport and turbid_saltpans. Remove `turbid_*.pli`, `turbid_*_discharge.bc`, `turbid_*_tracer.bc` from the v03d directory.
+5. Minimal validation: `lateral_geom_node_count` disappears from his.nc (no more lateral); `turbid_airport.max()` and `turbid_saltpans.max()` at t=0 must be 1.0.
 
-**Cenário físico resultante:** plume pré-existente desde sim-start (mais limpo que o pulso). Útil para medir espalhamento controlado.
+**Resulting physical scenario:** plume pre-existing from sim-start (cleaner than the pulse). Useful for measuring controlled spreading.
 
-## Trilha B — Validação offshore (Marettimo)
+## Track B — Offshore validation (Marettimo)
 
-**Escopo:** comparar WL + Hs/Tp/Dir offshore em Marettimo (Egadi, ~12.05°E, 37.96°N) com output v03c.
+**Scope:** compare WL + Hs/Tp/Dir offshore at Marettimo (Egadi, ~12.05°E, 37.96°N) with v03c output.
 
-**Implementação:**
+**Implementation:**
 
-1. Localizar estação: RON (Rete Ondametrica Nazionale, ISPRA) tem boia em Marettimo? Verificar também Copernicus CMEMS in-situ marine (`INSITU_MED_PHYBGCWAV_DISCRETE_MYNRT_013_035`). URL esperada: ispra.gov.it/en/topics/sea/wave-meter-national-network.
-2. Confirmar que o ponto Marettimo cai dentro do domínio SWAN outer (que vai ~11.95°E–12.57°E). Adicionar observation point no Marettimo no `.xyn` do v03c (requer rerun para extrair his time-series naquela estação) OU extrair via map.nc offline.
-3. Novo notebook `23_valid_v03c_offshore.ipynb` — carrega obs Marettimo, interpola modelo no ponto, calcula RMSE/bias/Willmott/corr para WL e para Hs/Tp separadamente.
-4. Adicionar resultado na tabela validation_metrics_v03c.csv existente (ou criar v03c_offshore.csv separada).
+1. Locate the station: does RON (Rete Ondametrica Nazionale, ISPRA) have a buoy at Marettimo? Also check Copernicus CMEMS in-situ marine (`INSITU_MED_PHYBGCWAV_DISCRETE_MYNRT_013_035`). Expected URL: ispra.gov.it/en/topics/sea/wave-meter-national-network.
+2. Confirm that the Marettimo point falls inside the SWAN outer domain (which spans ~11.95°E–12.57°E). Add an observation point at Marettimo in v03c's `.xyn` (requires a rerun to extract a his time-series at that station) OR extract via map.nc offline.
+3. New notebook `23_valid_v03c_offshore.ipynb` — loads Marettimo obs, interpolates the model at the point, computes RMSE/bias/Willmott/corr separately for WL and for Hs/Tp.
+4. Add the result to the existing validation_metrics_v03c.csv table (or create a separate v03c_offshore.csv).
 
-**Critério de sucesso:** RMSE(WL) < 10 cm offshore; Hs bias dentro de ±20 cm.
+**Success criterion:** RMSE(WL) < 10 cm offshore; Hs bias within ±20 cm.
 
-## Trilha C — Morfologia (investigação + provisionamento)
+## Track C — Morphology (investigation + provisioning)
 
-**Parte C1 — investigação (antes de v03d)**:
+**Part C1 — investigation (before v03d)**:
 
-1. `scripts/compute_uorb_from_map.py` — lê `41_util_edito_map_subset` output (hwav, twav, waterdepth), calcula u_orb = π Hs / (T sinh(kh)) nos pontos centrais do lagoon. Reporta % do tempo u_orb > 0.10 m/s (threshold resuspensão sand fino).
+1. `scripts/compute_uorb_from_map.py` — reads `41_util_edito_map_subset` output (hwav, twav, waterdepth), computes u_orb = π Hs / (T sinh(kh)) at the lagoon-centre points. Reports % of time u_orb > 0.10 m/s (fine-sand resuspension threshold).
 2. Notebook `31_analysis_resuspension_feasibility.ipynb`:
-   - Seção 1: u_orb time series nos 7 stations (a partir do his.nc v03c, que já tem uorb).
-   - Seção 2: série temporal turbidez Sentinel-2 L2A (nominalIIR / CHL_NN) 2025-06-01 a 2025-08-01, extraída do mesmo bbox.
-   - Seção 3: cross-correlação de turbidez com ERA5 wind speed (já temos local) + CMEMS Hs.
-   - Decisão: se turbidez correlaciona com Hs e u_orb excede threshold > 5% do tempo → morph vale a pena.
-3. Memória a atualizar com os números encontrados.
+   - Section 1: u_orb time series at the 7 stations (from the v03c his.nc, which already contains uorb).
+   - Section 2: Sentinel-2 L2A turbidity time series (nominalIIR / CHL_NN) 2025-06-01 to 2025-08-01, extracted from the same bbox.
+   - Section 3: cross-correlation of turbidity with ERA5 wind speed (already available locally) + CMEMS Hs.
+   - Decision: if turbidity correlates with Hs and u_orb exceeds the threshold > 5% of the time → morph is worth pursuing.
+3. Memory to update with the numbers found.
 
-**Parte C2 — provisionamento v03d**:
+**Part C2 — v03d provisioning**:
 
-Se C1 for positivo:
-- Habilitar D-Morphology no MDU do v03d: `[Morphology]` section + referência a `sediment.sed` + `morphology.mor`.
-- Sediment: 2 frações. Fração 1 = sand fino (d50 ≈ 150 µm), fração 2 = silt (d50 ≈ 30 µm).
-- Manning baseline preservado; D-Morph adiciona bed shear stress do wave orbital.
-- Initial bed: uniforme (sem variação espacial na primeira iteração; refinar depois se sentido).
-- `morfac = 1` (real-time, sem aceleração morfológica — runs curtos).
+If C1 is positive:
+- Enable D-Morphology in v03d's MDU: `[Morphology]` section + reference to `sediment.sed` + `morphology.mor`.
+- Sediment: 2 fractions. Fraction 1 = fine sand (d50 ≈ 150 µm), fraction 2 = silt (d50 ≈ 30 µm).
+- Manning baseline preserved; D-Morph adds bed shear stress from wave orbital.
+- Initial bed: uniform (no spatial variation in the first iteration; refine later if useful).
+- `morfac = 1` (real-time, no morphological acceleration — short runs).
 
-Se C1 for negativo: documenta no roadmap e pula C2. v03d fica sem morph.
+If C1 is negative: document in the roadmap and skip C2. v03d remains without morph.
 
-**XBeach fora**: já decidido — é modelo de surf zone, não aplicável a lagoon sheltered.
+**XBeach out**: already decided — it is a surf-zone model, not applicable to a sheltered lagoon.
 
-**Resultado C1 (2026-04-23)**: morph **aprovado** para v03d. Ver [notebook 31_analysis_resuspension_feasibility](../notebooks/31_analysis_resuspension_feasibility.ipynb). Evidências: (a) iter-1 SWAN já reporta u_orb = 0.186 m/s em BocaNord (acima do fine-sand threshold 0.14); (b) offshore peak Hs = 2.05 m (2025-07-09) → inlet u_orb 0.7-1.7 m/s — excede sand threshold >30% do tempo mesmo com atenuação 30%; (c) S2 scene 2025-10-06 mostra evento de ressuspensão visualmente confirmado (PI). Interior marginal mas mobiliza silt + clay. **C2 segue**: habilitar `[Morphology]` + 2 frações (sand d50 150µm, silt d50 30µm).
+**C1 result (2026-04-23)**: morph **approved** for v03d. See [notebook 31_analysis_resuspension_feasibility](../notebooks/31_analysis_resuspension_feasibility.ipynb). Evidence: (a) iter-1 SWAN already reports u_orb = 0.186 m/s at BocaNord (above the fine-sand threshold of 0.14); (b) offshore peak Hs = 2.05 m (2025-07-09) → inlet u_orb 0.7-1.7 m/s — exceeds the sand threshold > 30% of the time even with 30% attenuation; (c) S2 scene 2025-10-06 shows a visually confirmed resuspension event (PI). Interior is marginal but mobilises silt + clay. **C2 proceeds**: enable `[Morphology]` + 2 fractions (sand d50 150µm, silt d50 30µm).
 
-## Trilha D — HDF5 coupling debug (local)
+## Track D — HDF5 coupling debug (local)
 
-**Escopo:** destravar a limitação de ondas constantes no acoplamento FM+SWAN Online with FLOW.
+**Scope:** unblock the constant-wave limitation of the FM+SWAN Online with FLOW coupling.
 
-**Implementação (local, sem EDITO):**
+**Implementation (local, no EDITO):**
 
-1. **Run baseline** do v03c local completo (full 9 dias) para reproduzir o erro localmente e ter baseline de comparação.
-2. **Teste 1 — `ncFormat = 3`**: clonar v03c como `v03c_test1_nc3`, mudar `ncFormat = 4 → 3` no MDU, rerun. Checar se os errors HDF somem e se hwav.std() > 0 agora.
-3. **Teste 2 — serial run (`nPart = 1`)**: clonar como `v03c_test2_serial`, mudar run_model para nPart=1, rerun. Checar mesmo critério.
-4. **Teste 3 — combo**: se T1 e T2 isolados falharem, combinar ambos.
-5. **Pesquisa**: Deltares OSS forum (`oss.deltares.nl/web/delft3d/forum`) + GitHub `Deltares/dflowfm-repo` issues. Procurar por "HDF error com.nc SWAN online FLOW".
-6. **Escalação**: se tudo falhar, abrir thread no forum Deltares com MDU/MDW anonimizado + log + versão exata.
+1. **Baseline run** of the full v03c locally (full 9 days) to reproduce the error locally and provide a comparison baseline.
+2. **Test 1 — `ncFormat = 3`**: clone v03c as `v03c_test1_nc3`, change `ncFormat = 4 → 3` in the MDU, rerun. Check whether HDF errors disappear and whether hwav.std() > 0.
+3. **Test 2 — serial run (`nPart = 1`)**: clone as `v03c_test2_serial`, change run_model to nPart=1, rerun. Check the same criterion.
+4. **Test 3 — combo**: if T1 and T2 fail individually, combine both.
+5. **Research**: Deltares OSS forum (`oss.deltares.nl/web/delft3d/forum`) + GitHub `Deltares/dflowfm-repo` issues. Search for "HDF error com.nc SWAN online FLOW".
+6. **Escalation**: if everything fails, open a thread on the Deltares forum with anonymised MDU/MDW + log + exact version.
 
-**Deliverable**: memória `hdf5_coupling_resolution.md` com o workaround (ou confirmação de bug conhecido).
+**Deliverable**: memory `hdf5_coupling_resolution.md` with the workaround (or confirmation of a known bug).
 
-**Resultado D (2026-04-23)**: **resolvido**. Testes locais com 2h sim em `model/dflowfm_v03c_hdftest_*/` isolaram a causa: **`ncFormat = 3` elimina os HDF errors e restaura time-varying waves**. Matrix de 4 tests (baseline/nc3/nolock/serial) provou que nem MPI concurrency nem HDF5_USE_FILE_LOCKING resolvem isoladamente — só classic netCDF corta de raiz. Trade-off: limite 2GB por arquivo. Mitigação combinando wrimap_* reductions + mapInterval=1800 faz 9 dias caber. Detalhes em [hdf5_coupling_resolution](../../.claude/projects/c--Users-Unipa-Documents-StagnoneDT/memory/hdf5_coupling_resolution.md).
+**Track D result (2026-04-23)**: **resolved**. Local 2-h sim tests in `model/dflowfm_v03c_hdftest_*/` isolated the cause: **`ncFormat = 3` eliminates the HDF errors and restores time-varying waves**. A 4-test matrix (baseline/nc3/nolock/serial) showed that neither MPI concurrency nor HDF5_USE_FILE_LOCKING resolves the issue in isolation — only classic netCDF cuts it at the root. Trade-off: 2 GB per-file limit. Mitigation by combining wrimap_* reductions + mapInterval=1800 makes 9 days fit. Details in [hdf5_coupling_resolution](../../.claude/projects/c--Users-Unipa-Documents-StagnoneDT/memory/hdf5_coupling_resolution.md).
 
-## Trilha E — v03d consolidation
+## Track E — v03d consolidation
 
-Puxa de A + C2 (se positivo) + D (se resolveu):
+Pulls from A + C2 (if positive) + D (if resolved):
 
-Build em `model/dflowfm_v03d/` (notebook `14_build_v03d.ipynb`):
-- A: buffer tracers + remoção de laterals
-- ERA5 evaporation forcing (adicionar `era5_e_2025...nc` + referência no ext)
-- C2: sediment + morph se C1 positivo
-- D: ncFormat=3 ou setup serial se D resolveu
+Build in `model/dflowfm_v03d/` (notebook `14_build_v03d.ipynb`):
+- A: buffer tracers + lateral removal
+- ERA5 evaporation forcing (add `era5_e_2025...nc` + reference in ext)
+- C2: sediment + morph if C1 positive
+- D: ncFormat=3 or serial setup if D resolved
 
-## Trilha F — v03d validation
+## Track F — v03d validation
 
-Notebook `24_valid_v03d.ipynb` (reaproveita estrutura do `22_valid_v03c`):
-- Stations padrão (7 + Marettimo offshore)
-- Hipersalinidade (agora esperada persistir com evap)
-- Tracers (dispersão pré-existente)
-- Ondas (time-varying, se D resolveu)
-- Sedimento (se C2 habilitado)
+Notebook `24_valid_v03d.ipynb` (reuses the `22_valid_v03c` structure):
+- Standard stations (7 + Marettimo offshore)
+- Hypersalinity (now expected to persist with evap)
+- Tracers (pre-existing dispersion)
+- Waves (time-varying, if D resolved)
+- Sediment (if C2 enabled)
 
-## Sequência recomendada
+## Recommended sequence
 
-| # | Trilha | Duração | Dependência |
+| # | Track | Duration | Dependency |
 |---|---|---|---|
-| 1 | **B — Marettimo** | 4-6 h | map.nc local |
-| 2 | **D — HDF5 local** | 4-8 h | ambiente local Delft3D |
-| 3 | **C1 — morph investigation** | 3-4 h | his.nc + map subset + Sentinel-2 |
-| 4 | **A — tracer buffer script** | 2 h | independente |
-| 5 | **E — v03d build** | 4 h | A, C2 (se aplicável), D |
-| 6 | **F — v03d validation** | 3 h | v03d run no EDITO (~12 h clock time) |
+| 1 | **B — Marettimo** | 4–6 h | local map.nc |
+| 2 | **D — HDF5 local** | 4–8 h | local Delft3D environment |
+| 3 | **C1 — morph investigation** | 3–4 h | his.nc + map subset + Sentinel-2 |
+| 4 | **A — tracer buffer script** | 2 h | independent |
+| 5 | **E — v03d build** | 4 h | A, C2 (if applicable), D |
+| 6 | **F — v03d validation** | 3 h | v03d run on EDITO (~12 h clock time) |
 
-Total estimado ~24 h de trabalho + 12 h de clock para o run v03d.
+Estimated total ~24 h of work + 12 h of clock time for the v03d run.
 
-## Out of scope (para depois)
+## Out of scope (for later)
 
-- SWAN nested grid extension (memória `swan_grid_extension`) — fica para v04.
-- Tier 2 / Tier 3 do dt_scaling_roadmap.
+- SWAN nested grid extension (memory `swan_grid_extension`) — postponed to v04.
+- Tier 2 / Tier 3 of the dt_scaling_roadmap.
 - Paper drafts.
