@@ -17,6 +17,11 @@ data/processed/planet_composite_*.nc
 # EDITO run logs captured locally during debugging (useful transient artifacts, not repo-worthy)
 output/delft3d-run-docker-*.txt
 
+# Local smoke / partition logs (regenerable from the corresponding model dirs)
+/smoke_*.log
+/partition_*.log
+/trapani_test.json
+
 # Model outputs (re-generable, large: ~16-23 GB each)
 model/*/output/
 model/*/DFM_OUTPUT_*/
