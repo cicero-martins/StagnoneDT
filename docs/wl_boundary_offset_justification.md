@@ -174,9 +174,17 @@ The consistency of the metrics across **four independent stations** (3 in the la
 
 1. **Topographic survey of the gauges**: measure the IGM95 elevation of the BN/BS/AE stations to fix the datum (one morning of fieldwork with a GNSS RTK receiver).
 2. **Formal MDT from CMEMS**: download the static product `SEALEVEL_MED_PHY_MDT_L4_STATIC_008_066` (Mediterranean Sea Mean Dynamic Topography, 0.0417° resolution, 1993-2012 reference period, free with CMEMS account at https://data.marine.copernicus.eu/product/SEALEVEL_MED_PHY_MDT_L4_STATIC_008_066/description). Extract pointwise MDT at the 51 boundary nodes and apply as a spatially-varying offset instead of a single constant. Alternative: AVISO+ MDT_CNES_CLS22 product (similar accuracy, https://www.aviso.altimetry.fr/en/data/products/auxiliary-products/mdt/mdt-mediterranean.html).
-3. **Validation against an RMN gauge near the domain** — Marettimo turned out to be SiAM (not RMN, see §2.2), so its datum is not publicly available. The closest RMN-network gauges with documented IGM95 datum are **Trapani**, **Porto Empedocle**, **Palermo**, and **Lampedusa**. Trapani is closest (~30 km NE) but the most relevant offshore reference would be **Porto Empedocle** (similarly exposed to the Sicily Channel). Contact ISPRA to obtain the IGM95 elevation of the chosen RMN station's hydrometric zero.
-4. **Direct contact with ISPRA-SiAM** (responsible: Maurizio Ferla, ISPRA-CN-COS) to obtain the calibration metadata of the Marettimo gauge (sensor depth + reference benchmark) — would unlock its use as an offshore validation point with absolute datum.
-5. **Sensitivity analysis** of ±10 cm in the offset to quantify the impact on residence time and salinity dynamics.
+3. **Validation against an RMN gauge near the domain** — Marettimo is SiAM (not RMN, see §2.2), so its datum is not publicly available. **Trapani is NOT part of the ISPRA-RMN network** (verified 2026-05 against the official `mareografico.it` station list, JRC webcritech SeaLevelsDb, PSMSL, and IOC sealevelmonitoring.org). The actual closest RMN-network gauges with documented IGM-traced datum are, in order of relevance:
+    - **Porto Empedocle** (~150 km SE) — Sicily Channel, same basin as our boundary, formal datum. **Most defensible RMN reference for this domain.**
+    - **Palermo** (~80 km NE) — Tyrrhenian basin (different MDT regime than Sicily Channel; expected systematic offset ~5–10 cm).
+    - **Lampedusa** (~280 km S) — Sicily Channel south, formal datum but very far.
+    The previous (incorrect) text in this document listed Trapani as RMN; it has been removed. Other gauges in the western-Sicily area exist but are JRC tsunami-alert (informal datum, like Marettimo): **Pantelleria-Scauri** (TAD device 660, ~110 km SW), and possibly the dormant Marettimo (TAD 658).
+4. **Long Marettimo statistical anchor (2025 baseline)** — A 13-month series of Marettimo WL has been downloaded via JRC webcritech (`scripts/download_marettimo_wl_long.py`), covering 2025-01-01 to 2026-01-19 at 10-min resolution (~55k samples). Annual mean = **+0.091 m**, std = 0.135 m. Strong seasonality: monthly mean ranges from −0.041 m (Feb 2025) to +0.174 m (Jan 2026). This series can be used as a multi-month statistical anchor for the offset, paired with a formal MDT product (item 2 above) for spatial spreading across the 51 BC nodes:
+    - `δ(Marettimo) = mean(obs_Marettimo) − mean(zos_CMEMS_at_Marettimo)` over the full 13-month window
+    - `δ(node_i) = δ(Marettimo) + [MDT(node_i) − MDT(Marettimo)]`
+    Datum of Marettimo remains informal — this anchors the time-mean robustly but not absolutely. ISPRA-SiAM contact (item 5 below) is still required for absolute traceability.
+5. **Direct contact with ISPRA-SiAM** (responsible: Maurizio Ferla, ISPRA-CN-COS) to obtain the calibration metadata of the Marettimo gauge (sensor depth + reference benchmark) — would unlock its use as an offshore validation point with absolute datum.
+6. **Sensitivity analysis** of ±10 cm in the offset to quantify the impact on residence time and salinity dynamics.
 
 ## 8. Conclusion for the supervisor
 
