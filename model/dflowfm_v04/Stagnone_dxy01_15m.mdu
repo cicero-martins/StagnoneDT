@@ -221,7 +221,7 @@ autoTimestepNoQout      = 1              # Exclude negative qin terms from time 
 tStart                  = 0.0            # Start time w.r.t. RefDate [TUnit].
 tStop                   = 259200.0       # Stop time w.r.t. RefDate [TUnit].
 startDateTime           = 20250701000000 # Computation start datetime [yyyymmddhhmmss]
-stopDateTime            = 20250702000000 # SMOKE TEST 1d (full run = 20250710000000)
+stopDateTime            = 20250710000000 # 9-day full run
 updateRoughnessInterval = 86400.0        # Update interval for time dependent roughness parameters [s].
 Dtfacmax                = 1.1            # Max timestep increase factor in successive time steps.
 

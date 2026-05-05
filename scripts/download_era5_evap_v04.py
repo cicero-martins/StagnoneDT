@@ -13,10 +13,37 @@ in the ext entry, OR convert in preprocess.
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
+def load_dotenv(env_path: Path) -> None:
+    """Minimal .env loader: KEY=VALUE per line, no quoting, '#' comments.
+    Only sets keys not already in os.environ (existing env wins)."""
+    if not env_path.exists():
+        return
+    for raw in env_path.read_text(encoding='utf-8').splitlines():
+        line = raw.strip()
+        if not line or line.startswith('#') or '=' not in line:
+            continue
+        key, _, val = line.partition('=')
+        key = key.strip()
+        val = val.strip().strip('"').strip("'")
+        if key and key not in os.environ:
+            os.environ[key] = val
+
+
+load_dotenv(PROJECT_ROOT / '.env')
+
+# Sanity check before invoking dfm_tools
+if not os.environ.get('CDSAPI_URL') or not os.environ.get('CDSAPI_KEY'):
+    sys.exit('ERROR: CDSAPI_URL and/or CDSAPI_KEY not set in environment '
+             '(checked .env and os.environ). Add them to .env at project root.')
+print(f'CDS auth: URL={os.environ["CDSAPI_URL"]} '
+      f'KEY={os.environ["CDSAPI_KEY"][:8]}...{os.environ["CDSAPI_KEY"][-4:]}')
 
 # Same domain as v03d ERA5 (use bbox slightly larger than mesh extent)
 LON_MIN, LON_MAX = 11.85, 12.65
