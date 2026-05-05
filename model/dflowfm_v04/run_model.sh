@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-nPart=4
+nPart=8
 dimrFile=dimr_config.xml
 mduFolder=.
 PROCESSSTR="$(seq -s " " 0 $((nPart-1)))"
