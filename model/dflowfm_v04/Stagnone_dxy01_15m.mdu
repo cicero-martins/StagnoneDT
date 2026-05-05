@@ -176,7 +176,7 @@ salinityDependentFreezingPoint = 0       # Enable salinity-dependent freezing po
 saliMax                        = -999.0  # Limit for salinity to max value [ppt]
 saliMin                        = 0.0     # Limit for salinity to min value [ppt]
 heat_eachStep                  = 1       # '1=heat each timestep, 0=heat each usertimestep
-nudgeTimeUni                   = 3600.0  # Uniform nudge relaxation time [s]
+nudgeTimeUni                   = 864000.0 # v04: 10 days (was 3600s/1h - too aggressive, was overwriting hypersaline IC every hour)
 iniWithNudge                   = 0       # v03c: set to 0 so initialFields.ini XYZ hypersaline is actually applied (was 2 = overwritten by nudge file)
 secondaryFlow                  = 0       # Secondary flow (0: no, 1: yes)
 betaSpiral                     = 0.0     # Weight factor of the spiral flow intensity on flow dispersion stresses
