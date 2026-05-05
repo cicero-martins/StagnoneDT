@@ -232,6 +232,8 @@ restartDateTime =  # Restart date and time when restarting from *_map.nc [YYYYMM
 [External Forcing]
 extForceFile    = Stagnone_dxy01_15m_old.ext # Old format for external forcings file *.ext, link with tim/cmp-format boundary conditions specification
 extForceFileNew = Stagnone_dxy01_15m_new.ext # New format for external forcings file *.ext, link with bc-format boundary conditions specification
+Rainfall        = 1                          # v04: include rainfall (positive part of rainfall_rate)
+Evaporation     = 1                          # v04: include evaporation in mass balance (negative part of rainfall_rate from ERA5 mer)
 
 [Hydrology]
 interceptionModel = 0 # Interception model (0: none, 1: on, via layer thickness).
@@ -310,7 +312,7 @@ wrihis_lateral                    = 1                          # Write lateral d
 wrihis_taucurrent                 = 1                          # Write mean bed shear stress to his file (1: yes, 0: no)'
 wrimap_waterLevel_s0              = 0                          # Write water levels of previous time step to map file (1: yes, 0: no)
 wrimap_waterLevel_s1              = 1                          # Write water levels to map file (1: yes, 0: no)
-wrimap_evaporation                = 0                          # Write evaporation to map file, (1: yes, 0: no).
+wrimap_evaporation                = 1                          # v04: write evap to map file for validation (was 0)
 wrimap_waterdepth                 = 1                          # Write water depths to map file (1: yes, 0: no).
 wrimap_velocity_component_u0      = 0                          # Write velocity component of previous time step to map file (1: yes, 0: no)
 wrimap_velocity_component_u1      = 0                          # Write velocity component to map file (1: yes, 0: no)
@@ -326,7 +328,7 @@ wrimap_numLimdt                   = 0                          # Write the numbe
 wrimap_tauCurrent                 = 1                          # Write the shear stress to map file (1: yes, 0: no)
 wrimap_chezy                      = 0                          # Write the Chezy roughness to map file (1: yes, 0: no)
 wrimap_turbulence                 = 0                          # Write vicww, k and eps to map-file (1: yes, 0: no)
-wrimap_rain                       = 0                          # Write rainfall rate to map file, (1: yes, 0: no).
+wrimap_rain                       = 1                          # v04: write rainfall rate to map file for validation (was 0)
 wrimap_wind                       = 0                          # Write wind velocities to map file (1: yes, 0: no)
 wrimap_windstress                 = 0                          # Write wind stress to map file (1: yes, 0: no).
 wrimap_airdensity                 = 0                          # Write air density to map file, (1:yes, 0:no).
