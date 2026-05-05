@@ -42,10 +42,17 @@ def main() -> int:
         var = nc.variables['mer']
         old_std = var.standard_name if hasattr(var, 'standard_name') else '<absent>'
         old_long = var.long_name if hasattr(var, 'long_name') else '<absent>'
-        print(f'Before: standard_name={old_std!r}  long_name={old_long!r}')
+        old_units = var.units if hasattr(var, 'units') else '<absent>'
+        print(f'Before: standard_name={old_std!r}  long_name={old_long!r}  units={old_units!r}')
         var.standard_name = 'rainfall_rate'
         var.long_name = 'rainfall_rate'
-        print(f'After:  standard_name={var.standard_name!r}  long_name={var.long_name!r}')
+        # CRITICAL: FM ec_provider builds composite '<long_name> in <units>.' as
+        # lookup key against an internal CF/UDUNITS-canonical whitelist. dfm_tools
+        # writes 'mm/day' literally (xarray_helpers.py:358), which produces
+        # 'rainfall_rate in mm/day.' — not in the table. The CF/UDUNITS canonical
+        # form is 'mm day-1' (space, hyphen, 1), which IS in the table.
+        var.units = 'mm day-1'
+        print(f'After:  standard_name={var.standard_name!r}  long_name={var.long_name!r}  units={var.units!r}')
 
     print('OK — re-inspect with xarray to verify')
     import xarray as xr
