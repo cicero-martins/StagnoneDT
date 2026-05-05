@@ -29,15 +29,19 @@ EXT_OLD = V04_DIR / 'Stagnone_dxy01_15m_old.ext'
 
 
 def strip_legacy_evap_block(text: str) -> str:
-    """Remove any pre-existing v04 evap/rainfall_rate block. Idempotent rebuild."""
+    """Remove any pre-existing v04 evap/rainfall_rate block. Idempotent rebuild.
+
+    Handles both old-style ('#' comments) and new-style ('*' comments)
+    headers, plus the legacy QUANTITY=evaporation form.
+    """
     import re
-    # Strip the v04 comment header through to the closing FACTOR line (or OPERAND
-    # if FACTOR omitted). Match either legacy QUANTITY=evaporation or current
-    # QUANTITY=rainfall_rate forms.
+    # Strip the v04 comment header (either # or * marker) through the
+    # closing OPERAND line, plus any trailing FACTOR line if present.
     pattern = re.compile(
-        r'\n*# v04: ERA5 evaporation.*?'
+        r'\n*[#*] v04:\s*ERA5\s*evap.*?'
         r'(QUANTITY=evaporation|QUANTITY=rainfall_rate).*?'
-        r'(FACTOR=[^\n]*\n|OPERAND=[^\n]*\n)',
+        r'OPERAND=[^\n]*\n'
+        r'(FACTOR=[^\n]*\n)?',
         re.DOTALL,
     )
     return pattern.sub('\n', text)
@@ -54,10 +58,14 @@ def main() -> int:
     text = EXT_OLD.read_text(encoding='utf-8')
     text = strip_legacy_evap_block(text)
 
-    block = (f'\n# v04: ERA5 evaporation forcing for hipersalinidade fix\n'
-             f'#      ERA5 mer in mm/day (dfmt preprocess), negative = evap.\n'
-             f'#      FM unifies precip + evap as QUANTITY=rainfall_rate in mm/day.\n'
-             f'#      ERA5 negative-evap matches FM negative-rainfall_rate => no FACTOR needed.\n'
+    # IMPORTANT: old-ext uses '*' (asterisk) as comment marker, not '#'.
+    # Also do NOT put 'QUANTITY=' literally inside comments — the parser
+    # may read trailing text on those lines as the actual quantity value
+    # (root cause of v04 'Unsupported quantity name rainfall_rate in mm/day.'
+    # bug). Keep comments simple, no keywords inside.
+    block = (f'\n* v04: ERA5 evap forcing for hipersalinidade fix\n'
+             f'*      ERA5 mer mm/day, negative=evap. FM uses rainfall_rate.\n'
+             f'*      Sign matches naturally => no FACTOR.\n'
              f'QUANTITY=rainfall_rate\n'
              f'FILENAME={mer_file}\n'
              f'VARNAME=mer\n'
