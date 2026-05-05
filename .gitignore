@@ -90,6 +90,7 @@ desktop.ini
 # Temporary files
 *.tmp
 *.bak
+*.bak_attrs
 *~
 
 # Microsoft Office lock files (created when docs are open)
