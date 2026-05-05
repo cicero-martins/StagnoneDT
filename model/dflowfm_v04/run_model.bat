@@ -2,14 +2,14 @@
 rem ============================================================
 rem Stagnone di Marsala - D-Flow FM 3D Model Run (PARALLEL)
 rem Period: July 1-10, 2025 (9 days)
-rem 4 MPI processes on local machine (Ryzen 5 3600 / 16 GB RAM)
+rem 8 MPI processes (run on the higher-core-count machine)
 rem ============================================================
 
 rem Force CWD to the directory of this bat file (avoids System32 if launched as admin)
 cd /d "%~dp0"
 
 set dimrset=C:\Program Files\Deltares\Delft3D FM Suite 2026.01 HMWQ\plugins\DeltaShell.Dimr\kernels\x64
-set nPart=4
+set nPart=8
 set mduFile=Stagnone_dxy01_15m.mdu
 
 rem Add Delft3D FM binaries to PATH

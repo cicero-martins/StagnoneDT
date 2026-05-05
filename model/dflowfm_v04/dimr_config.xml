@@ -17,7 +17,7 @@
   </control>
   <component name="DFlowFM">
     <library>dflowfm</library>
-    <process>0 1 2 3</process>
+    <process>0 1 2 3 4 5 6 7</process>
     <workingDir>.</workingDir>
     <inputFile>Stagnone_dxy01_15m.mdu</inputFile>
     <mpiCommunicator>DFM_COMM_DFMWORLD</mpiCommunicator>
