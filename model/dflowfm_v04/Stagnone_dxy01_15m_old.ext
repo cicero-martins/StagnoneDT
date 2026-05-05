@@ -94,3 +94,15 @@ FILENAME=nudge_salinity_temperature_2025-07-01_00-00-00.nc
 FILETYPE=11
 METHOD=3
 OPERAND=O
+
+# v04: ERA5 evaporation forcing for hipersalinidade fix
+#      ERA5 mer is in mm/day (converted by dfmt preprocess),
+#      sign NEGATIVE for evaporation. FM expects m/s positive up.
+#      factor = -1e-3/86400 = -1.1574e-8 (mm/day -> m/s + sign flip).
+QUANTITY=evaporation
+FILENAME=era5_mer_20250701to20250710_ERA5.nc
+VARNAME=mer
+FILETYPE=11
+METHOD=3
+OPERAND=O
+FACTOR=-1.1574e-8
