@@ -27,6 +27,8 @@ model/*/output/
 model/*/DFM_OUTPUT_*/
 model/*/DFM_OUTPUT*/
 model/*/*.cache
+model/*/unstruc.dia
+model/*/*.dia
 
 # SWAN hotstart and intermediate files (all regenerated at runtime)
 model/*/wave/hot_*.nc
