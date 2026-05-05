@@ -5,15 +5,18 @@ ERA5 'mer' was converted by dfm_tools' preprocess_merge_meteofiles_era5
 from kg/m^2/s to mm/day (verified by inspecting the .nc 'units' attribute).
 Sign convention: NEGATIVE for evaporation (water leaving the surface).
 
-FM 'evaporation' expects m/s POSITIVE upward (out of ocean), so we apply:
-    FACTOR = -1e-3 / 86400 = -1.1574e-8
-which simultaneously converts mm/day -> m/s and flips the sign so a
-negative ERA5 mer (evap) becomes a positive FM evap.
+FM 2026.01 unifies precip + evap as a single QUANTITY=rainfall_rate (the
+canonical convention used by dfm_tools, see modelbuilder.py:278). Sign
+convention: POSITIVE for water entering surface (rain), NEGATIVE for water
+leaving (evap). Unit: mm/day, matching ERA5 mer after preprocess.
 
-Sanity check: ERA5 mean ~-2.55 mm/day in this domain in Jul 2025
-            -> after FACTOR: +2.95e-8 m/s ~ +2.55 mm/day to FM.
+So no FACTOR is needed. ERA5's negative-evap maps to FM negative-rainfall_rate
+naturally. Earlier attempts using QUANTITY=evaporation FAILED at runtime with
+"unknown QUANTITY evaporation" because FM does not have a separate evap
+quantity in old-ext format.
 
-Idempotent: only appends if the evaporation block is not already present.
+Idempotent: replaces any pre-existing rainfall_rate or legacy evaporation
+block with the canonical form.
 """
 from __future__ import annotations
 
@@ -24,7 +27,20 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 V04_DIR = PROJECT_ROOT / 'model' / 'dflowfm_v04'
 EXT_OLD = V04_DIR / 'Stagnone_dxy01_15m_old.ext'
 
-MARKER = 'QUANTITY=evaporation'
+
+def strip_legacy_evap_block(text: str) -> str:
+    """Remove any pre-existing v04 evap/rainfall_rate block. Idempotent rebuild."""
+    import re
+    # Strip the v04 comment header through to the closing FACTOR line (or OPERAND
+    # if FACTOR omitted). Match either legacy QUANTITY=evaporation or current
+    # QUANTITY=rainfall_rate forms.
+    pattern = re.compile(
+        r'\n*# v04: ERA5 evaporation.*?'
+        r'(QUANTITY=evaporation|QUANTITY=rainfall_rate).*?'
+        r'(FACTOR=[^\n]*\n|OPERAND=[^\n]*\n)',
+        re.DOTALL,
+    )
+    return pattern.sub('\n', text)
 
 
 def main() -> int:
@@ -36,29 +52,20 @@ def main() -> int:
     print(f'Using ERA5 mer file: {mer_file}')
 
     text = EXT_OLD.read_text(encoding='utf-8')
-    if MARKER in text:
-        print(f'Evaporation block already present; updating filename only')
-        # Replace the FILENAME line that follows our marker
-        import re
-        pattern = (r'(QUANTITY=evaporation\s*\nFILENAME=)([^\n]+)')
-        new_text = re.sub(pattern, lambda m: m.group(1) + mer_file, text)
-        EXT_OLD.write_text(new_text, encoding='utf-8')
-        print('  filename updated')
-        return 0
+    text = strip_legacy_evap_block(text)
 
     block = (f'\n# v04: ERA5 evaporation forcing for hipersalinidade fix\n'
-             f'#      ERA5 mer is in mm/day (converted by dfmt preprocess),\n'
-             f'#      sign NEGATIVE for evaporation. FM expects m/s positive up.\n'
-             f'#      factor = -1e-3/86400 = -1.1574e-8 (mm/day -> m/s + sign flip).\n'
-             f'QUANTITY=evaporation\n'
+             f'#      ERA5 mer in mm/day (dfmt preprocess), negative = evap.\n'
+             f'#      FM unifies precip + evap as QUANTITY=rainfall_rate in mm/day.\n'
+             f'#      ERA5 negative-evap matches FM negative-rainfall_rate => no FACTOR needed.\n'
+             f'QUANTITY=rainfall_rate\n'
              f'FILENAME={mer_file}\n'
              f'VARNAME=mer\n'
              f'FILETYPE=11\n'
              f'METHOD=3\n'
-             f'OPERAND=O\n'
-             f'FACTOR=-1.1574e-8\n')
+             f'OPERAND=O\n')
     EXT_OLD.write_text(text.rstrip() + '\n' + block, encoding='utf-8')
-    print(f'Appended evaporation block to {EXT_OLD.name}')
+    print(f'Wrote rainfall_rate block to {EXT_OLD.name}')
     print(block)
     return 0
 

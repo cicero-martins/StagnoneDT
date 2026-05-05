@@ -96,13 +96,12 @@ METHOD=3
 OPERAND=O
 
 # v04: ERA5 evaporation forcing for hipersalinidade fix
-#      ERA5 mer is in mm/day (converted by dfmt preprocess),
-#      sign NEGATIVE for evaporation. FM expects m/s positive up.
-#      factor = -1e-3/86400 = -1.1574e-8 (mm/day -> m/s + sign flip).
-QUANTITY=evaporation
+#      ERA5 mer in mm/day (dfmt preprocess), negative = evap.
+#      FM unifies precip + evap as QUANTITY=rainfall_rate in mm/day.
+#      ERA5 negative-evap matches FM negative-rainfall_rate => no FACTOR needed.
+QUANTITY=rainfall_rate
 FILENAME=era5_mer_20250701to20250710_ERA5.nc
 VARNAME=mer
 FILETYPE=11
 METHOD=3
 OPERAND=O
-FACTOR=-1.1574e-8
