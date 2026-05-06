@@ -18,10 +18,10 @@ This repository serves as the computational base for an ongoing **PhD project** 
 | v01–v02 | Complete (baseline + calibration fixes) |
 | v03a/b/c | Completed on EDITO (9 days, ~12 h wallclock); validated |
 | v03d | Completed — TPXO double-counting fix, HDF5 `ncFormat=3`, tracer-init buffers, full 9d Jul 2025 |
-| **v04** | **Running** — per-node WL offset (49 nodes via Marettimo anchor + MDT spread), Trapani mesh fix, D-Morph 2 fractions, ERA5 evap forcing, 8-MPI partitioning. See [progress report 2026-05-04](docs/progress_report_2026-05-04.md) |
-| Offshore validation | Marettimo (Trilha B) TPXO over-amplitude resolved in v03d; long anchor (13 months obs vs CMEMS `zos`, δ = +0.4489 m) computed for v04 — see [marettimo_offset_anchor_2025](docs/marettimo_offset_anchor_2025.md) |
-| Morphology (sediment) | Implemented in v04 — D-Morph 2 fractions (sand 150 µm + silt 30 µm), `bedLevType=1`, `MorStt=1440 min` |
-| HDF5 coupling bug | **Resolved** — `ncFormat=3` (classic NetCDF) eliminates the SWAN-side HDF re-open error; trade-off is the 2 GB per-file limit |
+| **v04** | **Validated** — 9-day Jul 2025 run completed (~9 h wall on 8 MPI), 26 GB output. Wave coupling, volume mass balance, hipersaline IC preservation all PASS. WL anomaly RMSE 2.3-4.3 cm post-spinup at 4 stations (BN/BS/AE/Marettimo), beating v03d in all of them. Two issues queued for v04.1: (i) salt blowup in 3.2% of intertidal cells; (ii) raw WL bias +12-17 cm from Marettimo-anchor over-correcting the lagoon datum. See [progress report 2026-05-04](docs/progress_report_2026-05-04.md) |
+| Offshore validation | Marettimo (Trilha B) TPXO over-amplitude resolved in v03d; long anchor (13 months obs vs CMEMS `zos`, δ = +0.4489 m) computed for v04 — see [marettimo_offset_anchor_2025](docs/marettimo_offset_anchor_2025.md). v04 validation at the v03d-compat cell (12.0753, 37.9747, bl≈−3.5 m): RMSE_anom 4.2 cm, corr 0.80, std_ratio 1.05 (essentially perfect amplitude) |
+| Morphology (sediment) | Implemented in v04 — D-Morph 2 fractions (sand 150 µm + silt 30 µm), `bedLevType=1`, `MorStt=1440 min`. Bed update from t=1d; verified to run without numerical instability |
+| HDF5 coupling bug | **Resolved** — `ncFormat=3` (classic NetCDF) eliminates the SWAN-side HDF re-open error; trade-off is the 2 GB per-file limit. Confirmed working under 8 MPI partitions with v04 setup |
 | Satellite roughness | Sentinel-2 RF + PlanetScope 8-band RF (CV 0.92) — **experimental, not yet applied to FM** |
 | Particle tracking | OpenDrift baseline reproducing July 2025 drifter tracks |
 | Residence time | Knudsen bulk estimate; Eulerian tracer recipe applied in v03d+ |
@@ -80,7 +80,7 @@ The lagoon is a protected area. Despite its shallow depth, significant vertical 
 
 ## Preliminary results
 
-> Figures below are based on v03c output; the spatial patterns, validation metrics, and feasibility findings remain valid. Absolute amplitude at Marettimo is refined in v03d (TPXO double-counting removed, see boundary offset note in version history) and v04 (per-node spatially-varying offset). v04 dedicated validation will replace the figures in this section once the run completes.
+> The v04 9-day Jul 2025 run completed and was validated; the dedicated v04 figures are at the bottom of this section ("v04 validation"). The earlier v03c figures remain to document the diagnostic process — the spatial patterns + feasibility findings hold; absolute amplitude at Marettimo improved from v03c (~1.8× over-amp) to v03d (TPXO removed) to v04 (std_ratio 1.05, corr 0.80 post-spinup).
 
 ### Computational grids (v03a and beyond)
 
@@ -165,18 +165,67 @@ A five-test isolation matrix (baseline / `nc3` / `HDF5_USE_FILE_LOCKING=FALSE` /
   <em>Time-mean wave orbital velocity (m s⁻¹) over the FM domain for the v03 July 2025 window. Deep-blue offshore = negligible bed interaction; warm colours trace the coast where shoaling drives u_orb above the sand-mobilisation threshold. The Egadi islands (Marettimo, Levanzo, Favignana, top-left and centre) show the same signature. This spatial pattern is consistent with the inlet-focused resuspension hypothesis and will be revisited once the HDF5 fix feeds through to time-varying wave fields in v03d.</em>
 </p>
 
+### v04 validation (Jul 1-10 2025, 9-day run)
+
+The v04 run (per-node WL offset + Trapani mesh fix + D-Morph 2 fractions + ERA5 evaporation + nudge relaxed to 10 d) completed in ~9 h wall on 8 MPI partitions, producing 26 GB of map.nc/his.nc/com.nc/restart output. Health checks via [scripts/v04_health_check.py](scripts/v04_health_check.py); v03 vs v04 dynamic comparison via [scripts/compare_v03_vs_v04_wl.py](scripts/compare_v03_vs_v04_wl.py).
+
+**Wave coupling — time-varying confirmed.** Significant wave height varies 0-1.5 m at 4 representative cells, capturing the 2025-07-08/09 swell event predicted by the offshore CMEMS series. The HDF5 `ncFormat=3` workaround scales to 8 MPI partitions without regression.
+
+<p align="center">
+  <img src="figures/v04_wave_coupling_check.png" width="760" alt="v04 wave coupling time series"/><br/>
+  <em>v04 mesh2d_hwav at offshore-W, offshore-S, inlet-BocaNord, lagoon-centre. Calm dia 1-7 (Hs 0.2-0.4 m), storm peak ~1.5 m on day 8-9. std 0.33-0.38 m across the 4 sample cells.</em>
+</p>
+
+**Volume mass balance — +0.12 % drift over 9 d.** Total domain volume oscillates around 444 × 10⁹ m³ with M2/S2 modulation visible (~1.5 × 10⁹ m³ swing per cycle). The `mesh2d_face_z` netfile addition is confirmed working (without it, FM falls back to `bedLevUni=5 m` and reports zero volume — see [docs/fm_2026_gotchas.md](docs/fm_2026_gotchas.md) §5).
+
+<p align="center">
+  <img src="figures/v04_volume_evolution.png" width="760" alt="v04 total volume over 9 days"/><br/>
+  <em>Total water volume across the FM domain. Initial 443.3 × 10⁹ m³, final 443.8 × 10⁹ m³.</em>
+</p>
+
+**Hipersaline IC preservation — partial success.** Lagoon-interior mean salinity stays at 40-42 ppt over the 9 d (compared to v03d, which eroded from 42 → 37.7 ppt within ~12 h without evap forcing). However, ~3.2 % of cells (1338 of ~25k total) develop unphysical salinities >50 ppt by day 9, concentrated on the eastern intertidal periphery (12.45-12.49 °E, 37.85-37.90 °N — the historical salt-pan area near Mozia/Trapani) and a small Trapani-port edge cluster. Cause: feedback `dS/dt = S·E/h` diverges as `h → 0` in cells with `bedlevel` between −0.6 and −0.1 m when ERA5 mer (~5 mm/d) removes water without a mechanical cap. The lagoon-mean is unaffected (area-weighted; bulk cells dominate); the diagnostic + fix candidates are queued for v04.1.
+
+<p align="center">
+  <img src="figures/v04_high_sal_map.png" width="640" alt="Spatial map of cells with surface salinity >50 ppt at t=final"/><br/>
+  <em>Cells with surface salinity >50 ppt at the final timestep. Bulk lagoon (grey) is normal; the runaway is localised to the salt-pan periphery (east shore) and a small Trapani-port edge cluster.</em>
+</p>
+
+**WL validation post-spinup (Jul 2-10 2025).** First sim-day dropped to remove the IC spin-up transient. Three lagoon stations from his.nc + Marettimo from map.nc using the v03d-compatible cell (12.0753, 37.9747, bl ≈ −3.5 m; the literal nearest cell to the gauge picks a deep-lee-of-island position with std~0 — avoid). Both raw and mean-removed (anomaly) metrics are reported:
+
+| Station | n | RMSE_raw | Bias | **RMSE_anom** | **Corr** | std_mod / std_obs |
+|---|---|---|---|---|---|---|
+| BocaNord | 1150 | 0.174 | +0.171 | **0.034** | **0.87** | 1.13 |
+| BocaSud | 1150 | 0.024 | +0.008 | **0.023** | **0.92** | 1.09 |
+| AltaVilaEst | 1149 | 0.133 | +0.125 | **0.043** | **0.83** | 1.29 |
+| Marettimo | 385 | 0.172 | +0.167 | **0.042** | **0.80** | 1.05 |
+
+`RMSE² = bias² + RMSE_anom²` — most of the raw error is bias (76-90 % of variance). Stripping the bias, the v04 dynamic accuracy (RMSE_anom 2.3-4.3 cm, corr 0.80-0.92) **matches or beats** v03d in the same window (post-spinup days 1.5-9: RMSE 3.4-5.2 cm, corr 0.77-0.85), with std_ratio brought from 1.30-1.65 (v03d) down to 1.05-1.29 (v04) — the tidal over-amplification at lagoon stations is essentially eliminated.
+
+<p align="center">
+  <img src="figures/v04_wl_validation.png" width="780" alt="v04 WL validation raw + anomaly at 4 stations"/><br/>
+  <em>Left: raw WL — model (orange) consistently above obs (blue) by the bias offset, especially at BocaNord, AltaVilaEst, Marettimo. BocaSud is essentially overlapping (bias +0.008 m). Right: mean-removed anomaly — the two curves match almost perfectly at all 4 stations, confirming the dynamics are good and the only issue is the absolute datum.</em>
+</p>
+
+**v03 (HDF bug + TPXO double-counting) vs v04 dynamics.** With the bias removed, v04 reduces anomaly RMSE by 49-76 % vs v03 at the lagoon stations, and brings std_ratio from ~1.95 (≈ 2× over-amplified tide) down to ~1.10 (essentially correct amplitude). This combines the effects of the TPXO BC fix (already in v03d) and the wave-coupling fix; isolating wave coupling alone would require a v04-no-waves variant which we have not built.
+
+<p align="center">
+  <img src="figures/v03_vs_v04_wl_compare.png" width="800" alt="v03 vs v04 WL comparison"/><br/>
+  <em>v03 (grey, HDF wave bug + TPXO double-counting) vs v04 (orange) vs obs (blue) at the 3 lagoon stations. Left column: raw WL (v03 over-amplifies, v04 has higher bias). Right column: anomaly (mean removed). v04 amplitude matches obs nearly perfectly while v03 is ~2× over-amplified.</em>
+</p>
+
+**v04.1 fixes queued.** Two known issues to address before promoting v04 to a production reference:
+
+1. **Salinity blowup mitigation.** Candidates: physics cap (`SalMax`), drying-threshold tuning (`Trsh_thresh`), evap-mask polygon over the salt-pan area, or earlier `MorStt` so D-Morph deposition can naturally fill ultra-shallow cells. Effort: 5-30 min depending on path.
+2. **Datum recalibration.** Subtract ~+0.10 m from the per-node base offset (keeps the MDT spatial spread but zeros the mean lagoon-station bias). Or recalibrate against BocaSud (bias +0.008 m, the cleanest current station). Effort: 5 min.
+
 ## Roadmap
 
-The post-v03c roadmap (six tracks A–F converging on v03d build + validation) is **complete** — see [docs/roadmap_post_v03c.md](docs/roadmap_post_v03c.md). Current focus is v04, the "minimum viable + ERA5 evap" build:
+The post-v03c roadmap (six tracks A–F converging on v03d build + validation) is **complete** — see [docs/roadmap_post_v03c.md](docs/roadmap_post_v03c.md). The v04 "minimum viable + ERA5 evap" build is also **complete and validated** (see preceding section). Current focus is **v04.1** — two targeted fixes layered on the v04 setup:
 
-- **WL boundary**: per-node δ from Marettimo statistical anchor (13-month series) + CMEMS MDT spatial spreading
-- **Mesh**: EMODnet 2024 patch over Trapani port (frees ~half of the previously emerged port nodes)
-- **Bed**: `mesh2d_face_z` added to netfile to enable `bedLevType=1`, required by D-Morph
-- **Sediment**: 2 fractions (sand 150 µm + silt 30 µm), `MorFac=1.0`, real-time bed update from t=1d
-- **Mass balance**: ERA5 `mer` as `rainfall_rate` forcing (negative=evap) with `Rainfall=1`+`Evaporation=1` MDU switches
-- **Nudge**: relaxed from 1h to 10d so lagoon-interior dynamics are not overwritten
+1. **Salt-pan salinity stability.** Cap or mask runaway in shallow intertidal cells (3.2 % of total today).
+2. **Lagoon-datum offset recalibration.** Bring the +12-17 cm raw WL bias at BN/AE/Marettimo to ~zero by reducing the constant component of the per-node offset by ~10 cm (the MDT spatial spread stays).
 
-Run currently in progress on a higher-core machine (~9h wall for 9 sim-days at 8 MPI). After validation: longer-window scenarios, possible refinements with formal MDT spreading, and porting to EDITO.
+After v04.1: longer-window scenarios (multi-month, seasonal contrast), Porto Empedocle RMN cross-validation (formal-datum offshore reference), and possible porting back to EDITO for distributed runs.
 
 ## Notebook catalog
 
@@ -340,6 +389,12 @@ Operational + roadmap:
 - [docs/fm_2026_gotchas.md](docs/fm_2026_gotchas.md) — five interlocking parser/config gotchas encountered during v04 build (FM 2026.01)
 - [docs/deltares_hdf5_coupling_report.md](docs/deltares_hdf5_coupling_report.md) — HDF5 coupling bug report + test matrix (resolved with `ncFormat=3`)
 - [docs/satellite_roughness_review.md](docs/satellite_roughness_review.md) — literature review of 28 roughness papers
+
+Validation + diagnostics scripts (run from project root):
+
+- [scripts/v04_health_check.py](scripts/v04_health_check.py) — wave coupling + volume + salinity map + WL validation (raw + anomaly) at 4 stations
+- [scripts/compare_v03_vs_v04_wl.py](scripts/compare_v03_vs_v04_wl.py) — direct WL comparison v03 (HDF wave bug + TPXO over-amp) vs v04 at the 3 lagoon stations
+- [scripts/compute_marettimo_offset_anchor.py](scripts/compute_marettimo_offset_anchor.py) — long-window δ anchor against CMEMS `zos`
 
 ## License
 
