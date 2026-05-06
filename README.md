@@ -9,23 +9,23 @@ This repository serves as the computational base for an ongoing **PhD project** 
   <em>PlanetScope SuperDove 8-band median composite, 9 dates Jun–Sep 2025, 3 m GSD. Lagoon (centre-left), Trapani airport + city (top), western Sicily coastline. See <a href="notebooks/archive/03b_roughness_alternatives.ipynb">03b notebook</a>.</em>
 </p>
 
-## Status (April 2026)
+## Status (May 2026)
 
 | Area | Status |
 |------|--------|
-| Mesh + bathymetry | Complete — 21 k nodes unstructured FM mesh, 2006 + modern bathy fusion |
-| Input forcing | ERA5+in-situ blended wind, CMEMS time-varying wave BCs, hypersaline init |
-| v01 (baseline) | 9-day local run complete |
-| v02 (calibration fixes) | Validated against 3 WL stations |
+| Mesh + bathymetry | Complete — 21 k nodes; v04 adds `mesh2d_face_z` for D-Morph + EMODnet 2024 patch over Trapani port (172 → 85 emerged nodes) |
+| Input forcing | ERA5+in-situ blended wind, CMEMS time-varying wave BCs, hypersaline init, ERA5 evap (v04) |
+| v01–v02 | Complete (baseline + calibration fixes) |
 | v03a/b/c | Completed on EDITO (9 days, ~12 h wallclock); validated |
-| v03d (next) | Planned — D-Morph + `ncFormat=3` fix + ERA5 evap (see [roadmap](docs/roadmap_post_v03c.md)) |
-| Offshore validation | WL at Marettimo tide gauge (Trilha B) — BC tide propagates (Corr 0.95); ~1.8× amplitude over |
-| Morphology (sediment) | Feasibility complete (Trilha C1) — morph approved for v03d, S2 field event 2025-10-06 |
-| HDF5 coupling bug | Workaround identified (Trilha D) — `ncFormat=3`; Deltares support drafted |
+| v03d | Completed — TPXO double-counting fix, HDF5 `ncFormat=3`, tracer-init buffers, full 9d Jul 2025 |
+| **v04** | **Running** — per-node WL offset (49 nodes via Marettimo anchor + MDT spread), Trapani mesh fix, D-Morph 2 fractions, ERA5 evap forcing, 8-MPI partitioning. See [progress report 2026-05-04](docs/progress_report_2026-05-04.md) |
+| Offshore validation | Marettimo (Trilha B) TPXO over-amplitude resolved in v03d; long anchor (13 months obs vs CMEMS `zos`, δ = +0.4489 m) computed for v04 — see [marettimo_offset_anchor_2025](docs/marettimo_offset_anchor_2025.md) |
+| Morphology (sediment) | Implemented in v04 — D-Morph 2 fractions (sand 150 µm + silt 30 µm), `bedLevType=1`, `MorStt=1440 min` |
+| HDF5 coupling bug | **Resolved** — `ncFormat=3` (classic NetCDF) eliminates the SWAN-side HDF re-open error; trade-off is the 2 GB per-file limit |
 | Satellite roughness | Sentinel-2 RF + PlanetScope 8-band RF (CV 0.92) — **experimental, not yet applied to FM** |
 | Particle tracking | OpenDrift baseline reproducing July 2025 drifter tracks |
-| Residence time | Knudsen bulk estimate; Eulerian tracer recipe for v03d+ |
-| EDITO deployment | Functional — `delft3dfmrun-docker` service |
+| Residence time | Knudsen bulk estimate; Eulerian tracer recipe applied in v03d+ |
+| EDITO deployment | Functional — `delft3dfmrun-docker` service. v04 currently running on a higher-core local machine for faster iteration |
 
 ## Site description
 
@@ -59,21 +59,28 @@ The lagoon is a protected area. Despite its shallow depth, significant vertical 
 
 ## Model version history
 
-| Feature | v01 | v02 | v03a | v03b | v03c | v03d (plan) |
-|---------|:---:|:---:|:----:|:----:|:----:|:-----------:|
-| Datum offset on WL BC | 0.0 m | +0.42 m | +0.42 m | +0.42 m | +0.42 m | +0.42 m |
-| Central 3D obs (C1/C2/C3) | — | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Blended wind (ERA5 + in-situ) | — | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Hypersaline init (42 psu interior) | — | — | ✓ | ✓ | ✓ | ✓ |
-| SWAN wave coupling | — | — | stationary | CMEMS TPAR (stat.) | TPAR (stat.) | TPAR (stat.) |
-| Initial tracer (lagoon) | — | — | ✓ | ✓ | ✓ | ✓ |
-| Turbidity tracer buffers (airport + saltpans) | — | — | — | — | pulse (lateral) | init buffer 500 m |
-| `ncFormat` (output) | 4 | 4 | 4 | 4 | 4 (waves stuck) | **3** (fixes waves) |
-| ERA5 evaporation | — | — | — | — | — | ✓ (plan) |
-| D-Morphology (sand + silt) | — | — | — | — | — | ✓ (plan) |
-| Simulation period | 9 d | 9 d | 9 d | 9 d | 9 d | 9 d + Oct-event v03e |
+| Feature | v01 | v02 | v03a/b/c | v03d | **v04** |
+|---------|:---:|:---:|:--------:|:----:|:-------:|
+| WL boundary offset | 0.0 m | const +0.42 m | const +0.42 m | const +0.42 m | **per-node δ +0.455 to +0.501 m** (Marettimo anchor + CMEMS MDT spread) |
+| Central 3D obs (C1/C2/C3) | — | ✓ | ✓ | ✓ | ✓ |
+| Blended wind (ERA5 + in-situ) | — | ✓ | ✓ | ✓ | ✓ |
+| Hypersaline init (42 psu interior) | — | — | ✓ | ✓ | ✓ |
+| SWAN wave coupling | — | — | stationary / TPAR | TPAR (stat.) | TPAR (stat.) |
+| Initial tracer (lagoon) | — | — | ✓ | ✓ | ✓ |
+| Turbidity tracer buffers (airport + saltpans) | — | — | pulse (v03c) | init buffer 500 m | init buffer (inherited) |
+| `ncFormat` (output) | 4 | 4 | 4 (waves stuck) | **3** (HDF fix) | 3 |
+| BC superposition fix (TPXO removed) | — | — | — | ✓ | ✓ |
+| Trapani port mesh patch (EMODnet 2024) | — | — | — | — | ✓ (172 → 85 emerged nodes) |
+| `mesh2d_face_z` in netfile (`bedLevType=1`) | — | — | — | — | ✓ (D-Morph requirement) |
+| D-Morphology (sand 150 µm + silt 30 µm) | — | — | — | — | ✓ |
+| ERA5 evaporation forcing (`rainfall_rate`) | — | — | — | — | ✓ |
+| `nudgeTimeUni` | 3600 s | 3600 s | 3600 s | 3600 s | **864000 s** (preserves hypersaline IC) |
+| MPI partitions (local default) | 4 | 4 | 4 | 4 | **8** |
+| Simulation period | 9 d | 9 d | 9 d | 9 d | 9 d (+ longer-window v04.x planned) |
 
 ## Preliminary results
+
+> Figures below are based on v03c output; the spatial patterns, validation metrics, and feasibility findings remain valid. Absolute amplitude at Marettimo is refined in v03d (TPXO double-counting removed, see boundary offset note in version history) and v04 (per-node spatially-varying offset). v04 dedicated validation will replace the figures in this section once the run completes.
 
 ### Computational grids (v03a and beyond)
 
@@ -103,7 +110,9 @@ The lagoon is a protected area. Despite its shallow depth, significant vertical 
   <em>After ring-scanning 1,394 always-wet faces at 0.5–3 km offshore, the best-matching cell (green) recovers the tidal phase almost perfectly (Corr 0.95). The original literal-nearest cell (blue, at the drying edge) had flat-lined. Observed signal (black) from the JRC webcritech ISPRA gauge.</em>
 </p>
 
-Ring-scan **isolates the issue**: the CMEMS west-boundary tidal forcing propagates correctly (Corr 0.93–0.96, Willmott d 0.89 across 1,394 cells), but the model over-amplifies the tidal range by ~1.8× at this location (Std_mod 11.2 cm vs Std_obs 6.3 cm). Under investigation as part of v03d. Data fetched from JRC's [webcritech TAD server device 658](https://webcritech.jrc.ec.europa.eu/TAD_server/Device/658). Full analysis in [notebook 23_valid_v03c_offshore](notebooks/23_valid_v03c_offshore.ipynb).
+Ring-scan **isolates the issue**: the CMEMS west-boundary tidal forcing propagates correctly (Corr 0.93–0.96, Willmott d 0.89 across 1,394 cells), but in v03c the model over-amplifies the tidal range by ~1.8× at this location (Std_mod 11.2 cm vs Std_obs 6.3 cm). **Resolved in v03d** by removing the `tide_tpxo80_opendap_*.bc` block from the new-format ext file: the CMEMS reanalysis WL already contains a tide signal, so superposing TPXO on the same `.pli` doubled it (`new.ext` parses repeated `[Boundary]` blocks of the same quantity additively). See [docs/deltares_modelbuilder_observation.md](docs/deltares_modelbuilder_observation.md).
+
+A separate long-window analysis using the full 2025-01 to 2026-01 Marettimo SiAM record (55,052 samples at 10-min resolution) computed the **statistical offset anchor** δ = mean(obs) − mean(zos<sub>CMEMS</sub>) = **+0.4489 m annual** (+0.4812 m for July 2025), with monthly mean ranging from +0.36 m (Feb) to +0.50 m (Jan/26). v04 uses this anchor combined with a CMEMS MDT product (`SEALEVEL_MED_PHY_MDT_L4_STATIC_008_066`) to spread δ across the 49 PLI nodes (range +0.455 to +0.501 m). Full report in [docs/marettimo_offset_anchor_2025.md](docs/marettimo_offset_anchor_2025.md). Data fetched from JRC's [webcritech TAD server device 658](https://webcritech.jrc.ec.europa.eu/TAD_server/Device/658).
 
 ### Sediment resuspension feasibility (Trilha C1)
 
@@ -112,7 +121,7 @@ Ring-scan **isolates the issue**: the CMEMS west-boundary tidal forcing propagat
   <em>Proxy orbital velocity at the inlet (h = 1.5 m) from the offshore CMEMS wave time series, for three shoaling-attenuation scenarios. Thresholds for incipient motion of silt (0.035 m/s), fine sand (0.14 m/s), and medium sand (0.22 m/s) are crossed during the 2025-07-08/10 swell event.</em>
 </p>
 
-Three independent lines of evidence — iter-1 SWAN output (`u_orb` = 0.186 m/s at BocaNord), offshore CMEMS swell propagation, and a Sentinel-2 scene from 2025-10-06 with visible resuspension plumes — all justify adding **D-Morphology** to v03d. Two fractions planned: sand (d50 = 150 µm) for the inlet channel, silt (d50 = 30 µm) for the lagoon interior. XBeach ruled out (surf-zone model; not applicable to a sheltered lagoon). Full analysis in [notebook 31_analysis_resuspension_feasibility](notebooks/31_analysis_resuspension_feasibility.ipynb).
+Three independent lines of evidence — iter-1 SWAN output (`u_orb` = 0.186 m/s at BocaNord), offshore CMEMS swell propagation, and a Sentinel-2 scene from 2025-10-06 with visible resuspension plumes — justified adding **D-Morphology**. Implemented in v04 with two fractions: sand (d50 = 150 µm) for the inlet channel, silt (d50 = 30 µm) for the lagoon interior, `MorFac=1.0`, `MorStt=1440 min` (bed update from t=1d). XBeach ruled out (surf-zone model; not applicable to a sheltered lagoon). Full analysis in [notebook 31_analysis_resuspension_feasibility](notebooks/31_analysis_resuspension_feasibility.ipynb).
 
 ### Satellite-derived bottom roughness — experimental
 
@@ -143,11 +152,11 @@ Feature importance on the Planet pipeline shows that the four extra Planet bands
   <em>Interior lagoon salinity starts at 42 psu as intended (fix of v03b's <code>iniWithNudge=2</code> bug), but flushes to ~37.7 psu within ~12 hours under tidal exchange alone. Without surface evaporation the hypersaline regime is not sustainable.</em>
 </p>
 
-This drove the decision to add **ERA5 evaporation forcing** in v03d.
+This drove the implementation of **ERA5 evaporation forcing** in v04, alongside relaxation of `nudgeTimeUni` from 3600 s (1 h) to 864000 s (10 d) so the lagoon-interior dynamics aren't overwritten every hour by a CMEMS-regional nudge target that doesn't resolve the hypersaline core. v04 build encountered five interlocking gotchas getting evap + D-Morph through the FM 2026.01 parser — documented exhaustively in [docs/fm_2026_gotchas.md](docs/fm_2026_gotchas.md).
 
-### HDF5 coupling debug (Trilha D)
+### HDF5 coupling debug (Trilha D, resolved)
 
-A five-test isolation matrix (baseline / `nc3` / `HDF5_USE_FILE_LOCKING=FALSE` / serial / `AppendCOM=true`) pins down the bug to SWAN's HDF5 re-open-for-write of `com.nc`; only `ncFormat=3` (classic NetCDF) eliminates the error and restores time-varying waves. Trade-off: classic NetCDF has a 2 GB per-file limit — mitigated for the current 9-day window with `wrimap_*` reductions and a longer `mapInterval`. Full report in [docs/deltares_hdf5_coupling_report.md](docs/deltares_hdf5_coupling_report.md) (drafted for Deltares support).
+A five-test isolation matrix (baseline / `nc3` / `HDF5_USE_FILE_LOCKING=FALSE` / serial / `AppendCOM=true`) pinned the bug to SWAN's HDF5 re-open-for-write of `com.nc`. Only `ncFormat=3` (classic NetCDF) eliminates the error and restores time-varying waves. Trade-off: classic NetCDF has a 2 GB per-file limit — mitigated for the 9-day window with `wrimap_*` reductions and a longer `mapInterval`. Adopted from v03d onward. Full report in [docs/deltares_hdf5_coupling_report.md](docs/deltares_hdf5_coupling_report.md).
 
 ### Wave orbital velocity — spatial pattern
 
@@ -158,7 +167,16 @@ A five-test isolation matrix (baseline / `nc3` / `HDF5_USE_FILE_LOCKING=FALSE` /
 
 ## Roadmap
 
-The post-v03c roadmap is split into six parallel tracks (A–F) converging on a v03d build + validation — see [docs/roadmap_post_v03c.md](docs/roadmap_post_v03c.md) for the full plan with hour budgets and dependencies. Tracks A, B, C1, D are complete; E (v03d build) + F (validation) are next.
+The post-v03c roadmap (six tracks A–F converging on v03d build + validation) is **complete** — see [docs/roadmap_post_v03c.md](docs/roadmap_post_v03c.md). Current focus is v04, the "minimum viable + ERA5 evap" build:
+
+- **WL boundary**: per-node δ from Marettimo statistical anchor (13-month series) + CMEMS MDT spatial spreading
+- **Mesh**: EMODnet 2024 patch over Trapani port (frees ~half of the previously emerged port nodes)
+- **Bed**: `mesh2d_face_z` added to netfile to enable `bedLevType=1`, required by D-Morph
+- **Sediment**: 2 fractions (sand 150 µm + silt 30 µm), `MorFac=1.0`, real-time bed update from t=1d
+- **Mass balance**: ERA5 `mer` as `rainfall_rate` forcing (negative=evap) with `Rainfall=1`+`Evaporation=1` MDU switches
+- **Nudge**: relaxed from 1h to 10d so lagoon-interior dynamics are not overwritten
+
+Run currently in progress on a higher-core machine (~9h wall for 9 sim-days at 8 MPI). After validation: longer-window scenarios, possible refinements with formal MDT spreading, and porting to EDITO.
 
 ## Notebook catalog
 
@@ -214,13 +232,13 @@ Download [Delft3D FM Suite 2026.01 HMWQ](https://download.deltares.nl/delft3dfm)
 
 ### Credentials
 
-- **CMEMS** (ocean BC): https://data.marine.copernicus.eu/
-- **ECMWF CDS** (ERA5): https://cds.climate.copernicus.eu/
+- **CMEMS** (ocean BC): https://data.marine.copernicus.eu/ — first call to `copernicusmarine` will prompt and cache login
+- **ECMWF CDS** (ERA5): https://cds.climate.copernicus.eu/ — copy your Personal Access Token from the profile page; add `CDSAPI_URL=https://cds.climate.copernicus.eu/api` and `CDSAPI_KEY=<token>` to `.env` (the v04 ERA5 download script loads it via the local `load_dotenv()` helper)
 - **CDSE** (Sentinel-2): https://dataspace.copernicus.eu/
 - **Planet** (PlanetScope SR): https://www.planet.com/account/
 - **EDITO** (Datalab S3): https://datalab.dive.edito.eu/account/storage
 
-Copy `.env.example` → `.env` and fill EDITO S3 credentials. Never commit `.env` — it's in `.gitignore`.
+Copy `.env.example` → `.env` and fill the credentials. Never commit `.env` — it's in `.gitignore`.
 
 ## Reproducing results
 
@@ -252,27 +270,33 @@ Sequence for a fresh run:
 
 ```
 StagnoneDT/
-├── notebooks/             # Main workflow (17 Jupyter notebooks + archive/)
-├── scripts/               # edito_sync.py, planet_mosaic_composite.py, download_marettimo_wl.py, ...
-├── docs/                  # EDITO_WORKFLOW.md, roadmap_post_v03c.md, deltares_hdf5_coupling_report.md, progress_report_*.md
+├── notebooks/             # Main workflow (~20 Jupyter notebooks + archive/)
+├── scripts/               # edito_sync.py, build_v04_offset_bc.py, regen_mesh_z_trapani.py,
+│                          # add_face_z_to_netfile.py, download_marettimo_wl_long.py,
+│                          # compute_marettimo_offset_anchor.py, integrate_era5_evap_v04.py, ...
+├── docs/                  # progress reports, roadmaps, methodology + boundary justifications,
+│                          # FM 2026 gotchas, EDITO workflow
 ├── model/
 │   ├── dflowfm/           # v01 (baseline)
 │   ├── dflowfm_v02/       # v02 (calibration fixes)
 │   ├── dflowfm_v03a/      # v03a (nested SWAN + hypersaline)
 │   ├── dflowfm_v03b/      # v03b (CMEMS time-varying waves)
-│   ├── dflowfm_v03c/      # v03c (iniWithNudge + tracer fixes, current validated)
-│   └── dflowfm_v03d/      # v03d (morph + ncFormat=3 fix + evaporation, in prep)
+│   ├── dflowfm_v03c/      # v03c (iniWithNudge + tracer fixes)
+│   ├── dflowfm_v03d/      # v03d (TPXO BC fix, ncFormat=3, full 9d, validated)
+│   └── dflowfm_v04/       # v04 (per-node WL offset + Trapani mesh + D-Morph + ERA5 evap, current)
 ├── data/
 │   ├── raw/
-│   │   ├── insitu/        # 3 WL + 2 wind station CSVs + drifter data + Marettimo tide gauge
+│   │   ├── insitu/        # 3 WL + 2 wind station CSVs + drifters + Marettimo 13-month series
+│   │   ├── cmems/         # zos at Marettimo (anchor calc) + MDT static product
+│   │   ├── era5/          # ERA5 mer raw + processed for FM
+│   │   ├── bathymetry/    # EMODnet 2024 patch around Trapani port
 │   │   └── satellite/     # Sentinel-2 + PlanetScope 18 scenes (summer 2025, gitignored)
 │   └── processed/         # QC'd data + planet composite NetCDF (gitignored) + metrics CSVs
 ├── oldModel/              # Reference models A & B + 2006 bathymetry (read-only)
 ├── reference/             # Papers, User Days materials, modelbuilder example
-├── figures/               # Generated plots from notebooks
-├── memory/                # (not in repo) project context / design decisions
+├── figures/               # Generated plots from notebooks (v03c validation, anchor figures)
 ├── environment.yml        # Conda environment spec
-├── .env.example           # EDITO credentials template
+├── .env.example           # CMEMS / CDS / Planet / EDITO credentials template
 ├── .gitignore
 └── README.md              # This file
 ```
@@ -297,12 +321,25 @@ Possible directions for peer-reviewed output arising from this work, alongside t
 
 ## Documentation
 
-- [docs/EDITO_WORKFLOW.md](docs/EDITO_WORKFLOW.md) — operational workflow on EDITO Datalab
-- [docs/roadmap_post_v03c.md](docs/roadmap_post_v03c.md) — post-v03c roadmap (Trilhas A–F)
-- [docs/deltares_hdf5_coupling_report.md](docs/deltares_hdf5_coupling_report.md) — HDF5 coupling bug report + test matrix for Deltares support
+Per-version progress + technical reports:
+
 - [docs/progress_report_2026-04-22.md](docs/progress_report_2026-04-22.md) — v03b → v03c debugging session
-- [docs/satellite_roughness_review.md](docs/satellite_roughness_review.md) — literature review of 28 roughness papers
+- [docs/progress_report_2026-05-04.md](docs/progress_report_2026-05-04.md) — v04 minimum-viable build day
 - [docs/progress_report_v1.docx](docs/progress_report_v1.docx) — internal technical progress report (generated via `scripts/generate_report.py`)
+
+Methodology + boundary conditions:
+
+- [docs/wl_boundary_offset_justification.md](docs/wl_boundary_offset_justification.md) — multi-component decomposition of the +0.42 m WL offset (MDT + CMEMS bias + gauge datum + IB)
+- [docs/marettimo_offset_anchor_2025.md](docs/marettimo_offset_anchor_2025.md) — 13-month Marettimo SiAM vs CMEMS `zos` anchor δ for v04 spatial offset
+- [docs/deltares_modelbuilder_observation.md](docs/deltares_modelbuilder_observation.md) — observation report on the dfm_tools modelbuilder pattern (constant + tide + CMEMS doubles tide in Mediterranean)
+
+Operational + roadmap:
+
+- [docs/EDITO_WORKFLOW.md](docs/EDITO_WORKFLOW.md) — operational workflow on EDITO Datalab
+- [docs/roadmap_post_v03c.md](docs/roadmap_post_v03c.md) — post-v03c roadmap (Trilhas A–F, complete)
+- [docs/fm_2026_gotchas.md](docs/fm_2026_gotchas.md) — five interlocking parser/config gotchas encountered during v04 build (FM 2026.01)
+- [docs/deltares_hdf5_coupling_report.md](docs/deltares_hdf5_coupling_report.md) — HDF5 coupling bug report + test matrix (resolved with `ncFormat=3`)
+- [docs/satellite_roughness_review.md](docs/satellite_roughness_review.md) — literature review of 28 roughness papers
 
 ## License
 
