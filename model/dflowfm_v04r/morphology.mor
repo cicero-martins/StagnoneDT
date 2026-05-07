@@ -1,0 +1,29 @@
+[MorphologyFileInformation]
+    FileCreatedBy        = StagnoneDT v04 build
+    FileCreationDate     = 2026-05-04
+    FileVersion          = 02.00
+
+[Morphology]
+    MorFac               = 1.0
+    MorStt               = 1440.0
+    Thresh               = 0.05
+    BedUpd               = true
+    CmpUpd               = true
+    EqmBc                = false
+    DensIn               = true
+    Sus                  = 1.0
+    Bed                  = 1.0
+    SusW                 = 1.0
+    BedW                 = 1.0
+    SedThr               = 0.5
+    ThetSD               = 0.0
+    HMaxTH               = 1.0
+    FWFac                = 1.0
+    AlfaBs               = 1.0
+    AlfaBn               = 1.5
+    Espir                = 0.0
+    ISlope               = 2
+    IHidExp              = 1
+    NeglectEntrainment   = false
+    UpdInf               = false
+    OldMudFrac           = false
