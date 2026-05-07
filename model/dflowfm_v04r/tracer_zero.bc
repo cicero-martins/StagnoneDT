@@ -1,0 +1,10 @@
+[General]
+fileVersion           = 1.01
+fileType              = boundConds
+
+[Forcing]
+name                  = Stagnone_dxy01_15m_bnd1_0001
+function              = constant
+quantity              = tracerbndlagoon_tracer
+unit                  = -
+0.0
