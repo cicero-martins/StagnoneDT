@@ -56,8 +56,19 @@ model/*/*_rst.nc
 # Heavy raw data (download on-demand via notebooks)
 data/raw/satellite/
 
-# Regenerable regridded model output (~50 MB, rebuild via scripts/regrid_v03a_for_opendrift.py)
+# Regenerable regridded model output (~50-100 MB each; rebuild via scripts/regrid_*_for_opendrift.py)
 data/processed/v03a_surface_current.nc
+data/processed/v04_surface_current.nc
+data/processed/v04r_surface_current.nc
+data/processed/v04rE5_surface_current.nc
+
+# Restart-input directories cloned per re-run (~78 MB each, regenerable from v04 DFM_OUTPUT)
+model/*/restart_input/
+
+# Drifters: large compressed archives (Marettimo full record, regenerable)
+data/raw/insitu/marettimo_2025_2026.rar
+data/raw/insitu/marettimo_2025_2026.zip
+data/raw/insitu/april2024april2025/
 
 # Python
 __pycache__/
