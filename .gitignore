@@ -57,10 +57,7 @@ model/*/*_rst.nc
 data/raw/satellite/
 
 # Regenerable regridded model output (~50-100 MB each; rebuild via scripts/regrid_*_for_opendrift.py)
-data/processed/v03a_surface_current.nc
-data/processed/v04_surface_current.nc
-data/processed/v04r_surface_current.nc
-data/processed/v04rE5_surface_current.nc
+data/processed/v0*_surface_current.nc
 
 # Restart-input directories cloned per re-run (~78 MB each, regenerable from v04 DFM_OUTPUT)
 model/*/restart_input/
