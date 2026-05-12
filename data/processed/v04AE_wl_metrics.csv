@@ -1,0 +1,7 @@
+station,window,n,rmse,bias,rmse_anom,corr,std_ratio
+BocaNord,post-spinup,1148,0.1753,0.1723,0.0325,0.8745,1.1295
+BocaNord,full,1292,0.1948,0.1796,0.0755,0.5962,1.5590
+BocaSud,post-spinup,1148,0.0234,0.0094,0.0215,0.9284,1.0813
+BocaSud,full,1292,0.0759,0.0266,0.0711,0.5468,1.5750
+AltaVilaEst,post-spinup,1148,0.1241,0.1168,0.0421,0.8069,1.1997
+AltaVilaEst,full,1292,0.1475,0.1310,0.0679,0.6466,1.5142
