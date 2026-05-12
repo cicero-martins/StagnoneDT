@@ -1,0 +1,283 @@
+* 1.2.184.057d2f7ceeafda462a1b4e598efa4ce4f0c97cc5
+* Source: all/release/2026.01
+* File creation date: 17:52:48, 11-05-2026
+** INFO   : Command: "C:\Program Files\Deltares\Delft3D FM Suite 2026.01 HMWQ\plugins\DeltaShell.Dimr\kernels\x64\bin\dflowfm-cli.exe"  --partition:ndomains=16:icgsolver=6 Stagnone_dxy01_15m.mdu
+ Until here copy of previous diagnostic file
+** WARNING: While reading 'Stagnone_dxy01_15m.mdu': keyword [numerics] qhrelax=0.01 was in file, but not used. Check possible typo.
+** WARNING: While reading 'Stagnone_dxy01_15m.mdu': keyword [wind] windspeedbreakpoints=0.0 100.0 was in file, but not used. Check possible typo.
+** WARNING: While reading 'Stagnone_dxy01_15m.mdu': keyword [output] wrishp_enc=0 was in file, but not used. Check possible typo.
+** WARNING: While reading 'Stagnone_dxy01_15m.mdu': keyword [output] waterlevelclasses=0.0 was in file, but not used. Check possible typo.
+** WARNING: While reading 'Stagnone_dxy01_15m.mdu': keyword [output] waterdepthclasses=0.0 was in file, but not used. Check possible typo.
+** WARNING: While reading 'Stagnone_dxy01_15m.mdu': keyword [output] velocitydirectionclassesinterv=0.0 was in file, but not used. Check possible typo.
+** WARNING: While reading 'Stagnone_dxy01_15m.mdu': keyword [output] velocitymagnitudeclasses=0.0 was in file, but not used. Check possible typo.
+** INFO   : Reading cache file: Stagnone_dxy01_15m.cache
+** INFO   : No cache file available initially. Proceeding with normal initialization.
+** INFO   : Opened file : sicily2.ldb
+** INFO   : Closed file : sicily2.ldb
+** INFO   : Opened file : Stagnone_dxy01_15m.ldb
+** INFO   : Closed file : Stagnone_dxy01_15m.ldb
+** INFO   : Opened file : Stagnone_dxy01_15m_obs.xyn
+** INFO   : Closed file : Stagnone_dxy01_15m_obs.xyn
+** INFO   : Option --partition:ugrid=1 was automatically set, because BedlevType = 1 is used.
+** INFO   : removing dry cells...
+** INFO   : Opened file : illegalcells_dry.pol
+** INFO   : Closed file : illegalcells_dry.pol
+** INFO   : fixing global polygon...
+** INFO   : done
+** INFO   : done in      0.00200 sec.
+** INFO   : added node-based ghostcells:             53
+** INFO   : nr of netnodes               ( )  :                     1983
+** INFO   : nr of netlinks               ( )  :                     4025
+** INFO   : 
+** INFO   : nr of 2D netlinks            ( )  :                     4025
+** INFO   : nr of 1D netlinks            ( )  :                        0
+** INFO   : 
+** INFO   : nr of netcells               ( )  :                     2043
+** INFO   : nr of netcells 1D2D          ( )  :                     2043
+** INFO   : 
+** INFO   : removing dry cells...
+** INFO   : Opened file : illegalcells_dry.pol
+** INFO   : Closed file : illegalcells_dry.pol
+** INFO   : fixing global polygon...
+** INFO   : done
+** INFO   : done in      0.00200 sec.
+** INFO   : added node-based ghostcells:             37
+** INFO   : nr of netnodes               ( )  :                     1699
+** INFO   : nr of netlinks               ( )  :                     3584
+** INFO   : 
+** INFO   : nr of 2D netlinks            ( )  :                     3584
+** INFO   : nr of 1D netlinks            ( )  :                        0
+** INFO   : 
+** INFO   : nr of netcells               ( )  :                     1886
+** INFO   : nr of netcells 1D2D          ( )  :                     1886
+** INFO   : 
+** INFO   : removing dry cells...
+** INFO   : Opened file : illegalcells_dry.pol
+** INFO   : Closed file : illegalcells_dry.pol
+** INFO   : fixing global polygon...
+** INFO   : done
+** INFO   : done in      0.00400 sec.
+** INFO   : added node-based ghostcells:             38
+** INFO   : nr of netnodes               ( )  :                     1655
+** INFO   : nr of netlinks               ( )  :                     3493
+** INFO   : 
+** INFO   : nr of 2D netlinks            ( )  :                     3493
+** INFO   : nr of 1D netlinks            ( )  :                        0
+** INFO   : 
+** INFO   : nr of netcells               ( )  :                     1839
+** INFO   : nr of netcells 1D2D          ( )  :                     1839
+** INFO   : 
+** INFO   : removing dry cells...
+** INFO   : Opened file : illegalcells_dry.pol
+** INFO   : Closed file : illegalcells_dry.pol
+** INFO   : fixing global polygon...
+** INFO   : done
+** INFO   : done in      0.00200 sec.
+** INFO   : added node-based ghostcells:             62
+** INFO   : nr of netnodes               ( )  :                     1865
+** INFO   : nr of netlinks               ( )  :                     3896
+** INFO   : 
+** INFO   : nr of 2D netlinks            ( )  :                     3896
+** INFO   : nr of 1D netlinks            ( )  :                        0
+** INFO   : 
+** INFO   : nr of netcells               ( )  :                     2031
+** INFO   : nr of netcells 1D2D          ( )  :                     2031
+** INFO   : 
+** INFO   : removing dry cells...
+** INFO   : Opened file : illegalcells_dry.pol
+** INFO   : Closed file : illegalcells_dry.pol
+** INFO   : fixing global polygon...
+** INFO   : done
+** INFO   : done in      0.00200 sec.
+** INFO   : added node-based ghostcells:             76
+** INFO   : nr of netnodes               ( )  :                     1293
+** INFO   : nr of netlinks               ( )  :                     3176
+** INFO   : 
+** INFO   : nr of 2D netlinks            ( )  :                     3176
+** INFO   : nr of 1D netlinks            ( )  :                        0
+** INFO   : 
+** INFO   : nr of netcells               ( )  :                     1884
+** INFO   : nr of netcells 1D2D          ( )  :                     1884
+** INFO   : 
+** INFO   : removing dry cells...
+** INFO   : Opened file : illegalcells_dry.pol
+** INFO   : Closed file : illegalcells_dry.pol
+** INFO   : fixing global polygon...
+** INFO   : done
+** INFO   : done in      0.00200 sec.
+** INFO   : added node-based ghostcells:             40
+** INFO   : nr of netnodes               ( )  :                     1717
+** INFO   : nr of netlinks               ( )  :                     3538
+** INFO   : 
+** INFO   : nr of 2D netlinks            ( )  :                     3538
+** INFO   : nr of 1D netlinks            ( )  :                        0
+** INFO   : 
+** INFO   : nr of netcells               ( )  :                     1822
+** INFO   : nr of netcells 1D2D          ( )  :                     1822
+** INFO   : 
+** INFO   : removing dry cells...
+** INFO   : Opened file : illegalcells_dry.pol
+** INFO   : Closed file : illegalcells_dry.pol
+** INFO   : fixing global polygon...
+** INFO   : done
+** INFO   : done in      0.00200 sec.
+** INFO   : added node-based ghostcells:             50
+** INFO   : nr of netnodes               ( )  :                     1743
+** INFO   : nr of netlinks               ( )  :                     3653
+** INFO   : 
+** INFO   : nr of 2D netlinks            ( )  :                     3653
+** INFO   : nr of 1D netlinks            ( )  :                        0
+** INFO   : 
+** INFO   : nr of netcells               ( )  :                     1910
+** INFO   : nr of netcells 1D2D          ( )  :                     1910
+** INFO   : 
+** INFO   : removing dry cells...
+** INFO   : Opened file : illegalcells_dry.pol
+** INFO   : Closed file : illegalcells_dry.pol
+** INFO   : fixing global polygon...
+** INFO   : done
+** INFO   : done in      0.00200 sec.
+** INFO   : added node-based ghostcells:             85
+** INFO   : nr of netnodes               ( )  :                     2104
+** INFO   : nr of netlinks               ( )  :                     4311
+** INFO   : 
+** INFO   : nr of 2D netlinks            ( )  :                     4311
+** INFO   : nr of 1D netlinks            ( )  :                        0
+** INFO   : 
+** INFO   : nr of netcells               ( )  :                     2208
+** INFO   : nr of netcells 1D2D          ( )  :                     2208
+** INFO   : 
+** INFO   : removing dry cells...
+** INFO   : Opened file : illegalcells_dry.pol
+** INFO   : Closed file : illegalcells_dry.pol
+** INFO   : fixing global polygon...
+** INFO   : done
+** INFO   : done in      0.00200 sec.
+** INFO   : added node-based ghostcells:             37
+** INFO   : nr of netnodes               ( )  :                     1742
+** INFO   : nr of netlinks               ( )  :                     3581
+** INFO   : 
+** INFO   : nr of 2D netlinks            ( )  :                     3581
+** INFO   : nr of 1D netlinks            ( )  :                        0
+** INFO   : 
+** INFO   : nr of netcells               ( )  :                     1840
+** INFO   : nr of netcells 1D2D          ( )  :                     1840
+** INFO   : 
+** INFO   : removing dry cells...
+** INFO   : Opened file : illegalcells_dry.pol
+** INFO   : Closed file : illegalcells_dry.pol
+** INFO   : fixing global polygon...
+** INFO   : done
+** INFO   : done in      0.00400 sec.
+** INFO   : added node-based ghostcells:             94
+** INFO   : nr of netnodes               ( )  :                     1796
+** INFO   : nr of netlinks               ( )  :                     3806
+** INFO   : 
+** INFO   : nr of 2D netlinks            ( )  :                     3806
+** INFO   : nr of 1D netlinks            ( )  :                        0
+** INFO   : 
+** INFO   : nr of netcells               ( )  :                     2011
+** INFO   : nr of netcells 1D2D          ( )  :                     2011
+** INFO   : 
+** INFO   : removing dry cells...
+** INFO   : Opened file : illegalcells_dry.pol
+** INFO   : Closed file : illegalcells_dry.pol
+** INFO   : fixing global polygon...
+** INFO   : done
+** INFO   : done in      0.00200 sec.
+** INFO   : added node-based ghostcells:             75
+** INFO   : nr of netnodes               ( )  :                     1003
+** INFO   : nr of netlinks               ( )  :                     2840
+** INFO   : 
+** INFO   : nr of 2D netlinks            ( )  :                     2840
+** INFO   : nr of 1D netlinks            ( )  :                        0
+** INFO   : 
+** INFO   : nr of netcells               ( )  :                     1837
+** INFO   : nr of netcells 1D2D          ( )  :                     1837
+** INFO   : 
+** INFO   : removing dry cells...
+** INFO   : Opened file : illegalcells_dry.pol
+** INFO   : Closed file : illegalcells_dry.pol
+** INFO   : fixing global polygon...
+** INFO   : done
+** INFO   : done in      0.00200 sec.
+** INFO   : added node-based ghostcells:            139
+** INFO   : nr of netnodes               ( )  :                     1090
+** INFO   : nr of netlinks               ( )  :                     3065
+** INFO   : 
+** INFO   : nr of 2D netlinks            ( )  :                     3065
+** INFO   : nr of 1D netlinks            ( )  :                        0
+** INFO   : 
+** INFO   : nr of netcells               ( )  :                     1974
+** INFO   : nr of netcells 1D2D          ( )  :                     1974
+** INFO   : 
+** INFO   : removing dry cells...
+** INFO   : Opened file : illegalcells_dry.pol
+** INFO   : Closed file : illegalcells_dry.pol
+** INFO   : fixing global polygon...
+** INFO   : done
+** INFO   : done in      0.00400 sec.
+** INFO   : added node-based ghostcells:            155
+** INFO   : nr of netnodes               ( )  :                     2167
+** INFO   : nr of netlinks               ( )  :                     4539
+** INFO   : 
+** INFO   : nr of 2D netlinks            ( )  :                     4539
+** INFO   : nr of 1D netlinks            ( )  :                        0
+** INFO   : 
+** INFO   : nr of netcells               ( )  :                     2373
+** INFO   : nr of netcells 1D2D          ( )  :                     2373
+** INFO   : 
+** INFO   : removing dry cells...
+** INFO   : Opened file : illegalcells_dry.pol
+** INFO   : Closed file : illegalcells_dry.pol
+** INFO   : fixing global polygon...
+** INFO   : done
+** INFO   : done in      0.00200 sec.
+** INFO   : added node-based ghostcells:            109
+** INFO   : nr of netnodes               ( )  :                     1814
+** INFO   : nr of netlinks               ( )  :                     3780
+** INFO   : 
+** INFO   : nr of 2D netlinks            ( )  :                     3780
+** INFO   : nr of 1D netlinks            ( )  :                        0
+** INFO   : 
+** INFO   : nr of netcells               ( )  :                     1966
+** INFO   : nr of netcells 1D2D          ( )  :                     1966
+** INFO   : 
+** INFO   : removing dry cells...
+** INFO   : Opened file : illegalcells_dry.pol
+** INFO   : Closed file : illegalcells_dry.pol
+** INFO   : fixing global polygon...
+** INFO   : done
+** INFO   : done in      0.00200 sec.
+** INFO   : added node-based ghostcells:             61
+** INFO   : nr of netnodes               ( )  :                     1781
+** INFO   : nr of netlinks               ( )  :                     3735
+** INFO   : 
+** INFO   : nr of 2D netlinks            ( )  :                     3735
+** INFO   : nr of 1D netlinks            ( )  :                        0
+** INFO   : 
+** INFO   : nr of netcells               ( )  :                     1955
+** INFO   : nr of netcells 1D2D          ( )  :                     1955
+** INFO   : 
+** INFO   : removing dry cells...
+** INFO   : Opened file : illegalcells_dry.pol
+** INFO   : Closed file : illegalcells_dry.pol
+** INFO   : fixing global polygon...
+** INFO   : done
+** INFO   : done in      0.00100 sec.
+** INFO   : added node-based ghostcells:             52
+** INFO   : nr of netnodes               ( )  :                     1694
+** INFO   : nr of netlinks               ( )  :                     3564
+** INFO   : 
+** INFO   : nr of 2D netlinks            ( )  :                     3564
+** INFO   : nr of 1D netlinks            ( )  :                        0
+** INFO   : 
+** INFO   : nr of netcells               ( )  :                     1871
+** INFO   : nr of netcells 1D2D          ( )  :                     1871
+** INFO   : 
+** INFO   : removing dry cells...
+** INFO   : Opened file : illegalcells_dry.pol
+** INFO   : Closed file : illegalcells_dry.pol
+** INFO   : fixing global polygon...
+** INFO   : done
+** INFO   : done in      0.00200 sec.
