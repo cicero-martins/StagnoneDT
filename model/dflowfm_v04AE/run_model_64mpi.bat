@@ -1,52 +1,35 @@
 @echo off
 rem ============================================================
-rem Stagnone di Marsala - D-Flow FM 3D Model Run (PARALLEL)
-rem Period: July 1-10, 2025 (9 days)
-rem v04AE: AE-only blend wind (Mulino dropped per drifter validation 2026-05-08)
+rem DEPRECATED 2026-05-11 — DO NOT RUN
 rem
-rem Variant: 64 MPI partitions to fully saturate the 64-core machine.
-rem  Mesh has ~25 200 cells -> ~790 cells/partition at 32 MPI (healthy).
-rem  Going to 48 MPI (~525 cells) or 64 MPI (~395 cells) may speed things up
-rem  but communication overhead can dominate at very small partition sizes;
-rem  benchmark a 12h sim at 32/48/64 first if you want to push past 32.
-rem  Tradeoff: each rank gets ~395 cells - small enough that communication
-rem  overhead can dominate. Benchmark vs run_model.bat (32 MPI) to confirm.
+rem This script previously launched a 64-MPI variant of v04AE to "saturate"
+rem the 64-core Workstation. That was the wrong approach.
+rem
+rem Per PRACE WP284 (Mogé et al. 2019, https://prace-ri.eu/wp-content/uploads/WP284.pdf):
+rem   With a 25 200-cell mesh, 64 partitions = 395 cells/partition. At that
+rem   ratio communication efficiency collapses to <0.5 and load imbalance
+rem   exceeds 1.4. Halo overhead also dominates. The PETSc linear solver
+rem   stops scaling below ~20 000 unknowns/partition.
+rem
+rem Per PRACE WP177 (Donners et al. 2014, https://zenodo.org/records/823064/files/WP177.pdf):
+rem   The coupled FM+SWAN runtime is far more sensitive to SWAN OpenMP
+rem   thread affinity and to the FLOW/SWAN core-sharing pattern than to
+rem   raw MPI count for FLOW. Going to 64 MPI for FLOW also leaves zero
+rem   cores for SWAN OpenMP threads, which contradicts the WP177 design.
+rem
+rem Use run_model.bat (8 MPI) and the partition sweep benchmark instead.
+rem See memory hpc_optimization_xeon_64core.md for the full rationale.
 rem ============================================================
 
-rem Force CWD to the directory of this bat file (avoids System32 if launched as admin)
-cd /d "%~dp0"
-
-set dimrset=C:\Program Files\Deltares\Delft3D FM Suite 2026.01 HMWQ\plugins\DeltaShell.Dimr\kernels\x64
-set nPart=64
-set mduFile=Stagnone_dxy01_15m.mdu
-
-rem Add Delft3D FM binaries to PATH
-set "PATH=%dimrset%\bin;%dimrset%\lib;%dimrset%\share\bin;%PATH%"
-
-echo ============================================================
-echo Stagnone 3D FM+SWAN coupled run (%nPart% MPI processes)
-echo Working directory: %CD%
-echo ============================================================
 echo.
-
-rem ----- Step 1: partition the mesh (only needed once per mesh change) -----
-echo [1/2] Partitioning mesh into %nPart% domains...
-call "%dimrset%\bin\run_dflowfm.bat" --partition:ndomains=%nPart%:icgsolver=6 %mduFile%
-if %ERRORLEVEL% NEQ 0 (
-    echo.
-    echo Partitioning FAILED with exit code %ERRORLEVEL%
-    pause
-    exit /b %ERRORLEVEL%
-)
-echo Partitioning done.
+echo  ========================================================
+echo   run_model_64mpi.bat is DEPRECATED as of 2026-05-11.
+echo   Per PRACE WP284 + WP177 this configuration is sub-optimal
+echo   for the 25 200-cell mesh on dual-socket Xeon 6430.
 echo.
-
-rem ----- Step 2: run DIMR parallel (FM + SWAN coupling) -----
-echo [2/2] Running DIMR with %nPart% processes...
-call "%dimrset%\bin\run_dimr_parallel.bat" %nPart% dimr_config.xml
-
+echo   Use run_model.bat (8 MPI default) or run the partition sweep
+echo   benchmark: scripts/benchmark_hpc_partition_sweep.bat
+echo  ========================================================
 echo.
-echo ============================================================
-echo Model run finished with exit code: %ERRORLEVEL%
-echo ============================================================
 pause
+exit /b 1

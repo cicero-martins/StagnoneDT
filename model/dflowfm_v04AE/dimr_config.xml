@@ -9,7 +9,14 @@
   <control>
     <parallel>
       <startGroup>
-        <time>0 600 777600</time>
+        <!-- 2026-05-11: progressao 600 -> 1800 -> 3600 s entre chamadas SWAN.
+             O bottleneck e a CPU-cost por chamada SWAN nested estacionaria (68x53 inner +
+             outer, ~100s/call no Xeon 6430 com 16 threads OpenMP). Threads ja saturaram
+             em 16 (32 piora), entao ganho adicional vem de chamar SWAN menos vezes.
+             Trade-off: feedback wave-current a cada 1h sim em vez de 30 min. Para
+             lagoa tidal 12.4h e sea breeze diurnal isso e aceitavel. Se validacao
+             de drifter (wave-driven Stokes/windage) sofrer, reverter para 1800. -->
+        <time>0 3600 777600</time>
         <start name="wave"/>
       </startGroup>
       <start name="DFlowFM"/>
