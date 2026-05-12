@@ -119,7 +119,7 @@ logSolverConvergence      = 0      # Print time step, number of solver iteration
 fixedWeirScheme1D2D       = 0      # Fixed weir scheme for 1d2d links (0: same as fixedweirscheme, 1: lateral iterative fixed weir scheme).
 horizontalMomentumFilter  = 0      # Filter for reduction of checkerboarding; 0=No, 1=yes.
 maxNonLinearIterations    = 100    # Maximal iterations in non-linear iteration loop before a time step reduction is applied
-maxVelocity               = 0.0    # Upper bound [m/s] on velocity (<= 0: no bounds). Run will abort when violated.
+maxVelocity               = 10.0   # Upper bound [m/s] on velocity (<= 0: no bounds). Run will abort when violated. -- 2026-05-11: graceful abort instead of silent stall
 waterLevelWarn            = 0.0    # Warning level [m AD] on water level (<= 0: no check).
 tSpinUpTurbLogProf        = 0.0    # Spin up time [s] when starting with a parabolic viscosity profile in whole model domain.
 fixedWeirTopFrictCoef     = -999.0 # Uniform friction coefficient of the groyne part of fixed weirs [the unit depends on frictiontype].
@@ -173,7 +173,7 @@ dalton                         = 0.0013  # Coefficient for evaporative heat flux
 tempMax                        = -999.0  # Limit the temperature to max value [°C]
 tempMin                        = 0.0     # Limit the temperature to min value [°C]
 salinityDependentFreezingPoint = 0       # Enable salinity-dependent freezing point (0 = no, 1 = yes). tempMin should be below 0 degrees Celsius.
-saliMax                        = -999.0  # Limit for salinity to max value [ppt]
+saliMax                        = 80.0    # Limit for salinity to max value [ppt] -- 2026-05-11: clip intertidal blowup to prevent silent stall
 saliMin                        = 0.0     # Limit for salinity to min value [ppt]
 heat_eachStep                  = 1       # '1=heat each timestep, 0=heat each usertimestep
 nudgeTimeUni                   = 864000.0 # v04: 10 days (was 3600s/1h - too aggressive, was overwriting hypersaline IC every hour)
