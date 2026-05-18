@@ -17,6 +17,13 @@ data/processed/planet_composite_*.nc
 # EDITO run logs captured locally during debugging (useful transient artifacts, not repo-worthy)
 output/delft3d-run-docker-*.txt
 
+# ERA5/CMEMS local re-download transient logs (regenerable from scripts)
+data/raw/era5_*_download*.log
+data/raw/cmems_*_download*.log
+
+# ERA5 raw monthly chunks per re-download window (regenerable via scripts/download_era5_*.py)
+data/raw/era5_v04*/
+
 # Local smoke / partition logs (regenerable from the corresponding model dirs)
 /smoke_*.log
 /partition_*.log
