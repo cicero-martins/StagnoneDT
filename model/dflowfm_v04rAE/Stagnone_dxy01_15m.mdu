@@ -119,7 +119,7 @@ logSolverConvergence      = 0      # Print time step, number of solver iteration
 fixedWeirScheme1D2D       = 0      # Fixed weir scheme for 1d2d links (0: same as fixedweirscheme, 1: lateral iterative fixed weir scheme).
 horizontalMomentumFilter  = 0      # Filter for reduction of checkerboarding; 0=No, 1=yes.
 maxNonLinearIterations    = 100    # Maximal iterations in non-linear iteration loop before a time step reduction is applied
-maxVelocity               = 0.0    # Upper bound [m/s] on velocity (<= 0: no bounds). Run will abort when violated.
+maxVelocity               = 10.0   # v04AE crash insurance: cap blowup velocities (memory v04AE_nowaves_velocity_cap_crash); also re-enabled here for Phase A 1d demo
 waterLevelWarn            = 0.0    # Warning level [m AD] on water level (<= 0: no check).
 tSpinUpTurbLogProf        = 0.0    # Spin up time [s] when starting with a parabolic viscosity profile in whole model domain.
 fixedWeirTopFrictCoef     = -999.0 # Uniform friction coefficient of the groyne part of fixed weirs [the unit depends on frictiontype].
@@ -173,7 +173,7 @@ dalton                         = 0.0013  # Coefficient for evaporative heat flux
 tempMax                        = -999.0  # Limit the temperature to max value [°C]
 tempMin                        = 0.0     # Limit the temperature to min value [°C]
 salinityDependentFreezingPoint = 0       # Enable salinity-dependent freezing point (0 = no, 1 = yes). tempMin should be below 0 degrees Celsius.
-saliMax                        = -999.0  # Limit for salinity to max value [ppt]
+saliMax                        = 80.0    # v04AE: cap salinity blowup in intertidal cells (memory v04_salt_blowup_silent_stall); re-enabled for Phase A 1d demo
 saliMin                        = 0.0     # Limit for salinity to min value [ppt]
 heat_eachStep                  = 1       # '1=heat each timestep, 0=heat each usertimestep
 nudgeTimeUni                   = 864000.0 # v04: 10 days (was 3600s/1h - too aggressive, was overwriting hypersaline IC every hour)
@@ -219,9 +219,9 @@ autoTimestep            = 3              # 0 = no, 1 = 2D (hor. out), 3=3D (hor.
 autoTimestepNoStruct    = 0              # Exclude structure links (and neighbours) from time step limitation (0 = no, 1 = yes).
 autoTimestepNoQout      = 1              # Exclude negative qin terms from time step limitation (0 = no, 1 = yes).
 tStart                  = 0.0            # Start time w.r.t. RefDate [TUnit].
-tStop                   = 259200.0       # Stop time w.r.t. RefDate [TUnit].
-startDateTime           = 20250708000000 # v04r: restart from Jul 8 00:00 (drifter campaign window only)
-stopDateTime            = 20250710000000 # 2-day re-run Jul 8-9 with finer mapInterval for drifter validation
+tStop                   = 86400.0        # Phase A demo: 1 day (Jul 8 00:00 → Jul 9 00:00). Was 259200 (3d).
+startDateTime           = 20250708000000 # Phase A: restart from Jul 8 00:00
+stopDateTime            = 20250709000000 # Phase A: 1d run Jul 8 → Jul 9, for digital-twin close-the-loop demo
 updateRoughnessInterval = 86400.0        # Update interval for time dependent roughness parameters [s].
 Dtfacmax                = 1.1            # Max timestep increase factor in successive time steps.
 

@@ -9,7 +9,7 @@
   <control>
     <parallel>
       <startGroup>
-        <time>0 600 172800</time>
+        <time>0 600 86400</time>
         <start name="wave"/>
       </startGroup>
       <start name="DFlowFM"/>
