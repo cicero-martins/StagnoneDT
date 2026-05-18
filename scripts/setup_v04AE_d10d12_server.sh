@@ -80,13 +80,17 @@ for bc in waterlevelbnd_CMEMS_Stagnone_dxy01_15m.bc \
   fi
 done
 
-# 4. Patch ext file to point to new file names (replace 20250710 -> 20250713)
-echo "=== [4/8] Patching Stagnone_dxy01_15m_new.ext ==="
-EXT="$NEW/Stagnone_dxy01_15m_new.ext"
-cp "$EXT" "$EXT.bak"
-sed -i 's|_20250701to20250710\.nc|_20250701to20250713.nc|g' "$EXT"
-echo "  Updated meteo refs in $EXT (diff vs .bak):"
-diff "$EXT.bak" "$EXT" | head -20 || true
+# 4. Patch BOTH ext files (new + old) to point to new file names (20250710 -> 20250713)
+echo "=== [4/8] Patching Stagnone_dxy01_15m_{new,old}.ext ==="
+for EXT in "$NEW/Stagnone_dxy01_15m_new.ext" "$NEW/Stagnone_dxy01_15m_old.ext"; do
+  [[ -f "$EXT" ]] || continue
+  cp "$EXT" "$EXT.bak"
+  # Match the date string anywhere (covers era5_*_20250701to20250710_ERA5.nc
+  # AND wind_blendedAE_*_20250701to20250710.nc — different filename suffixes)
+  sed -i 's/_20250701to20250710/_20250701to20250713/g' "$EXT"
+  echo "  Updated meteo refs in $(basename $EXT) (diff vs .bak):"
+  diff "$EXT.bak" "$EXT" | head -30 || true
+done
 
 # 5. Patch master MDU: time window + restart + ensure caps active
 echo "=== [5/8] Patching master MDU ==="
