@@ -113,3 +113,6 @@ desktop.ini
 # Microsoft Office lock files (created when docs are open)
 ~$*
 
+
+# CMEMS raw monthly downloads per re-download window (regenerable)
+data/raw/cmems_v04*/
