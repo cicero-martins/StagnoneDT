@@ -32,8 +32,8 @@ DST = PROJECT_ROOT / 'model' / 'dflowfm_v04AE_d10d12'
 
 PLI_FILE = DST / 'Stagnone_dxy01_15m.pli'
 TSTART = pd.Timestamp('2025-07-01 00:00')
-# Daily files (sal/temp/cur) have midnight timestamps -> Jul 13 00:00 is the last.
-# Simulation window is Jul 10 00:00 -> Jul 12 00:00, fully covered with 24h buffer.
+# All anfc datasets are sub-daily (PT15M zos, PT1H 3D cur/sal/temp) — no midnight
+# alignment needed. Cover the simulation window Jul 10->12 with buffer.
 TSTOP  = pd.Timestamp('2025-07-13 00:00')
 REFDATE = '2025-01-01 00:00:00'
 
