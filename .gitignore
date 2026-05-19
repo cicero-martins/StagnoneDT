@@ -116,3 +116,6 @@ desktop.ini
 
 # CMEMS raw monthly downloads per re-download window (regenerable)
 data/raw/cmems_v04*/
+
+# Per-partition .dia inside diag/ subfolders (auto-generated runtime, large)
+model/*/diag/*.dia
