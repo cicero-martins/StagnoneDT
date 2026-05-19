@@ -54,14 +54,20 @@ END   = '2025-07-13T23:00:00'
 
 DATASETS = [
     # (dataset_id, variables, output_filename)
-    # SSH is 2D, hourly: gives tidal signal at the boundary
-    ('cmems_mod_med_phy-ssh_my_4.2km_PT1H-m',  ['zos'],         'cmems_zos_2025-07-01_2025-07-13.nc'),
-    # Currents: daily 3D (141 z-levels). Hourly cur dataset is depth-averaged surface only,
-    # FM v04AE BC expects t3d (50 vertical layers per node).
-    ('cmems_mod_med_phy-cur_my_4.2km_P1D-m',   ['uo', 'vo'],    'cmems_uovo_2025-07-01_2025-07-13.nc'),
-    # Salinity, temperature: daily 3D (already correct)
-    ('cmems_mod_med_phy-sal_my_4.2km_P1D-m',   ['so'],          'cmems_so_2025-07-01_2025-07-13.nc'),
-    ('cmems_mod_med_phy-temp_my_4.2km_P1D-m',  ['thetao'],      'cmems_thetao_2025-07-01_2025-07-13.nc'),
+    # MIXED MODE (selected 2026-05-19 after discovering anfc 3D doesn't go back to Jul 2025):
+    #
+    # SSH: anfc PT15M-i (includes tide; v04AE legacy BC had tide and was validated).
+    # Reanalysis _my_ zos does NOT include tide (memory cmems_zos_reference_frame).
+    # Coverage: anfc PT15M-i goes back to early 2024+ -- covers Jul 2025 OK.
+    ('cmems_mod_med_phy-ssh_anfc_4.2km_PT15M-i', ['zos'],   'cmems_zos_2025-07-01_2025-07-13.nc'),
+    # Currents/Sal/Temp: anfc 3D variants only go back ~Oct 2025 (insufficient for our
+    # Jul 2025 window). Fall back to reanalysis daily 3D. Boundary currents lack tide
+    # but that's OK -- FM derives velocity at the WL boundary from WL gradient via
+    # waterlevelbnd flux, not from the uxuy BC directly. Baroclinic structure is
+    # what matters here.
+    ('cmems_mod_med_phy-cur_my_4.2km_P1D-m',  ['uo', 'vo'], 'cmems_uovo_2025-07-01_2025-07-13.nc'),
+    ('cmems_mod_med_phy-sal_my_4.2km_P1D-m',  ['so'],       'cmems_so_2025-07-01_2025-07-13.nc'),
+    ('cmems_mod_med_phy-temp_my_4.2km_P1D-m', ['thetao'],   'cmems_thetao_2025-07-01_2025-07-13.nc'),
 ]
 
 
