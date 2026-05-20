@@ -1,0 +1,6 @@
+,rmse,rmse,bias,bias,rmse_anom,rmse_anom,corr,corr,delta_rmse,delta_corr
+run,v04AE,v04AE_nodm,v04AE,v04AE_nodm,v04AE,v04AE_nodm,v04AE,v04AE_nodm,,
+station,,,,,,,,,,
+AltaVilaEst,0.1241,0.1362,0.1168,0.1303,0.0421,0.0394,0.8069,0.8168,0.0121,0.0099
+BocaNord,0.1753,0.1703,0.1723,0.1676,0.0325,0.0304,0.8745,0.8825,-0.0050,0.0080
+BocaSud,0.0234,0.0280,0.0094,0.0177,0.0215,0.0217,0.9284,0.9240,0.0045,-0.0043
