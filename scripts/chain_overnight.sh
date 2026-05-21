@@ -123,20 +123,35 @@ for f in "$D10D12"/era5_*_20250701to20250713_ERA5.nc \
          "$D10D12"/wind_era5raw_*_20250701to20250713.nc; do
     [[ -f "$f" ]] && cp "$f" "$NEW/"
 done
-# CMEMS BC files extended to Jul 1-13 (avoid EC-module Error at sim 9d)
+# BC files: CMEMS WL/sal/temp + turbid_* lateral (all Jul 1-13 from d10d12)
 for bc in waterlevelbnd_CMEMS_Stagnone_dxy01_15m.bc \
           salinitybnd_CMEMS_Stagnone_dxy01_15m.bc \
           temperaturebnd_CMEMS_Stagnone_dxy01_15m.bc \
-          uxuyadvectionvelocitybnd_CMEMS_Stagnone_dxy01_15m.bc; do
+          turbid_airport_discharge.bc \
+          turbid_airport_tracer.bc \
+          turbid_saltpans_discharge.bc \
+          turbid_saltpans_tracer.bc; do
     [[ -f "$D10D12/$bc" ]] && cp "$D10D12/$bc" "$NEW/"
 done
 
-# Patch .ext files
+# Patch .ext files (date refs in meteo filenames)
 for EXT in "$NEW/Stagnone_dxy01_15m_new.ext" "$NEW/Stagnone_dxy01_15m_old.ext"; do
     [[ -f "$EXT" ]] || continue
     cp "$EXT" "$EXT.bak"
     sed -i 's/_20250701to20250710/_20250701to20250713/g' "$EXT"
 done
+
+# Remove uxuyadvectionvelocitybnd block from new.ext (its .bc ends Jul 10 12:00
+# even in d10d12; FM derives velocity from WL gradient when uxuy absent)
+EXT_NEW="$NEW/Stagnone_dxy01_15m_new.ext"
+if [[ -f "$EXT_NEW" ]]; then
+    python3 - <<PYEOF
+import re
+with open('$EXT_NEW') as f: c = f.read()
+c2 = re.sub(r'\[Boundary\][^\[]*?uxuyadvectionvelocitybnd[^\[]*?(?=\[|\Z)', '', c, flags=re.S)
+with open('$EXT_NEW', 'w') as f: f.write(c2)
+PYEOF
+fi
 
 # Restart files (8 ranks)
 mkdir -p "$NEW/restart_input"
