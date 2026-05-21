@@ -53,20 +53,30 @@ rsync -a \
   "$NODM"/ "$NEW"/
 echo "  Cloned $(du -sh $NEW | cut -f1)"
 
-# Replace meteo forcings with Jul 1-13 versions from d10d12 (which has extended files)
-echo "=== [1.5/4] Replacing meteo with Jul 1-13 versions ==="
+# Replace meteo + BC forcings with Jul 1-13 versions from d10d12 (has extended files)
+echo "=== [1.5/4] Replacing meteo + BCs with Jul 1-13 versions ==="
 D10D12="$ROOT/model/dflowfm_v04AE_d10d12"
-# Remove nodm Jul 1-10 versions
+# Remove nodm Jul 1-10 meteo
 rm -f "$NEW"/era5_*_20250701to20250710_ERA5.nc
 rm -f "$NEW"/wind_blendedAE_*_20250701to20250710.nc
 rm -f "$NEW"/wind_era5raw_*_20250701to20250710.nc
-# Install d10d12 Jul 1-13 versions
+# Install d10d12 Jul 1-13 meteo
 for f in "$D10D12"/era5_*_20250701to20250713_ERA5.nc \
          "$D10D12"/wind_blendedAE_*_20250701to20250713.nc \
          "$D10D12"/wind_era5raw_*_20250701to20250713.nc; do
-    [[ -f "$f" ]] && cp -v "$f" "$NEW/" | head -1
+    [[ -f "$f" ]] && cp "$f" "$NEW/"
 done
-# Patch both .ext files (new+old) to reference new dates
+# CRITICAL: nodm's CMEMS .bc files only cover Jul 1-10. d10d12 has Jul 1-13 versions.
+# Without this, test will crash with EC-module Error at sim 9d (Jul 10 0:00).
+for bc in waterlevelbnd_CMEMS_Stagnone_dxy01_15m.bc \
+          salinitybnd_CMEMS_Stagnone_dxy01_15m.bc \
+          temperaturebnd_CMEMS_Stagnone_dxy01_15m.bc \
+          uxuyadvectionvelocitybnd_CMEMS_Stagnone_dxy01_15m.bc; do
+    if [[ -f "$D10D12/$bc" ]]; then
+        cp "$D10D12/$bc" "$NEW/"
+    fi
+done
+# Patch both .ext files (new+old) to reference new meteo file dates
 for EXT in "$NEW/Stagnone_dxy01_15m_new.ext" "$NEW/Stagnone_dxy01_15m_old.ext"; do
     [[ -f "$EXT" ]] || continue
     cp "$EXT" "$EXT.bak"

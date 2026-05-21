@@ -114,7 +114,7 @@ rsync -a \
     "$NODM"/ "$NEW"/
 log "  Cloned $(du -sh $NEW | cut -f1)"
 
-# Replace meteo with Jul 1-13 versions
+# Replace meteo + BCs with Jul 1-13 versions (BCs CRITICAL — nodm's only cover Jul 1-10)
 rm -f "$NEW"/era5_*_20250701to20250710_ERA5.nc
 rm -f "$NEW"/wind_blendedAE_*_20250701to20250710.nc
 rm -f "$NEW"/wind_era5raw_*_20250701to20250710.nc
@@ -122,6 +122,13 @@ for f in "$D10D12"/era5_*_20250701to20250713_ERA5.nc \
          "$D10D12"/wind_blendedAE_*_20250701to20250713.nc \
          "$D10D12"/wind_era5raw_*_20250701to20250713.nc; do
     [[ -f "$f" ]] && cp "$f" "$NEW/"
+done
+# CMEMS BC files extended to Jul 1-13 (avoid EC-module Error at sim 9d)
+for bc in waterlevelbnd_CMEMS_Stagnone_dxy01_15m.bc \
+          salinitybnd_CMEMS_Stagnone_dxy01_15m.bc \
+          temperaturebnd_CMEMS_Stagnone_dxy01_15m.bc \
+          uxuyadvectionvelocitybnd_CMEMS_Stagnone_dxy01_15m.bc; do
+    [[ -f "$D10D12/$bc" ]] && cp "$D10D12/$bc" "$NEW/"
 done
 
 # Patch .ext files
