@@ -28,9 +28,9 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 CENTER_LON, CENTER_LAT = 12.0434, 38.0003   # cell 13162 location
-TARGET_RADIUS_M = 200.0    # cells to modify (focused on the bathy step)
-SMOOTH_RADIUS_M = 150.0    # neighbors used for local median
-SIGMA_M = 80.0             # Gaussian sigma (controls smoothing intensity)
+TARGET_RADIUS_M = 1000.0   # cells to modify (full offshore NW shelf zone)
+SMOOTH_RADIUS_M = 300.0    # neighbors used for local median
+SIGMA_M = 200.0            # Gaussian sigma (controls smoothing intensity)
 USE_MEDIAN = True          # if True: use median; else Gaussian average
 
 
