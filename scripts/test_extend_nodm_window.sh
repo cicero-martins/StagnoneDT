@@ -66,12 +66,17 @@ for f in "$D10D12"/era5_*_20250701to20250713_ERA5.nc \
          "$D10D12"/wind_era5raw_*_20250701to20250713.nc; do
     [[ -f "$f" ]] && cp "$f" "$NEW/"
 done
-# CRITICAL: nodm's CMEMS .bc files only cover Jul 1-10. d10d12 has Jul 1-13 versions.
-# Without this, test will crash with EC-module Error at sim 9d (Jul 10 0:00).
+# CRITICAL: nodm's BCs only cover Jul 1-10. d10d12 has Jul 1-13 versions for:
+#   - CMEMS WL/sal/temp BCs
+#   - turbid_airport_discharge/tracer + turbid_saltpans_discharge/tracer (lateral)
+# Without these, test crashes with EC-module Error when reading BCs past Jul 10.
 for bc in waterlevelbnd_CMEMS_Stagnone_dxy01_15m.bc \
           salinitybnd_CMEMS_Stagnone_dxy01_15m.bc \
           temperaturebnd_CMEMS_Stagnone_dxy01_15m.bc \
-          uxuyadvectionvelocitybnd_CMEMS_Stagnone_dxy01_15m.bc; do
+          turbid_airport_discharge.bc \
+          turbid_airport_tracer.bc \
+          turbid_saltpans_discharge.bc \
+          turbid_saltpans_tracer.bc; do
     if [[ -f "$D10D12/$bc" ]]; then
         cp "$D10D12/$bc" "$NEW/"
     fi
@@ -82,6 +87,21 @@ for EXT in "$NEW/Stagnone_dxy01_15m_new.ext" "$NEW/Stagnone_dxy01_15m_old.ext"; 
     cp "$EXT" "$EXT.bak"
     sed -i 's/_20250701to20250710/_20250701to20250713/g' "$EXT"
 done
+# Remove [Boundary] uxuyadvectionvelocitybnd block from new.ext
+# (per memory bc_continuation_eof_gotcha: d10d12's uxuy also ends at Jul 10 12:00;
+# per memory dfm_tools_hydrolib_mismatch_2026: FM derives uxuy from WL gradient
+# when uxuy bnd absent — fallback was already that anyway).
+EXT_NEW="$NEW/Stagnone_dxy01_15m_new.ext"
+if [[ -f "$EXT_NEW" ]]; then
+    python3 - <<PYEOF
+import re
+with open('$EXT_NEW') as f: c = f.read()
+# Match [Boundary] block containing uxuyadvectionvelocitybnd up to next blank line
+c2 = re.sub(r'\[Boundary\][^\[]*?uxuyadvectionvelocitybnd[^\[]*?(?=\[|\Z)', '', c, flags=re.S)
+with open('$EXT_NEW', 'w') as f: f.write(c2)
+print('  uxuyadvectionvelocitybnd block removed from new.ext')
+PYEOF
+fi
 
 # Patch MDUs (master + 8 per-partition) — ONLY dates, nothing else
 echo "=== [2/4] Patching MDUs — dates only ==="
