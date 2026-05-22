@@ -2,19 +2,19 @@
 cell 13162 (offshore NW of Marettimo).
 
 Compares v04AE_nodm (legacy, has choke) vs v05 in the strip:
-    lat ∈ [37.95, 38.07], lon ∈ [12.02, 12.10]
+    lat  in  [37.95, 38.07], lon  in  [12.02, 12.10]
 
 Three quantitative checks + PASS/FAIL summary:
 
-  [1] Cell density along the meridian — sharp transition near Marettimo NE
+  [1] Cell density along the meridian - sharp transition near Marettimo NE
       shoulder indicates structural choke. v05 should be smooth.
-  [2] |∇bl| (bedlevel gradient) — flag cells with |∇bl| > 3 m/cell.
-  [3] Edge length ratio to nearest neighbours — flag cells with ratio > 3.
+  [2] |gradbl| (bedlevel gradient) - flag cells with |gradbl| > 3 m/cell.
+  [3] Edge length ratio to nearest neighbours - flag cells with ratio > 3.
 
 Pass criteria for v05:
-  - max |∇bl| in corridor < 3 m/cell
+  - max |gradbl| in corridor < 3 m/cell
   - no cell with edge ratio > 3
-  - cell density transition gradual (no >2× step between adjacent latitudes)
+  - cell density transition gradual (no >2x step between adjacent latitudes)
 
 Outputs:
   figures/mesh_v05_choke_diagnostic.png
@@ -47,7 +47,7 @@ DENSITY_STEP_THRESHOLD = 2.0
 
 def load_net_files(pattern_or_path):
     """Load mesh from either a glob pattern (partitioned) or a single net.nc.
-    Returns (face_x, face_y, face_z, edge_x_pairs, edge_y_pairs) — flat arrays.
+    Returns (face_x, face_y, face_z, edge_x_pairs, edge_y_pairs) - flat arrays.
     """
     paths = sorted(Path('.').glob(pattern_or_path) if any(c in pattern_or_path for c in '*?[]')
                    else [Path(pattern_or_path)])
@@ -73,7 +73,7 @@ def load_net_files(pattern_or_path):
         all_fx.append(fx); all_fy.append(fy); all_fz.append(fz)
         # edge endpoints
         if 'mesh2d_edge_x' in ds.variables and 'mesh2d_edge_y' in ds.variables:
-            # mesh2d_edge_nodes: (n_edges, 2) → node indices
+            # mesh2d_edge_nodes: (n_edges, 2) -> node indices
             if 'mesh2d_edge_nodes' in ds.variables:
                 en = ds['mesh2d_edge_nodes'].values
                 nx = ds['mesh2d_node_x'].values
@@ -99,7 +99,7 @@ def in_corridor(fx, fy):
 
 
 def cell_density_profile(fx, fy):
-    """Cells per 0.005° lat bin within the corridor lon range."""
+    """Cells per 0.005deg lat bin within the corridor lon range."""
     mask = in_corridor(fx, fy)
     bins = np.arange(CORRIDOR_LAT[0], CORRIDOR_LAT[1] + 0.005, 0.005)
     counts, _ = np.histogram(fy[mask], bins=bins)
@@ -108,7 +108,7 @@ def cell_density_profile(fx, fy):
 
 
 def local_gradients(fx, fy, fz):
-    """For each cell in corridor, find nearest 4 neighbours and compute max |Δz/Δ_metric|."""
+    """For each cell in corridor, find nearest 4 neighbours and compute max |dz/d_metric|."""
     from scipy.spatial import cKDTree
     mask = in_corridor(fx, fy)
     idx_in = np.where(mask)[0]
@@ -175,7 +175,7 @@ def summarize(label, fx, fy, fz, ex0, ey0, ex1, ey1):
     else:
         max_step = 0.0
     print(f'  [1] density max step ratio: {max_step:.2f} (target < {DENSITY_STEP_THRESHOLD}) '
-          f'→ {"PASS" if max_step < DENSITY_STEP_THRESHOLD else "FAIL"}')
+          f'-> {"PASS" if max_step < DENSITY_STEP_THRESHOLD else "FAIL"}')
 
     # [2] gradient
     idx_in, grads = local_gradients(fx, fy, fz)
@@ -185,9 +185,9 @@ def summarize(label, fx, fy, fz, ex0, ey0, ex1, ey1):
     else:
         max_grad = float(np.nanmax(grads))
         pct_steep = float((grads > GRAD_THRESHOLD).mean() * 100)
-    print(f'  [2] max |Δz| to nearest neighbour: {max_grad:.2f} m  '
-          f'(target < {GRAD_THRESHOLD}) → {"PASS" if max_grad < GRAD_THRESHOLD else "FAIL"}')
-    print(f'      cells with |Δz|>{GRAD_THRESHOLD}: {pct_steep:.1f}%')
+    print(f'  [2] max |dz| to nearest neighbour: {max_grad:.2f} m  '
+          f'(target < {GRAD_THRESHOLD}) -> {"PASS" if max_grad < GRAD_THRESHOLD else "FAIL"}')
+    print(f'      cells with |dz|>{GRAD_THRESHOLD}: {pct_steep:.1f}%')
 
     # [3] edge length ratio
     lens, ratios = edge_ratio_in_corridor(ex0, ey0, ex1, ey1)
@@ -196,7 +196,7 @@ def summarize(label, fx, fy, fz, ex0, ey0, ex1, ey1):
     else:
         max_ratio = float(np.nanmax(ratios))
     print(f'  [3] max edge-length ratio: {max_ratio:.2f} '
-          f'(target < {EDGE_RATIO_THRESHOLD}) → '
+          f'(target < {EDGE_RATIO_THRESHOLD}) -> '
           f'{"PASS" if (np.isnan(max_ratio) or max_ratio < EDGE_RATIO_THRESHOLD) else "FAIL"}')
 
     pass_overall = (max_step < DENSITY_STEP_THRESHOLD and
@@ -221,8 +221,8 @@ def plot_diagnostic(stats_v04, stats_v05, out_path):
         ax = axes[row, 0]
         ax.barh(stats['centers'], stats['counts'], height=0.004,
                 color='steelblue' if row == 0 else 'forestgreen')
-        ax.set_title(f'{label} — cell density (corridor)')
-        ax.set_xlabel('cells per 0.005° lat bin')
+        ax.set_title(f'{label} - cell density (corridor)')
+        ax.set_xlabel('cells per 0.005deg lat bin')
         ax.set_ylabel('latitude')
         ax.axhline(CENTER_LAT, color='red', ls='--', lw=1, alpha=0.7)
         ax.text(0.95, 0.05, f'max step: {stats["max_step"]:.2f}',
@@ -238,27 +238,27 @@ def plot_diagnostic(stats_v04, stats_v05, out_path):
         ax.scatter(CENTER_LON, CENTER_LAT, marker='X', s=200, c='red',
                    edgecolor='white', lw=1.5, zorder=5)
         ax.set_aspect(1 / np.cos(np.radians(CENTER_LAT)))
-        ax.set_title(f'{label} — bedlevel + former cell 13162')
+        ax.set_title(f'{label} - bedlevel + former cell 13162')
         ax.set_xlabel('lon'); ax.set_ylabel('lat')
         plt.colorbar(sc, ax=ax, shrink=0.85, label='bl [m]')
 
-        # Panel: |Δz| distribution
+        # Panel: |dz| distribution
         ax = axes[row, 2]
         if len(stats['grads']) > 0:
             ax.hist(stats['grads'], bins=40, color='salmon',
                     edgecolor='black', alpha=0.8)
             ax.axvline(GRAD_THRESHOLD, color='red', ls='--', label=f'thresh {GRAD_THRESHOLD}')
             ax.set_yscale('log')
-            ax.set_xlabel('|Δz| to nearest neighbour [m]')
+            ax.set_xlabel('|dz| to nearest neighbour [m]')
             ax.set_ylabel('count (log)')
-            ax.set_title(f'{label} — gradient hist, max={stats["max_grad"]:.1f}')
+            ax.set_title(f'{label} - gradient hist, max={stats["max_grad"]:.1f}')
             ax.legend()
         else:
             ax.text(0.5, 0.5, 'no data', transform=ax.transAxes, ha='center')
 
     plt.suptitle(
-        f'choke diagnostic — corridor lon{CORRIDOR_LON} lat{CORRIDOR_LAT}\n'
-        f'v04 {"PASS" if stats_v04["pass_overall"] else "FAIL"}  ·  '
+        f'choke diagnostic - corridor lon{CORRIDOR_LON} lat{CORRIDOR_LAT}\n'
+        f'v04 {"PASS" if stats_v04["pass_overall"] else "FAIL"}  -  '
         f'v05 {"PASS" if stats_v05["pass_overall"] else "FAIL"}',
         fontsize=14, fontweight='bold')
     plt.tight_layout()
@@ -278,7 +278,7 @@ def main():
     print(f'Loading v04 baseline from {args.v04}')
     v04 = load_net_files(args.v04)
     if v04 is None:
-        print('  [skip] v04 not found — will plot v05 only.')
+        print('  [skip] v04 not found - will plot v05 only.')
         stats_v04 = None
     else:
         stats_v04 = summarize('v04AE_nodm', *v04)
@@ -298,9 +298,9 @@ def main():
 
     print('\n' + '=' * 60)
     if stats_v05['pass_overall']:
-        print('OVERALL v05 corridor: PASS — proceed to bathy interp + partition.')
+        print('OVERALL v05 corridor: PASS - proceed to bathy interp + partition.')
     else:
-        print('OVERALL v05 corridor: FAIL — iterate refine_basegrid params before partition.')
+        print('OVERALL v05 corridor: FAIL - iterate refine_basegrid params before partition.')
     print('=' * 60)
 
 

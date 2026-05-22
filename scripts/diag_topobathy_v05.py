@@ -2,15 +2,15 @@
 build_topobathy_v05.py.
 
 Outputs:
-  figures/topobathy_v05_diag.png   — 4-panel diagnostic
-  stdout                            — PASS/FAIL summary
+  figures/topobathy_v05_diag.png   - 4-panel diagnostic
+  stdout                            - PASS/FAIL summary
 
 Checks:
   1. NaN count inside bbox = 0
   2. Land cells (per land_mask) have z > 0 (sanity, allow >= -0.1)
   3. Sea cells have z < 0
-  4. |∇z| per cell < 100 m (flag suspicious steps)
-  5. Marettimo highest peak resolves to ~600-700 m (real ≈ 686 m)
+  4. |gradz| per cell < 100 m (flag suspicious steps)
+  5. Marettimo highest peak resolves to ~600-700 m (real ~ 686 m)
 """
 from __future__ import annotations
 
@@ -25,14 +25,16 @@ import xarray as xr
 NC = Path('data/processed/mesh_v05/topobathy_combined.nc')
 FIG = Path('figures/topobathy_v05_diag.png')
 
-# Marettimo highest peak Punta Falcone (~ 12.07 E, 37.98 N, alt 686 m)
-MARETTIMO_PEAK_LON, MARETTIMO_PEAK_LAT = 12.07, 37.98
+# Marettimo highest peak Punta Falcone (~ 12.052 E, 37.981 N, alt 686 m).
+# Use a generous island-wide bbox; we just need max(z) on the island.
+MARETTIMO_BOX_LON = (12.04, 12.08)
+MARETTIMO_BOX_LAT = (37.95, 37.99)
 MARETTIMO_PEAK_TRUE = 686
 
 
 def main():
     if not NC.exists():
-        raise SystemExit(f'{NC} not found — run build_topobathy_v05.py first')
+        raise SystemExit(f'{NC} not found - run build_topobathy_v05.py first')
 
     ds = xr.open_dataset(NC)
     z = ds['topobathy'].values
@@ -47,7 +49,7 @@ def main():
 
     n_nan = int(np.isnan(z).sum())
     pass_nan = n_nan == 0
-    print(f'[1] NaN inside bbox: {n_nan} → {"PASS" if pass_nan else "FAIL"}')
+    print(f'[1] NaN inside bbox: {n_nan} -> {"PASS" if pass_nan else "FAIL"}')
 
     z_land = z[land]
     z_sea = z[~land]
@@ -55,9 +57,9 @@ def main():
     n_bad_sea = int((z_sea > 0).sum())
     pass_signs = (n_bad_land == 0) and (n_bad_sea == 0)
     print(f'[2] Land cells with z < -0.1: {n_bad_land}/{land.sum()} '
-          f'(should be 0) → {"PASS" if n_bad_land == 0 else "WARN"}')
+          f'(should be 0) -> {"PASS" if n_bad_land == 0 else "WARN"}')
     print(f'[3] Sea cells with z > 0:    {n_bad_sea}/{(~land).sum()} '
-          f'(should be 0) → {"PASS" if n_bad_sea == 0 else "WARN"}')
+          f'(should be 0) -> {"PASS" if n_bad_sea == 0 else "WARN"}')
 
     # Gradient
     dy, dx = np.gradient(z)
@@ -66,18 +68,17 @@ def main():
     px_m = 11.0
     grad_per_m = gmag / px_m
     pct_steep = float((grad_per_m > 0.3).mean() * 100)  # >0.3 m/m = >30% slope
-    print(f'[4] cells with local slope >30% (|∇z|>0.3 m/m): {pct_steep:.2f}% '
-          f'(<2% expected) → {"PASS" if pct_steep < 2 else "WARN"}')
+    print(f'[4] cells with local slope >30% (|gradz|>0.3 m/m): {pct_steep:.2f}% '
+          f'(<2% expected) -> {"PASS" if pct_steep < 2 else "WARN"}')
 
-    # Marettimo peak
-    i_lat = int(np.argmin(np.abs(lat - MARETTIMO_PEAK_LAT)))
-    i_lon = int(np.argmin(np.abs(lon - MARETTIMO_PEAK_LON)))
-    # Use 5-pixel window for peak
-    pk_window = z[max(0, i_lat - 50):i_lat + 50,
-                  max(0, i_lon - 50):i_lon + 50]
-    pk_max = float(np.nanmax(pk_window))
-    pass_pk = 400 < pk_max < 900   # generous; if mosaic alignment slightly off we still want PASS
-    print(f'[5] Marettimo peak in window: {pk_max:.0f} m (true ≈ {MARETTIMO_PEAK_TRUE}) → {"PASS" if pass_pk else "WARN"}')
+    # Marettimo peak (island bbox)
+    mar_mask = ((lat[:, None] >= MARETTIMO_BOX_LAT[0]) &
+                (lat[:, None] <= MARETTIMO_BOX_LAT[1]) &
+                (lon[None, :] >= MARETTIMO_BOX_LON[0]) &
+                (lon[None, :] <= MARETTIMO_BOX_LON[1]))
+    pk_max = float(np.nanmax(np.where(mar_mask, z, -np.inf))) if mar_mask.any() else float('nan')
+    pass_pk = 400 < pk_max < 900   # tolerant: real peak is 686 m
+    print(f'[5] Marettimo peak in island bbox: {pk_max:.0f} m (true ~ {MARETTIMO_PEAK_TRUE}) -> {"PASS" if pass_pk else "WARN"}')
 
     overall = pass_nan and pass_signs and (pct_steep < 2) and pass_pk
     print('=' * 60)
@@ -127,12 +128,12 @@ def main():
     im = ax.imshow(grad_per_m, origin='lower', extent=extent,
                    cmap='magma', vmin=0, vmax=0.5,
                    aspect=1 / np.cos(np.radians(lat.mean())))
-    ax.set_title(f'(d) |∇z| per metre (warn if >0.3, {pct_steep:.2f}% of cells)')
+    ax.set_title(f'(d) |gradz| per metre (warn if >0.3, {pct_steep:.2f}% of cells)')
     ax.set_xlabel('lon')
     ax.set_ylabel('lat')
     plt.colorbar(im, ax=ax, shrink=0.8, label='m/m')
 
-    plt.suptitle(f'topobathy_v05 diagnostic — {"PASS" if overall else "REVIEW"}',
+    plt.suptitle(f'topobathy_v05 diagnostic - {"PASS" if overall else "REVIEW"}',
                  fontsize=14, fontweight='bold')
     plt.tight_layout()
     plt.savefig(FIG, dpi=120, bbox_inches='tight')

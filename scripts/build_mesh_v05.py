@@ -1,12 +1,12 @@
 """Build Stagnone v05 mesh via dfm_tools/meshkernel automation.
 
 Workflow:
-  1. Read sicily_v05.ldb → GeoDataFrame of land polygons (closing mainland east)
-  2. Read combined bathy XYZ → rasterize to regular grid (sea only, z<0)
-  3. dfmt.make_basegrid() — base regular grid covering bbox
-  4. dfmt.refine_basegrid() — refine based on bathy depth (shallow=fine, deep=coarse)
-  5. dfmt.meshkernel_delete_withgdf() — delete cells inside land polygons
-  6. dfmt.generate_bndpli_cutland() — auto-generate .pli boundary
+  1. Read sicily_v05.ldb -> GeoDataFrame of land polygons (closing mainland east)
+  2. Read combined bathy XYZ -> rasterize to regular grid (sea only, z<0)
+  3. dfmt.make_basegrid() - base regular grid covering bbox
+  4. dfmt.refine_basegrid() - refine based on bathy depth (shallow=fine, deep=coarse)
+  5. dfmt.meshkernel_delete_withgdf() - delete cells inside land polygons
+  6. dfmt.generate_bndpli_cutland() - auto-generate .pli boundary
   7. dfmt.meshkernel_to_UgridDataset() + save Stagnone_v05_net.nc
 
 Output: data/processed/mesh_v05/
@@ -43,19 +43,19 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 LON_MIN, LON_MAX = 11.95, 12.60
 LAT_MIN, LAT_MAX = 37.65, 38.25
 
-# Base grid resolution (~500m at 37.95°N)
+# Base grid resolution (~500m at 37.95degN)
 DX_BASE = 0.005
 DY_BASE = 0.005
 
 # Refinement parameters
-MIN_EDGE_SIZE_M = 15.0       # smallest allowed cell (m) — matches current lagoon resolution
+MIN_EDGE_SIZE_M = 15.0       # smallest allowed cell (m) - matches current lagoon resolution
 MAX_COURANT = 0.2            # CFL-like refinement criterion (smaller = finer)
 
 # CRS
 CRS = 'EPSG:4326'
 
 
-# ============ STEP 1: parse sicily_v05.ldb → GeoDataFrame ============
+# ============ STEP 1: parse sicily_v05.ldb -> GeoDataFrame ============
 def parse_ldb_to_polys(path):
     """Returns dict {name: np.array((N,2))}."""
     polys = {}
@@ -136,7 +136,7 @@ if 'StagnoneBarrier' in polys:
 # SicilyMainland: open coastline. Close to EAST edge to form a polygon enclosing all mainland.
 if 'SicilyMainland' in polys:
     coast = polys['SicilyMainland']
-    # Sort or ensure ordering — assume coastline is already sequential
+    # Sort or ensure ordering - assume coastline is already sequential
     # Close: from last point go to (LON_MAX, last_lat), then (LON_MAX, first_lat), then back to first point
     closed = np.vstack([
         coast,
@@ -171,7 +171,7 @@ if 'Other' in polys:
             if not np.allclose(seg[0], seg[-1]):
                 seg = np.vstack([seg, seg[:1]])
             poly = Polygon(seg)
-            if poly.is_valid and poly.area > 100 * (1/111000)**2:  # >100 m² area
+            if poly.is_valid and poly.area > 100 * (1/111000)**2:  # >100 m^2 area
                 geoms.append(poly)
                 geom_names.append(f'Other_sub{len(geoms)}')
         start = j + 1
@@ -192,9 +192,9 @@ topo_ds = xr.open_dataset(TOPOBATHY_NC)
 topo = topo_ds['topobathy']
 print(f'  loaded shape={dict(topo.sizes)} z range=({float(topo.min()):.1f}, {float(topo.max()):.1f})')
 
-# For refine_basegrid we need a depth field: shallower → finer cells.
+# For refine_basegrid we need a depth field: shallower -> finer cells.
 # Convention: sea z<0 in topobathy. refine_basegrid uses |z| via celerity sqrt(g*|z|).
-# Land cells (z>0) would produce large celerity → coarse refinement; we want FINE near coast.
+# Land cells (z>0) would produce large celerity -> coarse refinement; we want FINE near coast.
 # Substitute land cells with sentinel -1 m so refine treats them as shallow water; they'll
 # be deleted by step 6 via the LDB polygons anyway.
 land_mask = topo_ds['land_mask'].values.astype(bool) if 'land_mask' in topo_ds else (topo.values > 0)
@@ -232,7 +232,7 @@ dfmt.refine_basegrid(
 print(f'  Refined')
 
 
-# ============ STEP 5: boundary .pli (BEFORE land cut — on uncut grid) ============
+# ============ STEP 5: boundary .pli (BEFORE land cut - on uncut grid) ============
 print('\n=== Step 5: generate boundary .pli (on uncut refined grid) ===')
 bnd_gdf = dfmt.generate_bndpli_cutland(mk, res='f', crs=CRS)
 print(f'  .pli boundary: {len(bnd_gdf)} line(s)')
@@ -274,7 +274,7 @@ ax.set_ylim(LAT_MIN - 0.02, LAT_MAX + 0.02)
 ax.set_aspect(1/np.cos(np.radians(37.95)))
 ax.set_xlabel('lon')
 ax.set_ylabel('lat')
-ax.set_title(f'Stagnone v05 mesh — {len(fx)} cells')
+ax.set_title(f'Stagnone v05 mesh - {len(fx)} cells')
 ax.legend()
 ax.grid(alpha=0.3)
 plt.tight_layout()

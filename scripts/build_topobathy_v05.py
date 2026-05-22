@@ -9,18 +9,18 @@ Merges multiple sources on a single 10m regular grid in WGS84:
   bat20m_stgnlg   | Lagoon bathy       | C:/Users/Unipa/Documents/StagnoneLagoon/Datasets/bat20m_stgnlg_Adjusted.xyz
   GEBCO 2024      | Offshore bathy     | data/raw/gebco_2024/GEBCO_2024.nc  (optional)
 
-Merge rules (priority high → low):
+Merge rules (priority high -> low):
   - Inside any sicily_v05.ldb polygon (LAND mask):
       1. TINITALY where defined
       2. Copernicus DEM elsewhere
-      → final z > 0
+      -> final z > 0
   - Outside the polygons (SEA mask):
       1. bat20m_stgnlg_Adjusted where in lagoon bbox
       2. GEBCO 2024 elsewhere
-      → final z < 0 (FM convention: bathy = bottom level below MSL, negative)
-  - Buffer ±50 m around coastline: gaussian blend land↔sea to avoid stair-step.
+      -> final z < 0 (FM convention: bathy = bottom level below MSL, negative)
+  - Buffer +/-50 m around coastline: gaussian blend land<->sea to avoid stair-step.
 
-Convention: in the OUTPUT NetCDF we keep z (signed) — land positive,
+Convention: in the OUTPUT NetCDF we keep z (signed) - land positive,
 sea negative. The mesh build (build_mesh_v05.py) will sign-correct to
 FM's bedlevel convention if needed.
 
@@ -65,7 +65,7 @@ def make_target_grid():
 
 
 def resample_geotiff_to_grid(geotiff_path, lon, lat, name):
-    """Open a GeoTIFF and reproject to our regular grid (no fancy CRS — both WGS84)."""
+    """Open a GeoTIFF and reproject to our regular grid (no fancy CRS - both WGS84)."""
     with rasterio.open(geotiff_path) as src:
         dst_transform = from_origin(lon[0], lat[-1],
                                     lon[1] - lon[0], lat[1] - lat[0])
@@ -109,7 +109,7 @@ def load_bat20m(lon, lat, src_path):
             (lat_pts >= BBOX_LAT[0] - 0.01) & (lat_pts <= BBOX_LAT[1] + 0.01))
     lon_pts, lat_pts, z = lon_pts[mask], lat_pts[mask], z[mask]
     print(f'    in bbox: {len(z)} points')
-    # Grid via griddata (linear; may be slow for 8M points — subsample if needed)
+    # Grid via griddata (linear; may be slow for 8M points - subsample if needed)
     if len(z) > 2_000_000:
         # downsample to 2M for griddata
         idx = np.random.default_rng(0).choice(len(z), 2_000_000, replace=False)
@@ -123,16 +123,35 @@ def load_bat20m(lon, lat, src_path):
 
 
 def load_gebco(lon, lat, src_path):
+    """Offshore bathy loader. Handles both GEBCO (lon/lat dims, elevation var)
+    and GMRT (x/y dims, z or altitude var) netCDFs."""
     if not src_path.exists():
-        print(f'  [skip] GEBCO not found at {src_path} — offshore gap will rely on bat20m extrapolation')
+        print(f'  [skip] {src_path} not found - offshore gap will rely on bat20m extrapolation')
         return None
     print(f'  loading {src_path.name}')
     ds = xr.open_dataset(src_path)
-    da = ds['elevation'] if 'elevation' in ds else list(ds.data_vars.values())[0]
-    da = da.sel(lon=slice(BBOX_LON[0] - 0.05, BBOX_LON[1] + 0.05),
-                lat=slice(BBOX_LAT[0] - 0.05, BBOX_LAT[1] + 0.05))
+    # Pick the elevation variable
+    da = None
+    for name in ('elevation', 'z', 'altitude', 'topo'):
+        if name in ds.data_vars:
+            da = ds[name]
+            break
+    if da is None:
+        da = list(ds.data_vars.values())[0]
+        print(f'  [warn] guessed elevation var: {da.name}')
+    # Standardize dim names (GMRT uses x/y, GEBCO uses lon/lat)
+    if 'x' in da.dims and 'y' in da.dims:
+        da = da.rename({'x': 'lon', 'y': 'lat'})
+    elif 'longitude' in da.dims:
+        da = da.rename({'longitude': 'lon', 'latitude': 'lat'})
+    # Slice + interp to target grid
+    try:
+        da = da.sel(lon=slice(BBOX_LON[0] - 0.05, BBOX_LON[1] + 0.05),
+                    lat=slice(BBOX_LAT[0] - 0.05, BBOX_LAT[1] + 0.05))
+    except Exception:
+        pass
     out = da.interp(lon=lon, lat=lat, method='linear').values.astype(np.float32)
-    print(f'  GEBCO grid valid={np.isfinite(out).sum()}/{out.size} '
+    print(f'  offshore bathy ({da.name}): valid={np.isfinite(out).sum()}/{out.size} '
           f'range=({np.nanmin(out):.1f}, {np.nanmax(out):.1f})')
     return out
 
@@ -222,14 +241,14 @@ def main():
     if TINITALY.exists():
         tinitaly = resample_geotiff_to_grid(TINITALY, lon, lat, 'TINITALY')
     else:
-        print(f'  [skip] {TINITALY} not found — run download_tinitaly_v05.py first')
+        print(f'  [skip] {TINITALY} not found - run download_tinitaly_v05.py first')
         tinitaly = np.full((len(lat), len(lon)), np.nan, dtype=np.float32)
 
     print('\n[3/5] Copernicus DEM 30m (gap-fill)')
     if COPERNICUS.exists():
         cop = resample_geotiff_to_grid(COPERNICUS, lon, lat, 'Copernicus')
     else:
-        print(f'  [skip] {COPERNICUS} not found — run download_copernicus_dem_v05.py first')
+        print(f'  [skip] {COPERNICUS} not found - run download_copernicus_dem_v05.py first')
         cop = np.full((len(lat), len(lon)), np.nan, dtype=np.float32)
 
     print('\n[4/5] bat20m_stgnlg_Adjusted lagoon bathy (primary sea)')
@@ -243,7 +262,7 @@ def main():
     gebco = load_gebco(lon, lat, GEBCO)
 
     # === MERGE ===
-    print('\nMerging by priority + LDB mask…')
+    print('\nMerging by priority + LDB mask...')
     z = np.full((len(lat), len(lon)), np.nan, dtype=np.float32)
 
     # LAND priority: TINITALY > Copernicus, on cells inside any polygon
@@ -264,29 +283,48 @@ def main():
 
     z = np.where(land_mask, land_z, sea_z)
 
-    n_nan = np.isnan(z).sum()
+    n_nan = int(np.isnan(z).sum())
     print(f'  combined coverage: {(~np.isnan(z)).sum()}/{z.size} '
           f'(missing {n_nan} cells = {100*n_nan/z.size:.1f}%)')
     if n_nan > 0:
-        # Fill remaining NaNs with nearest valid via scipy gaussian fill
+        # Same-class nearest-neighbour fill: NEVER leak values across the
+        # land/sea boundary. Without this, sea NaN cells get filled with
+        # nearby LAND elevations (e.g. Marettimo cliff at 400m bleeding to
+        # offshore cells), producing spurious positive z in the sea.
         from scipy.ndimage import distance_transform_edt
-        mask_valid = ~np.isnan(z)
-        indices = distance_transform_edt(~mask_valid, return_distances=False,
+        # land fill
+        land_z = np.where(land_mask & np.isfinite(z), z, np.nan)
+        land_missing = land_mask & np.isnan(z)
+        if land_missing.any() and np.isfinite(land_z).any():
+            valid = np.isfinite(land_z)
+            idx = distance_transform_edt(~valid, return_distances=False,
                                           return_indices=True)
-        z = z[tuple(indices)]
-        print('  filled remaining NaN by nearest-neighbour')
+            land_filled = land_z[tuple(idx)]
+            z = np.where(land_missing, land_filled, z)
+            print(f'  land same-class fill: {int(land_missing.sum())} cells')
+        # sea fill
+        sea_z = np.where((~land_mask) & np.isfinite(z), z, np.nan)
+        sea_missing = (~land_mask) & np.isnan(z)
+        if sea_missing.any() and np.isfinite(sea_z).any():
+            valid = np.isfinite(sea_z)
+            idx = distance_transform_edt(~valid, return_distances=False,
+                                          return_indices=True)
+            sea_filled = sea_z[tuple(idx)]
+            z = np.where(sea_missing, sea_filled, z)
+            print(f'  sea  same-class fill: {int(sea_missing.sum())} cells')
+        # If sea still has NaN (no valid sea cell anywhere - shouldn't happen
+        # with bat20m), use a flat deep placeholder
+        still_nan = np.isnan(z)
+        if still_nan.any():
+            z = np.where(still_nan & ~land_mask, -50.0, z)
+            z = np.where(still_nan & land_mask, 0.0, z)
+            print(f'  applied flat fallback for {int(still_nan.sum())} stranded cells')
 
-    # Optional: gaussian blend over coast buffer to soften the seam
-    buffer_pix = max(1, int(COAST_BUFFER_DEG / TARGET_RES_DEG))
-    if buffer_pix >= 1:
-        print(f'  gaussian blend over coast (sigma={buffer_pix/2:.1f} pixels)')
-        smoothed = gaussian_filter(z, sigma=buffer_pix / 2)
-        # Only apply blend within buffer_pix of coast
-        from scipy.ndimage import distance_transform_edt
-        coast_dist = np.minimum(distance_transform_edt(land_mask),
-                                distance_transform_edt(~land_mask))
-        coast_w = np.clip(1 - coast_dist / buffer_pix, 0, 1)
-        z = (1 - coast_w) * z + coast_w * smoothed
+    # NOTE: no global gaussian smoothing across the coastline -- that would
+    # bleed +700 m TINITALY values into adjacent sea cells (and vice versa),
+    # which was the bug that caused sea_z to peak at +248 m in our first try.
+    # Within-class smoothing (sea-only, land-only) is possible if needed
+    # later; for refinement the raw signed field is fine.
 
     # Stats
     z_land = z[land_mask]

@@ -1,6 +1,6 @@
 """Download Copernicus DEM GLO-30 tiles covering the Stagnone v05 mesh bbox.
 
-Anonymous S3 access (no credentials). Tiles are 1°×1° GeoTIFF in EPSG:4326.
+Anonymous S3 access (no credentials). Tiles are 1degx1deg GeoTIFF in EPSG:4326.
 For bbox lon [11.95, 12.60] x lat [37.65, 38.25] we need 2 tiles:
   - N37_00_E011_00 (covers lon 11-12, lat 37-38)
   - N37_00_E012_00 (covers lon 12-13, lat 37-38)
@@ -63,7 +63,7 @@ def download_tile(s3, stem, key, out_dir):
 
 
 def mosaic_tiles(tile_paths, out_path):
-    print(f'\nMosaicking {len(tile_paths)} tiles → {out_path}')
+    print(f'\nMosaicking {len(tile_paths)} tiles -> {out_path}')
     srcs = [rasterio.open(p) for p in tile_paths]
     arr, transform = merge(srcs)
     meta = srcs[0].meta.copy()
@@ -93,7 +93,7 @@ def main():
             downloaded.append(p)
 
     if not downloaded:
-        print('No tiles downloaded — abort.')
+        print('No tiles downloaded - abort.')
         sys.exit(1)
 
     mosaic_tiles(downloaded, MOSAIC)
