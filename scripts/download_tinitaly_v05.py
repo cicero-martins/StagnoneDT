@@ -7,10 +7,12 @@ HUMAN STEP is required:
 
   1. Open https://tinitaly.pi.ingv.it/Download_Area1_1.html
   2. Select tiles covering lon [11.95, 12.60] x lat [37.65, 38.25]
-     For our bbox (Egadi + Marsala/Trapani coast) you typically need 2-3
-     tiles in UTM 33N around X ~230-310 km, Y ~4170-4250 km. The portal
-     names tiles like 'w42565_s10' or similar code.
-  3. Save downloaded .tif files (in EPSG:32633 UTM 33N) to:
+     For our bbox (Egadi + Marsala/Trapani coast) the 3 tiles to grab are:
+       w41580_s10.tif  (covers ~37.6-38.0 N, 12.0-12.6 E - Marsala/Stagnone)
+       w42075_s10.tif  (covers ~37.95-38.25 N, 11.5-12.1 E - Marettimo)
+       w42080_s10.tif  (covers ~37.95-38.30 N, 12.0-12.6 E - Trapani/Levanzo)
+     All TINITALY tiles are 50x50 km in EPSG:32632 (UTM zone 32N).
+  3. Save downloaded .tif files (in EPSG:32632 UTM 32N) to:
        data/raw/tinitaly_v05_raw/
 
 THEN run this script: it reprojects each tile to WGS84, mosaics, clips to
@@ -41,7 +43,7 @@ DST_CRS = 'EPSG:4326'
 
 
 def reproject_tile(src_path, dst_path):
-    print(f'  reproject {src_path.name} → WGS84')
+    print(f'  reproject {src_path.name} -> WGS84')
     with rasterio.open(src_path) as src:
         if src.crs is None:
             print(f'  [warn] {src_path.name} has no CRS; assuming EPSG:32633')
@@ -67,7 +69,7 @@ def reproject_tile(src_path, dst_path):
 
 
 def mosaic_and_clip(tile_paths, out_path, bbox_lon, bbox_lat):
-    print(f'\nMosaic {len(tile_paths)} reprojected tiles → {out_path}')
+    print(f'\nMosaic {len(tile_paths)} reprojected tiles -> {out_path}')
     srcs = [rasterio.open(p) for p in tile_paths]
     arr, transform = merge(srcs, bounds=(bbox_lon[0], bbox_lat[0],
                                          bbox_lon[1], bbox_lat[1]))
