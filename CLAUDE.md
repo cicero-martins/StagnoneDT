@@ -18,6 +18,17 @@ Always check `git log --oneline -10` and read [README.md](README.md) at the star
 
 Credentials live in `.env` (gitignored): `CDSAPI_URL`, `CDSAPI_KEY`, EDITO S3, etc. The download scripts include a minimal `load_dotenv()` helper.
 
+## Before writing code — grep checkpoint
+
+Antes de propor função/helper novo, especialmente algo que envolva mesh, forcing, BC, postproc ou model assembly:
+
+1. `grep -r "<keyword>" notebooks/ scripts/` — alguém já fez isso? Notebooks 00-13 são as pipelines canônicas.
+2. Check memory `dfm_tools_capabilities_inventory.md` — a lib tem rotina pronta?
+3. Check memory `dfm_tools_hydrolib_mismatch_2026.md` — a função existe mas está quebrada vs hydrolib 1.0.0?
+4. Para mesh build especificamente: `mesh_generation_workflow.md` tem a ordem correta de chamadas (basegrid → refine → bndpli_cutland → delete → to_UgridDataset).
+
+**Custo de pular o checkpoint**: sessão 2026-05-20 perdeu um dia inteiro reescrevendo `make_basegrid + refine_basegrid + meshkernel_delete_withgdf` porque não foi checado que `dfm_tools` já oferece tudo isso.
+
 ## Project conventions
 
 **Versioning** — model dirs `model/dflowfm_v01/`, `_v02/`, ..., `_v04/`. Major versions only (no v04a/v04b). Cloning pattern: copy from previous validated version, exclude `DFM_OUTPUT_*/`, `_000?_*` partitioned files, `*.bak`, runtime logs. Document the new version's scope in `docs/progress_report_YYYY-MM-DD.md`.
@@ -75,5 +86,6 @@ Credentials live in `.env` (gitignored): `CDSAPI_URL`, `CDSAPI_KEY`, EDITO S3, e
 - `git log --oneline -10` — recent decisions
 - `cat docs/progress_report_*.md | head` — latest milestone narrative
 - `cat ~/.claude/projects/c--Users-Unipa-Documents-StagnoneDT/memory/MEMORY.md` — what's tribal knowledge vs. what's in code
+- `ls notebooks/` — **canonical pipelines live in 00-13** (forcing, mesh, build, coupling) — grep before writing helpers
 - `ls model/` — version landscape
-- `ls scripts/` — workflow building blocks
+- `ls scripts/` — workflow building blocks (grep first to find existing logic)
