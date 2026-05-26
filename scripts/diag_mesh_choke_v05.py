@@ -75,14 +75,22 @@ def load_net_files(pattern_or_path):
         if 'mesh2d_edge_x' in ds.variables and 'mesh2d_edge_y' in ds.variables:
             # mesh2d_edge_nodes: (n_edges, 2) -> node indices
             if 'mesh2d_edge_nodes' in ds.variables:
-                en = ds['mesh2d_edge_nodes'].values
-                nx = ds['mesh2d_node_x'].values
-                ny = ds['mesh2d_node_y'].values
-                # 0-based or 1-based? Deltares uses 1-based; subtract 1 safely
-                en0 = en - en.min()
-                ex0 = nx[en0[:, 0]]; ey0 = ny[en0[:, 0]]
-                ex1 = nx[en0[:, 1]]; ey1 = ny[en0[:, 1]]
-                all_ex0.append(ex0); all_ey0.append(ey0); all_ex1.append(ex1); all_ey1.append(ey1)
+                en = np.ma.asarray(ds['mesh2d_edge_nodes'].values)
+                nx = np.asarray(ds['mesh2d_node_x'].values)
+                ny = np.asarray(ds['mesh2d_node_y'].values)
+                # Drop rows with any masked / fill value, then zero-index
+                if np.ma.isMaskedArray(en):
+                    bad = np.ma.getmaskarray(en).any(axis=1)
+                    en = np.asarray(en.filled(-1))
+                else:
+                    bad = np.zeros(en.shape[0], dtype=bool)
+                bad |= (en < 0).any(axis=1)
+                en_keep = en[~bad].astype(np.int64)
+                if en_keep.size:
+                    en0 = en_keep - en_keep.min()
+                    ex0 = nx[en0[:, 0]]; ey0 = ny[en0[:, 0]]
+                    ex1 = nx[en0[:, 1]]; ey1 = ny[en0[:, 1]]
+                    all_ex0.append(ex0); all_ey0.append(ey0); all_ex1.append(ex1); all_ey1.append(ey1)
         ds.close()
     fx = np.concatenate(all_fx); fy = np.concatenate(all_fy); fz = np.concatenate(all_fz)
     if all_ex0:
