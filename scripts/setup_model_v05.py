@@ -96,8 +96,11 @@ def patch_mdu_line(line: str) -> str:
 
 
 def write_ext_new(path: Path):
-    """Minimal _new.ext for FM-only v05 diagnostic: WL/sal/temp boundary."""
-    content = f"""# v05 minimal ext (FM-only diagnostic).  Written by setup_model_v05.py.
+    """_new.ext for v05 cold-start. 2026-06-03: uxuy block ADDED — sua ausência
+    era a causa raiz das vel espúrias 10-15 m/s nas células fundas offshore NW
+    (mesmo padrão que jul06jul13 cell 46710 e continuation cell 13162)."""
+    content = f"""# v05 _new.ext (cold-start). Written by setup_model_v05.py.
+# 2026-06-03: uxuyadvectionvelocitybnd added (was missing; caused 23h crash).
 
 [Boundary]
 quantity     = waterlevelbnd
@@ -113,6 +116,11 @@ forcingFile  = salinitybnd_CMEMS_Stagnone_v05.bc
 quantity     = temperaturebnd
 locationFile = {PLI_NAME}
 forcingFile  = temperaturebnd_CMEMS_Stagnone_v05.bc
+
+[Boundary]
+quantity     = uxuyadvectionvelocitybnd
+locationFile = {PLI_NAME}
+forcingFile  = uxuyadvectionvelocitybnd_CMEMS_Stagnone_v05.bc
 
 [Meteo]
 quantity        = windx

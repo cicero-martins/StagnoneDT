@@ -87,21 +87,26 @@ for EXT in "$NEW/Stagnone_dxy01_15m_new.ext" "$NEW/Stagnone_dxy01_15m_old.ext"; 
     cp "$EXT" "$EXT.bak"
     sed -i 's/_20250701to20250710/_20250701to20250713/g' "$EXT"
 done
-# Remove [Boundary] uxuyadvectionvelocitybnd block from new.ext
-# (per memory bc_continuation_eof_gotcha: d10d12's uxuy also ends at Jul 10 12:00;
-# per memory dfm_tools_hydrolib_mismatch_2026: FM derives uxuy from WL gradient
-# when uxuy bnd absent — fallback was already that anyway).
-EXT_NEW="$NEW/Stagnone_dxy01_15m_new.ext"
-if [[ -f "$EXT_NEW" ]]; then
-    python3 - <<PYEOF
-import re
-with open('$EXT_NEW') as f: c = f.read()
-# Match [Boundary] block containing uxuyadvectionvelocitybnd up to next blank line
-c2 = re.sub(r'\[Boundary\][^\[]*?uxuyadvectionvelocitybnd[^\[]*?(?=\[|\Z)', '', c, flags=re.S)
-with open('$EXT_NEW', 'w') as f: f.write(c2)
-print('  uxuyadvectionvelocitybnd block removed from new.ext')
-PYEOF
-fi
+# 2026-06-03: uxuy strip DISABLED. A justificativa "FM derives velocity from WL
+# gradient when uxuy absent" estava ERRADA. Sem uxuy o FM precisa fechar
+# continuidade na borda só pelo gradiente de WL e, com anfc PT15M-i (maré real)
+# + células fundas offshore NW, gera vel espúrias 10-15 m/s — bate exatamente
+# com o sintoma de cell 13162 (continuation) e cell 46710 (jul06jul13/jul13jul20).
+# Memory [[continuation_restart_shock_cell_13162]] precisa ser corrigida; a
+# "Opção A — cold-start completo" funcionava porque o cold-start nodm usa o
+# v04AE master _new.ext intacto (com uxuy), não porque restart shock seja real.
+# Original strip block kept como comentário para auditoria:
+# EXT_NEW="$NEW/Stagnone_dxy01_15m_new.ext"
+# if [[ -f "$EXT_NEW" ]]; then
+#     python3 - <<PYEOF
+# import re
+# with open('$EXT_NEW') as f: c = f.read()
+# c2 = re.sub(r'\[Boundary\][^\[]*?uxuyadvectionvelocitybnd[^\[]*?(?=\[|\Z)', '', c, flags=re.S)
+# with open('$EXT_NEW', 'w') as f: f.write(c2)
+# print('  uxuyadvectionvelocitybnd block removed from new.ext')
+# PYEOF
+# fi
+echo "  uxuy block PRESERVED in $NEW/Stagnone_dxy01_15m_new.ext (cell-13162 hypothesis test)"
 
 # Patch MDUs (master + 8 per-partition) — ONLY dates, nothing else
 echo "=== [2/4] Patching MDUs — dates only ==="

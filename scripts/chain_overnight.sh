@@ -141,17 +141,24 @@ for EXT in "$NEW/Stagnone_dxy01_15m_new.ext" "$NEW/Stagnone_dxy01_15m_old.ext"; 
     sed -i 's/_20250701to20250710/_20250701to20250713/g' "$EXT"
 done
 
-# Remove uxuyadvectionvelocitybnd block from new.ext (its .bc ends Jul 10 12:00
-# even in d10d12; FM derives velocity from WL gradient when uxuy absent)
-EXT_NEW="$NEW/Stagnone_dxy01_15m_new.ext"
-if [[ -f "$EXT_NEW" ]]; then
-    python3 - <<PYEOF
-import re
-with open('$EXT_NEW') as f: c = f.read()
-c2 = re.sub(r'\[Boundary\][^\[]*?uxuyadvectionvelocitybnd[^\[]*?(?=\[|\Z)', '', c, flags=re.S)
-with open('$EXT_NEW', 'w') as f: f.write(c2)
-PYEOF
-fi
+# 2026-06-03: uxuy strip DISABLED. Hipótese cell-13162 root cause testada (jul06jul13
+# crashed cell 46710 com mesmo padrão, _new.ext sem uxuy). Sem uxuy o FM precisa
+# fechar continuidade na borda só pelo gradiente de WL, e com anfc PT15M-i (maré
+# real) + células fundas offshore isso gera velocidades espúrias 10-15 m/s. A .bc
+# do d10d12 termina em Jul 10 12:00 mas a extrapolação do FM (zero-order hold ou
+# linear) é segura — preferível a remover a forçante de velocidade inteira.
+# Se queremos não-extrapolar, melhor estender o .bc com xarray do que cortar o bloco.
+# Original strip block kept como comentário para auditoria:
+# EXT_NEW="$NEW/Stagnone_dxy01_15m_new.ext"
+# if [[ -f "$EXT_NEW" ]]; then
+#     python3 - <<PYEOF
+# import re
+# with open('$EXT_NEW') as f: c = f.read()
+# c2 = re.sub(r'\[Boundary\][^\[]*?uxuyadvectionvelocitybnd[^\[]*?(?=\[|\Z)', '', c, flags=re.S)
+# with open('$EXT_NEW', 'w') as f: f.write(c2)
+# PYEOF
+# fi
+echo "  uxuy block PRESERVED in $NEW/Stagnone_dxy01_15m_new.ext (cell-13162 hypothesis test)"
 
 # Restart files (8 ranks)
 mkdir -p "$NEW/restart_input"
