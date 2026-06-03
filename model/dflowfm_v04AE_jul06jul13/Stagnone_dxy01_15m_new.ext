@@ -1,0 +1,110 @@
+# written by HYDROLIB-core 1.0.0
+#
+# v03d: dropped the TPXO astronomical waterlevelbnd block to avoid
+# double-counting tide. CMEMS Mediterranean reanalysis WL already includes
+# the tidal component, so summing it with TPXO produced ~2x amplitude at
+# the boundary in v03c (visible at point 11132 next to bnd1_0022, and as
+# the ~1.8x over-amplification flagged by the Marettimo ring-scan in
+# notebook 23). Datum-offset constant (+0.4208 m) stays.
+
+# v04: per-node WL offset replaces constant +0.4208 m.
+#      delta_anchor(Jul/2025) = +0.4812 m,
+#      with MDT spreading across 49 nodes (~6.5 cm).
+#      See scripts/build_v04_offset_bc.py.
+
+[General]
+fileVersion = 2.01
+fileType    = extForce
+
+[Boundary]
+quantity     = waterlevelbnd
+locationFile = Stagnone_dxy01_15m.pli
+forcingFile  = waterlevelbnd_offset_pernode_Stagnone_dxy01_15m.bc
+
+# [Boundary]   -- v03d: removed (TPXO tide superposed on CMEMS tide; double-counted)
+# quantity     = waterlevelbnd
+# locationFile = Stagnone_dxy01_15m.pli
+# forcingFile  = tide_tpxo80_opendap_Stagnone_dxy01_15m.bc
+
+[Boundary]
+quantity     = waterlevelbnd
+locationFile = Stagnone_dxy01_15m.pli
+forcingFile  = waterlevelbnd_CMEMS_Stagnone_dxy01_15m.bc
+
+[Boundary]
+quantity     = salinitybnd
+locationFile = Stagnone_dxy01_15m.pli
+forcingFile  = salinitybnd_CMEMS_Stagnone_dxy01_15m.bc
+
+[Boundary]
+quantity     = temperaturebnd
+locationFile = Stagnone_dxy01_15m.pli
+forcingFile  = temperaturebnd_CMEMS_Stagnone_dxy01_15m.bc
+
+[Boundary]
+quantity     = uxuyadvectionvelocitybnd
+locationFile = Stagnone_dxy01_15m.pli
+forcingFile  = uxuyadvectionvelocitybnd_CMEMS_Stagnone_dxy01_15m.bc
+
+[Meteo]
+quantity            = windx                                # Name of the quantity. See UM Section C.5.3
+forcingFile         = wind_blendedAE_u10n_20250701to20250713_optimized.nc # v04AE: AE-only blend (Mulino dropped per drifter validation 2026-05-08, mean LW skill 0.530 vs 0.377 with full blend)
+forcingVariableName = u10n                                 # Variable name used in forcingfile associated with this forcing. See UM Section C.5.3
+forcingFileType     = netcdf                               # Type of forcingFile.
+interpolationMethod = linearSpaceTime                      # Type of (spatial) interpolation.
+operand             = O                                    # How this data is combined with previous data for the same quantity (if any).
+
+[Meteo]
+quantity            = windy                                # Name of the quantity. See UM Section C.5.3
+forcingFile         = wind_blendedAE_v10n_20250701to20250713_optimized.nc # v04AE: AE-only blend (Mulino dropped per drifter validation 2026-05-08, mean LW skill 0.530 vs 0.377 with full blend)
+forcingVariableName = v10n                                 # Variable name used in forcingfile associated with this forcing. See UM Section C.5.3
+forcingFileType     = netcdf                               # Type of forcingFile.
+interpolationMethod = linearSpaceTime                      # Type of (spatial) interpolation.
+operand             = O                                    # How this data is combined with previous data for the same quantity (if any).
+
+[Meteo]
+quantity            = airpressure                         # Name of the quantity. See UM Section C.5.3
+forcingFile         = era5_msl_20250701to20250713_ERA5_optimized.nc # Name of file containing the forcing for this meteo quantity.
+forcingVariableName = msl                                 # Variable name used in forcingfile associated with this forcing. See UM Section C.5.3
+forcingFileType     = netcdf                              # Type of forcingFile.
+interpolationMethod = linearSpaceTime                     # Type of (spatial) interpolation.
+operand             = O                                   # How this data is combined with previous data for the same quantity (if any).
+
+[Meteo]
+quantity            = charnock                             # Name of the quantity. See UM Section C.5.3
+forcingFile         = era5_chnk_20250701to20250713_ERA5.nc # Name of file containing the forcing for this meteo quantity.
+forcingVariableName = chnk                                 # Variable name used in forcingfile associated with this forcing. See UM Section C.5.3
+forcingFileType     = netcdf                               # Type of forcingFile.
+interpolationMethod = linearSpaceTime                      # Type of (spatial) interpolation.
+operand             = O                                    # How this data is combined with previous data for the same quantity (if any).
+
+
+[Boundary]
+    quantity              = tracerbndlagoon_tracer
+    locationFile          = Stagnone_dxy01_15m.pli
+    forcingFile           = tracer_zero.bc
+
+# --- v03c: turbidity dispersion pulses (rain event on day 3) ---
+# Airport Birgi (12.468, 37.917): ~1000 m³ over 2 h -> 0.139 m³/s
+[Lateral]
+id                   = turbid_airport
+name                 = Turbid pulse — Birgi airport drainage
+locationFile         = turbid_airport.pli
+discharge            = turbid_airport_discharge.bc
+
+[Boundary]
+quantity             = tracerbndturbid_airport
+locationFile         = turbid_airport.pli
+forcingFile          = turbid_airport_tracer.bc
+
+# Saltpans di Trapani (12.507, 37.997): ~10000 m³ over 2 h -> 1.389 m³/s
+[Lateral]
+id                   = turbid_saltpans
+name                 = Turbid pulse — Trapani saltpans outflow
+locationFile         = turbid_saltpans.pli
+discharge            = turbid_saltpans_discharge.bc
+
+[Boundary]
+quantity             = tracerbndturbid_saltpans
+locationFile         = turbid_saltpans.pli
+forcingFile          = turbid_saltpans_tracer.bc

@@ -1,0 +1,173 @@
+** INFO   : no partitioning polygons file: read subdomain numbering from netfiles
+** WARNING: D-WAVES coupling enabled and kmx>0, so layer interface coordinates are needed on com-file. FullGridOutput set to 1.
+** WARNING:            6  0.7000070      XK (KMAX), YK (KMAX), ZK (KMAX), KC (KMAX), NMK (KMAX), RNOD(KMAX)
+** WARNING: While reading 'Stagnone_dxy01_15m_0000.mdu': keyword [numerics] qhrelax=0.01 was in file, but not used. Check possible typo.
+** WARNING: While reading 'Stagnone_dxy01_15m_0000.mdu': keyword [wind] windspeedbreakpoints=0.0 100.0 was in file, but not used. Check possible typo.
+** WARNING: While reading 'Stagnone_dxy01_15m_0000.mdu': keyword [output] wrishp_enc=0 was in file, but not used. Check possible typo.
+** WARNING: While reading 'Stagnone_dxy01_15m_0000.mdu': keyword [output] waterlevelclasses=0.0 was in file, but not used. Check possible typo.
+** WARNING: While reading 'Stagnone_dxy01_15m_0000.mdu': keyword [output] waterdepthclasses=0.0 was in file, but not used. Check possible typo.
+** WARNING: While reading 'Stagnone_dxy01_15m_0000.mdu': keyword [output] velocitydirectionclassesinterv=0.0 was in file, but not used. Check possible typo.
+** WARNING: While reading 'Stagnone_dxy01_15m_0000.mdu': keyword [output] velocitymagnitudeclasses=0.0 was in file, but not used. Check possible typo.
+** INFO   : Reading cache file: Stagnone_dxy01_15m_0000.cache
+** INFO   : No cache file available initially. Proceeding with normal initialization.
+** INFO   : Opened file : sicily2.ldb
+** INFO   : Closed file : sicily2.ldb
+** INFO   : Opened file : Stagnone_dxy01_15m.ldb
+** INFO   : Closed file : Stagnone_dxy01_15m.ldb
+** INFO   : Opened file : Stagnone_dxy01_15m_obs.xyn
+** INFO   : Closed file : Stagnone_dxy01_15m_obs.xyn
+** INFO   : Initializing flow model geometry...
+** INFO   : removing dry cells...
+** INFO   : Opened file : illegalcells_dry.pol
+** INFO   : Closed file : illegalcells_dry.pol
+** INFO   : fixing global polygon...
+** INFO   : done
+** INFO   : done in      0.00000 sec.
+** INFO   : Opened file : Stagnone_dxy01_15m_old.ext
+** INFO   : disabled 262 boundary links
+** INFO   : partition_reduce_mirrorcells, elapsed time:     0.22000E-01s.
+** INFO   : Opened file : Stagnone_dxy01_15m.pli
+** INFO   : Closed file : Stagnone_dxy01_15m.pli
+** INFO   : boundary: 'Stagnone_dxy01_15m.pli' opened 63 cells.
+** INFO   : waterlevelbnd Stagnone_dxy01_15m.pli      63 nr of open bndcells
+** INFO   : Opened file : Stagnone_dxy01_15m.pli
+** INFO   : Closed file : Stagnone_dxy01_15m.pli
+** WARNING: Boundary link 00005978 already claimed [     12.4150,     37.7016]
+** WARNING: Boundary link 00006029 already claimed [     12.4050,     37.7016]
+** WARNING: Boundary link 00006079 already claimed [     12.3950,     37.7016]
+** WARNING: Boundary link 00006127 already claimed [     12.3850,     37.7016]
+** WARNING: Boundary link 00006173 already claimed [     12.3750,     37.7016]
+** WARNING: Boundary link 00006216 already claimed [     12.3650,     37.7016]
+** WARNING: Boundary link 00006259 already claimed [     12.3550,     37.7016]
+** WARNING: Boundary link 00006302 already claimed [     12.3450,     37.7016]
+** WARNING: Boundary link 00006346 already claimed [     12.3350,     37.7016]
+** WARNING: Boundary link 00006387 already claimed [     12.3250,     37.7016]
+** WARNING: Boundary link 00006428 already claimed [     12.3150,     37.7016]
+** WARNING: Boundary link 00006470 already claimed [     12.3050,     37.7016]
+** WARNING: Boundary link 00006510 already claimed [     12.2950,     37.7016]
+** WARNING: Boundary link 00006549 already claimed [     12.2850,     37.7016]
+** WARNING: Boundary link 00006592 already claimed [     12.2750,     37.7016]
+** WARNING: Boundary link 00006637 already claimed [     12.2650,     37.7016]
+** WARNING: Boundary link 00006682 already claimed [     12.2550,     37.7016]
+** WARNING: Boundary link 00006727 already claimed [     12.2450,     37.7016]
+** WARNING: Boundary link 00006773 already claimed [     12.2350,     37.7016]
+** WARNING: Boundary link 00006816 already claimed [     12.2250,     37.7016]
+** WARNING: Boundary link 00006859 already claimed [     12.2150,     37.7016]
+** WARNING: Boundary link 00006902 already claimed [     12.2050,     37.7016]
+** WARNING: Boundary link 00006946 already claimed [     12.1950,     37.7016]
+** WARNING: Boundary link 00006988 already claimed [     12.1850,     37.7016]
+** WARNING: Boundary link 00007027 already claimed [     12.1750,     37.7016]
+** WARNING: Boundary link 00007066 already claimed [     12.1650,     37.7016]
+** WARNING: Boundary link 00007105 already claimed [     12.1550,     37.7016]
+** WARNING: Boundary link 00007108 already claimed [     11.9620,     37.8462]
+** WARNING: Boundary link 00007145 already claimed [     12.1450,     37.7016]
+** WARNING: Boundary link 00007148 already claimed [     11.9620,     37.8383]
+** WARNING: Boundary link 00007183 already claimed [     12.1350,     37.7016]
+** WARNING: Boundary link 00007186 already claimed [     11.9620,     37.8304]
+** WARNING: Boundary link 00007219 already claimed [     12.1250,     37.7016]
+** WARNING: Boundary link 00007222 already claimed [     11.9620,     37.8225]
+** WARNING: Boundary link 00007253 already claimed [     12.1150,     37.7016]
+** WARNING: Boundary link 00007256 already claimed [     11.9620,     37.8146]
+** WARNING: Boundary link 00007285 already claimed [     12.1050,     37.7016]
+** WARNING: Boundary link 00007288 already claimed [     11.9620,     37.8067]
+** WARNING: Boundary link 00007315 already claimed [     12.0950,     37.7016]
+** WARNING: Boundary link 00007318 already claimed [     11.9620,     37.7988]
+** WARNING: Boundary link 00007343 already claimed [     12.0850,     37.7016]
+** WARNING: Boundary link 00007346 already claimed [     11.9620,     37.7909]
+** WARNING: Boundary link 00007369 already claimed [     12.0750,     37.7016]
+** WARNING: Boundary link 00007372 already claimed [     11.9620,     37.7830]
+** WARNING: Boundary link 00007393 already claimed [     12.0650,     37.7016]
+** WARNING: Boundary link 00007396 already claimed [     11.9620,     37.7751]
+** WARNING: Boundary link 00007415 already claimed [     12.0550,     37.7016]
+** WARNING: Boundary link 00007418 already claimed [     11.9620,     37.7672]
+** WARNING: Boundary link 00007435 already claimed [     12.0450,     37.7016]
+** WARNING: Boundary link 00007438 already claimed [     11.9620,     37.7593]
+** WARNING: Boundary link 00007453 already claimed [     12.0350,     37.7016]
+** WARNING: Boundary link 00007456 already claimed [     11.9620,     37.7514]
+** WARNING: Boundary link 00007469 already claimed [     12.0250,     37.7016]
+** WARNING: Boundary link 00007472 already claimed [     11.9620,     37.7435]
+** WARNING: Boundary link 00007483 already claimed [     12.0150,     37.7016]
+** WARNING: Boundary link 00007486 already claimed [     11.9620,     37.7356]
+** WARNING: Boundary link 00007495 already claimed [     12.0050,     37.7016]
+** WARNING: Boundary link 00007498 already claimed [     11.9620,     37.7277]
+** WARNING: Boundary link 00007505 already claimed [     11.9950,     37.7016]
+** WARNING: Boundary link 00007508 already claimed [     11.9620,     37.7198]
+** WARNING: Boundary link 00007513 already claimed [     11.9850,     37.7016]
+** WARNING: Boundary link 00007516 already claimed [     11.9620,     37.7119]
+** WARNING: Boundary link 00007519 already claimed [     11.9750,     37.7016]
+** INFO   : boundary: 'Stagnone_dxy01_15m.pli' opened 0 cells.
+** INFO   : waterlevelbnd Stagnone_dxy01_15m.pli       0 nr of open bndcells
+** INFO   : Opened file : Stagnone_dxy01_15m.pli
+** INFO   : Closed file : Stagnone_dxy01_15m.pli
+** INFO   : boundary: 'Stagnone_dxy01_15m.pli' opened 63 cells.
+** INFO   : salinitybnd Stagnone_dxy01_15m.pli      63 nr of salinity bndcells
+** INFO   : Opened file : Stagnone_dxy01_15m.pli
+** INFO   : Closed file : Stagnone_dxy01_15m.pli
+** INFO   : boundary: 'Stagnone_dxy01_15m.pli' opened 63 cells.
+** INFO   : temperaturebnd Stagnone_dxy01_15m.pli      63 nr of temperature bndcells
+** INFO   : Opened file : Stagnone_dxy01_15m.pli
+** INFO   : Closed file : Stagnone_dxy01_15m.pli
+** INFO   : boundary: 'Stagnone_dxy01_15m.pli' opened 63 cells.
+** INFO   : tracerbndlagoon_tracer Stagnone_dxy01_15m.pli      63 nr of tracer bndcells
+** INFO   : Start partitioning model...
+** INFO   : added node-based ghostcells:             55
+** INFO   : added node-based ghostcells:             40
+** INFO   : added node-based ghostcells:             21
+** INFO   : added node-based ghostcells:             24
+** INFO   : added node-based ghostcells:             39
+** INFO   : added node-based ghostcells:             39
+** INFO   : added node-based ghostcells:             40
+** INFO   : added node-based ghostcells:             21
+** INFO   : added node-based ghostcells:             24
+** INFO   : added node-based ghostcells:             16
+** INFO   : added node-based ghostcells:             39
+** INFO   : added node-based ghostcells:             39
+** INFO   : added node-based ghostcells:             40
+** INFO   : added node-based ghostcells:             21
+** INFO   : added node-based ghostcells:             24
+** INFO   : added node-based ghostcells:             16
+** INFO   : added node-based ghostcells:             39
+** INFO   : added node-based ghostcells:             39
+** INFO   : added node-based ghostcells:             40
+** INFO   : added node-based ghostcells:             21
+** INFO   : added node-based ghostcells:             24
+** INFO   : added node-based ghostcells:             16
+** INFO   : added node-based ghostcells:             39
+** INFO   : added node-based ghostcells:             39
+** INFO   : partition_fixorientation_ghostlist: number of reversed flowlinks=              0
+** INFO   : Done partitioning model.
+** INFO   : merged 0 samples in .00 seconds.
+** INFO   : setbedlevelfromextfile: Using bedlevel as specified in net-file.
+** INFO   : setbedlevelfromextfile: Mirroring input bedlevels at open boundaries.
+** INFO   : Done initializing flow model geometry.
+** INFO   : OpenMP disabled.
+** INFO   : List of constituents defined in the model
+** INFO   :        1 salt
+** INFO   :        2 temperature
+** INFO   :        3 lagoon_tracer
+** INFO   : Finding flow nodes...
+** INFO   : done in      0.00000 sec.
+** INFO   : minimum Coriolis parameter :       0.000089
+** INFO   : maximum Coriolis parameter :       0.000090
+** INFO   : Start initializing external forcings...
+** INFO   : Reading initial field file 'initialFields.ini'.
+** INFO   : Opened file : initialsalinity_hypersaline.xyz
+** INFO   : merged 0 samples in .02 seconds.
+** INFO   : Closed file : initialsalinity_hypersaline.xyz
+** INFO   : add_tracer: tracer lagoon_tracer already exists. No update required.
+** INFO   : Opened file : lagoon_tracer_init.xyz
+** INFO   : merged 0 samples in .02 seconds.
+** INFO   : Closed file : lagoon_tracer_init.xyz
+** INFO   : Opened file : turbid_airport_init.xyz
+** INFO   : merged 0 samples in .03 seconds.
+** INFO   : Closed file : turbid_airport_init.xyz
+** INFO   : Opened file : turbid_saltpans_init.xyz
+** INFO   : merged 0 samples in .01 seconds.
+** INFO   : Closed file : turbid_saltpans_init.xyz
+** INFO   : Finish initializing the initial field file 'initialFields.ini':       5 blocks have been read and handled.
+** WARNING: ...
+** WARNING: Forcing file (tracer_zero.bc) not found.
+** ERROR  : Boundary link 00007519 already claimed [     11.9750,     37.7016]
+** ERROR  : initboundaryblockforcings: Error while initializing quantity 'tracerbndlagoon_tracer'. Check preceding log lines for details.
+** ERROR  : Error occurs on one or more processes with ...
+** INFO   : Closed file : Stagnone_dxy01_15m_old.ext

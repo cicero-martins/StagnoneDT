@@ -1,0 +1,19 @@
+[General]
+fileVersion           = 1.01
+fileType              = boundConds
+
+[Forcing]
+name                  = turbid_airport
+function              = timeseries
+timeInterpolation     = linear
+quantity              = time
+unit                  = minutes since 2025-07-01 00:00:00
+quantity              = lateral_discharge
+unit                  = m3/s
+0        0.0
+2880     0.0
+2880.1   0.139
+3000     0.139
+3000.1   0.0
+12960    0.0
+17280    0.0
