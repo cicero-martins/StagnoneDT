@@ -1,23 +1,28 @@
 #!/usr/bin/env bash
 #
-# Setup minimal N-3 continuation using d10d12 as template (NOT nodm).
-# Reason: d10d12 has BCs + meteo + .mdw all aligned for Jul 1-13 window.
-# Replacing some files from nodm clone caused SWAN time_read errors.
+# Setup minimal N-K continuation (default K=3) using d10d12 as template.
+# d10d12 has BCs + meteo + .mdw all aligned for Jul 1-13 window.
 #
-# Usage:  bash setup_continuation_simple.sh <publish_day>
-# E.g.:   bash setup_continuation_simple.sh 2025-07-13
+# Usage:  bash setup_continuation_simple.sh <publish_day> [K]
+# E.g.:   bash setup_continuation_simple.sh 2025-07-10        # rst @ Jul 7 (N-3, 72h)
+#         bash setup_continuation_simple.sh 2025-07-10 2      # rst @ Jul 8 (N-2, 48h)
 
 set -euo pipefail
 
-PUBLISH_DAY="${1:?Usage: $0 <publish_day YYYY-MM-DD>}"
+PUBLISH_DAY="${1:?Usage: $0 <publish_day YYYY-MM-DD> [K days back]}"
+K_BACK="${2:-3}"
 ROOT="${ROOT:-$HOME/StagnoneDT}"
 TEMPLATE="$ROOT/model/dflowfm_v04AE_d10d12"
-NODM_OUT="$ROOT/model/dflowfm_v04AE_nodm/DFM_OUTPUT_Stagnone_dxy01_15m"
+# RST_SRC: dir com os rst_*.nc usados para reiniciar. Default = nodm cold-start;
+# pode ser overridado via env var para chain (ex: rst do dia anterior do próprio
+# pipeline de continuation).
+RST_SRC="${RST_SRC:-$ROOT/model/dflowfm_v04AE_nodm/DFM_OUTPUT_Stagnone_dxy01_15m}"
+NODM_OUT="$RST_SRC"   # nome mantido para minimizar diff no resto do script
 RUNS="$ROOT/runs/forecast"
-NEW="$RUNS/d${PUBLISH_DAY}"
+NEW="$RUNS/d${PUBLISH_DAY}_n${K_BACK}"
 
-# Window: N-3 -> N (72h)
-START_DATE=$(date -u -d "$PUBLISH_DAY - 3 days" +%Y-%m-%d)
+# Window: N-K -> N (K*24h)
+START_DATE=$(date -u -d "$PUBLISH_DAY - $K_BACK days" +%Y-%m-%d)
 STOP_DATE="$PUBLISH_DAY"
 START_NOSEP=$(date -u -d "$START_DATE" +%Y%m%d)
 STOP_NOSEP=$(date -u -d "$STOP_DATE" +%Y%m%d)
@@ -64,7 +69,7 @@ for n in 0 1 2 3 4 5 6 7; do
     rank=$(printf "%04d" $n)
     cp "$NODM_OUT/Stagnone_dxy01_15m_${rank}_${START_NOSEP}_000000_rst.nc" "$NEW/restart_input/"
 done
-echo "  8 rst @ $START_DATE installed from nodm"
+echo "  8 rst @ $START_DATE installed from $NODM_OUT"
 
 # Patch MDUs (master + 8 per-partition)
 patch_mdu() {
@@ -84,6 +89,10 @@ patch_mdu() {
     # D-Morph off: nodm rst has no sediment fractions; d10d12 MDU has Sedimentmodelnr=4
     # which causes "Mismatch in number of sediment fractions" error. Force OFF.
     sed -i 's/^Sedimentmodelnr\s*=.*/Sedimentmodelnr = 0/' "$mdu"
+    # DIAGNOSTIC: raise maxVelocity to 50 to let cell 13162 explode and observe
+    # if instability stays local (cell isolated outlier) or propagates to neighbors.
+    # If isolated: bathy smoothing local. If propagates: structural issue.
+    sed -i 's/^maxVelocity\s*=.*/maxVelocity               = 50.0           # DIAGNOSTIC: allow cell 13162 blowup to test propagation/' "$mdu"
 }
 patch_mdu "$NEW/Stagnone_dxy01_15m.mdu" ""
 for n in 0 1 2 3 4 5 6 7; do

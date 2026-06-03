@@ -7,14 +7,17 @@ Differences vs v04AE_d10d12:
   - PLI: data/processed/mesh_v05/Stagnone_v05.pli  (vs v04AE's 49 nodes)
   - CMEMS source: data/raw/cmems_v05/ (extended bbox to lat 38.30)
   - Output: model/dflowfm_v05/
-  - Skip uxuy (hydrolib 1.0.0 vector quantity bug; v04AE 49-node fallback
-    doesn't map to v05's 333 nodes; FM derives velocity from WL gradient).
+  - 2026-06-03: uxuy NOW GENERATED (was previously skipped citing hydrolib bug +
+    "FM derives velocity from WL gradient" — both turned out to be wrong; the
+    v05 23h crash with WL=±14m and vel=-50 m/s matches the uxuy-removal cascade
+    documented in jul06jul13 + continuation cell-13162).
   - Skip per-node Marettimo offset (recompute later; constant for now).
 
 Quantities written:
-  - waterlevelbnd_CMEMS_*.bc       (333 nodes, 15-min anfc + tide)
-  - salinitybnd_CMEMS_*.bc         (333 nodes, daily 3D reanalysis)
-  - temperaturebnd_CMEMS_*.bc      (333 nodes, daily 3D reanalysis)
+  - waterlevelbnd_CMEMS_*.bc           (333 nodes, 15-min anfc + tide)
+  - salinitybnd_CMEMS_*.bc             (333 nodes, daily 3D reanalysis)
+  - temperaturebnd_CMEMS_*.bc          (333 nodes, daily 3D reanalysis)
+  - uxuyadvectionvelocitybnd_CMEMS_*.bc (333 nodes, daily 3D reanalysis uo+vo)
 """
 from __future__ import annotations
 
@@ -64,7 +67,8 @@ def main():
         print('[monkey-patch] Stubbed hcdfm.VectorQuantityUnitPairs for hydrolib 1.0.0')
 
     ext_new = hcdfm.ExtModel()
-    list_quantities = ['waterlevelbnd', 'salinitybnd', 'temperaturebnd']
+    list_quantities = ['waterlevelbnd', 'salinitybnd', 'temperaturebnd',
+                       'uxuyadvectionvelocitybnd']
     dir_pattern = str(SRC_NC / 'cmems_{ncvarname}_*.nc')
 
     print(f'PLI:          {PLI_FILE}')
