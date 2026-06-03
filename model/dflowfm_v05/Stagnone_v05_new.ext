@@ -1,0 +1,45 @@
+# v05 _new.ext (cold-start). Written by setup_model_v05.py.
+# 2026-06-03: uxuyadvectionvelocitybnd added (was missing; caused 23h crash).
+
+[Boundary]
+quantity     = waterlevelbnd
+locationFile = Stagnone_v05.pli
+forcingFile  = waterlevelbnd_CMEMS_Stagnone_v05.bc
+
+[Boundary]
+quantity     = salinitybnd
+locationFile = Stagnone_v05.pli
+forcingFile  = salinitybnd_CMEMS_Stagnone_v05.bc
+
+[Boundary]
+quantity     = temperaturebnd
+locationFile = Stagnone_v05.pli
+forcingFile  = temperaturebnd_CMEMS_Stagnone_v05.bc
+
+[Boundary]
+quantity     = uxuyadvectionvelocitybnd
+locationFile = Stagnone_v05.pli
+forcingFile  = uxuyadvectionvelocitybnd_CMEMS_Stagnone_v05.bc
+
+[Meteo]
+quantity        = windx
+forcingFile     = wind_blendedAE_u10n_20250701to20250713.nc
+forcingFileType = netcdf
+operand         = O
+
+[Meteo]
+quantity        = windy
+forcingFile     = wind_blendedAE_v10n_20250701to20250713.nc
+forcingFileType = netcdf
+operand         = O
+
+[Meteo]
+quantity        = airpressure
+forcingFile     = era5_msl_20250701to20250713_ERA5.nc
+forcingFileType = netcdf
+operand         = O
+
+# [Meteo] charnock dropped 2026-05-27: FM kernel looks for var 'c' but our
+# era5_chnk has var 'chnk' (the v04AE_d10d12 bypass preprocessing dropped the
+# GRIB attrs FM used to identify Charnock). For FM-only diagnostic the impact
+# is minor (no SWAN coupling; FM uses default Charnock=0.012 internal).

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dimrConfig xmlns="http://schemas.deltares.nl/dimr"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.3.xsd">
+    <documentation>
+        <fileVersion>1.3</fileVersion>
+        <createdBy>setup_model_v05.py / hand-written 2026-05-26</createdBy>
+        <creationDate>2026-05-26T00:00:00Z</creationDate>
+    </documentation>
+    <control>
+        <start name="myNameDFlowFM"/>
+    </control>
+    <component name="myNameDFlowFM">
+        <library>dflowfm</library>
+        <workingDir>.</workingDir>
+        <inputFile>Stagnone_v05.mdu</inputFile>
+    </component>
+</dimrConfig>
