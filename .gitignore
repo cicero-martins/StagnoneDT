@@ -14,6 +14,30 @@ model/dflowfm_*_waveonly_test/
 # Planet multi-date composite (regenerable via scripts/planet_mosaic_composite.py, ~3.7 GB)
 data/processed/planet_composite_*.nc
 
+# Planet 2023 RF pipeline intermediates (regenerable via scripts/build_planet2023_maltese_rf.py)
+data/processed/planet2023_rf/composite_aug2023.tif
+data/processed/planet2023_rf/lyzenga_dii_aug2023.tif
+data/processed/planet2023_rf/pca_dii_aug2023.tif
+
+# Roughness XYZ from Planet RF (regenerable, large)
+data/processed/roughness_satellite_planet2023*.xyz
+
+# QGIS project/auxiliary files (georeferencing session artifacts)
+data/processed/*.gpkg
+data/processed/*.gpkg-shm
+data/processed/*.gpkg-wal
+data/processed/*.qgz
+data/processed/*_modified.tif
+data/processed/*_modified.tif.aux.xml
+data/processed/*.png.aux.xml
+data/processed/*.png.points
+data/processed/*.pdf.aux.xml
+data/processed/*.pdf.points
+reference/papers/*.tif
+reference/papers/*.tif.aux.xml
+reference/papers/*.pdf.aux.xml
+reference/papers/*.pdf.points
+
 # EDITO run logs captured locally during debugging (useful transient artifacts, not repo-worthy)
 output/delft3d-run-docker-*.txt
 
