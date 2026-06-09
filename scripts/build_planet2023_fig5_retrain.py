@@ -388,6 +388,52 @@ def make_comparison(class_fig5, fig5_tf, fig5_crs, H5, W5):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# 7. Export roughness XYZ for FM trachytopes
+# ─────────────────────────────────────────────────────────────────────────────
+def save_roughness_xyz(stride=3):
+    """Write roughness_satellite_v3.xyz (x_utm33N, y_utm33N, manning_n).
+
+    Uses every `stride`-th pixel in each direction (default 3 -> 9m effective
+    resolution) — sufficient for mesh cells of ~30m inside the lagoon.
+    Only pixels with a valid class are written; nodata (-9999) are skipped.
+    """
+    xyz_out = OUT_DIR / 'roughness_satellite_v3.xyz'
+
+    with rasterio.open(CLASS_TIF2) as ds:
+        class_map = ds.read(1)      # (H, W) int16, nodata=-9999
+        tf        = ds.transform
+        H, W      = ds.height, ds.width
+
+    rows = np.arange(0, H, stride)
+    cols = np.arange(0, W, stride)
+    rr, cc = np.meshgrid(rows, cols, indexing='ij')
+    rr_f = rr.ravel(); cc_f = cc.ravel()
+
+    cls_sub = class_map[rr_f, cc_f]
+    valid   = cls_sub != -9999
+
+    cls_v = cls_sub[valid]
+    x_v   = tf.c + (cc_f[valid] + 0.5) * tf.a
+    y_v   = tf.f + (rr_f[valid] + 0.5) * tf.e
+
+    manning = np.vectorize(MANNING_MAP.get)(cls_v, np.nan)
+    ok      = ~np.isnan(manning)
+    x_v, y_v, manning = x_v[ok], y_v[ok], manning[ok]
+
+    with open(xyz_out, 'w') as f:
+        for x, y, n in zip(x_v, y_v, manning):
+            f.write(f'{x:.2f}  {y:.2f}  {n:.4f}\n')
+
+    print(f'  Wrote {len(x_v):,} points  ->  {xyz_out.name}')
+    print(f'  Manning range: {manning.min():.3f} - {manning.max():.3f}')
+    class_counts = {c: (cls_v[ok] == c).sum() for c in MANNING_MAP}
+    for cid, n_pts in class_counts.items():
+        if n_pts > 0:
+            print('    class %d  %-44s  %7d pts  n=%.3f'
+                  % (cid, MALTESE_CLASSES[cid]['name'], n_pts, MANNING_MAP[cid]))
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Main
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
@@ -419,6 +465,9 @@ def main():
 
     print('\n=== Step 6: Comparison figure ===')
     make_comparison(class_fig5, fig5_tf, fig5_crs, H5, W5)
+
+    print('\n=== Step 7: Export roughness XYZ ===')
+    save_roughness_xyz(stride=3)
 
     print('\nDone.')
 
