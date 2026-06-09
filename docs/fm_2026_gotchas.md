@@ -121,6 +121,35 @@ Not a parser bug, but an easy-to-miss interaction. The default `nudgeTimeUni=360
 7. [ ] After init: `my model volume` in partition `.dia` files is non-zero (~10¹¹ m³ scale for our ~1800 km² domain)
 8. [ ] After 12h sim-time: interior salinity has not collapsed to boundary value (compare to `wrimap_salinity` slice in map.nc)
 
+## 6. Trachytope `.arl` requires a dimension header as first non-comment line
+
+**Symptom:** Run aborts at init with:
+```
+** ERROR  : Read error from file: stagnone_trachytopes_v3.arl, Record: 9
+** FATAL  : flow_trachyinit:: Error reading trachytope dimensions (dimtrt)
+```
+
+**Cause:** FM's `flow_trachyinit` reads the *dimensions* (number of assigned links) from the first non-comment line before reading any link records. Without it, FM interprets the first link ID (e.g. `701`) as the count, proceeds to read 701 records, and fails with a read error when a record has more columns than expected.
+
+**Fix:** After all `*`-comment header lines, insert a single line with the total number of link entries:
+
+```
+* link_id  n_classes  class_id  fraction  ...
+11211
+701  1  2  1.0000
+702  1  2  1.0000
+703  2  2  0.7517  3  0.2483
+...
+```
+
+In the build script, collect all data lines first and insert the count before writing:
+```python
+comment_end = next(i for i, l in enumerate(lines) if not l.startswith('*'))
+lines.insert(comment_end, str(n_assigned))
+```
+
+This is equivalent to the Delft3D-FLOW `.aru`/`.arl` convention documented in the D-Morphology Manual §11.3.2 (count header, then per-link records).
+
 ## Latent dfm_tools issues worth reporting upstream
 
 - `xarray_helpers.py:358`: writes `units = 'mm/day'` literally; should be `'mm day-1'` (CF/UDUNITS).
