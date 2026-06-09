@@ -41,10 +41,13 @@ CLASS_TIF  = ROOT / 'data/processed/planet2023_rf_v3/classified_seagrass_aug2023
 ARL_OUT    = ROOT / 'data/processed/planet2023_rf_v3/stagnone_trachytopes_v3.arl'
 
 RADIUS     = 20        # m -- search radius around each edge midpoint
-N_TRACHYTOPE = 4       # classes 0-3 in trachytopes.ttd
+N_TRACHYTOPE = 4       # classes 1-4 in trachytopes.ttd (FM reserves class 0)
+TRAC_OFFSET = 1        # classes start at 1, not 0
 
 # RF class -> trachytope class (-1 = skip / nodata)
-RF_TO_TRAC = {0: 0, 1: 1, 2: 1, 3: 2, 4: 2, 5: 2, 7: 3}
+# FM reserves class 0 as "no trachytope / background" — user classes start at 1
+# 1=sand(f53), 2=Cymodocea(f153), 3=Posidonia(f153), 4=rock(f53)
+RF_TO_TRAC = {0: 1, 1: 2, 2: 2, 3: 3, 4: 3, 5: 3, 7: 4}
 
 # -- 1. Load mesh edges -------------------------------------------------------
 print('Loading mesh...')
@@ -109,7 +112,8 @@ lines = [
     '# RF v3 seagrass classification, Planet SuperDove Aug 2023',
     '# build_trachytope_arl.py  --  FM Manual C.7.1 coordinate format',
     f'# Search radius: {RADIUS} m  |  Pixel res: {pix_res} m',
-    '# TTD: 0=sand(n53,0.020), 1=Cymodocea(f153), 2=Posidonia(f153), 3=rock(n53,0.028)',
+    '# TTD: 1=sand(n53,0.020), 2=Cymodocea(f153), 3=Posidonia(f153), 4=rock(n53,0.028)',
+    '# FM class 0 is reserved for background roughness (unifFrictCoef)',
     '# xu  yu  zu  TrachytopeNr  Fraction',
 ]
 
@@ -127,7 +131,7 @@ for i in range(N_edges):
         n_skipped += 1
         continue
 
-    counts = np.bincount(classified, minlength=N_TRACHYTOPE).astype(float)
+    counts = np.bincount(classified, minlength=N_TRACHYTOPE + TRAC_OFFSET).astype(float)
     total  = counts.sum()
     fracs  = counts / total
 
@@ -135,10 +139,10 @@ for i in range(N_edges):
     yu = edge_y_utm[i]
 
     wrote_any = False
-    for cls in range(N_TRACHYTOPE):
+    for cls in range(TRAC_OFFSET, N_TRACHYTOPE + TRAC_OFFSET):   # 1..4
         if fracs[cls] > 0:
             lines.append(f'{xu:.3f}  {yu:.3f}  0  {cls}  {fracs[cls]:.4f}')
-            class_hist[cls] += int(counts[cls])
+            class_hist[cls - TRAC_OFFSET] += int(counts[cls])
             wrote_any = True
 
     if wrote_any:
@@ -152,7 +156,8 @@ print(f'  Links all-nodata:   {n_skipped:,}')
 total_px = class_hist.sum()
 class_names = ['sand(f53)', 'Cymodocea(f153)', 'Posidonia(f153)', 'rock(f53)']
 print(f'\n  Trachytope distribution (pixel-weighted):')
-for cls in range(N_TRACHYTOPE):
-    pct = class_hist[cls] / total_px * 100 if total_px > 0 else 0
-    print(f'    TTD {cls} ({class_names[cls]:18s}): {class_hist[cls]:8,} px ({pct:5.1f}%)')
+for i, name in enumerate(class_names):
+    cls = i + TRAC_OFFSET
+    pct = class_hist[i] / total_px * 100 if total_px > 0 else 0
+    print(f'    TTD {cls} ({name:18s}): {class_hist[i]:8,} px ({pct:5.1f}%)')
 print(f'\nSaved: {ARL_OUT.name}  ({ARL_OUT.stat().st_size/1e3:.0f} kB)')

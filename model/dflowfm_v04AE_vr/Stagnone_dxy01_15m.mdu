@@ -242,7 +242,7 @@ interceptionModel = 0 # Interception model (0: none, 1: on, via layer thickness)
 trtRou = Y    # Include alluvial and vegetation roughness (trachytopes) (Y: yes, N: no)
 trtDef = trachytopes.ttd      # File (*.ttd) containing trachytope definitions
 trtL   = stagnone_trachytopes_v3.arl      # File (*.arl) containing distribution of trachytope definitions
-dtTrt  = 60.0 # Trachytope roughness update time interval
+dtTrt  = 300.0 # Trachytope roughness update time interval (must be multiple of DtUser=300)
 trtMxR = 8    # Maximum recursion level for composite trachytope definitions
 
 [Output]
