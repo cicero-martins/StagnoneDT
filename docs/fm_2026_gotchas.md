@@ -121,34 +121,37 @@ Not a parser bug, but an easy-to-miss interaction. The default `nudgeTimeUni=360
 7. [ ] After init: `my model volume` in partition `.dia` files is non-zero (~10¹¹ m³ scale for our ~1800 km² domain)
 8. [ ] After 12h sim-time: interior salinity has not collapsed to boundary value (compare to `wrimap_salinity` slice in map.nc)
 
-## 6. Trachytope `.arl` requires a dimension header as first non-comment line
+## 6. Trachytope `.arl` is coordinate-based, NOT link-ID-based
 
 **Symptom:** Run aborts at init with:
 ```
 ** ERROR  : Read error from file: stagnone_trachytopes_v3.arl, Record: 9
 ** FATAL  : flow_trachyinit:: Error reading trachytope dimensions (dimtrt)
 ```
+(Record number varies depending on which line FM trips on.)
 
-**Cause:** FM's `flow_trachyinit` reads the *dimensions* (number of assigned links) from the first non-comment line before reading any link records. Without it, FM interprets the first link ID (e.g. `701`) as the count, proceeds to read 701 records, and fails with a read error when a record has more columns than expected.
+**Cause:** The `.arl` format (FM Manual §C.7.1) uses **spatial coordinates**, not link IDs. FM reads `xu yu zu TrachytopeNr Fraction` per row. Any other format (link-ID, count header, wrong column order) will produce this FATAL at init. There is NO header/count line.
 
-**Fix:** After all `*`-comment header lines, insert a single line with the total number of link entries:
-
+**Correct format per FM Manual C.7.1:**
 ```
-* link_id  n_classes  class_id  fraction  ...
-11211
-701  1  2  1.0000
-702  1  2  1.0000
-703  2  2  0.7517  3  0.2483
+# comment lines start with # or *
+# xu  yu  zu  TrachytopeNr  Fraction
+271103.396  4187338.750  0  2  1.0000
+272861.411  4187180.313  0  2  0.7517
+272861.411  4187180.313  0  3  0.2483
 ...
 ```
 
-In the build script, collect all data lines first and insert the count before writing:
-```python
-comment_end = next(i for i, l in enumerate(lines) if not l.startswith('*'))
-lines.insert(comment_end, str(n_assigned))
-```
+Multiple trachytope classes for the same link = consecutive lines with identical `xu,yu,zu`. FM sums fractions; remaining `(1 − sum)` takes the MDU `unifFrictCoef` background roughness.
 
-This is equivalent to the Delft3D-FLOW `.aru`/`.arl` convention documented in the D-Morphology Manual §11.3.2 (count header, then per-link records).
+**TTD formula numbers (FM 2026, §C.7.2.5) — NOT the same as older FM versions:**
+- Formula `53` = Manning n [s/m^1/3] (one parameter)
+- Formula `153` = Baptist 1 [h_v m, mD 1/m, C_D -, C_b m^0.5/s] (four parameters)
+- Formula `1` = flood-protected area fraction — NOT a roughness formula; using it as Manning silently does nothing useful
+
+**Coordinate system:** mesh edge coordinates (`mesh2d_edge_x/y`) in the net.nc are in WGS84 degrees. The ARL file must be in the **same CRS as the mesh** — i.e., WGS84 degrees for this project — OR in projected coordinates if the net.nc stores them that way. Verify with `ds['mesh2d_edge_x'].values.max()` — if ~13 it is WGS84; if ~280000 it is UTM. Our net.nc is WGS84, so the build script reprojects RF TIF pixels (UTM33N) to match edge coordinates before writing.
+
+**Build script:** `scripts/build_trachytope_arl.py` — reads WGS84 edge coords, reprojects to UTM33N for TIF sampling (20m circular kernel), then writes ARL in UTM33N (confirmed that FM 2026 accepts projected meters in the ARL provided the coordinates spatially overlap the mesh extent).
 
 ## Latent dfm_tools issues worth reporting upstream
 
