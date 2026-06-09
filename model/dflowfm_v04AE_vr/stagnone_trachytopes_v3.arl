@@ -4,6 +4,7 @@
 * Search radius: 20 m  |  Kernel: 149 px  |  Pixel res: 3.0 m
 * Trachytope classes: 0=sand(n=0.020), 1=Cymodocea(Baptist), 2=Posidonia(Baptist), 3=rock(n=0.028)
 * link_id  n_classes  class_id  fraction  [class_id  fraction  ...]
+11211
 701  1  2  1.0000
 702  1  2  1.0000
 703  2  2  0.7517  3  0.2483
