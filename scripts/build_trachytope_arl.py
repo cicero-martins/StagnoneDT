@@ -148,6 +148,10 @@ for i in range(N_edges):
     lines.append(f'{i+1}  {len(present)}  ' + '  '.join(parts))
     n_assigned += 1
 
+# Insert dimension header after comment block (FM requires n_entries as first non-comment line)
+comment_end = next(i for i, l in enumerate(lines) if not l.startswith('*'))
+lines.insert(comment_end, str(n_assigned))
+
 # Footer stats
 lines.append('* End of file')
 
