@@ -114,6 +114,7 @@ lines = [
     f'# Search radius: {RADIUS} m  |  Pixel res: {pix_res} m',
     '# TTD: 1=sand(n53,0.020), 2=Cymodocea(f153), 3=Posidonia(f153), 4=rock(n53,0.028)',
     '# FM class 0 is reserved for background roughness (unifFrictCoef)',
+    '# COORDS: WGS84 lon/lat (must match mesh CRS; UTM would silently assign zero links)',
     '# xu  yu  zu  TrachytopeNr  Fraction',
 ]
 
@@ -135,13 +136,16 @@ for i in range(N_edges):
     total  = counts.sum()
     fracs  = counts / total
 
-    xu = edge_x_utm[i]
-    yu = edge_y_utm[i]
+    # ARL coordinates must match the mesh CRS (WGS84 lon/lat), NOT UTM.
+    # UTM was only used to index the raster; writing UTM here causes FM to
+    # find zero matching links and silently apply no trachytopes.
+    xu = edge_x[i]   # WGS84 longitude
+    yu = edge_y[i]   # WGS84 latitude
 
     wrote_any = False
     for cls in range(TRAC_OFFSET, N_TRACHYTOPE + TRAC_OFFSET):   # 1..4
         if fracs[cls] > 0:
-            lines.append(f'{xu:.3f}  {yu:.3f}  0  {cls}  {fracs[cls]:.4f}')
+            lines.append(f'{xu:.6f}  {yu:.6f}  0  {cls}  {fracs[cls]:.4f}')
             class_hist[cls - TRAC_OFFSET] += int(counts[cls])
             wrote_any = True
 
