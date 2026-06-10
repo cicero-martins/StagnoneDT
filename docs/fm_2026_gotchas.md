@@ -132,13 +132,14 @@ Not a parser bug, but an easy-to-miss interaction. The default `nudgeTimeUni=360
 
 **Cause:** The `.arl` format (FM Manual §C.7.1) uses **spatial coordinates**, not link IDs. FM reads `xu yu zu TrachytopeNr Fraction` per row. Any other format (link-ID, count header, wrong column order) will produce this FATAL at init. There is NO header/count line.
 
-**Correct format per FM Manual C.7.1:**
+**Correct format per FM Manual C.7.1** (WGS84 coords for our mesh):
 ```
 # comment lines start with # or *
+# COORDS: WGS84 lon/lat -- must match mesh CRS
 # xu  yu  zu  TrachytopeNr  Fraction
-271103.396  4187338.750  0  2  1.0000
-272861.411  4187180.313  0  2  0.7517
-272861.411  4187180.313  0  3  0.2483
+12.400000  37.804768  0  2  1.0000
+12.420000  37.803781  0  2  0.7517
+12.420000  37.803781  0  3  0.2483
 ...
 ```
 
@@ -149,9 +150,11 @@ Multiple trachytope classes for the same link = consecutive lines with identical
 - Formula `153` = Baptist 1 [h_v m, mD 1/m, C_D -, C_b m^0.5/s] (four parameters)
 - Formula `1` = flood-protected area fraction — NOT a roughness formula; using it as Manning silently does nothing useful
 
-**Coordinate system:** mesh edge coordinates (`mesh2d_edge_x/y`) in the net.nc are in WGS84 degrees. The ARL file must be in the **same CRS as the mesh** — i.e., WGS84 degrees for this project — OR in projected coordinates if the net.nc stores them that way. Verify with `ds['mesh2d_edge_x'].values.max()` — if ~13 it is WGS84; if ~280000 it is UTM. Our net.nc is WGS84, so the build script reprojects RF TIF pixels (UTM33N) to match edge coordinates before writing.
+**Coordinate system — critical silent-failure gotcha (2026-06-10):** The xu/yu in the `.arl` **must be in the same CRS as the mesh**. FM matches ARL entries to flow links by spatial proximity in the mesh CRS. If the mesh is WGS84 (edge_x ~12.4) but the ARL uses UTM33N (~271000), **no links are ever matched and the model runs to completion without FATAL or WARNING, but trachytopes have zero effect** — velocities and WL fields are identical to the no-VR baseline.
 
-**Build script:** `scripts/build_trachytope_arl.py` — reads WGS84 edge coords, reprojects to UTM33N for TIF sampling (20m circular kernel), then writes ARL in UTM33N (confirmed that FM 2026 accepts projected meters in the ARL provided the coordinates spatially overlap the mesh extent).
+Diagnostic: compare time-averaged velocity stats (VR vs no-VR baseline) — if identical to 4+ decimal places, suspect CRS mismatch. Check `ds['mesh2d_edge_x'].values.max()`: if ~13 it is WGS84; if ~280000 it is UTM.
+
+**Build script:** `scripts/build_trachytope_arl.py` — reads WGS84 edge coords, reprojects to UTM33N *only* for TIF raster sampling (20m circular kernel), then writes ARL in **WGS84** (`edge_x`/`edge_y`, not `edge_x_utm`/`edge_y_utm`). The UTM transform must NOT leak into the ARL output coordinates.
 
 ## Latent dfm_tools issues worth reporting upstream
 
