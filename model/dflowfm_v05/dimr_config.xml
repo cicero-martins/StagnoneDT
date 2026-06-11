@@ -8,11 +8,15 @@
         <creationDate>2026-05-26T00:00:00Z</creationDate>
     </documentation>
     <control>
-        <start name="myNameDFlowFM"/>
+        <parallel>
+            <start name="myNameDFlowFM"/>
+        </parallel>
     </control>
     <component name="myNameDFlowFM">
         <library>dflowfm</library>
+        <process>0 1 2 3 4 5 6 7</process>
         <workingDir>.</workingDir>
         <inputFile>Stagnone_v05.mdu</inputFile>
+        <mpiCommunicator>DFM_COMM_DFMWORLD</mpiCommunicator>
     </component>
 </dimrConfig>
