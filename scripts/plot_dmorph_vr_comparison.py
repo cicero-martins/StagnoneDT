@@ -86,44 +86,54 @@ def sample_seagrass(face_x, face_y):
 
 
 # ---------------------------------------------------------------
-# Load bl run (local extraction)
+# Load both NPZs from server extraction (27901 cells, same mesh, no filter)
+# Prefer server versions so bl and vr are guaranteed aligned.
+# Fallback to local bl extraction if server version not present.
 # ---------------------------------------------------------------
-BL_MAP_DIR = ROOT / 'model' / 'dflowfm_v04AE' / 'DFM_OUTPUT_Stagnone_dxy01_15m'
-d_bl = extract_bl_local('bl', BL_MAP_DIR)
+bl_server = PROC / 'dmorph_delta_bl_server.npz'
+bl_local  = PROC / 'dmorph_delta_bl.npz'
+vr_npz    = PROC / 'dmorph_delta_vr.npz'
 
-# ---------------------------------------------------------------
-# Load vr run (transferred from server)
-# ---------------------------------------------------------------
-vr_npz = PROC / 'dmorph_delta_vr.npz'
-if not vr_npz.exists():
-    print(f'\nERROR: {vr_npz} not found.')
-    print('Run scripts/extract_dmorph_comparison_server.py on simit server,')
-    print('then scp simit:~/StagnoneDT/data/processed/dmorph_delta_vr.npz data/processed/')
-    raise SystemExit(1)
+for f in [vr_npz]:
+    if not f.exists():
+        print(f'\nERROR: {f.name} not found.')
+        print('Run scripts/extract_dmorph_comparison_server.py on simit server,')
+        print('then scp the NPZ to data/processed/')
+        raise SystemExit(1)
+
 d_vr = np.load(vr_npz)
-print(f'vr: loaded {len(d_vr["face_x"])} cells')
+d_bl = np.load(bl_server if bl_server.exists() else bl_local)
+print(f'bl: {len(d_bl["face_x"])} cells  vr: {len(d_vr["face_x"])} cells')
 
-# Align by nearest-face match (grids may differ if partitioned differently)
-# Both runs use the same mesh, so face coords should match 1:1 after lagoon filter.
-# Verify alignment:
-max_dist = np.max(np.sqrt((d_bl['face_x'] - d_vr['face_x'])**2 +
-                           (d_bl['face_y'] - d_vr['face_y'])**2))
-if max_dist > 1e-6:
-    print(f'WARNING: max coord mismatch = {max_dist:.2e} deg — rebuilding alignment')
-    # Sort both by (x,y) to align
-    idx_bl = np.lexsort((d_bl['face_y'], d_bl['face_x']))
-    idx_vr = np.lexsort((d_vr['face_y'], d_vr['face_x']))
-    face_x   = d_bl['face_x'][idx_bl]
-    face_y   = d_bl['face_y'][idx_bl]
-    delta_bl_bl = d_bl['delta_bl'][idx_bl]
-    delta_bl_vr = d_vr['delta_bl'][idx_vr]
-else:
-    face_x      = d_bl['face_x']
-    face_y      = d_bl['face_y']
-    delta_bl_bl = d_bl['delta_bl']
-    delta_bl_vr = d_vr['delta_bl']
+# Apply lagoon filter and align — both NPZs from same mesh so coords match 1:1
+# Sort by (x,y) to guarantee alignment regardless of partition order
+idx_bl = np.lexsort((d_bl['face_y'], d_bl['face_x']))
+idx_vr = np.lexsort((d_vr['face_y'], d_vr['face_x']))
+fx_all  = d_bl['face_x'][idx_bl]
+fy_all  = d_bl['face_y'][idx_bl]
+dbl_all = d_bl['delta_bl'][idx_bl]
+dvr_all = d_vr['delta_bl'][idx_vr]
+
+# Lagoon filter
+lag = ((fx_all >= LAG_LON[0]) & (fx_all <= LAG_LON[1]) &
+       (fy_all >= LAG_LAT[0]) & (fy_all <= LAG_LAT[1]))
+face_x      = fx_all[lag]
+face_y      = fy_all[lag]
+delta_bl_bl = dbl_all[lag]
+delta_bl_vr = dvr_all[lag]
+
+# Flag blowup cells (delta > 5m in vr — unphysical with TcrEro=0.1)
+blowup_mask = np.abs(delta_bl_vr) > 5.0
+print(f'Blowup cells (|delta|>5m): {blowup_mask.sum()}')
+if blowup_mask.sum() > 0:
+    print(f'  coords: {list(zip(face_x[blowup_mask].round(4), face_y[blowup_mask].round(4)))}')
+    print(f'  delta_bl_vr: {delta_bl_vr[blowup_mask]}  delta_bl_bl: {delta_bl_bl[blowup_mask]}')
 
 diff_dmorph = delta_bl_vr - delta_bl_bl  # VR effect on morphology
+
+# Capped arrays for visualisation (blowup cell plotted separately)
+delta_bl_vr_capped = np.where(blowup_mask, np.nan, delta_bl_vr)
+diff_dmorph_capped = np.where(blowup_mask, np.nan, diff_dmorph)
 
 # ---------------------------------------------------------------
 # Sample seagrass class
@@ -149,47 +159,103 @@ for tc, lbl in TRAC_LABELS.items():
 # ---------------------------------------------------------------
 # Figure
 # ---------------------------------------------------------------
-# Symmetric color scale capped at 95th pct of absolute values
-vmax = np.percentile(np.abs(np.concatenate([delta_bl_bl, delta_bl_vr])), 95)
-vmax_diff = np.percentile(np.abs(diff_dmorph), 95)
+# Robust color scale: use 98th pct of absolute values, excluding blowup
+vmax = float(np.nanpercentile(np.abs(np.concatenate([delta_bl_bl,
+                                                      delta_bl_vr_capped[~np.isnan(delta_bl_vr_capped)]])), 98))
+vmax_diff = float(np.nanpercentile(np.abs(diff_dmorph_capped[~np.isnan(diff_dmorph_capped)]), 98))
 
 fig, axes = plt.subplots(1, 4, figsize=(20, 7))
 
+def _add_blowup_marker(ax, show_legend=True):
+    if blowup_mask.sum() > 0:
+        ax.scatter(face_x[blowup_mask], face_y[blowup_mask],
+                   c='magenta', s=80, marker='*', zorder=10,
+                   label=f'blowup VR={delta_bl_vr[blowup_mask][0]:.0f} m\n'
+                         f'(bl={delta_bl_bl[blowup_mask][0]:.2f} m)')
+        if show_legend:
+            ax.legend(fontsize=7.5, loc='lower right',
+                      framealpha=0.9, edgecolor='grey')
+
+# ------ Panel A: bl baseline D-Morph ------
 sc0 = axes[0].scatter(face_x, face_y, c=delta_bl_bl, cmap='RdBu_r',
                       s=1.5, vmin=-vmax, vmax=vmax, linewidths=0, rasterized=True)
 plt.colorbar(sc0, ax=axes[0], label='delta bl (m)', fraction=0.035, pad=0.02)
 axes[0].set_title('A.  bl  D-Morph ON, VR OFF', fontsize=9, fontweight='bold')
-
-sc1 = axes[1].scatter(face_x, face_y, c=delta_bl_vr, cmap='RdBu_r',
-                      s=1.5, vmin=-vmax, vmax=vmax, linewidths=0, rasterized=True)
-plt.colorbar(sc1, ax=axes[1], label='delta bl (m)', fraction=0.035, pad=0.02)
-axes[1].set_title('B.  vr  D-Morph ON, VR ON', fontsize=9, fontweight='bold')
-
-sc2 = axes[2].scatter(face_x, face_y, c=diff_dmorph, cmap='RdBu_r',
-                      s=1.5, vmin=-vmax_diff, vmax=vmax_diff, linewidths=0, rasterized=True)
-plt.colorbar(sc2, ax=axes[2], label='vr - bl (m)', fraction=0.035, pad=0.02)
-axes[2].set_title('C.  Diff (vr - bl): VR effect on D-Morph', fontsize=9, fontweight='bold')
-n_more_dep = (diff_dmorph < -0.001).sum()
-n_less_dep = (diff_dmorph > 0.001).sum()
-axes[2].text(0.02, 0.98,
-             f'more deposition (blue): {n_more_dep} cells\n'
-             f'more erosion (red): {n_less_dep} cells',
-             transform=axes[2].transAxes, fontsize=7.5, va='top',
+axes[0].text(0.02, 0.98, f'max erosion: {delta_bl_bl.min():.2f} m\n'
+                          f'max deposition: {delta_bl_bl.max():.2f} m',
+             transform=axes[0].transAxes, fontsize=7.5, va='top',
              bbox=dict(fc='white', alpha=0.8, pad=2))
 
-# Panel D: seagrass + diff overlay
+# ------ Panel B: VR effect on D-Morph (tight scale ±vmax_diff) ------
+# Replace near-duplicate vr map with the diff at its own scale —
+# the absolute vr pattern is identical to bl at the ±0.7m scale.
+sc1 = axes[1].scatter(face_x, face_y, c=diff_dmorph_capped, cmap='RdBu_r',
+                      s=1.5, vmin=-vmax_diff, vmax=vmax_diff, linewidths=0, rasterized=True)
+plt.colorbar(sc1, ax=axes[1], label='vr - bl (m)', fraction=0.035, pad=0.02)
+axes[1].set_title('B.  Diff (vr - bl): VR effect on D-Morph', fontsize=9, fontweight='bold')
+valid_diff = diff_dmorph_capped[~np.isnan(diff_dmorph_capped)]
+n_more_dep = (valid_diff < -0.001).sum()
+n_more_ero = (valid_diff >  0.001).sum()
+axes[1].text(0.02, 0.98,
+             f'more deposition (blue): {n_more_dep}\n'
+             f'more erosion   (red):   {n_more_ero}',
+             transform=axes[1].transAxes, fontsize=7.5, va='top',
+             bbox=dict(fc='white', alpha=0.8, pad=2))
+_add_blowup_marker(axes[1])
+
+# ------ Panel C: per-class bar chart bl vs vr delta_bl (mean ± std) ------
+ax = axes[2]
+class_labels, bl_means, bl_stds, vr_means, vr_stds, diff_means = [], [], [], [], [], []
+for tc in [1, 2, 3, 4]:
+    mask = trac_class == tc
+    if mask.sum() < 5:
+        continue
+    class_labels.append(TRAC_LABELS[tc])
+    bl_means.append(delta_bl_bl[mask].mean())
+    bl_stds.append(delta_bl_bl[mask].std())
+    vr_means.append(delta_bl_vr_capped[mask][~np.isnan(delta_bl_vr_capped[mask])].mean())
+    vr_stds.append(delta_bl_vr_capped[mask][~np.isnan(delta_bl_vr_capped[mask])].std())
+    diff_means.append(diff_dmorph[mask].mean())
+
+x = np.arange(len(class_labels))
+w = 0.35
+bars_bl = ax.barh(x + w/2, bl_means, w, xerr=bl_stds, error_kw=dict(lw=0.8, capsize=3),
+                  color='#2563eb', alpha=0.8, label='bl (VR OFF)')
+bars_vr = ax.barh(x - w/2, vr_means, w, xerr=vr_stds, error_kw=dict(lw=0.8, capsize=3),
+                  color='#dc2626', alpha=0.8, label='vr (VR ON)')
+ax.axvline(0, color='k', lw=0.8, ls='--')
+ax.set_yticks(x)
+ax.set_yticklabels(class_labels, fontsize=9)
+ax.set_xlabel('Mean delta_bl (m, 9-day cumulative)', fontsize=8)
+ax.set_title('C.  D-Morph delta_bl per seagrass class\n'
+             '(mean ± 1 std, blue=bl, red=vr)',
+             fontsize=9, fontweight='bold')
+# annotate diff on each bar pair
+for i, (dm, lbl) in enumerate(zip(diff_means, class_labels)):
+    ax.text(max(bl_means[i], vr_means[i]) + 0.01, i,
+            f'Δ={dm:+.3f}m', va='center', fontsize=8, color='#555555')
+ax.legend(fontsize=8, loc='lower right')
+ax.grid(True, axis='x', alpha=0.3)
+ax.invert_yaxis()
+
+# ------ Panel D: seagrass/trachytope classification (reference) ------
+axes[3].scatter(face_x[trac_class == 0], face_y[trac_class == 0],
+                c='#aaaaaa', s=1.2, linewidths=0, rasterized=True, label='unclassified')
 for tc in [1, 2, 3, 4]:
     mask = trac_class == tc
     if mask.sum() == 0:
         continue
     axes[3].scatter(face_x[mask], face_y[mask],
-                    c=diff_dmorph[mask], cmap='RdBu_r', s=2.5,
-                    vmin=-vmax_diff, vmax=vmax_diff, linewidths=0, rasterized=True)
-axes[3].set_title('D.  VR D-Morph effect by seagrass class', fontsize=9, fontweight='bold')
-# class legend
-handles = [mpatches.Patch(color=TRAC_COLORS[tc], label=TRAC_LABELS[tc])
+                    c=TRAC_COLORS[tc], s=2.5, linewidths=0, rasterized=True)
+axes[3].set_title('D.  Seagrass / trachytope class (reference)', fontsize=9, fontweight='bold')
+handles = [mpatches.Patch(color=TRAC_COLORS[tc],
+                          label=f'{TRAC_LABELS[tc]}  n={( trac_class==tc).sum()}')
            for tc in [1, 2, 3, 4] if (trac_class == tc).sum() > 0]
-axes[3].legend(handles=handles, fontsize=6.5, loc='lower right', framealpha=0.85)
+handles += [mpatches.Patch(color='#aaaaaa',
+                           label=f'unclassified  n={(trac_class==0).sum()}')]
+axes[3].legend(handles=handles, fontsize=8, loc='lower right',
+               framealpha=0.92, edgecolor='grey')
+_add_blowup_marker(axes[3], show_legend=False)
 
 for ax in axes:
     ax.set_xlabel('Longitude', fontsize=8)
