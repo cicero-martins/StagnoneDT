@@ -9,23 +9,27 @@ This repository serves as the computational base for an ongoing **PhD project** 
   <em>PlanetScope SuperDove 8-band median composite, 9 dates Jun–Sep 2025, 3 m GSD. Lagoon (centre-left), Trapani airport + city (top), western Sicily coastline. See <a href="notebooks/archive/03b_roughness_alternatives.ipynb">03b notebook</a>.</em>
 </p>
 
-## Status (May 2026)
+## Status (June 2026)
 
 | Area | Status |
 |------|--------|
 | Mesh + bathymetry | Complete — 21 k nodes; v04 adds `mesh2d_face_z` for D-Morph + EMODnet 2024 patch over Trapani port (172 → 85 emerged nodes) |
-| Input forcing | ERA5+in-situ blended wind, CMEMS time-varying wave BCs, hypersaline init, ERA5 evap (v04) |
+| Input forcing | ERA5+in-situ blended (AE station only) wind, CMEMS time-varying wave BCs, hypersaline init, ERA5 evap |
 | v01–v02 | Complete (baseline + calibration fixes) |
 | v03a/b/c | Completed on EDITO (9 days, ~12 h wallclock); validated |
 | v03d | Completed — TPXO double-counting fix, HDF5 `ncFormat=3`, tracer-init buffers, full 9d Jul 2025 |
-| **v04** | **Validated** — 9-day Jul 2025 run completed (~9 h wall on 8 MPI), 26 GB output. Wave coupling, volume mass balance, hipersaline IC preservation all PASS. WL anomaly RMSE 2.3-4.3 cm post-spinup at 4 stations (BN/BS/AE/Marettimo), beating v03d in all of them. Two issues queued for v04.1: (i) salt blowup in 3.2% of intertidal cells; (ii) raw WL bias +12-17 cm from Marettimo-anchor over-correcting the lagoon datum. See [progress report 2026-05-04](docs/progress_report_2026-05-04.md) |
-| Offshore validation | Marettimo (Trilha B) TPXO over-amplitude resolved in v03d; long anchor (13 months obs vs CMEMS `zos`, δ = +0.4489 m) computed for v04 — see [marettimo_offset_anchor_2025](docs/marettimo_offset_anchor_2025.md). v04 validation at the v03d-compat cell (12.0753, 37.9747, bl≈−3.5 m): RMSE_anom 4.2 cm, corr 0.80, std_ratio 1.05 (essentially perfect amplitude) |
-| Morphology (sediment) | Implemented in v04 — D-Morph 2 fractions (sand 150 µm + silt 30 µm), `bedLevType=1`, `MorStt=1440 min`. Bed update from t=1d; verified to run without numerical instability |
-| HDF5 coupling bug | **Resolved** — `ncFormat=3` (classic NetCDF) eliminates the SWAN-side HDF re-open error; trade-off is the 2 GB per-file limit. Confirmed working under 8 MPI partitions with v04 setup |
-| Satellite roughness | Sentinel-2 RF + PlanetScope 8-band RF (CV 0.92) — **experimental, not yet applied to FM** |
-| Particle tracking | OpenDrift baseline reproducing July 2025 drifter tracks |
+| **v04AE** | **Current validated model** — 9-day Jul 2025, AE-only wind blend, 8 MPI (~9 h wall). WL anomaly RMSE 2.3–4.3 cm (4 stations). Drifter LW skill 0.570 (12 deploys, EP 566 m). Wave coupling, hypersaline IC, D-Morph and uxuyadvectionvelocitybnd stability all confirmed. |
+| Variable Roughness (Baptist) | **Validated** in `v04AE_vr` — Baptist canopy drag reduces WL setup bias 11–13 cm at BN/AE; drifter skill improvement in seagrass areas. `.arl` file built from RF seagrass classification. |
+| Continuation runs | **Operational** — Jul 1–20 stable; N−2 restart chain workflow confirmed; `v04AE_d10d12` as current reference window |
+| Offshore validation | Marettimo anchor δ = +0.4489 m (13 months), per-node spatial spread via CMEMS MDT; v04AE_vr residual bias +5–6 cm — datum fine-tuning pending |
+| Morphology (sediment) | D-Morph 2 fractions working but **TcrEro=0.1 unphysical** (Δbl=2.4 m/9d); disabled in operational runs (`Sedimentmodelnr=0`), to be recalibrated in v05 |
+| HDF5 coupling bug | **Resolved** — `ncFormat=3` (classic NetCDF); confirmed at 8 MPI |
+| Satellite roughness | RF classification 4 classes, OOB ≈ 0.92 (Planet Aug 2023, Maltese 2025 method). **Applied to FM** via `.arl` trachytope in v04AE_vr. |
+| Satellite bathymetry (SDB) | Lyzenga + 2-anchor ELC pipeline established. 2-epoch (Aug 2023 vs Aug 2025) Δz = +123 mm ± 225 mm — noise-limited; multi-epoch approach needed for D-Morph constraint. |
+| Particle tracking | **Validated** — LW skill 0.570, EP 566 m (12 deploys Jul 2025). D7 east-boundary bias resolved with AE-only wind. |
 | Residence time | Knudsen bulk estimate; Eulerian tracer recipe applied in v03d+ |
-| EDITO deployment | Functional — `delft3dfmrun-docker` service. v04 currently running on a higher-core local machine for faster iteration |
+| v05 new mesh | In progress — orthogonality issue in FM 2026.01 blocking; workaround under investigation |
+| EDITO deployment | Functional — `delft3dfmrun-docker` service; simit-server (Linux, IntelMPI) available as local HPC (2.5× faster than Win) |
 
 ## Site description
 
@@ -220,12 +224,15 @@ The v04 run (per-node WL offset + Trapani mesh fix + D-Morph 2 fractions + ERA5 
 
 ## Roadmap
 
-The post-v03c roadmap (six tracks A–F converging on v03d build + validation) is **complete** — see [docs/roadmap_post_v03c.md](docs/roadmap_post_v03c.md). The v04 "minimum viable + ERA5 evap" build is also **complete and validated** (see preceding section). Current focus is **v04.1** — two targeted fixes layered on the v04 setup:
+The post-v03c roadmap (six tracks A–F) and the v04 "minimum viable + ERA5 evap" build are both **complete and validated**. Current focus:
 
-1. **Salt-pan salinity stability.** Cap or mask runaway in shallow intertidal cells (3.2 % of total today).
-2. **Lagoon-datum offset recalibration.** Bring the +12-17 cm raw WL bias at BN/AE/Marettimo to ~zero by reducing the constant component of the per-node offset by ~10 cm (the MDT spatial spread stays).
+1. **WL datum recalibration** — residual +5–6 cm bias at BN/AE after VR; fine-tune per-node BC offset.
+2. **D-Morph TcrEro calibration** — sweep 0.05–0.25 to bring Δbl to physically plausible values; re-enable in operational runs.
+3. **v05 mesh** — resolve FM 2026.01 orthogonality issue (makeOrthoCenters or cell-deletion threshold).
+4. **Paper 1 draft** — all v04AE + VR validation results ready; introduction + methods + validation sections.
+5. **Multi-epoch SDB** — ≥4 Planet scenes per year for reliable Δz detection in sandy areas.
 
-After v04.1: longer-window scenarios (multi-month, seasonal contrast), Porto Empedocle RMN cross-validation (formal-datum offshore reference), and possible porting back to EDITO for distributed runs.
+After v04.1: longer-window scenarios (multi-month, seasonal contrast) and EDITO deployment of v04AE_vr for operational-forecast mode.
 
 ## Notebook catalog
 
@@ -358,15 +365,15 @@ StagnoneDT/
 - `oldModel/bat_stagnone_20m_2006.xyz` — 2006 bathymetry (189K points)
 - `reference/modelbuilder_example.ipynb` — dfm_tools modelbuilder template
 
-## Publication ideas
+## Publication roadmap
 
-Possible directions for peer-reviewed output arising from this work, alongside the PhD thesis. Titles and target journals are tentative; scope and emphasis will evolve with the results:
-
-1. 3D hydrodynamic modelling of a shallow Mediterranean seagrass lagoon — vertical flow structure under wind forcing (candidate venues: *Estuarine, Coastal and Shelf Science* / *Continental Shelf Research*).
-2. Satellite-derived bottom roughness for shallow lagoon modelling — PlanetScope 8-band vs Sentinel-2 (candidate venues: *Remote Sensing of Environment* / *Ecological Modelling*).
-3. Coupled wave-hydrodynamic modelling in a seagrass lagoon with vegetation drag (candidate venues: *Ocean Modelling* / *Coastal Engineering*).
-4. Multi-source bathymetry fusion for vegetated shallow lagoons (candidate venues: *Remote Sensing* / *Journal of Coastal Research*).
-5. A reusable digital-twin framework for protected Mediterranean lagoons on the EDITO platform (candidate venues: *Environmental Modelling & Software* / *Science of the Total Environment*).
+| # | Topic | Target journal | Status |
+|---|---|---|---|
+| P1 | 3D coupled wave-hydrodynamic model validation — WL, drifters, waves (v04AE) | *Ocean Modelling* / *ECSS* | **Ready to draft** — all results exist |
+| P2 | Baptist VR seagrass roughness in a shallow lagoon — WL bias reduction + drifter improvement | *Coastal Engineering* / *JGR-Oceans* | Preliminary results; TcrEro calibration pending |
+| P3 | Satellite RF seagrass mapping + VR integration — PlanetScope 8-band, Maltese 2025 method | *Remote Sensing of Environment* | Classification done; full VR integration remaining |
+| P4 | Wave-driven sediment transport + SDB validation — D-Morph, Lyzenga ELC | *Geomorphology* / *Continental Shelf Research* | Pending TcrEro calibration + multi-epoch SDB |
+| P5 | Digital-twin framework for Mediterranean lagoons on EDITO | *Environmental Modelling & Software* | Structural — after P1–P3 |
 
 ## Documentation
 
