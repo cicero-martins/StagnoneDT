@@ -143,3 +143,6 @@ data/raw/cmems_v04*/
 
 # Per-partition .dia inside diag/ subfolders (auto-generated runtime, large)
 model/*/diag/*.dia
+
+# Reference papers: large raw data (regenerable, but not worth the bandwidth to re-download)
+reference/papers/
