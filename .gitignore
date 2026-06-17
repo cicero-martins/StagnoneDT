@@ -150,3 +150,7 @@ reference/papers/
 # Large composites removed from git history (regenerable)
 data/processed/planet2025_aug_rf/composite_aug2025_elc.tif
 outputs/wetwise_stagnone_panel.pptx
+
+# Ciraolo roughness outputs (regenerable via scripts/build_ciraolo_roughness_dynamic.py)
+data/processed/roughness_ciraolo/roughness_ciraolo_dynamic.nc
+data/processed/roughness_ciraolo/roughness_ciraolo_bias.nc

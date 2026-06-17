@@ -1,6 +1,6 @@
 # Research Questions — Status and Publication Roadmap
 *Stagnone di Marsala Digital Twin — PhD, UNIPA*
-*Updated: 2026-06-17*
+*Updated: 2026-06-17*  
 
 ---
 
@@ -14,6 +14,7 @@
 | RQ6 | Can the calibrated coupled model support skillful operational short-range forecasts of water level, surface currents, and wave exposure, and be served through a web interface suitable for lagoon management? | **Prototype** — forecast chain operational; skill assessment pending against independent observations | WetWise portal (Leaflet, 30-min resolution, coarse/fine pyramid); CMEMS *anfc* boundary chain; v04AE_d10d12 continuation run validated (corr 0.98/0.90/0.36 BN/BS/AE) | **Paper 3** | *Environmental Modelling & Software* / *Ocean & Coastal Management* |
 | RQ7 | Are wave events capable of mobilising lagoon sediment, and to what extent do fine-sediment inputs from the Trapani coastal canal system (airport + saltpan drainage) contribute to lagoon siltation? | **Preliminary** — resuspension feasibility confirmed (SWAN u_orb + Sentinel-2 plume evidence); D-Morph 2-fraction framework implemented but TcrEro uncalibrated; canal turbidity tracer not yet quantified | D-Morph 2 fractions (sand 150 µm + silt 30 µm) in v04; SWAN orbital velocities; SDB as morphological constraint (RQ5) | **Paper 4** | *Continental Shelf Research* / *Geomorphology* |
 | RQ8 | What would be the hydrodynamic and environmental impact of reopening the historic channel at Isola Grande, restoring a second connection between the northern sub-basin and the open sea? | **Exploratory** — modified mesh prototype exists (`net_nodm_choke_opened/`); no coupled run yet | Prototype mesh with reopened channel; residence time + salinity framework reusable from RQ4; Mancuso 2023 N–S salinity gradient for benchmarking | **Paper 3** | *Ocean & Coastal Management* / *ECSS* |
+| RQ9 | Does implementing velocity-dependent *Posidonia oceanica* canopy roughness, calibrated from the Ciraolo et al. (2006) flume resistance law, improve hydrodynamic skill and alter the simulated response to cover change relative to the fixed Baptist trachytope approach? | **Experimental** — Ciraolo Eq. 22 (λ = 52×10⁶ Re_v^−1.56, S_f ∝ U^0.44) implemented in `scripts/build_ciraolo_roughness_dynamic.py`; static mean-state XYZ output ready; time-varying FM feasibility not yet tested; experimental run v04AE_ciraolo not yet executed | `build_ciraolo_roughness_dynamic.py`; Ciraolo et al. (2006) JHR flume data (Re_v 10⁴–10⁵, λ 0.14–11.8); Baptist Chezy from v04AE_vr map.nc for vegetated-mask derivation and bias diagnostic | **Paper 2** | *ECSS* / *MEPS* |
 
 ---
 
@@ -22,7 +23,7 @@
 | Paper | RQs | Core contribution | Target journal | Status |
 |---|---|---|---|---|
 | **P1** | RQ1–3 | 3D wave-hydrodynamic model + Baptist VR; WL + drifter + wave ensemble validation | *Estuarine, Coastal and Shelf Science* | §1+§2 drafted Jun 2026; §3 next |
-| **P2** | RQ4 | Hydrodynamic and environmental response to *P. oceanica* decline: scenario-based coupled modelling (2003 vs 2025 cover) quantifying changes in wave attenuation, near-bed exposure, residence time, and salinity gradients. Maltese 2025 provides the historical cover baseline; automated RF/PlanetScope pipeline extends it to 2025. | *Estuarine, Coastal and Shelf Science* / *Marine Ecology Progress Series* | Cover maps ready; scenario runs pending |
+| **P2** | RQ4, RQ9 | Hydrodynamic and environmental response to *P. oceanica* decline: scenario-based coupled modelling (2003 vs 2025 cover) quantifying changes in wave attenuation, near-bed exposure, residence time, and salinity gradients. Maltese 2025 provides the historical cover baseline; automated RF/PlanetScope pipeline extends it to 2025. RQ9 adds a methodological thread: velocity-dependent roughness (Ciraolo 2006) versus fixed Baptist trachytopes, testing whether the Re_v-dependent streamlining of *P. oceanica* fronds matters for skill and cover-change response. | *Estuarine, Coastal and Shelf Science* / *Marine Ecology Progress Series* | Cover maps ready; scenario runs pending; Ciraolo static XYZ ready |
 | **P3** | RQ6, RQ8 | Operational DT + CMEMS forecast chain + WetWise portal; management scenario — Isola Grande channel reopening and its impact on residence time and environmental conditions | *Environmental Modelling & Software* / *Ocean & Coastal Management* | WetWise prototype; channel mesh exists; no coupled run yet |
 | **P4** | RQ7, RQ5 | Wave-driven sediment resuspension + Trapani canal fine-sediment inputs; D-Morph calibration via SDB morphological constraint | *Continental Shelf Research* / *Geomorphology* | Feasibility confirmed; D-Morph uncalibrated; canal tracer not yet quantified |
 
@@ -30,6 +31,7 @@
 
 - **Paper 1** target: ECSS special issue or regular track. §1 + §2 complete; §3 Data and Methods is the next section.
 - **Paper 2** does not redo Maltese et al. (2025). The seagrass classification is the *input* (cover scenario); the *contribution* is quantifying how that decadal cover loss propagates into hydrodynamic and environmental change. The automated RF/Planet pipeline is the methodological bridge that makes 2025-epoch and future scenarios tractable.
+- **RQ9 (velocity-dependent roughness)** lives in P2 because the question is physically inseparable from cover-change response: if C scales with U^0.44 rather than being fixed, the simulated wave attenuation and near-bed exposure under 2003 vs 2025 cover will differ more than a fixed-trachytope model predicts. The Ciraolo static XYZ (mean-state Chezy) is already buildable from v04AE_vr output; the experimental run comparison is the deliverable.
 - **Paper 3** groups the operational DT (RQ6) with the Isola Grande scenario (RQ8): both address the DT's value for lagoon management and restoration planning.
 - **Paper 4** (RQ7 + RQ5) is the most data-constrained: needs D-Morph TcrEro calibration against observed bathymetry and quantification of the Trapani canal sediment load. SDB (RQ5) is the observational constraint, not a standalone question.
 - RQ1–RQ3 are jointly addressed by Paper 1's four-member ensemble design. Splitting them is not recommended.
