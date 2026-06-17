@@ -146,3 +146,7 @@ model/*/diag/*.dia
 
 # Reference papers: large raw data (regenerable, but not worth the bandwidth to re-download)
 reference/papers/
+
+# Large composites removed from git history (regenerable)
+data/processed/planet2025_aug_rf/composite_aug2025_elc.tif
+outputs/wetwise_stagnone_panel.pptx
