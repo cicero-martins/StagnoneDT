@@ -54,9 +54,9 @@ Despite very shallow depth, significant vertical flow structure is observed (win
 | RQ3 | Is Lagrangian drifter validation more discriminating than water-level metrics for evaluating competing model configurations in a micro-tidal lagoon? | Paper 1 | *ECSS* |
 | RQ4 | How has the multi-decadal decline of *Posidonia oceanica* (2003–2025) altered the wave attenuation capacity, near-bed current exposure, and water residence time of the Stagnone, and what are the environmental consequences of projected continued cover loss? (Maltese 2025 provides the historical cover baseline; automated RF/PlanetScope pipeline extends it to 2025 as input for scenario-based coupled modelling.) | Paper 2 | *ECSS* / *MEPS* |
 | RQ5 | Can satellite-derived bathymetry capture bathymetric change accompanying seagrass decline (2023–2025) and constrain D-Morph sediment calibration? | Paper 4 (supporting) | *Continental Shelf Research* |
-| RQ7 | Can the calibrated coupled model support skillful operational short-range forecasts served through a web interface for lagoon management? | Paper 3 | *EMS* / *OCM* |
-| RQ8 | Are wave events capable of mobilising lagoon sediment, and to what extent do fine-sediment inputs from the Trapani coastal canal system (airport + saltpan drainage) contribute to lagoon siltation? | Paper 4 | *Continental Shelf Research* / *Geomorphology* |
-| RQ9 | What would be the hydrodynamic and environmental impact of reopening the historic channel at Isola Grande, restoring exchange between the northern sub-basin and the open sea? | Paper 3 | *OCM* / *ECSS* |
+| RQ6 | Can the calibrated coupled model support skillful operational short-range forecasts served through a web interface for lagoon management? | Paper 3 | *EMS* / *OCM* |
+| RQ7 | Are wave events capable of mobilising lagoon sediment, and to what extent do fine-sediment inputs from the Trapani coastal canal system (airport + saltpan drainage) contribute to lagoon siltation? | Paper 4 | *Continental Shelf Research* / *Geomorphology* |
+| RQ8 | What would be the hydrodynamic and environmental impact of reopening the historic channel at Isola Grande, restoring exchange between the northern sub-basin and the open sea? | Paper 3 | *OCM* / *ECSS* |
 
 ## Methodology — architecture
 
@@ -253,8 +253,8 @@ StagnoneDT/
 |---|---|---|---|---|
 | **P1** | 3D coupled wave-hydrodynamic model — WL, drifter, wave validation (v04AE + VR ensemble) | RQ1–3 | *Estuarine, Coastal and Shelf Science* | §1+§2 drafted; §3 in progress |
 | **P2** | Hydrodynamic and environmental response to *P. oceanica* decline: scenario-based coupled modelling (2003 vs 2025 cover) quantifying changes in wave attenuation, near-bed exposure, residence time, and salinity gradients. Maltese 2025 provides the historical cover baseline; automated RF/Planet pipeline extends it to 2025. | RQ4 | *Estuarine, Coastal and Shelf Science* / *Marine Ecology Progress Series* | Cover maps ready; scenario runs pending |
-| **P3** | Operational DT + CMEMS forecast chain + WetWise portal; management scenario — Isola Grande channel reopening and its impact on residence time and environmental conditions | RQ7, RQ9 | *Environmental Modelling & Software* / *Ocean & Coastal Management* | WetWise prototype; channel mesh exists; no coupled run yet |
-| **P4** | Wave-driven sediment resuspension + Trapani canal fine-sediment inputs; D-Morph calibration via SDB morphological constraint | RQ8, RQ5 | *Continental Shelf Research* / *Geomorphology* | Feasibility confirmed; D-Morph uncalibrated; canal tracer not yet quantified |
+| **P3** | Operational DT + CMEMS forecast chain + WetWise portal; management scenario — Isola Grande channel reopening and its impact on residence time and environmental conditions | RQ6, RQ8 | *Environmental Modelling & Software* / *Ocean & Coastal Management* | WetWise prototype; channel mesh exists; no coupled run yet |
+| **P4** | Wave-driven sediment resuspension + Trapani canal fine-sediment inputs; D-Morph calibration via SDB morphological constraint | RQ7, RQ5 | *Continental Shelf Research* / *Geomorphology* | Feasibility confirmed; D-Morph uncalibrated; canal tracer not yet quantified |
 
 ## Critical reference files (read-only)
 
