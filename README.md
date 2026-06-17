@@ -57,6 +57,7 @@ Despite very shallow depth, significant vertical flow structure is observed (win
 | RQ6 | Can the calibrated coupled model support skillful operational short-range forecasts served through a web interface for lagoon management? | Paper 3 | *EMS* / *OCM* |
 | RQ7 | Are wave events capable of mobilising lagoon sediment, and to what extent do fine-sediment inputs from the Trapani coastal canal system (airport + saltpan drainage) contribute to lagoon siltation? | Paper 4 | *Continental Shelf Research* / *Geomorphology* |
 | RQ8 | What would be the hydrodynamic and environmental impact of reopening the historic channel at Isola Grande, restoring exchange between the northern sub-basin and the open sea? | Paper 3 | *OCM* / *ECSS* |
+| RQ9 | Does implementing velocity-dependent *Posidonia oceanica* canopy roughness calibrated from the Ciraolo et al. (2006) flume resistance law (S_f ∝ U^0.44) improve hydrodynamic skill and alter the simulated cover-change response relative to fixed Baptist trachytopes? | Paper 2 | *ECSS* / *MEPS* |
 
 ## Methodology — architecture
 
@@ -252,7 +253,7 @@ StagnoneDT/
 | Paper | Topic | RQs | Target journal | Status |
 |---|---|---|---|---|
 | **P1** | 3D coupled wave-hydrodynamic model — WL, drifter, wave validation (v04AE + VR ensemble) | RQ1–3 | *Estuarine, Coastal and Shelf Science* | §1+§2 drafted; §3 in progress |
-| **P2** | Hydrodynamic and environmental response to *P. oceanica* decline: scenario-based coupled modelling (2003 vs 2025 cover) quantifying changes in wave attenuation, near-bed exposure, residence time, and salinity gradients. Maltese 2025 provides the historical cover baseline; automated RF/Planet pipeline extends it to 2025. | RQ4 | *Estuarine, Coastal and Shelf Science* / *Marine Ecology Progress Series* | Cover maps ready; scenario runs pending |
+| **P2** | Hydrodynamic and environmental response to *P. oceanica* decline: scenario-based coupled modelling (2003 vs 2025 cover) quantifying changes in wave attenuation, near-bed exposure, residence time, and salinity gradients. Maltese 2025 provides the historical cover baseline; automated RF/Planet pipeline extends it to 2025. Includes velocity-dependent roughness comparison (Ciraolo 2006 vs Baptist, RQ9). | RQ4, RQ9 | *Estuarine, Coastal and Shelf Science* / *Marine Ecology Progress Series* | Cover maps ready; Ciraolo XYZ script ready; scenario runs pending |
 | **P3** | Operational DT + CMEMS forecast chain + WetWise portal; management scenario — Isola Grande channel reopening and its impact on residence time and environmental conditions | RQ6, RQ8 | *Environmental Modelling & Software* / *Ocean & Coastal Management* | WetWise prototype; channel mesh exists; no coupled run yet |
 | **P4** | Wave-driven sediment resuspension + Trapani canal fine-sediment inputs; D-Morph calibration via SDB morphological constraint | RQ7, RQ5 | *Continental Shelf Research* / *Geomorphology* | Feasibility confirmed; D-Morph uncalibrated; canal tracer not yet quantified |
 
