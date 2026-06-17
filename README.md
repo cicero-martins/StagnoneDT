@@ -56,6 +56,8 @@ Despite very shallow depth, significant vertical flow structure is observed (win
 | RQ5 | Can satellite-derived bathymetry detect morphological change in an ultra-shallow vegetated lagoon between 2023 and 2025? | Paper 2 | *RSE* / *ECSS* |
 | RQ6 | How do residence time distributions respond to changes in seagrass canopy cover, and what are the implications for meadow recovery? | Paper 2/3 | *ECSS* / *MEPS* |
 | RQ7 | Can the calibrated coupled model support skillful operational short-range forecasts served through a web interface for lagoon management? | Paper 3 | *EMS* / *OCM* |
+| RQ8 | Are wave events capable of mobilising lagoon sediment, and to what extent do fine-sediment inputs from the Trapani coastal canal system (airport + saltpan drainage) contribute to lagoon siltation? | Paper 4 | *Continental Shelf Research* / *Geomorphology* |
+| RQ9 | What would be the hydrodynamic and environmental impact of reopening the historic channel at Isola Grande, restoring exchange between the northern sub-basin and the open sea? | Paper 3 | *OCM* / *ECSS* |
 
 ## Methodology — architecture
 
@@ -252,7 +254,8 @@ StagnoneDT/
 |---|---|---|---|---|
 | **P1** | 3D coupled wave-hydrodynamic model — WL, drifter, wave validation (v04AE + VR ensemble) | RQ1–3 | *Estuarine, Coastal and Shelf Science* | §1+§2 drafted; §3 in progress |
 | **P2** | Seagrass mapping 2003–2024 (Maltese 2025 + 2025 epoch); SDB bathymetric change; residence time response to cover change | RQ4–6 | *Remote Sensing of Environment* / *ECSS* | Classification done; SDB noise-limited; residence time pending |
-| **P3** | Operational digital twin — CMEMS-driven forecast chain + WetWise web portal | RQ7 | *Environmental Modelling & Software* / *Ocean & Coastal Management* | Prototype; skill evaluation pending |
+| **P3** | Operational DT + WetWise forecast portal; management scenario — Isola Grande channel reopening and its impact on residence time and environmental conditions | RQ7, RQ9 | *Environmental Modelling & Software* / *Ocean & Coastal Management* | WetWise prototype; channel mesh exists; no coupled run yet |
+| **P4** | Wave-driven sediment resuspension; fine-sediment inputs from Trapani coastal canal system (airport + saltpan drainage) and lagoon siltation; D-Morph calibration via multi-epoch SDB | RQ8 | *Continental Shelf Research* / *Geomorphology* | Feasibility confirmed; D-Morph uncalibrated; canal tracer not quantified |
 
 ## Critical reference files (read-only)
 
