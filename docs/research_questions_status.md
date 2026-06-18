@@ -34,5 +34,5 @@
 - **RQ9 (velocity-dependent roughness)** lives in P2 because the question is physically inseparable from cover-change response: if C scales with U^0.44 rather than being fixed, the simulated wave attenuation and near-bed exposure under 2003 vs 2025 cover will differ more than a fixed-trachytope model predicts. The Ciraolo static XYZ (mean-state Chezy) is already buildable from v04AE_vr output; the experimental run comparison is the deliverable.
 - **Paper 3** groups the operational DT (RQ6) with the Isola Grande scenario (RQ8): both address the DT's value for lagoon management and restoration planning.
 - **Paper 4** (RQ7 + RQ5) is the most data-constrained: needs D-Morph TcrEro calibration against observed bathymetry and quantification of the Trapani canal sediment load. SDB (RQ5) is the observational constraint, not a standalone question.
-- RQ1–RQ3 are jointly addressed by Paper 1's four-member ensemble design. Splitting them is not recommended.
+- RQ1–RQ3 are jointly addressed by Paper 1's four-member ensemble design. 
 - The [REF-wave-current-lagoon] placeholder in Paper 1 §5 (gap statement) remains unresolved — a Mediterranean lagoon wave–current interaction study is needed.
