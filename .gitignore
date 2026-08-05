@@ -155,6 +155,18 @@ outputs/wetwise_stagnone_panel.pptx
 data/processed/roughness_ciraolo/roughness_ciraolo_dynamic.nc
 data/processed/roughness_ciraolo/roughness_ciraolo_bias.nc
 
+# LaTeX build artifacts (regenerable from .tex via latexmk)
+manuscript/*.aux
+manuscript/*.bbl
+manuscript/*.blg
+manuscript/*.fdb_latexmk
+manuscript/*.fls
+manuscript/*.log
+manuscript/*.out
+manuscript/*.spl
+manuscript/*.synctex.gz
+manuscript/main.pdf
+
 # ---------------------------------------------------------------------------
 # Working-tree triage 2026-08-05 (~5.8 GB of regenerable artefacts)
 # ---------------------------------------------------------------------------

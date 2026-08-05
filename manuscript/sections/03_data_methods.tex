@@ -1,0 +1,59 @@
+\section{Data and Methods}
+\label{sec:data_methods}
+
+%% NEXT SECTION TO DRAFT. Material for every subsection below already exists in
+%% the repository (README.md "Methodology" and "Model version history", the
+%% docs/ notes cited per subsection, and the memory entries). Methods rules
+%% from the Elsevier editor deck: past tense throughout, enough detail to
+%% reproduce, and no commentary or discussion inside Methods.
+
+\subsection{Hydrodynamic model}
+\label{sec:methods_model}
+
+%% D-Flow FM 1.2.184 (Suite 2026.01 HMWQ); unstructured mesh, 21k nodes;
+%% 10 sigma layers; k-epsilon turbulence; UNESCO density; WGS84.
+%% Bathymetry: EMODnet 2024 + Trapani port patch. bedLevType=3.
+%% 8 MPI partitions. Source: README.md, docs/fm_2026_gotchas.md.
+
+\subsection{Wave model and coupling}
+\label{sec:methods_waves}
+
+%% SWAN nested grids: outer ~400 m (full FM domain) + inner ~100 m (lagoon);
+%% 36 directions; JONSWAP friction + vegetation dissipation.
+%% DIMR online coupling, ComInterval = 3600 s, ncFormat = 3.
+%% Sources: docs/deltares_hdf5_coupling_report.md, memory
+%% hdf5_coupling_resolution, fm_cominterval_required_for_dimr_coupling.
+
+\subsection{Boundary and atmospheric forcing}
+\label{sec:methods_forcing}
+
+%% CMEMS Mediterranean physical reanalysis (dataset IDs in memory
+%% cmems_phy_dataset_ids); per-node Marettimo-anchored water level offset
+%% (docs/marettimo_offset_anchor_2025.md, docs/wl_boundary_offset_justification.md);
+%% uxuyadvectionvelocitybnd for offshore stability (memory
+%% uxuy_bnd_required_for_offshore_stability); ERA5 wind blended with the AE
+%% in-situ station; ERA5 evaporation (memory fm_evaporation_convention).
+%% Note for drafting: zos is an anomaly about the NEMO rest state, not a
+%% geodetic datum (memory cmems_zos_reference_frame).
+
+\subsection{Seagrass roughness parametrisation}
+\label{sec:methods_roughness}
+
+%% Baptist (2007) trachytopes via .arl; CRS must be WGS84 to match the mesh
+%% (memory arl_crs_must_match_mesh). Base map: Maltese et al. (2025)
+%% classification, 2023 epoch. Automated RF/PlanetScope pipeline
+%% (scripts/build_planet_rf_v4.py, memory planet2023_maltese_rf_pipeline).
+%% Ingrassia et al. (2024) Ks = 20 as the uniform-roughness reference for the
+%% baseline ensemble member (memory ingrassia_2024_vr_calibration).
+
+\subsection{Observational data and validation metrics}
+\label{sec:methods_validation}
+
+%% Water level at BN, BS, AE (memory insitu_2025-26_inventory); Marettimo
+%% offshore cell selection is non-trivial, use (12.0753, 37.9747) with
+%% bl < -0.3 m (memory marettimo_validation_cell).
+%% Metrics: report raw and anomaly together, RMSE^2 = bias^2 + RMSE_anom^2.
+%% Post-spinup window: drop the first simulated day.
+%% Lagrangian: Liu-Weisberg normalised cumulative separation skill score and
+%% endpoint proximity, 12 deploys July 2025, OpenDrift on regridded surface
+%% currents (memory regrid_opendrift_pipeline).

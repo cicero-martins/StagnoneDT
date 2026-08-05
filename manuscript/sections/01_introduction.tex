@@ -1,0 +1,133 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Coastal lagoons are among the most productive coastal environments on Earth.
+Their shallow, semi-enclosed geometry concentrates fisheries and biodiversity
+along roughly 13\% of the global shoreline \citep{Carrasco2016, Kjerfve1994},
+while making these systems acutely sensitive to the atmospheric and tidal
+forcing that drives water exchange and renewal. In the Mediterranean basin,
+where tidal amplitudes rarely exceed 0.3~m, the balance among tidal
+oscillations, wind stress, and seiche phenomena varies considerably among
+systems, yet wind consistently emerges as a significant driver of horizontal
+exchange and a key modulator of the residence times and salinity gradients
+that condition benthic habitat \citep{Niedda2007, Umgiesser2014}. The presence
+of dense submerged vegetation, principally \emph{Posidonia oceanica} (L.)
+Delile and \emph{Cymodocea nodosa} (Ucria) Ascherson along Mediterranean
+shores, introduces a further layer of complexity. Seagrass canopies attenuate
+incident wave energy \citep{Infantes2012} and extract momentum from the mean
+flow through canopy drag, modifying near-bed turbulence and the vertical
+velocity structure \citep{Nepf2012}. As global seagrass extent continues to
+decline at accelerating rates \citep{Waycott2009}, understanding how
+circulation controls residence times, dispersal, and habitat connectivity in
+vegetated coastal systems has become an urgent scientific and management
+priority. Addressing it requires circulation models that accurately reproduce
+transport pathways rather than water levels alone, and this distinction makes
+Lagrangian validation essential. By tracking the cumulative separation between
+simulated and observed drifter trajectories over time, the Lagrangian skill
+score provides a direct and discriminating measure of model accuracy that
+conventional scalar metrics cannot replicate
+\citep{Liu2011, Revelard2021}.
+
+The \emph{Stagnone di Marsala}, on the north-western coast of Sicily, offers a
+natural laboratory for these questions. The lagoon extends approximately 11~km
+in the north--south direction and 2.5~km east--west, enclosing a surface area
+of roughly 2200~ha between the mainland and the elongated Isola Grande
+\citep{DeMarchis2012}. Its mean water depth is approximately 0.95~m, ranging
+from a few tens of centimetres over the northern intertidal flats to a maximum
+of about 3~m near the southern inlet, placing it firmly in the class of very
+shallow coastal systems in which the depth-averaging assumption is, a priori,
+difficult to justify. Hydrodynamic exchange with the open Mediterranean is
+mediated by two mouths of strongly contrasting geometry: a narrow northern
+inlet ($\sim$400~m wide, 0.30--0.40~m deep) whose shallow sill severely
+restricts tidal exchange, partially mitigated by a historically dredged
+channel, and a wide southern inlet ($\sim$2900~m wide, 1.0--1.5~m deep) that
+controls the bulk of mass transfer
+\citep{DeMarchis2012, CiraoloDeMarchis2009}. The lagoon supports no
+significant freshwater input, and its bottom is colonised by
+\emph{P.\ oceanica} in the central and southern basin and by
+\emph{C.\ nodosa} in the shallower northern reaches, with shoot densities
+reaching 500--1200 plants~\si{\per\metre\squared} \citep{Ciraolo2009a}.
+Designated as a \emph{Riserva Naturale Orientata} and a Natura 2000 site, the
+Stagnone hosts recognised populations of protected flora and fauna. Despite
+this status, long-term satellite monitoring has documented a 75\% reduction in
+\emph{P.\ oceanica} meadow extent over the past two decades
+\citep{Maltese2025}, underscoring the need to understand the hydrodynamic
+processes that govern conditions within this enclosed basin.
+
+The tidal regime is microtidal, with free-surface amplitudes of the order of
+0.25~m dominated by semi-diurnal harmonics \citep{DiMarca2009}. In the absence
+of riverine input and with weak tidal forcing, circulation is driven almost
+exclusively by tidal oscillations and wind stress. Field experiments and 3D
+numerical modelling conducted by \citet{DeMarchis2012} during a July 2006
+campaign showed that tidal action dominates north--south exchange, while wind
+is the controlling agent of east--west currents and, critically, generates
+pronounced vertical recirculation structures entirely absent in tide-only
+simulations. This established that vertical velocity shear between wind-driven
+surface drift and near-bed return flow is quantitatively significant even at
+sub-metre depths, and that the tendency towards hypersaline conditions in
+summer \citep{LaLoggia2004} adds a baroclinic component that reinforces
+stratification in the vertical.
+
+Prior numerical investigations of the Stagnone have employed both
+depth-averaged and three-dimensional approaches, each appropriate to the
+research objective pursued. \citet{LaLoggia2004} and \citet{DiMarca2009}
+applied 2D depth-averaged models to characterise tidal flushing, residence
+times, and turbidity dynamics, yielding useful insight into the basin-scale
+water budget and the role of biological productivity in light attenuation.
+\citet{Ciraolo2009a} demonstrated through particle tracking the sensitivity of
+simulated trajectories to the assumed velocity field, highlighting the
+importance of current accuracy for transport prediction.
+\citet{DeMarchis2012} showed that resolving the vertical dimension is
+necessary to reproduce wind-driven recirculation. Their 3D non-hydrostatic
+finite-volume model, validated against simultaneous velocity and water-level
+measurements at multiple stations, achieved substantially better agreement
+with observed east--west currents than any depth-averaged simulation. More
+recently, \citet{Ingrassia2024} returned to a 2D unstructured-mesh framework
+(MIKE 21) and conducted systematic sensitivity tests of bed friction, varying
+the Gauckler--Strickler coefficient uniformly across the lagoon for different
+vegetation scenarios. The value $K_s = 20$~m$^{1/3}$~s$^{-1}$ was identified
+as most representative for the vegetated basin, yielding Nash--Sutcliffe
+efficiencies up to 0.92 for water level. The authors noted that the 2D
+approximation remains adequate for large-scale water-level budgeting while
+acknowledging reduced predictive skill for horizontal velocity, particularly
+in the northern, shallower sub-basin.
+
+Building on these foundations, the present study addresses two aspects that
+have not yet been incorporated jointly into a Stagnone circulation model. The
+first is wave--current coupling. Spectral ocean waves generated in the western
+Sicilian channel can penetrate both inlets and interact with the mean flow,
+altering near-bed turbulence and the effective drag experienced by the
+seagrass canopy. This mechanism has been shown to be non-negligible in
+comparably shallow Mediterranean lagoons [REF-wave-current-lagoon] but has not
+been included in previous Stagnone simulations. The second is the combined use
+of spatially distributed vegetation roughness derived directly from satellite
+imagery, rather than assumed uniform, and Lagrangian drifter observations as a
+validation target. Together, these extensions allow the relative contributions
+of three-dimensional dynamics, wave forcing, and seagrass heterogeneity to
+transport skill to be quantified within a controlled process-attribution
+framework.
+
+We apply the three-dimensional unstructured-mesh hydrodynamic solver Delft3D
+Flexible Mesh (D-Flow FM; \citealp{Kernkamp2011}) coupled online with the
+spectral wave model SWAN \citep{Booij1999}, driven by ERA5 reanalysis
+meteorological forcing and CMEMS Mediterranean physical reanalysis boundary
+conditions, over a nine-day period in July 2025. Spatially variable seagrass
+resistance is parametrised through \citet{Baptist2007} trachytopes derived
+from a supervised random-forest classification of PlanetScope multispectral
+imagery acquired in August 2023, following the mapping methodology of
+\citet{Maltese2025}. Model performance is assessed against in-situ water level
+time series at four stations and against GPS surface drifter trajectories from
+a field campaign concurrent with the simulation period, using the
+Liu--Weisberg Lagrangian skill score and endpoint proximity as metrics. A
+four-member ensemble (baseline with uniform roughness and no morphodynamics,
+seagrass roughness only, waves only, and full physics) attributes the observed
+improvements in Lagrangian skill to individual physical mechanisms.
+
+The paper is organised as follows. Section~\ref{sec:study_area} describes the
+study area and its hydrodynamic setting. Section~\ref{sec:data_methods}
+presents the observational datasets, the modelling framework, and the seagrass
+mapping and drifter validation methodology. Section~\ref{sec:results} reports
+validation results for water level and Lagrangian trajectories and the
+process-attribution experiment. Section~\ref{sec:discussion} discusses the
+implications for wind-driven vertical structure and seagrass--flow
+interaction. Section~\ref{sec:conclusions} provides conclusions.

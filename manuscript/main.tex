@@ -1,0 +1,117 @@
+%% Estuarine, Coastal and Shelf Science — elsarticle, author-year (Harvard)
+%% Review mode: double-spaced, line numbers, single column.
+%% Preamble mirrors reservoirs_s1_svm/manuscript/main.tex (Paper 1 and Paper 2).
+\documentclass[review,12pt,authoryear]{elsarticle}
+
+%% --- Encoding & fonts ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+
+%% --- Math ---
+\usepackage{amsmath,amssymb}
+
+%% --- Graphics & tables ---
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{multirow}
+
+%% --- Hyperlinks ---
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+%% --- Units ---
+\usepackage{siunitx}
+\sisetup{detect-all, group-separator={,}}
+
+%% --- Misc ---
+\usepackage{microtype}
+\usepackage{lineno}       % line numbers (activated by 'review' class option)
+\usepackage{setspace}
+\usepackage[margin=2.5cm]{geometry}
+
+%% --- Bibliography (natbib, Harvard author-year) ---
+\biboptions{authoryear,round,semicolon}
+
+% -----------------------------------------------------------------------
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Wind-driven three-dimensional circulation in a shallow vegetated
+       lagoon: model validation with Lagrangian drifters and the influence
+       of seagrass roughness and wave coupling}
+
+%% TODO co-authorship not yet agreed. Listed below is the corresponding author
+%% only. Do not submit without confirming the co-author list and CRediT roles.
+\author[unipa]{Cicero Martins Jr.\corref{cor1}}
+\ead{cicero.martinsjr@unipa.it}
+
+\cortext[cor1]{Corresponding author}
+\affiliation[unipa]{organization={Dipartimento di Ingegneria,
+                    Università degli Studi di Palermo},
+                    city={Palermo},
+                    country={Italy}}
+
+% -----------------------------------------------------------------------
+\begin{abstract}
+%% TODO draft last, once Results are settled. Check the ECSS Guide for Authors
+%% for the current word limit before finalising; do not assume the 150-word
+%% ENVSOFT cap that applies to the reservoirs manuscripts.
+\end{abstract}
+
+\begin{keyword}
+Coastal lagoon \sep
+Delft3D Flexible Mesh \sep
+Wave--current coupling \sep
+\emph{Posidonia oceanica} \sep
+Lagrangian drifters \sep
+Three-dimensional circulation
+\end{keyword}
+
+\end{frontmatter}
+
+\linenumbers   % activate line numbering for review
+
+% -----------------------------------------------------------------------
+\input{sections/01_introduction}
+\input{sections/02_study_area}
+\input{sections/03_data_methods}
+\input{sections/04_results}
+\input{sections/05_discussion}
+\input{sections/06_conclusions}
+
+% -----------------------------------------------------------------------
+\section*{CRediT authorship contribution statement}
+%% TODO complete once the co-author list is confirmed.
+\textbf{Martins Jr, C.:} Conceptualization, Methodology, Software, Formal
+analysis, Investigation, Data curation, Visualization, Writing -- original
+draft.
+
+\section*{Acknowledgements}
+%% TODO confirm the in-situ data provider attribution before submission.
+The author acknowledges the Copernicus Marine Environment Monitoring Service
+(CMEMS) for the Mediterranean physical reanalysis products, the ECMWF for ERA5
+atmospheric reanalysis, Planet Labs PBC for the PlanetScope imagery used in
+the seagrass classification, and Deltares for the Delft3D Flexible Mesh suite.
+
+\section*{Software and data availability}
+\begin{itemize}
+  \item \textbf{Model:} Delft3D Flexible Mesh Suite 2026.01 HMWQ (D-Flow FM
+  kernel 1.2.184) coupled online with SWAN through DIMR.
+  \item \textbf{Source code repository:} \url{https://github.com/cicero-martins/StagnoneDT}
+  \item \textbf{Data availability:} ERA5 and CMEMS products are openly
+  available from the Copernicus programme. PlanetScope imagery is under
+  commercial licence; scene identifiers are listed in the repository for
+  traceability. In-situ water level, wind, and drifter records are archived
+  in the repository.
+\end{itemize}
+
+\bibliographystyle{elsarticle-harv}
+\bibliography{references}
+
+\end{document}
