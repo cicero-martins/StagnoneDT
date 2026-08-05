@@ -1,59 +1,163 @@
 \section{Data and Methods}
 \label{sec:data_methods}
 
-%% NEXT SECTION TO DRAFT. Material for every subsection below already exists in
-%% the repository (README.md "Methodology" and "Model version history", the
-%% docs/ notes cited per subsection, and the memory entries). Methods rules
-%% from the Elsevier editor deck: past tense throughout, enough detail to
-%% reproduce, and no commentary or discussion inside Methods.
-
 \subsection{Hydrodynamic model}
 \label{sec:methods_model}
 
-%% D-Flow FM 1.2.184 (Suite 2026.01 HMWQ); unstructured mesh, 21k nodes;
-%% 10 sigma layers; k-epsilon turbulence; UNESCO density; WGS84.
-%% Bathymetry: EMODnet 2024 + Trapani port patch. bedLevType=3.
-%% 8 MPI partitions. Source: README.md, docs/fm_2026_gotchas.md.
+Circulation was simulated with D-Flow Flexible Mesh (D-Flow FM, kernel
+1.2.184) from the Delft3D FM Suite 2026.01, an unstructured finite-volume
+solver for the three-dimensional shallow-water equations \citep{Kernkamp2011}.
+The computational mesh comprised 21{,}188 nodes and 25{,}212 predominantly
+quadrilateral faces, and covered the lagoon together with an offshore
+extension reaching the western Sicilian channel, spanning
+11.96--12.56$^\circ$E and 37.70--38.06$^\circ$N in geographic (WGS84)
+coordinates. Resolution was graded from the offshore boundary towards the
+lagoon interior, where the inlets and the intertidal flats required the finest
+cells. The vertical was discretised with 10 sigma layers
+(\texttt{SigmaGrowthFactor} 1.2), which distributes resolution towards the bed
+while retaining a terrain-following representation appropriate to a basin
+whose depth varies from a few centimetres to about 3~m.
+
+Turbulence closure used the $k$--$\varepsilon$ model with background vertical
+eddy viscosity and diffusivity of $10^{-4}$~\si{\metre\squared\per\second} and
+uniform horizontal values of 0.1~\si{\metre\squared\per\second}. Density was
+computed from the UNESCO equation of state, with salinity and temperature both
+transported as active constituents so that the summer hypersaline gradient
+contributes baroclinically to the momentum balance. Bed levels were specified
+at cell centres from the bathymetry file. Bed roughness was prescribed as a
+Manning coefficient, uniform at 0.023~s~m$^{-1/3}$ in the reference
+configuration and spatially variable in the vegetated configurations
+(Section~\ref{sec:methods_roughness}). Wind drag followed a linear
+Charnock-type formulation with a drag coefficient of 0.025.
+
+The simulation covered nine days, from 1~July 2025 00:00 to 10~July 2025 00:00
+UTC. External forcing was updated every 300~s. The computational time step was
+adaptive under a Courant limit of 0.7, capped at 30~s and constrained to grow
+by no more than a factor 1.1 between successive steps. Initial conditions were
+ramped over the first hour. The domain was decomposed into eight partitions
+and run under MPI.
 
 \subsection{Wave model and coupling}
 \label{sec:methods_waves}
 
-%% SWAN nested grids: outer ~400 m (full FM domain) + inner ~100 m (lagoon);
-%% 36 directions; JONSWAP friction + vegetation dissipation.
-%% DIMR online coupling, ComInterval = 3600 s, ncFormat = 3.
-%% Sources: docs/deltares_hdf5_coupling_report.md, memory
-%% hdf5_coupling_resolution, fm_cominterval_required_for_dimr_coupling.
+Waves were computed with SWAN \citep{Booij1999} through the Delft3D-WAVE
+module, on two nested curvilinear grids. The outer grid covered the full
+D-Flow FM domain at approximately 400~m resolution and supplied boundary
+conditions to an inner grid of approximately 100~m resolution over the lagoon
+and its inlets. The spectral space was discretised into 24 directions over the
+full circle and 24 frequencies logarithmically distributed between 0.05 and
+1.0~Hz.
+
+Third-generation source terms were used, with Komen whitecapping,
+quadruplet wave--wave interactions, refraction, and frequency shifting all
+active. Triad interactions and wave setup were disabled. Depth-induced
+breaking followed the Battjes--Janssen formulation with $\alpha = 1.0$ and
+$\gamma = 0.73$, and bottom friction used the JONSWAP formulation with a
+coefficient of 0.067~\si{\metre\squared\per\cubic\second}. A minimum depth of
+0.05~m was imposed. Wave forces were passed to the flow solver as
+three-dimensional dissipation.
+
+Flow and waves were coupled online through the DIMR framework, exchanging
+fields every 3600~s. Within each exchange the wave model ran in stationary
+mode, so the time variation of the wave field followed from the re-evaluated
+water levels, currents, wind, and boundary spectra rather than from spectral
+propagation in time. Communication files were written in classic NetCDF
+(\texttt{ncFormat = 3}), which was required for the wave module to re-open the
+communication file reliably across the coupled run.
 
 \subsection{Boundary and atmospheric forcing}
 \label{sec:methods_forcing}
 
-%% CMEMS Mediterranean physical reanalysis (dataset IDs in memory
-%% cmems_phy_dataset_ids); per-node Marettimo-anchored water level offset
-%% (docs/marettimo_offset_anchor_2025.md, docs/wl_boundary_offset_justification.md);
-%% uxuyadvectionvelocitybnd for offshore stability (memory
-%% uxuy_bnd_required_for_offshore_stability); ERA5 wind blended with the AE
-%% in-situ station; ERA5 evaporation (memory fm_evaporation_convention).
-%% Note for drafting: zos is an anomaly about the NEMO rest state, not a
-%% geodetic datum (memory cmems_zos_reference_frame).
+Open-sea boundaries were forced with the CMEMS Mediterranean Sea physical
+reanalysis. Water level, salinity, and temperature were prescribed along the
+offshore boundary, together with a depth-resolved advection velocity
+(\texttt{uxuyadvectionvelocitybnd}). Prescribing the advection velocity was
+necessary for stability in the deep offshore cells, where a water-level-only
+boundary admitted spurious accelerations.
+
+The CMEMS sea surface height field is an anomaly about the model rest state
+rather than a geodetic level, so it cannot be imposed directly as a free
+surface without a reference correction. A per-node offset was therefore added
+to the water-level boundary, anchored on the tide gauge at Marettimo island
+(JRC TAD 658) and distributed along the boundary using the CMEMS mean dynamic
+topography. The anchor was estimated from a thirteen-month record spanning
+January 2025 to January 2026.
+
+Atmospheric forcing combined ERA5 reanalysis with in-situ observation. Wind
+components, mean sea level pressure, and the Charnock parameter were taken
+from ERA5, and the wind field was blended with the record from the
+AltaVilaEst station. Earlier configurations that additionally blended a second
+in-situ station produced a systematic rotation of the wind vector along the
+eastern lagoon margin, so the AltaVilaEst record alone was retained.
+Evaporation was imposed through the rainfall quantity with a negative sign,
+which is the convention D-Flow FM expects, with both the rainfall and
+evaporation switches enabled in the model definition. Interior salinity and
+temperature were nudged towards the CMEMS fields with a relaxation time of
+$8.64\times10^{5}$~s, long enough to leave the lagoon interior essentially
+free-running while constraining the offshore extension.
+
+Initial conditions represented the observed summer state, with a hypersaline
+field prescribed over the lagoon. Three passive tracers were carried, one
+labelling the lagoon water mass and two representing the discharges from the
+Trapani airport and saltpan canal systems.
 
 \subsection{Seagrass roughness parametrisation}
 \label{sec:methods_roughness}
 
-%% Baptist (2007) trachytopes via .arl; CRS must be WGS84 to match the mesh
-%% (memory arl_crs_must_match_mesh). Base map: Maltese et al. (2025)
-%% classification, 2023 epoch. Automated RF/PlanetScope pipeline
-%% (scripts/build_planet_rf_v4.py, memory planet2023_maltese_rf_pipeline).
-%% Ingrassia et al. (2024) Ks = 20 as the uniform-roughness reference for the
-%% baseline ensemble member (memory ingrassia_2024_vr_calibration).
+Spatially variable bed resistance was applied through the trachytope
+formulation, which assigns a roughness class to each flow link and combines
+classes within a computational cell by area weighting. Four classes were
+defined. Unvegetated substrate was represented by Manning coefficients of
+0.020 and 0.028~s~m$^{-1/3}$ for the sandy and coarser bed types. The two
+vegetated classes used the \citet{Baptist2007} formulation for submerged
+canopy resistance, which derives an equivalent Chezy coefficient from the
+canopy height $h_v$, the product of stem density and stem diameter $mD$, the
+drag coefficient $C_D$, and the bed Chezy coefficient $C_b$. The sparser class
+took $h_v = 0.15$~m, $mD = 3.2$~m$^{-1}$, and $C_D = 1.00$, and the denser
+class took $h_v = 0.50$~m, $mD = 5.0$~m$^{-1}$, and $C_D = 0.80$, both with
+$C_b = 45$~m$^{1/2}$~s$^{-1}$. Roughness was updated every 300~s.
+
+The spatial assignment of classes was derived from a supervised random-forest
+classification of PlanetScope SuperDove imagery acquired in August 2023 at 3~m
+ground sampling distance, following the mapping approach of
+\citet{Maltese2025}. Classified pixels were transferred to the mesh with a
+20~m search radius. The resulting roughness link file must be written in the
+same geographic coordinate system as the mesh, because a projected file is
+accepted without error while assigning no links at all.
+
+For reference, \citet{Ingrassia2024} obtained a best-fit uniform
+Gauckler--Strickler coefficient of 20~m$^{1/3}$~s$^{-1}$ for the vegetated
+Stagnone in a depth-averaged model, equivalent to a Manning coefficient of
+0.050~s~m$^{-1/3}$.
 
 \subsection{Observational data and validation metrics}
 \label{sec:methods_validation}
 
-%% Water level at BN, BS, AE (memory insitu_2025-26_inventory); Marettimo
-%% offshore cell selection is non-trivial, use (12.0753, 37.9747) with
-%% bl < -0.3 m (memory marettimo_validation_cell).
-%% Metrics: report raw and anomaly together, RMSE^2 = bias^2 + RMSE_anom^2.
-%% Post-spinup window: drop the first simulated day.
-%% Lagrangian: Liu-Weisberg normalised cumulative separation skill score and
-%% endpoint proximity, 12 deploys July 2025, OpenDrift on regridded surface
-%% currents (memory regrid_opendrift_pipeline).
+Water level was recorded at ten-minute resolution at three stations, BocaNord
+at the northern inlet, BocaSud near the southern inlet, and AltaVilaEst on the
+eastern flank of the central basin. Offshore performance was assessed at the
+Marettimo tide gauge. The model cell used for that comparison was not the cell
+nearest the gauge, which sits in the lee of the island and carries almost no
+free-surface variance. A cell at 12.0753$^\circ$E, 37.9747$^\circ$N with a bed
+level below $-0.3$~m was used instead, consistent with earlier versions of the
+model.
+
+Water-level skill was quantified with the raw root-mean-square error, the
+bias, and the anomaly root-mean-square error computed after removing the
+respective means, together with the linear correlation and the ratio of
+modelled to observed standard deviation. The three error measures are related
+by $\mathrm{RMSE}^2 = \mathrm{bias}^2 + \mathrm{RMSE}_{\mathrm{anom}}^2$, so
+reporting them jointly separates a constant reference-level offset from
+genuine dynamic error in phase and amplitude. Reporting either measure alone
+would confound the two. The first simulated day was discarded as spin-up.
+
+Lagrangian skill was assessed against GPS-tracked surface drifters released in
+the lagoon interior during the simulation window. Simulated trajectories were
+obtained by advecting particles with OpenDrift through the modelled surface
+current field. Agreement was quantified with the normalised cumulative
+Lagrangian separation skill score of \citet{Liu2011}, which accumulates the
+separation between modelled and observed positions and normalises it by the
+distance travelled by the observed drifter, and with the endpoint proximity,
+the separation between modelled and observed positions at the end of each
+deployment. \citet{Revelard2021} discuss the sensitivity of this class of
+metric to the normalisation choice in coastal applications.
