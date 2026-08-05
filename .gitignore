@@ -154,3 +154,70 @@ outputs/wetwise_stagnone_panel.pptx
 # Ciraolo roughness outputs (regenerable via scripts/build_ciraolo_roughness_dynamic.py)
 data/processed/roughness_ciraolo/roughness_ciraolo_dynamic.nc
 data/processed/roughness_ciraolo/roughness_ciraolo_bias.nc
+
+# ---------------------------------------------------------------------------
+# Working-tree triage 2026-08-05 (~5.8 GB of regenerable artefacts)
+# ---------------------------------------------------------------------------
+
+# Packaged run inputs+outputs shipped for review (contains DFM_OUTPUT_*, ~3.6 GB)
+data/processed/d2025-07-13_inputs_for_review/
+
+# Planet Aug-2025 composites (regenerable via scripts/build_planet_rf_v4.py, ~1 GB)
+data/processed/planet2025_aug_rf/composite_aug2025.tif
+data/processed/planet2025_aug_rf/composite_aug2025_norm.tif
+
+# Trained RF model binaries (22-72 MB each; retrain via scripts/build_planet_rf_v*.py)
+data/processed/planet*/rf_model_*.joblib
+
+# SDB rasters (regenerable via scripts/sdb_*.py, ~244 MB)
+data/processed/planet_sdb_2023_2025/
+
+# v05 topobathy + mesh heavy intermediates (regenerable via build_topobathy_v05.py /
+# build_mesh_v05.py / interp_bathy_to_mesh_v05.py). NOTE: grid_sobreposta_merged_net.nc
+# and Stagnone_v05_manual3_net.nc are deliberately NOT ignored - they carry manual
+# UI mesh edits that no script reproduces.
+data/processed/mesh_v05/bathy_gridded.nc
+data/processed/mesh_v05/topobathy_combined.nc
+data/processed/mesh_v05/grid_sobreposta_net.nc
+data/processed/mesh_v05/Stagnone_v05_net.nc
+data/processed/mesh_v05/*.xyz
+
+# QGIS georeferencing artefacts from Maltese 2025 figure digitisation
+data/processed/fig5_*_georef*.tif
+
+# Raw downloads feeding the v05 topobathy pipeline (on-demand, ~266 MB)
+data/raw/tinitaly_v05/
+data/raw/tinitaly_v05_raw/
+data/raw/copernicus_dem_v05/
+data/raw/gebco_2024/
+data/raw/cmems_v05/
+
+# Extended-window forcing for the d10d12 continuation (149 MB of blended wind alone)
+model/dflowfm_v04AE_d10d12_extended/
+
+# MPI partition artefacts - METIS output is machine-bound and not portable across hosts
+# (see memory partition_files_machine_bound). Legacy tracked partitions predate this rule.
+model/*/*_000?.mdu
+model/*/*_000?_net.nc
+model/*/DFM_interpreted_idomain_*_net.nc
+
+# SWAN diagnostics written into diag/ subfolders
+model/*/diag/swn-diag.*
+
+# Pre-edit backups with suffixes the plain *.bak rule misses
+*.bak.pre_*
+*.bak_pre_*
+
+# WetWise portal demo payloads + Paraview exports (regenerable via
+# scripts/build_wetwise_hydrodynamics_demo.py and scripts/export_for_paraview.py)
+outputs/wetwise_demo_jul25/animations/
+outputs/wetwise_demo_jul25/spatial/
+outputs/wetwise_hydtab/
+outputs/wetwise_hydtab.zip
+outputs/wetwise_stagnone_ppt.zip
+outputs/wetwise_tab_v2_test/
+outputs/wetwise_tab/demo_hydrodynamics/data/
+outputs/wetwise_tab/demo_hydrodynamics/demo_coarse.nc
+outputs/wetwise_tab/demo_hydrodynamics/demo_fine.nc
+outputs/wetwise_tab/demo_hydrodynamics/demo_data_full.nc
+outputs/paraview/v04AE_merged.nc
