@@ -1,0 +1,7 @@
+[FileInformation]
+  FileGeneratedBy  = Deltares, RGFGRID Version 7.03.00.77422 (Win64), Nov 30 2022, 15:52:41
+  FileCreationDate = 2026-05-29, 12:56:58
+  FileVersion      = 0.02
+[Grid]
+  Type        = DFLOW_FM
+  FileName    = Stagnone_v05_manual3_net.nc
