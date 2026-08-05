@@ -1,5 +1,15 @@
 # Paper 1 — Working Draft
 
+> **SUPERSEDED 2026-08-05.** The manuscript now lives in LaTeX at
+> [`manuscript/`](../manuscript/) (elsarticle, Harvard author-year), following the
+> same layout as the `reservoirs_s1_svm` papers. Sections 1 and 2 were migrated to
+> `manuscript/sections/01_introduction.tex` and `02_study_area.tex`, and the
+> reference list became `manuscript/references.bib`.
+>
+> **Do not edit the prose below.** Two copies of the same text drift apart silently.
+> This file is kept only for the reference-verification notes at the bottom, which
+> are not yet reproduced in the `.bib` comments.
+
 **Working title:** Wind-driven three-dimensional circulation in a shallow vegetated lagoon: model validation with Lagrangian drifters and the influence of seagrass roughness and wave coupling
 
 **Target journal:** Estuarine, Coastal and Shelf Science (ECSS)
