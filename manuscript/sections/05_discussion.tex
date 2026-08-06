@@ -1,10 +1,124 @@
 \section{Discussion}
 \label{sec:discussion}
 
-%% Editor-deck rules: do not claim beyond what the results support, do not
-%% introduce new terms here, some creative flexibility but do not oversell.
-%% This is where interpretation lives, including any mechanism arguments moved
-%% out of Section 4.
+\subsection{Water level cannot separate these configurations}
 
-%% Open item: the [REF-wave-current-lagoon] placeholder in the Introduction
-%% gap statement still needs a Mediterranean lagoon wave-current study.
+The five members differ in wave coupling, bed mobility and the spatial
+treatment of vegetation resistance, and they produce water level records that
+are almost the same. Anomaly RMSE varies by five millimetres or less between
+members at any station, and no member is consistently best across the three
+stations. Over the same simulations Liu--Weisberg skill spans 0.505 to 0.659
+and endpoint separation spans 343 to 583~m.
+
+A calibration exercise conducted on water level alone would therefore have no
+basis on which to prefer any of these configurations, and would plausibly
+select whichever member happened to minimise a station-averaged RMSE by a
+margin smaller than the measurement uncertainty. This is the case for treating
+Lagrangian observations as a distinct constraint rather than as a confirmation
+of a model already tuned to tide gauges. It also suggests that the frequent
+practice of reporting coastal model skill through water level statistics alone
+may certify transport behaviour that was never examined.
+
+The reason is structural rather than incidental. Water level in a micro-tidal
+basin with two open connections is set largely by the offshore forcing and the
+basin's capacity to fill and drain, both of which the five members share.
+Transport depends on the velocity field, which they do not.
+
+\subsection{Wave coupling}
+
+Wave coupling reduces Lagrangian skill by 0.035, a small effect but a
+consistent one, negative in eight of the twelve deployments. It was included in
+this model because spectral waves generated in the western Sicilian channel
+reach both inlets, and because canopy attenuation is a documented process in
+Mediterranean seagrass systems. The result does not contradict either premise.
+It says that in this basin, over this window, representing waves did not
+improve the prediction of surface transport, and slightly degraded it.
+
+Two limits on that statement matter. The wave contribution was measured only
+along the fixed-bed, uniform-roughness axis, so any interaction between wave
+forcing and canopy resistance is outside what this ensemble can resolve. And
+the window contains one moderate swell event rather than a storm, so the test
+is of ordinary summer conditions, not of the conditions under which wave
+effects on transport would be expected to be largest.
+
+\subsection{An interaction without an identified mechanism}
+
+Neither bed mobility nor distributed vegetation roughness changes Lagrangian
+skill on its own. Applied together they produce the only configuration that
+reproduces the observed drifter transport rate, at 0.99 of the observed mean
+speed against 0.76 to 0.85 for the others. The joint effect is larger than the
+sum of the separate point estimates, which is the signature of an interaction.
+
+What that interaction is remains unresolved, and three candidate explanations
+were tested and rejected.
+
+The first was that the roughness field organises where the bed erodes,
+producing a channelised bathymetry that conveys flow more efficiently. The
+bed-change fields do not support it. Their magnitudes are nearly identical
+between the two morphodynamic members, median $-0.024$ against $-0.020$~m, and
+their spatial difference is close to zero across the lagoon interior. What
+differences exist sit on the shorelines and in the northern intertidal, away
+from the drifter tracks.
+
+The second was that canopy drag suppresses erosion beneath the meadows. Both
+morphodynamic members show more bed change under the canopy than on bare
+substrate, in a ratio of 1.50 under uniform roughness and 1.40 under
+distributed roughness, so the effect is present in the wrong direction and is
+barely modified by the roughness treatment.
+
+The third was that the successful member simply carries a stronger current
+field. It does not. Its lagoon-mean surface speed is 0.078~\si{\metre\per\second},
+below that of a member whose particles travel 15\% too slowly, and well below
+the member with the lowest path ratio of all. The vertical profiles show that
+bed mobility, not roughness, controls the shear, and that adding canopy drag to
+a mobile bed lowers surface speed rather than raising it.
+
+The particles nevertheless travel at the right speed. Since it is not the mean
+speed of the field, it has to be where and when the particles encounter the
+faster water, which is a property of the joint space and time structure of the
+flow rather than of its magnitude. Demonstrating that would require relating
+particle position to the phase of the local current through the deployment
+window, which is beyond what is attempted here.
+
+Stating this openly is preferable to the available alternative, which is to
+attribute the improvement to canopy physics because the successful member is
+the one with a canopy. That attribution is not supported by any of the three
+diagnostics.
+
+\subsection{The bed-mobility caveat}
+
+The configuration that reproduces observed transport depends on morphodynamics
+whose critical shear stress for erosion has not been constrained by a repeated
+bathymetric survey. Over nine days the bed changes by up to 2.4~m in isolated
+cells, which is not a physically plausible rate for this system. The
+morphodynamic component therefore functions in this ensemble as a perturbation
+to the bed whose realism is unverified, and the interaction reported above
+should be read with that in mind.
+
+Two readings remain open. Bed mobility may be standing in for a deficiency in
+the initial bathymetry, in which case the improvement is a compensation and
+would not survive a corrected bed. Or the model may genuinely require an
+evolving bed to reproduce transport in a system where the seagrass canopy and
+the sediment surface adjust to one another, in which case the calibration
+problem is real but the physics is too. Distinguishing them requires
+observational constraint on the bed, and satellite-derived bathymetry over
+repeated epochs is the most tractable route currently available.
+
+\subsection{Vertical structure}
+
+Surface speed exceeds bed speed by a factor between 1.9 and 4.5 in the lagoon
+interior, in a basin whose mean depth is below one metre. Even the weakest case
+places a factor of nearly two between the layer a surface drifter samples and
+the layer that governs bed shear stress. A depth-averaged representation of
+this basin would assign a single velocity to both.
+
+This is consistent with what \citet{DeMarchis2012} found from field
+measurements and three-dimensional modelling in the same lagoon, and it
+supplies a quantitative basis for the choice of a three-dimensional solver
+here. The dependence of the shear ratio on bed mobility, from near 2.0 with a
+fixed bed to near 4.0 with a mobile one, also indicates that the vertical
+structure is not an independent property of the basin but responds to the same
+model choices that govern transport.
+
+%% Open item: the [REF-wave-current-lagoon] placeholder in the Introduction gap
+%% statement still needs a Mediterranean lagoon wave-current study.
