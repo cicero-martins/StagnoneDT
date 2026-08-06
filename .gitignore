@@ -81,6 +81,10 @@ model/*/wave/wavm-*.dat
 model/*/wave/wavm-*.def
 model/*/wave/wavm-*.nc
 
+# Station output pulled back from the server for scoring (regenerable; the
+# metrics that matter are committed as data/processed/wl_metrics_ensemble.csv)
+model/*/*_his.nc
+
 # Restart files (re-generable from model runs)
 model/*/*_rst.nc
 
