@@ -54,20 +54,68 @@ raises the BocaNord bias from 0.172 to 0.177~m.
 
 Thirty-five drifters across twelve deployments were scored against each member
 over the interval each drifter was in the water, which ranged from 0.5 to
-7.2~hours. Mean Liu--Weisberg skill was 0.539 without wave coupling, 0.505 and
-0.506 for the two wave-coupled fixed-bed members, 0.570 with morphodynamics
-alone and 0.659 with both morphodynamics and distributed roughness. Endpoint
-separation followed the same ordering, from 549 to 583~m for the first four
-members and 343~m for the last.
+7.2~hours. Table~\ref{tab:lagrangian} summarises the four metrics and
+Figure~\ref{fig:lagrangian} shows their distribution.
+
+Mean Liu--Weisberg skill was 0.539 without wave coupling, 0.505 and 0.506 for
+the two wave-coupled fixed-bed members, 0.570 with morphodynamics alone and
+0.659 with both morphodynamics and distributed roughness. Endpoint separation
+followed the same ordering, from 549 to 583~m for the first four members and
+343~m for the last. At drifter level the five distributions overlap heavily
+(Figure~\ref{fig:lagrangian}a), so the ordering of the means rests on paired
+comparison rather than on separation between groups.
+
+\begin{table}[H]
+  \centering
+  \caption{Lagrangian metrics by ensemble member, 35 drifters over twelve
+  deployments. Path ratio is simulated over observed path length and speed
+  ratio is mean speed along the simulated track over the observed
+  0.143~\si{\metre\per\second}, both scored on the interval each drifter was in
+  the water.}
+  \label{tab:lagrangian}
+  \begin{tabular}{lrrrr}
+    \toprule
+    Member & LW skill & Endpoint sep.\ (m) & Path ratio & Speed ratio \\
+    \midrule
+    No waves            & 0.539 & 549 & 0.78 & 0.82 \\
+    Waves               & 0.505 & 569 & 0.80 & 0.84 \\
+    Waves + roughness   & 0.506 & 583 & 0.81 & 0.85 \\
+    Waves + morph.      & 0.570 & 566 & 0.75 & 0.76 \\
+    Full                & \textbf{0.659} & \textbf{343} & \textbf{0.96} & \textbf{0.99} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The wave penalty is not carried by a few deployments
+(Figure~\ref{fig:lagrangian}b). Skill falls with wave coupling in 28 of the 35
+drifters (sign test $p = 0.0005$) and in 10 of the 12 deployments (sign test
+$p = 0.039$, Wilcoxon on deployment means $p = 0.043$). The two deployments in
+which waves help are internally consistent, with all three of their drifters
+improving in each, so they represent a genuine difference in behaviour rather
+than scatter. The largest single degradation is $-0.133$ and the largest single
+improvement $+0.069$.
 
 The observed drifters travelled at a mean speed of 0.143~\si{\metre\per\second}.
 Along their own simulated trajectories the members reached 0.118, 0.121, 0.122,
-0.109 and 0.142~\si{\metre\per\second} respectively, so only the member
-combining morphodynamics and distributed roughness reproduces the observed
-transport rate. The remainder fall 15 to 24\% short. The same ordering appears
-in the ratio of simulated to observed path length, which is 0.75 to 0.81 for
-four members and 0.96 for the fifth, and in the fraction of drifters whose path
-ratio falls below 0.7, which is 31 to 34\% against 11\%.
+0.109 and 0.142~\si{\metre\per\second} respectively
+(Figure~\ref{fig:lagrangian}c), so only the member combining morphodynamics and
+distributed roughness reproduces the observed transport rate. The remainder
+fall 15 to 24\% short. The same ordering appears in the fraction of drifters
+whose path ratio falls below 0.7, which is 31 to 34\% for the first four
+members against 11\% for the fifth.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{lagrangian_results}
+  \caption{Lagrangian validation. (a) Liu--Weisberg skill for every drifter
+  under every member, with the horizontal bar giving the mean. (b) The change
+  in skill from wave coupling, by deployment, with individual drifters
+  overlaid and the ensemble mean dashed. (c) Mean speed along each member's own
+  track against the observed value, with the ratio annotated. The member
+  combining distributed roughness and an active bed is drawn in colour
+  throughout.}
+  \label{fig:lagrangian}
+\end{figure}
 
 \subsection{Process attribution}
 \label{sec:res_attribution}
@@ -133,4 +181,42 @@ lowest path ratio of all.
   (a) Mean speed by sigma layer, colour giving the bed treatment and line style
   the roughness treatment. (b) The ratio of surface to bed speed.}
   \label{fig:profile}
+\end{figure}
+
+\subsection{Response of the roughness classes}
+\label{sec:res_classes}
+
+Cells were grouped by the trachytope class the model assigned them, taking the
+dominant class at the nearest roughness link. Comparing classes within a single
+member does not isolate the roughness treatment, because the classes occupy
+different parts of the basin at different depths. The uniform-roughness members
+make this explicit. With no roughness distinction applied at all, their
+\emph{Posidonia} cells are still slower at the bed than their sand cells, in a
+ratio of 0.86 and 0.87. The roughness effect is therefore read between members
+within a class rather than between classes within a member.
+
+On a fixed bed, moving from uniform to distributed roughness reduces mean bed
+speed by 1.3\% over sand, 1.1\% over \emph{Cymodocea}, 3.6\% over
+\emph{Posidonia} and 4.5\% over rock (Figure~\ref{fig:classes}b). The effect on
+the wave field is larger and ordered as canopy attenuation predicts. Mean
+orbital velocity at the bed falls by 11.3\% over sand, 13.7\% over
+\emph{Cymodocea} and 14.3\% over \emph{Posidonia}, and by only 3.3\% over rock
+(Figure~\ref{fig:classes}c), the rock class being the exposed substrate near
+the inlets where mean orbital velocity reaches 0.27~\si{\metre\per\second}
+against 0.05 to 0.09~\si{\metre\per\second} elsewhere in the basin.
+
+Introducing bed mobility inverts the class ordering of near-bed speed. The
+\emph{Posidonia} to sand ratio rises from 0.85 on a fixed bed to 1.10 and 1.27
+in the two morphodynamic members, because sand cells lose roughly half their
+near-bed speed while \emph{Posidonia} cells lose about a third.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{class_speed_uorb}
+  \caption{Flow and wave response by trachytope class in the lagoon interior.
+  (a) Mean bed and surface speed by class for every member, the full member
+  drawn opaque. (b) Change in mean bed speed from uniform to distributed
+  roughness on a fixed bed. (c) The same for mean wave orbital velocity at the
+  bed.}
+  \label{fig:classes}
 \end{figure}
