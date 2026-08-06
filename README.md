@@ -61,8 +61,9 @@ Despite very shallow depth, significant vertical flow structure is observed (win
 
 ## Methodology — architecture
 
-- **D-Flow FM**: 3D unstructured grid, 10 sigma layers, k-epsilon turbulence, UNESCO density, WGS84
-- **SWAN**: nested outer (~400 m, full FM domain) + inner (~100 m, lagoon) grids; 36 directions; JONSWAP friction + vegetation dissipation
+- **D-Flow FM**: 3D unstructured grid (21,188 nodes / 25,212 faces), 10 sigma layers (growth 1.2), k-epsilon turbulence, UNESCO density, WGS84, `bedLevType=1` (cell centres from bathymetry file), Manning 0.023 uniform baseline, 8 MPI partitions
+  - **Run window gotcha**: `tStop` in the MDU reads 259200 s (3 days) but is overridden by `startDateTime`/`stopDateTime`, which set the actual 9-day Jul 1–10 2025 window. Read the datetime pair, not `tStop`.
+- **SWAN**: nested outer (~400 m, full FM domain) + inner (~100 m, lagoon) grids; 24 directions × 24 frequencies (0.05–1.0 Hz); Komen whitecapping; JONSWAP friction (0.067); breaking α=1.0, γ=0.73
 - **DIMR**: couples Flow + Wave every 3600 s (`ComInterval=3600`); `ncFormat=3` (classic NetCDF, resolves HDF5 re-open bug)
 - **Trachytopes (VR)**: Baptist canopy drag via `.arl` file; CRS must match mesh (WGS84); built from RF seagrass classification
 - **Reference models** (in `oldModel/`): Model A (simple, lagoon-only) and Model B (modelbuilder-based, offshore boundary); v01 starts from Model B
