@@ -13,7 +13,7 @@ approximately 1~m and extensive intertidal flats, and the deeper southern
 sub-basin, with a mean depth of approximately 2~m and a maximum of about 3~m
 near the main inlet. Three islands punctuate the interior, the Phoenician
 archaeological site of Mothia in the south-central basin and the smaller
-islands of Santa Maria and Scola in the central reaches
+islands of Santa Maria and Scuola in the central reaches
 \citep{CiraoloDeMarchis2009}. Salt pans (\emph{saline}) occupy both margins of
 the lagoon, with extensive historic saltworks on the western barrier island
 (Isola Grande) and additional pans along the eastern mainland shore in the
@@ -69,25 +69,24 @@ validation targets for the hydrodynamic model
 (Section~\ref{sec:methods_validation}). Open-sea boundary conditions are
 prescribed from CMEMS Mediterranean physical reanalysis products
 (Section~\ref{sec:methods_forcing}). Offshore model performance is assessed
-against the tidal gauge on Marettimo island (JRC TAD 658), approximately 15~km
+against the tidal gauge on Marettimo island (JRC TAD 658), approximately 35~km
 to the west, which provides a free-surface reference uninfluenced by lagoonal
 dynamics. GPS-tracked surface drifters were released in the lagoon interior
 over a sub-period coinciding with the simulation window, and their
 trajectories form the basis of the Lagrangian validation
 (Section~\ref{sec:methods_validation}).
 
-%% TODO Figure 1 (study area map) not yet produced. Needs: lagoon bathymetry,
-%% the two inlets, the three islands, the four in-situ stations (BN, BS, AE,
-%% Mulino), Marettimo inset, and the drifter release points. Replace the
-%% placeholder box below with \includegraphics once the figure exists.
+%% Produced by scripts/plot_study_area_paper1.py
 \begin{figure}[H]
   \centering
-  \fbox{\parbox[c][6cm][c]{0.9\textwidth}{\centering\textsf{[Figure~1
-  placeholder] Study area map: lagoon bathymetry, northern and southern
-  inlets, Mothia/Santa Maria/Scola, in-situ stations BN, BS, AE and Mulino,
-  drifter release points, Marettimo inset.}}}
-  \caption{The Stagnone di Marsala lagoon on the north-western coast of
-  Sicily, showing bathymetry, the two inlets, the interior islands, and the
-  July 2025 in-situ station network.}
+  \includegraphics[width=\textwidth]{study_area_stagnone}
+  \caption{The study area. (a) The modelled domain, covering western Sicily,
+  the Egadi archipelago and the adjacent shelf, with the Marettimo tide gauge
+  used for offshore validation. The red box gives the extent of panel (b).
+  (b) The Stagnone di Marsala, with the water level stations (BocaNord,
+  AltaVilaEst, BocaSud), the Mulino meteorological station, and the 35 GPS
+  drifter release positions of the twelve July 2025 deployments.
+  (c) The domain within Italy. Colour gives depth below the reference level on
+  the model mesh; note the separate scales for (a) and (b).}
   \label{fig:study_area}
 \end{figure}
