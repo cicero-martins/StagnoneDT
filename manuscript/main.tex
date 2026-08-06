@@ -59,9 +59,26 @@
 
 % -----------------------------------------------------------------------
 \begin{abstract}
-%% TODO draft last, once Results are settled. Check the ECSS Guide for Authors
-%% for the current word limit before finalising; do not assume the 150-word
-%% ENVSOFT cap that applies to the reservoirs manuscripts.
+%% 197 words. CHECK the ECSS Guide for Authors limit before submission. Do not
+%% assume the 150-word ENVSOFT cap that applies to the reservoirs manuscripts.
+Coastal lagoon models are routinely validated against water level, yet water
+level may constrain transport weakly. We test this in the Stagnone di Marsala,
+a micro-tidal Sicilian lagoon of sub-metre mean depth colonised by
+\emph{Posidonia oceanica}, using a three-dimensional Delft3D Flexible Mesh
+model coupled to SWAN over nine days of July 2025. Five configurations differ
+in wave coupling, bed mobility and whether seagrass resistance is uniform or
+distributed from a satellite classification, and each is scored against three
+tide gauges and 35 GPS surface drifters. The configurations are
+indistinguishable in water level, with anomaly RMSE differing by five
+millimetres or less, while their Liu--Weisberg skill spans 0.505 to 0.659 and
+their endpoint separation 343 to 583~m. Wave coupling reduces Lagrangian skill
+by 0.035. Distributed roughness and bed mobility each change it negligibly on
+their own but raise it by 0.15 together, and only that combination reproduces
+the observed drifter transport rate. The mechanism of the interaction is not
+the modelled bed change, the suppression of erosion under the canopy, or a
+stronger mean current, and remains unidentified. Surface speed exceeds bed
+speed by 1.9 to 4.5 times, a vertical structure that itself depends on bed
+mobility.
 \end{abstract}
 
 \begin{keyword}
@@ -106,7 +123,7 @@ the seagrass classification, and Deltares for the Delft3D Flexible Mesh suite.
   \item \textbf{Source code repository:} \url{https://github.com/cicero-martins/StagnoneDT}
   \item \textbf{Data availability:} ERA5 and CMEMS products are openly
   available from the Copernicus programme. PlanetScope imagery is under
-  commercial licence; scene identifiers are listed in the repository for
+  commercial licence, and scene identifiers are listed in the repository for
   traceability. In-situ water level, wind, and drifter records are archived
   in the repository.
 \end{itemize}
