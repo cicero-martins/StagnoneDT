@@ -23,6 +23,19 @@ Four of the five members are drawn in grey and vr in colour, because the
 finding is that one member separates from a cluster of four, and that is what
 the encoding should say.
 
+Which layer this is, and why it is the right one. Every regrid takes a SINGLE
+layer, isel(layer, -1), not a column average. The map.nc carries no sigma
+coordinate to consult, so the convention was checked physically: mean speed
+rises monotonically from 0.247 m/s at index 0 to 0.415 m/s at index 9, which is
+bed friction at the bottom and wind-driven flow at the top. Index -1 is
+therefore the surface, which is what surface drifters ride. Both regrid code
+paths select the layer the same way, and the empirical check is that nowaves
+(server path, 0.118 m/s along track) sits with nodm (local dfm_tools path,
+0.121), which a layer inversion in either path would have broken.
+
+That vertical shear, a factor of 1.7 across a sub-metre mean depth, is itself
+the argument for running this basin in 3D rather than depth-averaged.
+
 Note on file sizes: the vr and nodm_vr regrids are uncompressed (82 MB) while
 the others use zlib (46 MB). Dimensions, window and 30-minute sampling are
 identical across all five, so this is storage, not a difference in content.
