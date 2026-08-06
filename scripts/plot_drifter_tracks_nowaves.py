@@ -7,6 +7,20 @@ This figure asks what that looks like in the trajectories themselves: the two
 deploys where the gain is largest and the two where it is most negative, each
 with the observation and three model members drawn on the same axes.
 
+What it shows is under-advection, not a directional error. In deploys 1 and 2
+the fixed-bed members travel a fraction of the observed distance in roughly the
+right direction. Mean path ratio is 0.75-0.81 for the four baseline members
+against 0.96 for vr, and 31-34% of their drifters fall below 0.7 against 11%
+for vr. Deploy 2 is the extreme case: the baseline members cover about one
+sixth of the observed path.
+
+CLIPPING IS NOT OPTIONAL HERE. OpenDrift advects every particle to the end of
+the forcing, but the deployments lasted 0.5 to 7.2 hours against 12 to 41 hours
+of simulation. An unclipped plot shows a spurious southward runaway that is
+entirely post-recovery drift, and it invites exactly the wrong mechanistic
+story. The scoring in drifter_validation_*.py already masks to the observed
+window, so metrics were never affected, only the picture.
+
 Members shown are the ones the argument turns on:
   nowaves  waves off, fixed bed, uniform roughness
   nodm     the same with wave coupling on, so nodm vs nowaves is the wave effect
@@ -142,7 +156,18 @@ def main():
             s = sims[key]
             s = s[s['deploy'] == dp]
             for src, g in s.groupby('drifter_id'):
-                g = g.sort_values('time')
+                # Clip each simulated track to the window in which THAT drifter
+                # was actually in the water. OpenDrift is run to the end of the
+                # forcing for every particle, so an unclipped track carries 12
+                # to 41 hours of drift past recovery and invents a divergence
+                # the scoring never sees. The metrics already mask this way.
+                og = o[o['source'] == src]
+                if og.empty:
+                    continue
+                t0, t1 = og['time'].min(), og['time'].max()
+                g = g[(g['time'] >= t0) & (g['time'] <= t1)].sort_values('time')
+                if g.empty:
+                    continue
                 ax.plot(g['lon'], g['lat'], '-', color=colour, lw=1.5,
                         alpha=0.9, zorder=4)
                 ax.plot(g['lon'].iloc[-1], g['lat'].iloc[-1], marker='o', ms=4,
