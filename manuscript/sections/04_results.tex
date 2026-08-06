@@ -1,35 +1,136 @@
 \section{Results}
 \label{sec:results}
 
-%% Editor-deck rules for Results: report the main findings, not all findings.
-%% Follow the figures and tell a story. Defend the data statistically.
-%% Interpretation belongs in the Discussion, not here.
-
-\subsection{Water level validation}
+\subsection{Water level}
 \label{sec:res_wl}
 
-%% v04AE post-spinup Jul 2-10 2025. Raw + anomaly together.
-%% BN 0.174/+0.171/0.034/corr 0.87; BS 0.024/+0.008/0.023/0.92;
-%% AE 0.133/+0.125/0.043/0.83; Marettimo 0.172/+0.167/0.042/0.80.
-%% 76-90% of raw variance is bias. std_ratio brought from ~1.95 (v03) to ~1.10.
+Table~\ref{tab:wl} reports water level skill at the three interior stations for
+every ensemble member over the post-spinup window. Raw error is dominated by a
+positive bias at BocaNord and AltaVilaEst, between 0.09 and 0.18~m, and is
+small at BocaSud, between $-0.004$ and $+0.018$~m. Removing the respective
+means leaves an anomaly RMSE of 0.021 to 0.045~m at every station in every
+member, with correlations from 0.79 to 0.93 and modelled-to-observed standard
+deviation ratios from 1.06 to 1.25.
 
-\subsection{Lagrangian drifter validation}
+The spread across configurations is small. Anomaly RMSE varies by 0.005~m or
+less between members at any given station, and the ordering of members is not
+consistent from one station to another. Variable roughness lowers the
+AltaVilaEst bias from 0.117 to 0.091~m relative to its own counterpart and
+raises the BocaNord bias from 0.172 to 0.177~m.
+
+\begin{table}[H]
+  \centering
+  \caption{Water level skill by member and station, 2--10 July 2025.
+  $\mathrm{RMSE}^2 = \mathrm{bias}^2 + \mathrm{RMSE}_{\mathrm{anom}}^2$. All
+  values in metres except the dimensionless ratios.}
+  \label{tab:wl}
+  \begin{tabular}{llrrrrr}
+    \toprule
+    Station & Member & RMSE & Bias & RMSE$_{\mathrm{anom}}$ & $r$ & $\sigma_m/\sigma_o$ \\
+    \midrule
+    BocaNord & no waves    & 0.150 & $+0.146$ & 0.034 & 0.86 & 1.09 \\
+             & waves       & 0.170 & $+0.168$ & 0.030 & 0.88 & 1.09 \\
+             & + roughness & 0.172 & $+0.170$ & 0.030 & 0.89 & 1.10 \\
+             & + morph.    & 0.175 & $+0.172$ & 0.032 & 0.87 & 1.13 \\
+             & full        & 0.180 & $+0.177$ & 0.031 & 0.88 & 1.13 \\
+    \midrule
+    BocaSud  & no waves    & 0.023 & $-0.004$ & 0.023 & 0.91 & 1.06 \\
+             & waves       & 0.028 & $+0.018$ & 0.022 & 0.92 & 1.06 \\
+             & + roughness & 0.025 & $+0.012$ & 0.023 & 0.92 & 1.07 \\
+             & + morph.    & 0.023 & $+0.009$ & 0.021 & 0.93 & 1.08 \\
+             & full        & 0.022 & $+0.003$ & 0.022 & 0.93 & 1.09 \\
+    \midrule
+    AltaVila & no waves    & 0.116 & $+0.108$ & 0.042 & 0.81 & 1.12 \\
+    Est      & waves       & 0.136 & $+0.130$ & 0.039 & 0.82 & 1.14 \\
+             & + roughness & 0.130 & $+0.124$ & 0.039 & 0.82 & 1.16 \\
+             & + morph.    & 0.124 & $+0.117$ & 0.042 & 0.81 & 1.20 \\
+             & full        & 0.102 & $+0.091$ & 0.045 & 0.79 & 1.25 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Lagrangian transport}
 \label{sec:res_drifters}
 
-%% 12 deploys July 2025. LW skill 0.570, endpoint proximity 566 m for
-%% v04AE vs 0.377 for v04. D7 east-boundary case resolved by the AE-only
-%% wind blend (memory d7_blended_wind_direction_bias).
+Thirty-five drifters across twelve deployments were scored against each member
+over the interval each drifter was in the water, which ranged from 0.5 to
+7.2~hours. Mean Liu--Weisberg skill was 0.539 without wave coupling, 0.505 and
+0.506 for the two wave-coupled fixed-bed members, 0.570 with morphodynamics
+alone and 0.659 with both morphodynamics and distributed roughness. Endpoint
+separation followed the same ordering, from 549 to 583~m for the first four
+members and 343~m for the last.
 
-\subsection{Process attribution experiment}
+The observed drifters travelled at a mean speed of 0.143~\si{\metre\per\second}.
+Along their own simulated trajectories the members reached 0.118, 0.121, 0.122,
+0.109 and 0.142~\si{\metre\per\second} respectively, so only the member
+combining morphodynamics and distributed roughness reproduces the observed
+transport rate. The remainder fall 15 to 24\% short. The same ordering appears
+in the ratio of simulated to observed path length, which is 0.75 to 0.81 for
+four members and 0.96 for the fifth, and in the fraction of drifters whose path
+ratio falls below 0.7, which is 31 to 34\% against 11\%.
+
+\subsection{Process attribution}
 \label{sec:res_attribution}
 
-%% Four-member ensemble: baseline / VR only / waves only / full.
-%% VR reduces WL setup bias 11-13 cm at BN and AE.
-%% Key claim for RQ3: LW skill separates configurations that WL metrics cannot.
+Figure~\ref{fig:attribution} gives the paired per-drifter contrasts with
+bootstrap confidence intervals. Wave coupling reduces Liu--Weisberg skill by
+0.035 (95\% CI $-0.053$ to $-0.017$, $p = 0.001$). Distributed roughness on a
+fixed bed changes it by 0.001 (CI $-0.016$ to $+0.018$, $p = 0.34$).
+Morphodynamics under uniform roughness changes it by 0.065 (CI $-0.019$ to
+$+0.150$, $p = 0.23$). The two contrasts in which both treatments are present
+are the only large ones with intervals clear of zero. Distributed roughness
+with morphodynamics active gives $+0.089$ (CI $+0.046$ to $+0.133$,
+$p < 0.001$), and morphodynamics with distributed roughness active gives
+$+0.153$ (CI $+0.056$ to $+0.246$, $p = 0.005$).
 
-\subsection{Three-dimensional flow structure}
+Neither treatment produces a demonstrable change on its own and their joint
+effect exceeds the sum of the individual point estimates, so the two interact
+rather than contribute additively.
+
+The joint effect is not evenly distributed across the dataset. It exceeds
+$+0.27$ in five deployments, is close to zero in four, and is negative in
+three, reaching $-0.39$ in the deployment with the shortest observed track.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{ensemble_attribution}
+  \caption{Process attribution over the ensemble. (a) and (b) give mean skill
+  and endpoint separation against the roughness treatment, one line per bed
+  treatment, with the no-wave member as the dashed reference and its bootstrap
+  interval shaded. (c) gives paired effect sizes with 95\% bootstrap intervals, where
+  filled markers denote intervals clear of zero. (d) gives the per-deployment
+  mean of the two headline contrasts.}
+  \label{fig:attribution}
+\end{figure}
+
+\subsection{Three-dimensional structure}
 \label{sec:res_3d}
 
-%% Vertical shear between wind-driven surface drift and near-bed return flow.
-%% Surface ucx lagoon-only mean 0.12 m/s (memory
-%% v04_surface_current_distribution). Compare against the depth-averaged case.
+Over 4043 wet cells in the lagoon interior, with the inlets excluded, mean
+current speed increases monotonically from the bed to the surface in every
+member (Figure~\ref{fig:profile}). Bed-layer speed ranges from 0.021 to
+0.040~\si{\metre\per\second} and surface-layer speed from 0.075 to
+0.102~\si{\metre\per\second}, giving surface-to-bed ratios of 1.85, 2.07, 2.05,
+4.48 and 3.77 across the five members.
+
+The three fixed-bed members give nearly identical profiles, with ratios between
+2.05 and 2.07. Both morphodynamic members roughly double the ratio, and they do
+so through the bed layer rather than the surface, with near-bed speed falling
+from 0.038 to 0.021~\si{\metre\per\second} while surface speed changes by less.
+Adding distributed roughness to an active bed lowers surface speed from 0.102
+to 0.078~\si{\metre\per\second}.
+
+Lagoon-mean surface speed does not order the members the way transport does.
+The member reproducing the observed drifter speed has a lagoon-mean surface
+speed of 0.078~\si{\metre\per\second}, below the 0.080 of a member whose
+particles travel 15\% too slowly, and below the 0.102 of the member with the
+lowest path ratio of all.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{layer_profile_lagoon}
+  \caption{Vertical structure in the lagoon interior over the drifter window.
+  (a) Mean speed by sigma layer, colour giving the bed treatment and line style
+  the roughness treatment. (b) The ratio of surface to bed speed.}
+  \label{fig:profile}
+\end{figure}
