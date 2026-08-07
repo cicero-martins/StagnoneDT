@@ -1,0 +1,173 @@
+%% Two-page status report for Prof. Ciraolo and Prof. De Marchis.
+%% Letterhead images shared with manuscript/cover_letter.tex.
+\documentclass[11pt]{article}
+\usepackage[left=2.2cm, right=2.2cm, bottom=2.0cm, top=3.3cm, headheight=3.2cm,
+            headsep=0.3cm, footskip=1.7cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{parskip}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{fancyhdr}
+\usepackage{siunitx}
+
+\graphicspath{{../manuscript/figures/}}
+\titleformat{\section}{\normalfont\bfseries\large}{\thesection.}{0.5em}{}
+\titlespacing*{\section}{0pt}{1.1em}{0.4em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[C]{\raggedright\includegraphics[width=0.5\textwidth]{../../manuscript/unipa_header.png}}
+\fancyfoot[C]{\includegraphics[width=0.9\textwidth]{../../manuscript/unipa_footer.png}}
+
+\begin{document}
+\thispagestyle{fancy}
+
+\begin{center}
+{\large\bfseries Stagnone di Marsala digital twin: project resumption and status}\\[0.3em]
+Cicero Martins Jr.\\
+\textit{To: Prof.\ Giuseppe Ciraolo, Prof.\ Mauro De Marchis} \hfill 7 August 2026
+\end{center}
+
+\vspace{0.2em}
+\hrule
+\vspace{0.6em}
+
+\section{Summary}
+
+Work on the coupled three-dimensional model resumed on 5 August after a pause
+since mid-June. The main outcome of the past three days is that the first
+manuscript now has a complete draft, in LaTeX, formatted for
+\textit{Estuarine, Coastal and Shelf Science} and within all of that journal's
+limits. One methodological question remains open and is under test as this is
+written.
+
+The manuscript is provisionally titled \textbf{``Transport validation of a
+wave-coupled lagoon model: interacting effects of seagrass roughness and bed
+mobility''}, with the three of us as authors. I would be grateful for your
+comments on both the framing and the content.
+
+\section{What the study asks and what it found}
+
+Coastal lagoon models are routinely validated against water level and then used
+to describe transport. The paper asks whether the first licenses the second. Six
+model configurations were run over the same nine days of July 2025, from the
+same initial condition and forcing, differing only in wave coupling, bed
+mobility, and whether seagrass resistance is uniform or distributed from a
+satellite classification. Each was scored against three tide gauges and against
+35 GPS surface drifters released over twelve deployments.
+
+\textbf{Water level does not separate the configurations.} Anomaly RMSE differs
+by six millimetres or less between members at any station, which is within the
+measurement uncertainty, and no configuration is consistently best across the
+three stations. Over the same simulations Liu--Weisberg skill spans 0.505 to
+0.655 and endpoint separation spans 334 to 661~m. A calibration conducted on
+water level alone would have had no basis on which to prefer any of them.
+
+\textbf{No treatment improves Lagrangian skill on its own.} Distributed seagrass
+roughness on a fixed bed changes skill by 0.009 or less, bed mobility under
+uniform roughness by 0.019, and wave coupling reduces it by 0.035 to 0.042.
+Applied together, distributed roughness and bed mobility raise skill by 0.131 to
+0.149, improving 32 of the 35 drifters, and only that combination reproduces the
+observed transport rate.
+
+\textbf{Splitting the trajectory error into magnitude and direction shows what
+each treatment corrects}, which is the most recent result and the one I consider
+the paper's contribution.
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+Configuration & Path length & Net displacement & Heading error \\
+              & (sim/obs)   & (sim/obs)        & (deg) \\
+\midrule
+Four fixed-bed members & 0.77--0.80 & 0.78--0.82 & 15.8--16.2 \\
+Mobile bed, uniform roughness & 0.94 & 0.95 & 12.5 \\
+Mobile bed, distributed roughness & 0.98 & 0.99 & \textbf{8.4} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The four fixed-bed members coincide in all three measures. Bed mobility acts on
+magnitude, restoring the distance travelled. Distributed roughness acts on
+direction, and does so only once the bed can move: on a fixed bed it leaves the
+heading error unchanged to the first decimal. This is reported as a narrowing
+rather than a complete mechanism, since reconstructing endpoint separation from
+a mean displacement ratio and a mean heading still underpredicts the two
+mobile-bed members by a factor of 1.4 to 1.9.
+
+Three simpler explanations were tested and rejected: the spatial pattern of bed
+change is indistinguishable between the two mobile-bed members, canopy drag does
+not suppress erosion beneath the meadows, and the successful configuration does
+not carry a stronger mean current field.
+
+Two further results support the modelling choices. The canopy parametrisation
+reduces mean wave orbital velocity at the bed by 14.3\% over \emph{Posidonia},
+13.7\% over \emph{Cymodocea}, 11.3\% over sand and 3.3\% over exposed rock, an
+ordering that follows canopy density. And surface current speed exceeds bed
+speed by a factor of 1.9 to 4.5 at sub-metre mean depth, consistent with
+De Marchis et al.\ (2012) in the same lagoon, which is the quantitative
+justification for solving in three dimensions.
+
+\section{Open item}
+
+The experimental design is a factorial in three factors, of which six of the
+eight cells were obtained. The two missing cells combine a mobile bed with no
+wave coupling. Both abort on the model's velocity cap, at 26.96 and
+43.42~\si{\metre\per\second} against a limit of 25, and they do so
+deterministically: two independent attempts stop at the same simulated instant
+with velocities identical to six decimal places. The four wave-coupled members,
+carrying the same sediment settings, complete without approaching their cap.
+
+Diagnosis so far places the instability offshore and diffuse rather than at a
+single defective cell. Of the 150 fastest cells before the abort, none is inside
+the lagoon and none is above the datum, and their median depth is 34~m. Two
+candidate causes are being tested at the moment, both concerning the offshore
+sector next to the open boundary: suspended sediment feeding the density field,
+and the treatment of the tangential velocity component at boundary faces.
+Results are expected within hours of writing.
+
+If neither resolves it, the result is reportable as it stands, as an observed
+bound on the design rather than a technical failure, and the manuscript already
+carries it that way. The consequence is that the wave contribution is measured
+on a fixed bed only, which the text states explicitly.
+
+\section{Manuscript status and what I would ask of you}
+
+The draft is complete across all six sections, with eight figures and three
+tables, 6200 words of body text against a limit of 8000, and 24 references
+verified against the source PDFs. Highlights and a cover letter are drafted.
+Outstanding are a graphical abstract, which \textit{ECSS} requires, and the
+WETWISE project identifier for the funding statement.
+
+I would welcome your reading on three points in particular:
+
+\begin{enumerate}[leftmargin=1.4em, itemsep=0.25em]
+  \item Whether the framing holds. The paper claims a validation-strategy
+  result, not a description of this lagoon, and the journal does not accept
+  manuscripts of mainly local interest.
+  \item Whether reporting the bed-mobility result is wise given that its
+  critical shear stress for erosion has not been constrained against a repeated
+  bathymetric survey. The manuscript states this openly, and the lagoon bed
+  changes by up to 1.0~m over nine days in isolated cells, which is not a
+  plausible rate. Satellite-derived bathymetry over repeated epochs is the route
+  I would propose to close it.
+  \item The CRediT roles I have assigned, which follow those of the reservoirs
+  manuscripts.
+\end{enumerate}
+
+The full draft, figures and analysis code are in the project repository, and I
+can send the compiled PDF on request.
+
+\vspace{-0.2em}
+{\footnotesize\itshape Dipartimento di Ingegneria, Universit\`a degli Studi di
+Palermo \textperiodcentered\
+\href{mailto:cicero.martinsjr@unipa.it}{cicero.martinsjr@unipa.it}}
+
+\end{document}
