@@ -1,0 +1,8 @@
+contrast,a,b,dLW,lo,hi,p,n_neg,n_pos,clear_of_zero
+"Waves | uniform, fixed bed",nodm,nowaves,-0.0347,-0.0523,-0.0172,0.0007,28,7,True
+"Waves | distributed, fixed bed",nodm_vr,nowaves_vr,-0.0425,-0.0639,-0.0228,0.0002,29,6,True
+"Roughness | no waves, fixed bed",nowaves_vr,nowaves,0.0087,0.0044,0.0132,0.0040,14,21,True
+"Roughness | waves, fixed bed",nodm_vr,nodm,0.0010,-0.0162,0.0172,0.3507,13,22,False
+"Roughness | waves, mobile bed",vr,bl,0.1313,0.0920,0.1749,0.0000,3,32,True
+Bed mobility | uniform,bl,nodm,0.0190,-0.0712,0.1083,0.6563,18,17,False
+Bed mobility | distributed,vr,nodm_vr,0.1494,0.0525,0.2453,0.0060,12,23,True

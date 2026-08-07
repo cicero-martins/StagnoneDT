@@ -28,7 +28,9 @@ ROOT = '/home/ciceromartinsjr/StagnoneDT/'
 MODEL = ROOT + 'model/'
 ARL = MODEL + 'dflowfm_v04AE_vr/stagnone_trachytopes_v3.arl'
 
-MEMBERS = [('nowaves', 'dflowfm_v04AE_nowaves'), ('nodm', 'dflowfm_v04AE_nodm'),
+MEMBERS = [('nowaves', 'dflowfm_v04AE_nowaves'),
+           ('nowaves_vr', 'dflowfm_v04AE_nowaves_vr'),
+           ('nodm', 'dflowfm_v04AE_nodm'),
            ('nodm_vr', 'dflowfm_v04AE_nodm_vr'), ('bl', 'dflowfm_v04AE'),
            ('vr', 'dflowfm_v04AE_vr')]
 LON = (12.432, 12.484)

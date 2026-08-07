@@ -7,15 +7,21 @@ and the modelled-to-observed standard deviation ratio go with them.
 
 The first simulated day is dropped as spin-up.
 
-Source per member is not uniform and that is deliberate. bl, nodm and nowaves
-read their his.nc directly. vr and nodm_vr read CSVs extracted on the server,
-because the vr his.nc copied to this machine is truncated at 430 of 1297 steps
-(it stops on 3 July) while its CSV carries the full record. Using the truncated
-file would silently score three days instead of eight.
+Source per member is not uniform. Four members read their own his.nc. Only
+nodm_vr reads a CSV extracted on the server, because its output was never
+copied back in full; that member is fixed-bed and was not rerun, so the CSV is
+still current for it.
+
+Two traps this encodes. A member directory can hold more than one his.nc, since
+the current run writes to the directory root while an earlier run's copy may
+remain under DFM_OUTPUT_*; the newest file wins, chosen by mtime. And vr was
+previously read from a CSV because its local his.nc was truncated at 430 of
+1297 steps, which is no longer the case after the 2026-08-06 rerun.
 
 Output: data/processed/wl_metrics_ensemble.csv
 """
 import glob
+import os
 from pathlib import Path
 
 import numpy as np
@@ -30,17 +36,26 @@ STATIONS = {'BocaNord': 'wl_BocaNord_10min_UTC.csv',
             'BocaSud': 'wl_BocaSud_10min_UTC.csv',
             'AltaVilaEst': 'wl_AltavilaEst_10min_UTC.csv'}
 
-HIS = {'nowaves': 'dflowfm_v04AE_nowaves', 'nodm': 'dflowfm_v04AE_nodm',
-       'bl': 'dflowfm_v04AE'}
-CSV = {'vr': 'wl_vr.csv', 'nodm_vr': 'wl_nodm_vr.csv'}
-ORDER = ['nowaves', 'nodm', 'nodm_vr', 'bl', 'vr']
+HIS = {'nowaves': 'dflowfm_v04AE_nowaves',
+       'nowaves_vr': 'dflowfm_v04AE_nowaves_vr',
+       'nodm': 'dflowfm_v04AE_nodm',
+       'bl': 'dflowfm_v04AE',
+       'vr': 'dflowfm_v04AE_vr'}
+CSV = {'nodm_vr': 'wl_nodm_vr.csv'}
+ORDER = ['nowaves', 'nowaves_vr', 'nodm', 'nodm_vr', 'bl', 'vr']
 
 SPINUP_DAYS = 1.0
 
 
 def from_his(d):
-    f = (glob.glob(str(MODEL / d / 'DFM_OUTPUT_*' / '*_his.nc')) +
-         glob.glob(str(MODEL / d / '*_his.nc')))[0]
+    # Newest wins. The member directories can hold more than one his.nc: the
+    # current run writes to the directory root while an earlier run's copy may
+    # still sit under DFM_OUTPUT_*. Picking by glob order silently scored a
+    # superseded run.
+    cands = (glob.glob(str(MODEL / d / '*_his.nc')) +
+             glob.glob(str(MODEL / d / 'DFM_OUTPUT_*' / '*_his.nc')))
+    cands = [c for c in cands if not c.endswith('.bak_unrestricted')]
+    f = max(cands, key=os.path.getmtime)
     ds = xr.open_dataset(f)
     names = [b.tobytes().decode('utf-8', 'ignore').strip() if isinstance(b, bytes)
              else str(b).strip()

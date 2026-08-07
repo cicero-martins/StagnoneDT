@@ -7,16 +7,14 @@
 Table~\ref{tab:wl} reports water level skill at the three interior stations for
 every ensemble member over the post-spinup window. Raw error is dominated by a
 positive bias at BocaNord and AltaVilaEst, between 0.09 and 0.18~m, and is
-small at BocaSud, between $-0.004$ and $+0.018$~m. Removing the respective
+small at BocaSud, between $-0.007$ and $+0.018$~m. Removing the respective
 means leaves an anomaly RMSE of 0.021 to 0.045~m at every station in every
-member, with correlations from 0.79 to 0.93 and modelled-to-observed standard
-deviation ratios from 1.06 to 1.25.
+member, with correlations from 0.80 to 0.93 and modelled-to-observed standard
+deviation ratios from 1.06 to 1.26.
 
-The spread across configurations is small. Anomaly RMSE varies by 0.005~m or
+The spread across configurations is small. Anomaly RMSE varies by 0.006~m or
 less between members at any given station, and the ordering of members is not
-consistent from one station to another. Variable roughness lowers the
-AltaVilaEst bias from 0.117 to 0.091~m relative to its own counterpart and
-raises the BocaNord bias from 0.172 to 0.177~m.
+consistent from one station to another.
 
 \begin{table}[H]
   \centering
@@ -28,23 +26,26 @@ raises the BocaNord bias from 0.172 to 0.177~m.
     \toprule
     Station & Member & RMSE & Bias & RMSE$_{\mathrm{anom}}$ & $r$ & $\sigma_m/\sigma_o$ \\
     \midrule
-    BocaNord & no waves    & 0.150 & $+0.146$ & 0.034 & 0.86 & 1.09 \\
-             & waves       & 0.170 & $+0.168$ & 0.030 & 0.88 & 1.09 \\
-             & + roughness & 0.172 & $+0.170$ & 0.030 & 0.89 & 1.10 \\
-             & + morph.    & 0.175 & $+0.172$ & 0.032 & 0.87 & 1.13 \\
-             & full        & 0.180 & $+0.177$ & 0.031 & 0.88 & 1.13 \\
+    BocaNord & no waves          & 0.150 & $+0.146$ & 0.034 & 0.86 & 1.11 \\
+             & no waves + rough. & 0.151 & $+0.148$ & 0.033 & 0.86 & 1.12 \\
+             & waves             & 0.170 & $+0.168$ & 0.030 & 0.88 & 1.09 \\
+             & waves + rough.    & 0.172 & $+0.170$ & 0.030 & 0.89 & 1.10 \\
+             & waves + morph.    & 0.175 & $+0.172$ & 0.033 & 0.87 & 1.13 \\
+             & full              & 0.179 & $+0.176$ & 0.032 & 0.88 & 1.14 \\
     \midrule
-    BocaSud  & no waves    & 0.023 & $-0.004$ & 0.023 & 0.91 & 1.06 \\
-             & waves       & 0.028 & $+0.018$ & 0.022 & 0.92 & 1.06 \\
-             & + roughness & 0.025 & $+0.012$ & 0.023 & 0.92 & 1.07 \\
-             & + morph.    & 0.023 & $+0.009$ & 0.021 & 0.93 & 1.08 \\
-             & full        & 0.022 & $+0.003$ & 0.022 & 0.93 & 1.09 \\
+    BocaSud  & no waves          & 0.023 & $-0.004$ & 0.023 & 0.93 & 1.14 \\
+             & no waves + rough. & 0.023 & $-0.007$ & 0.022 & 0.93 & 1.14 \\
+             & waves             & 0.028 & $+0.018$ & 0.022 & 0.92 & 1.06 \\
+             & waves + rough.    & 0.025 & $+0.012$ & 0.023 & 0.92 & 1.07 \\
+             & waves + morph.    & 0.024 & $+0.011$ & 0.021 & 0.93 & 1.08 \\
+             & full              & 0.023 & $+0.003$ & 0.022 & 0.92 & 1.09 \\
     \midrule
-    AltaVila & no waves    & 0.116 & $+0.108$ & 0.042 & 0.81 & 1.12 \\
-    Est      & waves       & 0.136 & $+0.130$ & 0.039 & 0.82 & 1.14 \\
-             & + roughness & 0.130 & $+0.124$ & 0.039 & 0.82 & 1.16 \\
-             & + morph.    & 0.124 & $+0.117$ & 0.042 & 0.81 & 1.20 \\
-             & full        & 0.102 & $+0.091$ & 0.045 & 0.79 & 1.25 \\
+    AltaVila & no waves          & 0.116 & $+0.108$ & 0.042 & 0.82 & 1.23 \\
+    Est      & no waves + rough. & 0.112 & $+0.105$ & 0.041 & 0.83 & 1.23 \\
+             & waves             & 0.136 & $+0.130$ & 0.039 & 0.82 & 1.14 \\
+             & waves + rough.    & 0.130 & $+0.124$ & 0.039 & 0.82 & 1.16 \\
+             & waves + morph.    & 0.131 & $+0.124$ & 0.042 & 0.80 & 1.19 \\
+             & full              & 0.102 & $+0.092$ & 0.045 & 0.80 & 1.26 \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -54,16 +55,17 @@ raises the BocaNord bias from 0.172 to 0.177~m.
 
 Thirty-five drifters across twelve deployments were scored against each member
 over the interval each drifter was in the water, which ranged from 0.5 to
-7.2~hours. Table~\ref{tab:lagrangian} summarises the four metrics and
+7.2~hours. Table~\ref{tab:lagrangian} summarises the metrics and
 Figure~\ref{fig:lagrangian} shows their distribution.
 
-Mean Liu--Weisberg skill was 0.539 without wave coupling, 0.505 and 0.506 for
-the two wave-coupled fixed-bed members, 0.570 with morphodynamics alone and
-0.659 with both morphodynamics and distributed roughness. Endpoint separation
-followed the same ordering, from 549 to 583~m for the first four members and
-343~m for the last. At drifter level the five distributions overlap heavily
-(Figure~\ref{fig:lagrangian}a), so the ordering of the means rests on paired
-comparison rather than on separation between groups.
+Mean Liu--Weisberg skill was 0.539 and 0.548 for the two members without wave
+coupling, 0.505 and 0.506 for their wave-coupled fixed-bed counterparts, 0.524
+with a mobile bed under uniform roughness and 0.655 with a mobile bed under
+distributed roughness. Endpoint separation ranges from 549 to 661~m across the
+first five members and falls to 334~m in the last. At drifter level the
+distributions overlap heavily (Figure~\ref{fig:lagrangian}a), so the ordering
+of the means rests on paired comparison rather than on separation between
+groups.
 
 \begin{table}[H]
   \centering
@@ -73,36 +75,35 @@ comparison rather than on separation between groups.
   0.143~\si{\metre\per\second}, both scored on the interval each drifter was in
   the water.}
   \label{tab:lagrangian}
-  \begin{tabular}{lrrrr}
+  \begin{tabular}{lccrrrr}
     \toprule
-    Member & LW skill & Endpoint sep.\ (m) & Path ratio & Speed ratio \\
+    Member & Waves & Bed & LW skill & Endpoint sep.\ (m) & Path ratio \\
     \midrule
-    No waves            & 0.539 & 549 & 0.78 & 0.82 \\
-    Waves               & 0.505 & 569 & 0.80 & 0.84 \\
-    Waves + roughness   & 0.506 & 583 & 0.81 & 0.85 \\
-    Waves + morph.      & 0.570 & 566 & 0.75 & 0.76 \\
-    Full                & \textbf{0.659} & \textbf{343} & \textbf{0.96} & \textbf{0.99} \\
+    No waves            & no  & fixed  & 0.539 & 549 & 0.78 \\
+    No waves + rough.   & no  & fixed  & 0.548 & 550 & 0.78 \\
+    Waves               & yes & fixed  & 0.505 & 569 & 0.80 \\
+    Waves + rough.      & yes & fixed  & 0.506 & 583 & 0.81 \\
+    Waves + morph.      & yes & mobile & 0.524 & 661 & 0.93 \\
+    Full                & yes & mobile & \textbf{0.655} & \textbf{334} & \textbf{0.97} \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-The wave penalty is not carried by a few deployments
-(Figure~\ref{fig:lagrangian}b). Skill falls with wave coupling in 28 of the 35
-drifters (sign test $p = 0.0005$) and in 10 of the 12 deployments (sign test
-$p = 0.039$, Wilcoxon on deployment means $p = 0.043$). The two deployments in
-which waves help are internally consistent, with all three of their drifters
-improving in each, so they represent a genuine difference in behaviour rather
-than scatter. The largest single degradation is $-0.133$ and the largest single
-improvement $+0.069$.
+The wave penalty is neither carried by a few deployments nor dependent on the
+roughness treatment (Figure~\ref{fig:lagrangian}b). Under uniform roughness,
+skill falls with wave coupling in 28 of the 35 drifters and in 10 of the 12
+deployments (sign test $p = 0.0005$). Under distributed roughness the
+corresponding counts are 29 of 35 and 10 of 12 ($p = 0.0001$). The two
+deployments in which waves help are the same two in both treatments, and all
+three of their drifters improve in each, so they represent a genuine difference
+in behaviour rather than scatter.
 
-The observed drifters travelled at a mean speed of 0.143~\si{\metre\per\second}.
-Along their own simulated trajectories the members reached 0.118, 0.121, 0.122,
-0.109 and 0.142~\si{\metre\per\second} respectively
-(Figure~\ref{fig:lagrangian}c), so only the member combining morphodynamics and
-distributed roughness reproduces the observed transport rate. The remainder
-fall 15 to 24\% short. The same ordering appears in the fraction of drifters
-whose path ratio falls below 0.7, which is 31 to 34\% for the first four
-members against 11\% for the fifth.
+The observed drifters travelled at a mean speed of 0.143~\si{\metre\per\second},
+and only the member combining a mobile bed with distributed roughness
+reproduces that rate, at 0.97 of the observed path length. The four fixed-bed
+members fall 19 to 22\% short. A mobile bed under uniform roughness recovers
+most of the path length, at 0.93, while losing accuracy in direction, which is
+why its endpoint separation is the worst of the six.
 
 \begin{figure}[H]
   \centering
@@ -110,10 +111,8 @@ members against 11\% for the fifth.
   \caption{Lagrangian validation. (a) Liu--Weisberg skill for every drifter
   under every member, with the horizontal bar giving the mean. (b) The change
   in skill from wave coupling, by deployment, with individual drifters
-  overlaid and the ensemble mean dashed. (c) Mean speed along each member's own
-  track against the observed value, with the ratio annotated. The member
-  combining distributed roughness and an active bed is drawn in colour
-  throughout.}
+  overlaid. (c) Mean speed along each member's own track against the observed
+  value.}
   \label{fig:lagrangian}
 \end{figure}
 
@@ -121,33 +120,39 @@ members against 11\% for the fifth.
 \label{sec:res_attribution}
 
 Figure~\ref{fig:attribution} gives the paired per-drifter contrasts with
-bootstrap confidence intervals. Wave coupling reduces Liu--Weisberg skill by
-0.035 (95\% CI $-0.053$ to $-0.017$, $p = 0.001$). Distributed roughness on a
-fixed bed changes it by 0.001 (CI $-0.016$ to $+0.018$, $p = 0.34$).
-Morphodynamics under uniform roughness changes it by 0.065 (CI $-0.019$ to
-$+0.150$, $p = 0.23$). The two contrasts in which both treatments are present
-are the only large ones with intervals clear of zero. Distributed roughness
-with morphodynamics active gives $+0.089$ (CI $+0.046$ to $+0.133$,
-$p < 0.001$), and morphodynamics with distributed roughness active gives
-$+0.153$ (CI $+0.056$ to $+0.246$, $p = 0.005$).
+bootstrap confidence intervals.
 
-Neither treatment produces a demonstrable change on its own and their joint
-effect exceeds the sum of the individual point estimates, so the two interact
-rather than contribute additively.
+Wave coupling reduces Liu--Weisberg skill on both roughness axes, by 0.035
+under uniform roughness (95\% CI $-0.052$ to $-0.017$, $p < 0.001$) and by
+0.042 under distributed roughness (CI $-0.064$ to $-0.023$, $p < 0.001$). The
+two estimates are statistically indistinguishable from one another, so the wave
+penalty does not depend on how vegetation resistance is represented.
 
-The joint effect is not evenly distributed across the dataset. It exceeds
-$+0.27$ in five deployments, is close to zero in four, and is negative in
-three, reaching $-0.39$ in the deployment with the shortest observed track.
+Distributed roughness on a fixed bed changes skill by 0.001 with wave coupling
+(CI $-0.016$ to $+0.017$, $p = 0.35$) and by 0.009 without it (CI $+0.004$ to
+$+0.013$, $p = 0.004$). Both are negligible beside the other contrasts. A
+mobile bed under uniform roughness changes skill by 0.019 (CI $-0.071$ to
+$+0.108$, $p = 0.66$).
+
+The two contrasts in which both treatments are present are of a different order.
+Distributed roughness on a mobile bed gives $+0.131$ (CI $+0.092$ to $+0.175$,
+$p < 0.001$), improving 32 of the 35 drifters. A mobile bed under distributed
+roughness gives $+0.149$ (CI $+0.052$ to $+0.245$, $p = 0.006$).
+
+Neither treatment produces more than a marginal change on its own, and their
+joint effect exceeds the sum of the individual point estimates by an order of
+magnitude, so the two interact rather than contribute additively
+(Figure~\ref{fig:attribution}d).
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{ensemble_attribution}
-  \caption{Process attribution over the ensemble. (a) and (b) give mean skill
-  and endpoint separation against the roughness treatment, one line per bed
-  treatment, with the no-wave member as the dashed reference and its bootstrap
-  interval shaded. (c) gives paired effect sizes with 95\% bootstrap intervals, where
-  filled markers denote intervals clear of zero. (d) gives the per-deployment
-  mean of the two headline contrasts.}
+  \caption{Process attribution over the ensemble. (a) Skill for every drifter
+  under every member. (b) The wave penalty by deployment, measured separately
+  on the uniform and distributed roughness axes. (c) Paired effect sizes with
+  95\% bootstrap intervals; filled markers denote intervals clear of zero.
+  (d) Mean skill against the roughness treatment, one line per bed treatment,
+  with the no-wave fixed-bed pair as a dotted reference.}
   \label{fig:attribution}
 \end{figure}
 
@@ -158,21 +163,20 @@ Over 4043 wet cells in the lagoon interior, with the inlets excluded, mean
 current speed increases monotonically from the bed to the surface in every
 member (Figure~\ref{fig:profile}). Bed-layer speed ranges from 0.021 to
 0.040~\si{\metre\per\second} and surface-layer speed from 0.075 to
-0.102~\si{\metre\per\second}, giving surface-to-bed ratios of 1.85, 2.07, 2.05,
-4.48 and 3.77 across the five members.
+0.100~\si{\metre\per\second}, giving surface-to-bed ratios between 1.85 and
+4.42.
 
-The three fixed-bed members give nearly identical profiles, with ratios between
-2.05 and 2.07. Both morphodynamic members roughly double the ratio, and they do
-so through the bed layer rather than the surface, with near-bed speed falling
-from 0.038 to 0.021~\si{\metre\per\second} while surface speed changes by less.
-Adding distributed roughness to an active bed lowers surface speed from 0.102
-to 0.078~\si{\metre\per\second}.
+The fixed-bed members give nearly identical profiles, with ratios between 1.85
+and 2.07. Both mobile-bed members roughly double the ratio, to 4.42 and 3.77,
+and they do so through the bed layer rather than the surface, with near-bed
+speed falling from 0.038 to 0.021~\si{\metre\per\second} while surface speed
+changes by less. Adding distributed roughness to a mobile bed lowers surface
+speed from 0.100 to 0.078~\si{\metre\per\second}.
 
 Lagoon-mean surface speed does not order the members the way transport does.
 The member reproducing the observed drifter speed has a lagoon-mean surface
 speed of 0.078~\si{\metre\per\second}, below the 0.080 of a member whose
-particles travel 15\% too slowly, and below the 0.102 of the member with the
-lowest path ratio of all.
+particles travel 20\% too slowly.
 
 \begin{figure}[H]
   \centering
@@ -206,8 +210,8 @@ the inlets where mean orbital velocity reaches 0.27~\si{\metre\per\second}
 against 0.05 to 0.09~\si{\metre\per\second} elsewhere in the basin.
 
 Introducing bed mobility inverts the class ordering of near-bed speed. The
-\emph{Posidonia} to sand ratio rises from 0.85 on a fixed bed to 1.10 and 1.27
-in the two morphodynamic members, because sand cells lose roughly half their
+\emph{Posidonia} to sand ratio rises from 0.85 on a fixed bed to 1.09 and 1.28
+in the two mobile-bed members, because sand cells lose roughly half their
 near-bed speed while \emph{Posidonia} cells lose about a third.
 
 \begin{figure}[H]

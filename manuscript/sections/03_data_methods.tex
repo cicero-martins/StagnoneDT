@@ -170,46 +170,57 @@ metric to the normalisation choice in coastal applications.
 \subsection{Numerical experiments}
 \label{sec:methods_experiments}
 
-Five simulations were run over the same nine-day window, from the same initial
+Six simulations were run over the same nine-day window, from the same initial
 condition and with identical boundary and atmospheric forcing, so that the
 differences between them isolate individual model components
-(Table~\ref{tab:ensemble}). All five wrote station output every 600~s and
-gridded output every 1800~s, so the ensemble comparison is not affected by
-differences in output sampling.
+(Table~\ref{tab:ensemble}). All six wrote station output every 600~s and
+gridded output every 1800~s, so the comparison is not affected by differences
+in output sampling.
 
-Four of the five form a factorial combination of two factors. The first is the
-seagrass roughness treatment, either a uniform Manning coefficient of
-0.023~s~m$^{-1/3}$ over the whole domain or the spatially distributed
-trachytope field of Section~\ref{sec:methods_roughness}. The second is the
-morphodynamic bed update, either a fixed bed or a two-fraction sediment
-transport and bed-level update with sand and silt. All four include wave
-coupling. The fifth simulation repeats the fixed-bed, uniform-roughness member
-with the wave model switched off entirely, so that the difference between the
-two isolates the contribution of wave coupling under otherwise identical
-conditions.
+The design is a factorial in three factors, wave coupling, seagrass roughness
+and bed mobility, of which six of the eight cells were obtained. The two
+missing cells are the ones combining a mobile bed with no wave coupling, in
+either roughness treatment. Neither is attainable with this sediment
+parametrisation. Both abort on the velocity cap, reaching 27 and
+43~\si{\metre\per\second} in an offshore cell against a limit of
+25~\si{\metre\per\second}. That result is reported in
+Section~\ref{sec:discussion} rather than treated as a technical failure,
+because the wave-coupled members with the same sediment settings never
+approached their own cap.
 
-Two aspects of this design deserve statement. The morphodynamic factor is
-included as a sensitivity test rather than as a calibrated prediction, because
-the critical shear stress for erosion has not been constrained against a
-repeated bathymetric survey. Sections~\ref{sec:res_attribution} and
-\ref{sec:discussion} treat it accordingly. The wave contribution is assessed
-along the fixed-bed, uniform-roughness axis only, so any interaction between
-wave forcing and canopy resistance is not resolved by this ensemble.
+Morphodynamics is confined to depths at which waves can plausibly move the
+modelled sediment. Available sediment thickness is held at 0.5~m per fraction
+above 15~m depth and tapered linearly to zero at 20~m, below which mean orbital
+velocity at the bed is 0.016~\si{\metre\per\second}, an order of magnitude
+below the range in which the sand fraction mobilises. Without this restriction
+the bed updates over the whole domain, including water hundreds of metres deep
+where the process has no physical meaning.
+
+Two limitations of the design should be stated. The morphodynamic factor is a
+sensitivity test rather than a calibrated prediction, because the critical
+shear stress for erosion has not been constrained against a repeated
+bathymetric survey. And the wave contribution is measured on a fixed bed only,
+since the mobile-bed no-wave cells could not be run.
 
 \begin{table}[H]
   \centering
-  \caption{Ensemble members. All five share the mesh, the nine-day window, the
-  initial condition, and the boundary and atmospheric forcing.}
+  \caption{Ensemble members. All six share the mesh, the nine-day window, the
+  initial condition, and the boundary and atmospheric forcing. The two cells
+  combining a mobile bed with no waves could not be run.}
   \label{tab:ensemble}
-  \begin{tabular}{llccc}
+  \begin{tabular}{lccc}
     \toprule
-    Member & Identifier & Waves & Seagrass roughness & Morphodynamics \\
+    Member & Waves & Seagrass roughness & Bed \\
     \midrule
-    Reference           & \texttt{nodm}     & yes & uniform     & fixed bed \\
-    Roughness           & \texttt{nodm\_vr} & yes & distributed & fixed bed \\
-    Morphodynamics      & \texttt{bl}       & yes & uniform     & active    \\
-    Roughness + morph.  & \texttt{vr}       & yes & distributed & active    \\
-    No waves            & \texttt{nowaves}  & no  & uniform     & fixed bed \\
+    No waves            & no  & uniform     & fixed \\
+    No waves + rough.   & no  & distributed & fixed \\
+    Waves               & yes & uniform     & fixed \\
+    Waves + rough.      & yes & distributed & fixed \\
+    Waves + morph.      & yes & uniform     & mobile \\
+    Full                & yes & distributed & mobile \\
+    \midrule
+    \multicolumn{4}{l}{\emph{Not attainable:} no waves, uniform, mobile bed} \\
+    \multicolumn{4}{l}{\emph{Not attainable:} no waves, distributed, mobile bed} \\
     \bottomrule
   \end{tabular}
 \end{table}
