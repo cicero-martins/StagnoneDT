@@ -240,3 +240,6 @@ outputs/wetwise_tab/demo_hydrodynamics/demo_coarse.nc
 outputs/wetwise_tab/demo_hydrodynamics/demo_fine.nc
 outputs/wetwise_tab/demo_hydrodynamics/demo_data_full.nc
 outputs/paraview/v04AE_merged.nc
+
+# Elsevier guide PDF, third-party, regenerable from the journal page
+reference/guide_ecss.pdf

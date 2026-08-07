@@ -105,6 +105,28 @@ members fall 19 to 22\% short. A mobile bed under uniform roughness recovers
 most of the path length, at 0.93, while losing accuracy in direction, which is
 why its endpoint separation is the worst of the six.
 
+Figure~\ref{fig:tracks} shows the tracks these statistics are computed from,
+for four deployments spanning the duration range. The two failure modes are
+visible directly. The fixed-bed member stops short of the observed endpoint in
+every panel. The mobile-bed member under uniform roughness covers a comparable
+distance to the observed drifter but in the wrong direction, most clearly in
+deployments 3 and 10, where it leaves the observed track early and ends farther
+from the observed endpoint than the fixed-bed member does despite travelling
+farther. Only the member combining a mobile bed with distributed roughness
+follows the observed path in both respects.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{drifter_trajectories}
+  \caption{Observed and simulated drifter trajectories for four deployments,
+  one drifter per panel, chosen as the median-skill drifter of its deployment
+  under the full member. Circles mark the release and squares the end of the
+  scored window. Each track is clipped to the interval its drifter was in the
+  water. The three fixed-bed members not drawn are indistinguishable from the
+  one shown.}
+  \label{fig:tracks}
+\end{figure}
+
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{lagrangian_results}
