@@ -125,10 +125,27 @@ ground sampling distance. The classification follows the approach of
 column signal before supervised classification, but it is an independent
 product, a random forest on 3~m PlanetScope scenes in place of their
 gradient-boosted classifier on 2~m WorldView, QuickBird and Pleiades imagery.
-Classified pixels were transferred to the mesh with a 20~m search radius. The
-resulting roughness link file must be written in the same geographic coordinate
-system as the mesh, because a projected file is accepted without error while
-assigning no links at all.
+Classified pixels were transferred to the mesh with a 20~m search radius, and a
+flow link straddling more than one class carries each class weighted by the
+area it occupies (Figure~\ref{fig:seagrass}). Of the 7345 links inside the
+lagoon, 48.6\% are dominated by \emph{P.\ oceanica}, 22.5\% by
+\emph{C.\ nodosa}, 25.6\% by bare sand and 3.3\% by rock. The resulting
+roughness link file must be written in the same geographic coordinate system as
+the mesh, because a projected file is accepted without error while assigning no
+links at all.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{seagrass_classification}
+  \caption{The seagrass map from imagery to model input. (a) PlanetScope
+  SuperDove August 2023 median composite. (b) The random-forest classification,
+  with the six output classes collapsed to the four trachytope classes.
+  (c) The dominant trachytope class at each flow link, from the roughness file
+  the model reads, showing the mesh resolution the classification is sampled
+  onto. The classification is computed over the whole scene, but only links
+  inside the lagoon carry a canopy class.}
+  \label{fig:seagrass}
+\end{figure}
 
 For reference, \citet{Ingrassia2024} obtained a best-fit uniform
 Gauckler--Strickler coefficient of 20~m$^{1/3}$~s$^{-1}$ for the vegetated
