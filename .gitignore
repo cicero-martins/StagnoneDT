@@ -159,6 +159,9 @@ outputs/wetwise_stagnone_panel.pptx
 data/processed/roughness_ciraolo/roughness_ciraolo_dynamic.nc
 data/processed/roughness_ciraolo/roughness_ciraolo_bias.nc
 
+# Pre-restriction snapshots kept on disk while the new results are validated
+*.bak_unrestricted
+
 # LaTeX build artifacts (regenerable from .tex via latexmk)
 manuscript/*.aux
 manuscript/*.bbl
