@@ -97,12 +97,17 @@ have not yet been incorporated jointly into a Stagnone circulation model. The
 first is wave--current coupling. Spectral ocean waves generated in the western
 Sicilian channel can penetrate both inlets and interact with the mean flow,
 altering near-bed turbulence and the effective drag experienced by the
-seagrass canopy. This mechanism has been shown to be non-negligible in
-comparably shallow Mediterranean lagoons [REF-wave-current-lagoon] but has not
-been included in previous Stagnone simulations. The second is the combined use
-of spatially distributed vegetation roughness derived directly from satellite
-imagery, rather than assumed uniform, and Lagrangian drifter observations as a
-validation target. Together, these extensions allow the relative contributions
+seagrass canopy. Coupled wave and flow modelling in comparably shallow
+Mediterranean basins has shown this to be non-negligible. In the Venice Lagoon
+\citet{Carniello2011} found the wave-induced contribution to bed shear stress
+to interact non-linearly with the current-induced contribution, so that neither
+can be obtained from the other. In the Mar Menor, a restricted micro-tidal
+lagoon of comparable depth, \citet{Morote2025} found locally generated waves to
+produce near-bed orbital velocities sufficient to mobilise bottom sediment over
+most of the basin. Neither process has been represented in previous Stagnone
+simulations. The second is the combined use of spatially distributed vegetation
+roughness mapped from satellite imagery, rather than assumed uniform, and
+Lagrangian drifter observations as a validation target. Together, these extensions allow the relative contributions
 of three-dimensional dynamics, wave forcing, and seagrass heterogeneity to
 transport skill to be quantified within a controlled process-attribution
 framework.
@@ -116,13 +121,13 @@ resistance is parametrised through \citet{Baptist2007} trachytopes derived
 from a supervised random-forest classification of PlanetScope multispectral
 imagery acquired in August 2023, following the mapping methodology of
 \citet{Maltese2025}. Model performance is assessed against in-situ water level
-time series at four stations and against GPS surface drifter trajectories from
-a field campaign concurrent with the simulation period, using the
-Liu--Weisberg Lagrangian skill score and endpoint proximity as metrics. A
-five-member ensemble, comprising a factorial combination of seagrass roughness
-and morphodynamic bed update together with a reference simulation run without
-wave coupling, attributes differences in Lagrangian skill to individual
-physical mechanisms (Section~\ref{sec:methods_experiments}).
+time series at three lagoon stations and an offshore tide gauge, and against
+GPS surface drifter trajectories from a field campaign concurrent with the
+simulation period, using the Liu--Weisberg Lagrangian skill score and endpoint
+proximity as metrics. A six-member ensemble spanning three factors, wave
+coupling, seagrass roughness and morphodynamic bed update, attributes
+differences in Lagrangian skill to individual physical mechanisms and to their
+interaction (Section~\ref{sec:methods_experiments}).
 
 The paper is organised as follows. Section~\ref{sec:study_area} describes the
 study area and its hydrodynamic setting. Section~\ref{sec:data_methods}
