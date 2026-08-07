@@ -66,7 +66,9 @@ GRID = '#e8e7e4'
 BASE = '#9a9892'          # the four baseline members
 ACCENT = '#4a3aa7'        # vr, the member that separates
 
-MEMBERS = [('nowaves', 'v04AE_nowaves'), ('nodm', 'v04AE_nodm'),
+MEMBERS = [('nowaves', 'v04AE_nowaves'),
+           ('nowaves_vr', 'v04AE_nowaves_vr'),
+           ('nodm', 'v04AE_nodm'),
            ('nodm_vr', 'v04AE_nodm_vr'), ('bl', 'v04AE'), ('vr', 'v04AE_vr')]
 LAGOON = dict(lon=(12.425, 12.487), lat=(37.820, 37.910))
 ASPECT = 1.0 / np.cos(np.radians(37.87))
