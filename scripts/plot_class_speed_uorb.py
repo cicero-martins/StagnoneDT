@@ -39,8 +39,9 @@ C_SURF = '#4a3aa7'
 C_ORB = '#1baf7a'
 
 CLASSES = ['sand', 'Cymodocea', 'Posidonia', 'rock']
-ORDER = ['nowaves', 'nodm', 'nodm_vr', 'bl', 'vr']
-LABEL = {'nowaves': 'no waves', 'nodm': 'waves', 'nodm_vr': '+ roughness',
+ORDER = ['nowaves', 'nowaves_vr', 'nodm', 'nodm_vr', 'bl', 'vr']
+LABEL = {'nowaves': 'no waves', 'nowaves_vr': 'no waves + rough.',
+         'nodm': 'waves', 'nodm_vr': '+ roughness',
          'bl': '+ morph.', 'vr': 'full'}
 
 
