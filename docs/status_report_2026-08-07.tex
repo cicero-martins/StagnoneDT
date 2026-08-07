@@ -43,45 +43,43 @@ Cicero Martins Jr.\\
 \section{Summary}
 
 Work on the coupled three-dimensional model resumed on 5 August after a pause
-since mid-June, due to the rewriting of the manuscripts related to GEE. 
-As we have several runs already done, the main outcome of the past three days is that the first
-manuscript now has a complete draft, in LaTeX, formatted for
-\textit{Estuarine, Coastal and Shelf Science} and within all of that journal's
-limits. A numerical problem that had cost us two of the eight experiments was
-also traced and fixed today, and the corresponding re-runs are in progress
-(Section~3).
+since mid-June, due to the rewriting of the manuscripts related to GEE. As we
+already had several runs done and the skeleton of the paper in place, the main
+outcome of the past three days was to compile everything and finalise the first
+draft. It is now complete in LaTeX, formatted for \textit{Estuarine, Coastal and
+Shelf Science} and within that journal's limits, and provisionally titled
+\textbf{``Transport validation of a wave-coupled lagoon model: interacting
+effects of seagrass roughness and bed mobility''}, with the three of us as
+authors.
 
-The manuscript is provisionally titled \textbf{``Transport validation of a
-wave-coupled lagoon model: interacting effects of seagrass roughness and bed
-mobility''}, with the three of us as authors. I would be grateful for your
-comments on both the framing and the content.
+A numerical problem that had cost us two of the eight experiments was also
+traced and fixed today, and the corresponding re-runs are in progress
+(Section~3).
 
 \section{What the study asks and what it found}
 
-Considering that coastal lagoon models are routinely validated against water level and then used
-to describe transport, I set the paper to ask whether the first licenses the second. Six
-model configurations were run over the same nine days of July 2025, during the drifters deployments,
-from the same initial condition and forcing, differing only in wave coupling, bed
-mobility, and whether seagrass resistance is uniform or distributed from a
-satellite classification. Each was scored against three tide gauges and against
-35 GPS surface drifters released over twelve deployments.
+Coastal lagoon models are routinely validated against water level and then used
+to describe transport, so I set the paper to ask whether the first licenses the
+second. Six configurations were run over the same nine days of July 2025,
+covering the drifter deployments, from the same initial condition and forcing,
+differing only in wave coupling, bed mobility, and whether seagrass resistance
+is uniform or distributed from a satellite classification. Each was scored
+against three tide gauges and against 35 GPS drifters over twelve deployments.
 
-\textbf{Water level does not separate the configurations.} In the results, WL anomaly RMSE differs
-by six millimetres or less between the runs at any station, which is within the
-measurement uncertainty, and no configuration is consistently best across the
-three stations. Over the same simulations, using Liu--Weisberg skill score, we obtained
-values spanning from 0.505 to 0.655 and endpoint separation spans 334 to 661~m. 
-A calibration conducted on water level alone would have had no basis on which to prefer any of them.
+\textbf{Water level does not separate the configurations.} Anomaly RMSE differs
+between them by six millimetres or less at any station, within the measurement
+uncertainty, and no configuration is consistently best. Over the same
+simulations Liu--Weisberg skill spans 0.505 to 0.655 and endpoint separation 334
+to 661~m. A calibration on water level alone would have had no basis on which to
+prefer any of them.
 
-\textbf{No treatment improves Lagrangian skill on its own.} Distributed seagrass
-roughness on a fixed bed changes skill by 0.009 or less, bed mobility under
-uniform roughness by 0.019, and wave coupling reduces it by 0.035 to 0.042.
-Applied together, distributed roughness and bed mobility raise skill by 0.131 to
-0.149, improving 32 of the 35 drifters, and only that combination reproduces the
-observed transport rate.
+\textbf{No treatment improves Lagrangian skill on its own}, whether seagrass
+roughness, bed mobility or wave coupling. Applied together, distributed
+roughness and bed mobility raise skill by 0.13 to 0.15, improving 32 of the 35
+drifters, and only that combination reproduces the observed transport rate.
 
 \textbf{Splitting the trajectory error into magnitude and direction shows what
-each treatment corrects}, which is the most recent result and the one I consider
+each treatment corrects.} This is the most recent result and the one I consider
 the paper's contribution.
 
 \begin{center}
@@ -99,84 +97,64 @@ Mobile bed, distributed roughness & 0.98 & 0.99 & \textbf{8.4} \\
 
 The four fixed-bed members coincide in all three measures. Bed mobility acts on
 magnitude, restoring the distance travelled. Distributed roughness acts on
-direction, and does so only once the bed can move: on a fixed bed it leaves the
-heading error unchanged to the first decimal. This is reported as a narrowing
-rather than a complete mechanism, since reconstructing endpoint separation from
-a mean displacement ratio and a mean heading still underpredicts the two
-mobile-bed members by a factor of 1.4 to 1.9.
-
-Until now, I could not find a simpler explanation: the spatial pattern of bed
-change is indistinguishable between the two mobile-bed members, canopy drag does
-not suppress erosion beneath the meadows, and the successful configuration does
-not carry a stronger mean current field.
+direction, and only once the bed can move: on a fixed bed it leaves the heading
+error unchanged. I could not find a simpler explanation, having tested and
+rejected three, and the paper reports it as a narrowing rather than a complete
+mechanism.
 
 Two further results support the modelling choices. The canopy parametrisation
-reduces mean wave orbital velocity at the bed by 14.3\% over \emph{Posidonia},
-13.7\% over \emph{Cymodocea}, 11.3\% over sand and 3.3\% over exposed rock, an
-ordering that follows canopy density. And surface speed exceeds bed speed by a
-factor of 1.9 to 4.5 at sub-metre mean depth, consistent with De~Marchis et
-al.\ (2012) here and the quantitative case for solving in three dimensions.
+attenuates near-bed wave orbital velocity in proportion to canopy density, and
+surface speed exceeds bed speed by a factor of 1.9 to 4.5 at sub-metre mean
+depth, consistent with De~Marchis et al.\ (2012) here and the quantitative case
+for solving in three dimensions.
 
-\section{An item that closed while this was being written}
+\section{A problem traced and fixed today}
 
-The design is a factorial in three factors, and until today only six of its
-eight cells had been obtained. The two missing cells combine a mobile bed with
-no wave coupling, and both aborted on the model's velocity cap, at 26.96 and
-43.42~\si{\metre\per\second} against a limit of 25. They did so
-deterministically: two independent attempts stopped at the same simulated
-instant with velocities identical to six decimal places. The manuscript as it
-stands reports this as a property of the system, under a heading stating that a
-mobile bed does not stabilise without waves.
+Two of the eight cells of the factorial, those combining a mobile bed with no
+wave coupling, had been aborting on the model's velocity cap. The manuscript as
+it stands reports this as a property of the system. That reading was wrong, and
+I am glad the check was made before submission.
 
-That reading was wrong, and I am glad the check was made before submission. The
-instability turned out to be offshore and diffuse rather than a defective cell:
-of the 150 fastest cells before the abort, none was inside the lagoon, none was
-above the datum, and their median depth was 34~m.
+The cause is the coupling between suspended sediment and density, which is the
+only route by which sediment can move momentum in a deep offshore cell holding
+no erodible material. It also explains an earlier fix that had failed. With the
+coupling disabled the run passed the abort point without incident, at nearly
+double the time step, and three re-runs are under way so that all four
+mobile-bed members share the setting. They should finish overnight.
 
-The cause is the coupling between suspended sediment and density. The morphology
-settings had suspended sediment feeding the density field, and therefore the
-baroclinic pressure gradient, which is the only route by which sediment can move
-momentum in a deep cell holding no erodible material. It also explains an
-earlier fix that failed: confining erodible thickness to depths above 20~m
-changed nothing, because that bounds erosion and not the suspended load arriving
-by advection. With the coupling disabled the run passed the abort instant
-without incident and is now at 65\% of the nine days, with a time step almost
-double what it had before.
+The design then closes at the full eight cells, and the effect of wave coupling
+becomes measurable on a mobile bed, which the manuscript currently states cannot
+be done. Sections 3.6, 4.3, 5 and 6 will be revised accordingly. I do not expect
+the results in Section~2 to move, since they rest on members that were never
+affected, but they will be recomputed and checked.
 
-Three re-runs are under way so that all four mobile-bed members share the
-setting, and should finish overnight. The design then closes at eight cells, and
-the effect of wave coupling becomes measurable on a mobile bed, which the
-manuscript currently states cannot be done. Sections 3.6, 4.3, 5 and 6 will be
-revised, and the subsection asserting that a mobile bed does not stabilise
-without waves will be removed rather than reworded. I do not expect the results
-in Section~2 to move, since they rest on members that were never affected, but
-they will be recomputed and checked.
-
-\section{Manuscript status and what I would ask of you}
+\section{Manuscript status and one question for you}
 
 The draft is complete across all six sections, with eight figures and three
-tables, 6200 words of body text against a limit of 8000, and 24 references
-verified against the source PDFs. Highlights and a cover letter are drafted.
-Outstanding are a graphical abstract, which \textit{ECSS} requires.
+tables, 6200 words against a limit of 8000, and 24 references. Highlights and a
+cover letter are drafted. Outstanding is a graphical abstract, which
+\textit{ECSS} requires.
 
-I would welcome your reading on three points in particular:
+The one point on which I would value your judgement is strategic rather than
+editorial: \textbf{whether to submit before obtaining a new bathymetric survey.}
+The configuration that best reproduces observed transport is the one with a
+mobile bed, and its critical shear stress for erosion has not been constrained
+against measured bathymetric change. We are using the old bathymetry, so it is
+possible that the mobile bed helps because it moves the old morphology towards
+the present one, in which case the improvement is a compensation rather than a
+physical result. The manuscript states this limitation openly, and notes that
+the lagoon bed changes by up to 1.0~m over nine days in isolated cells, which is
+not a plausible rate. If there is a realistic chance of obtaining new bathymetry
+soon, I would rather wait and rerun the simulations with it before submitting
+than defend the present version in review.
 
-\begin{enumerate}[leftmargin=1.4em, itemsep=0.25em]
-  \item Whether the framing holds. The paper claims a validation-strategy
-  result, trying not to sit just as an study case of the Stagnone, 
-  since the journal does not accept manuscripts of mainly local interest. Did you agree?
-  \item Whether reporting the bed-mobility result is wise given that its
-  critical shear stress for erosion has not been constrained against a repeated
-  bathymetric survey. We are using the old bathymetry we have, maybe the results
-  are better for mobile beds because it changes the morphology near the nowadays morphology, 
-  and if we try again with updated data, the results could be completely different.
-  The manuscript states this limitation openly, and the lagoon bed
-  changes by up to 1.0~m over nine days in isolated cells, which is not a
-  plausible rate. There's a chance that we obtain the new bathymetry soon, 
-  and if so, we should wait to rerun the simulations with it before submission. 
-  \item The CRediT roles I have assigned, which follow those of the reservoirs
-  manuscripts.
-\end{enumerate}
+On the wider plan: after the holidays, and before leaving for Malta, my
+intention is to close this paper and begin drafting the remaining themes we
+discussed. Those are the effect of the multi-decadal \emph{Posidonia} decline on
+wave attenuation, near-bed exposure and residence time; the operational forecast
+chain with the WetWise portal, together with the Isola Grande channel reopening
+scenario; and wave-driven sediment mobilisation with the Trapani canal
+contribution to lagoon siltation.
 
 The full draft, figures and analysis code are in the project repository, and I
 can send the compiled PDF on request.
