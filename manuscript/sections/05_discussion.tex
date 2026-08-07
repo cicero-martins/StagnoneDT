@@ -46,7 +46,7 @@ which wave effects on transport would be expected to be largest. The wave
 contribution is also measured on a fixed bed only, because the mobile-bed
 no-wave configurations could not be run, for reasons taken up below.
 
-\subsection{An interaction without an identified mechanism}
+\subsection{What the interaction acts on}
 
 Neither bed mobility nor distributed vegetation roughness changes Lagrangian
 skill by more than a marginal amount on its own: 0.019 for bed mobility under
@@ -58,16 +58,16 @@ observed path length against 0.78 to 0.93 for the others. The joint effect
 exceeds the sum of the separate point estimates by an order of magnitude, which
 is the signature of an interaction.
 
-What that interaction is remains unresolved, and three candidate explanations
-were tested and rejected.
+Three candidate explanations for it were tested and rejected before a fourth
+line of evidence narrowed the question.
 
 The first was that the roughness field organises where the bed erodes,
 producing a channelised bathymetry that conveys flow more efficiently. The
 bed-change fields do not support it. Their magnitudes are nearly identical
 between the two mobile-bed members, median $-0.059$ against $-0.047$~m in the
-lagoon, and their spatial difference is close to zero across the interior. What
-differences exist sit on the shorelines and in the northern intertidal, away
-from the drifter tracks.
+lagoon, and their spatial difference is close to zero across the interior. The share of
+total bed change held by the busiest 5\% of lagoon cells is 18.9\% and 19.0\%,
+indistinguishable, so neither is more focused than the other.
 
 The second was that canopy drag suppresses erosion beneath the meadows. Both
 mobile-bed members show more bed change under the canopy than on bare
@@ -84,14 +84,11 @@ a mobile bed lowers surface speed rather than raising it.
 The particles nevertheless travel at the right speed. Since it is not the mean
 speed of the field, it has to be where and when the particles encounter the
 faster water, which is a property of the joint space and time structure of the
-flow rather than of its magnitude. Demonstrating that would require relating
-particle position to the phase of the local current through the deployment
-window, which is beyond what is attempted here.
+flow rather than of its magnitude.
 
 Stating this openly is preferable to the available alternative, which is to
 attribute the improvement to canopy physics because the successful member is
-the one with a canopy. That attribution is not supported by any of the three
-diagnostics.
+the one with a canopy. None of the three diagnostics supports that.
 
 The canopy parametrisation does behave as intended, which makes the negative
 result sharper rather than weaker. Holding the bed fixed and moving from
@@ -104,6 +101,44 @@ roughly three times as much as over sand. The vegetation is therefore doing to
 the waves and to the bed layer what a canopy should. What it does not do, on a
 fixed bed, is change surface transport, and that is the gap the interaction
 occupies.
+
+Splitting the trajectory error into a magnitude part and a direction part
+narrows where the interaction acts (Figure~\ref{fig:decomp}). For each drifter
+the simulated path length, the simulated net displacement and the mean angular
+difference between simulated and observed step directions were computed over
+the scored window.
+
+The four fixed-bed members are indistinguishable in all three. Path length runs
+0.77 to 0.80 of observed, net displacement 0.78 to 0.82, and mean heading error
+15.8 to 16.2$^\circ$. Distributed roughness on a fixed bed leaves the heading
+error at 16.0$^\circ$, unchanged to the first decimal, so it does not alter
+where the particles go any more than it alters how far.
+
+Bed mobility acts mainly on magnitude, raising path length to 0.94 and net
+displacement to 0.95, with a smaller gain in heading, to 12.5$^\circ$. Adding
+distributed roughness to a mobile bed acts mainly on direction, cutting the
+heading error to 8.4$^\circ$, a third of what remained, for a further 0.04 in
+path length. The roughness treatment therefore has a directional effect that
+exists only when the bed can move, and that is the interaction stated in terms
+of what it corrects.
+
+This is a narrowing, not a full account. Treating each track as a single vector
+and reconstructing the endpoint separation from the mean displacement ratio and
+the mean heading error reproduces the four fixed-bed members within 12\%, at
+507 to 538~m against 549 to 583~m observed, but underpredicts the two
+mobile-bed members by a factor of 1.4 to 1.9, at 354 and 239~m against 661 and
+334~m. A single mean heading is therefore an incomplete description of the
+mobile-bed error, and what remains unexplained is why.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{transport_error_decomposition}
+  \caption{The trajectory error split into magnitude and direction. (a) Path
+  length and (b) net displacement, both as the ratio of simulated to observed.
+  (c) Mean angular difference between simulated and observed step directions.
+  The four fixed-bed members coincide in all three panels.}
+  \label{fig:decomp}
+\end{figure}
 
 \subsection{A mobile bed does not stabilise without waves}
 
