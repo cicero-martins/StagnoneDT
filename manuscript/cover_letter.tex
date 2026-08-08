@@ -34,38 +34,42 @@ To the Editors of\\
 Dear Editors,
 
 \vspace{0.2cm}
-We submit for your consideration the manuscript \textbf{``Transport validation
-of a wave-coupled lagoon model: interacting effects of seagrass roughness and
-bed mobility''}, by Cicero Martins Jr., Giuseppe Ciraolo and Mauro De Marchis,
-as an original research paper.
+We submit for your consideration the manuscript \textbf{``Interacting effects of
+wave coupling and bed mobility on Lagrangian transport in a shallow vegetated
+lagoon''}, by Cicero Martins Jr., Giuseppe Ciraolo and Mauro De Marchis, as an
+original research paper.
 
 The corresponding author is MSc.\ Cicero Martins Jr.
 
 \vspace{0.3cm}
 Coastal lagoon models are commonly validated against water level and then used
 to describe transport. This manuscript asks whether the first licenses the
-second. We built six configurations of a three-dimensional Delft3D Flexible
-Mesh model coupled online with SWAN, differing in wave coupling, bed mobility
-and whether seagrass resistance is uniform or distributed from a satellite
-classification, and scored each against three tide gauges and 35 GPS surface
-drifters over the same nine days.
+second. We ran a complete factorial in wave coupling, bed mobility and whether
+seagrass resistance is uniform or distributed from a satellite classification,
+giving eight configurations of a three-dimensional Delft3D Flexible Mesh model
+coupled online with SWAN, and scored each against three tide gauges and 35 GPS
+surface drifters over the same nine days.
 
 The configurations are indistinguishable in water level. Their anomaly RMSE
-differs by six millimetres or less at any station, which is within measurement
-uncertainty, so a calibration conducted on water level alone would have no
-basis on which to prefer any of them. Over the same simulations their
-Liu--Weisberg skill spans 0.505 to 0.655 and their endpoint separation 334 to
-661~m.
+differs by at most four millimetres at any station, which is within measurement
+uncertainty, so a calibration conducted on water level alone would have no basis
+on which to prefer any of them. Over the same simulations their Liu--Weisberg
+skill spans 0.469 to 0.705 and their endpoint separation 336 to 625~m.
 
-What separates them is an interaction rather than any single process.
-Distributed seagrass roughness and bed mobility each change Lagrangian skill by
-an amount indistinguishable from zero when applied alone, and together they
-raise it by 0.13 to 0.15. Decomposing the trajectory error into a magnitude
-part and a direction part shows why: bed mobility restores the distance
-travelled, from 0.79 to 0.94 of observed, while distributed roughness reduces
-the mean heading error from 12.5 to 8.4 degrees and does so only once the bed
-can move. We report this as a narrowing rather than a complete mechanism, and
-we state the three candidate explanations we tested and had to reject.
+What separates them is an interaction rather than any single process. Neither
+wave coupling nor bed mobility improves Lagrangian skill on its own, and each is
+what makes the other work. Wave coupling on a fixed bed costs 0.035 to 0.042 in
+skill. Bed mobility without waves costs 0.071 to 0.075 and makes every one of
+the 35 drifters worse in both roughness treatments. Applied together they gain
+0.119 to 0.232, and the two worst and the two best members of the ensemble are
+built from the same pair of treatments.
+
+Splitting the trajectory error into a magnitude part and a direction part shows
+the two moving together across the design, so the treatments act on the velocity
+field as a whole rather than on separable parts of the error. Surface speed
+exceeds bed speed by 1.85 to 2.20 times at sub-metre mean depth, a vertical
+structure set by wave coupling, which is the quantitative case for solving in
+three dimensions.
 
 We believe the work suits \textit{Estuarine, Coastal and Shelf Science} on two
 grounds. It is a study of brackish water and lagoon phenomena and of coastal
@@ -77,11 +81,10 @@ drifter observations and a circulation model exist together. The prior study
 closest to our wave treatment, Carniello et al.\ (2011), appeared in this
 journal.
 
-We also draw your attention to two results we report against our own interest.
-Wave coupling, which we introduce to this system for the first time, does not
-improve Lagrangian prediction over this window. And the configuration that best
-reproduces observed transport depends on a morphodynamic parameter we have not
-been able to constrain against a repeated bathymetric survey, which we state
+We also draw your attention to a limitation we report against our own interest.
+The configurations that best reproduce observed transport depend on a
+morphodynamic parameter we have not been able to constrain against a repeated
+bathymetric survey, which we state
 explicitly as a limitation rather than leaving to a reader to discover.
 
 \vspace{0.3cm}

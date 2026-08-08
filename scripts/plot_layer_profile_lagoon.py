@@ -37,7 +37,7 @@ from matplotlib.lines import Line2D
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import KEYS, LABEL
+from _ensemble import KEYS, LABEL, FACTORS
 
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
@@ -62,6 +62,15 @@ STYLE = {                       # member -> (colour, linestyle, label)
     'vr':           (C_MORPH, '-.', 'waves, distributed, mobile'),
 }
 ORDER = list(KEYS)
+
+# The same three-slot code the manuscript tables use, so panel (b) and panel (a)
+# name the members identically and neither carries internal keys.
+CODE = {}
+for _k in KEYS:
+    _f = FACTORS[_k]
+    CODE[_k] = (('W' if _f['waves'] else '-')
+                + ('R' if _f['roughness'] == 'distributed' else '-')
+                + ('M' if _f['bed'] == 'mobile' else '-'))
 
 
 def main():
@@ -101,9 +110,12 @@ def main():
     style(ax)
 
     handles = [Line2D([0], [0], color=STYLE[k][0], ls=STYLE[k][1], lw=2.0,
-                      label=STYLE[k][2]) for k in ORDER]
-    ax.legend(handles=handles, fontsize=7.5, frameon=False, loc='lower right',
-              title='bed, roughness', title_fontsize=7.5)
+                      label=CODE[k]) for k in ORDER]
+    ax.legend(handles=handles, fontsize=8, frameon=False,
+              loc='upper center', bbox_to_anchor=(0.5, -0.13), ncol=4,
+              handlelength=2.6, columnspacing=1.4,
+              prop={'family': 'DejaVu Sans Mono', 'size': 8},
+              title='W wave coupling    R distributed roughness    M mobile bed', title_fontsize=7.5)
 
     ax2 = axes[1]
     ys = np.arange(len(ORDER))[::-1]
@@ -117,7 +129,8 @@ def main():
                  color=INK, va='center', ha='left')
     ax2.axvline(1, color=INK, lw=1.0, zorder=2)
     ax2.set_yticks(ys)
-    ax2.set_yticklabels(ORDER, fontsize=8.5)
+    ax2.set_yticklabels([CODE[k] for k in ORDER], fontsize=9,
+                        family='DejaVu Sans Mono')
     ax2.set_xlim(0.8, max(shear.values()) * 1.20)
     ax2.set_ylim(-0.6, len(ORDER) - 0.4)
     ax2.set_xlabel('Surface speed / bed speed', fontsize=8.5, color=MUTED)
