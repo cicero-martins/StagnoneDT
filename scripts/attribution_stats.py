@@ -1,9 +1,12 @@
-"""Paired contrasts across the six-member ensemble, with bootstrap intervals.
+"""Paired contrasts across the eight-member ensemble, with bootstrap intervals.
 
-The ensemble covers six of the eight cells of a waves x roughness x bed-mobility
-factorial. The two missing cells are no-waves with a mobile bed, in both
-roughness treatments, and neither is attainable: both abort on the velocity cap,
-before and after morphodynamics was confined to depths above 20 m.
+The waves x roughness x bed-mobility factorial closed on 2026-08-08, when
+DensIn=false let the two no-wave mobile-bed cells run. Every factor now has four
+single-factor contrasts, one per combination of the other two, so an effect can
+be reported with the conditions under which it was measured rather than as a
+single number from one axis.
+
+Member and contrast definitions live in _ensemble.py.
 
 Emits data/processed/attribution_contrasts.csv and prints the table.
 """
@@ -13,23 +16,15 @@ import numpy as np
 import pandas as pd
 from scipy.stats import wilcoxon, binomtest
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _ensemble import MEMBERS as ENS, KEYS, TAG, LABEL, CONTRASTS, MODELDIR
+
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
 NBOOT = 4000
 
-MEMBERS = {'nowaves': 'v04AE_nowaves', 'nowaves_vr': 'v04AE_nowaves_vr',
-           'nodm': 'v04AE_nodm', 'nodm_vr': 'v04AE_nodm_vr',
-           'bl': 'v04AE', 'vr': 'v04AE_vr'}
-
-CONTRASTS = [
-    ('Waves | uniform, fixed bed',      'nodm',    'nowaves'),
-    ('Waves | distributed, fixed bed',  'nodm_vr', 'nowaves_vr'),
-    ('Roughness | no waves, fixed bed', 'nowaves_vr', 'nowaves'),
-    ('Roughness | waves, fixed bed',    'nodm_vr', 'nodm'),
-    ('Roughness | waves, mobile bed',   'vr',      'bl'),
-    ('Bed mobility | uniform',          'bl',      'nodm'),
-    ('Bed mobility | distributed',      'vr',      'nodm_vr'),
-]
+MEMBERS = TAG
 
 
 def boot_ci(v, rng, n=NBOOT):
@@ -57,8 +52,8 @@ def main():
 
     rng = np.random.default_rng(17)
     rows = []
-    print(f"\n{'contrast':34s} {'dLW':>7s} {'CI95':>18s} {'p':>8s} {'neg/pos':>9s}")
-    print('-' * 82)
+    print(f"\n{'contrast':38s} {'dLW':>7s} {'CI95':>18s} {'p':>8s} {'neg/pos':>9s}")
+    print('-' * 86)
     for lab, a, b in CONTRASTS:
         x = (d[f'LW_{a}'] - d[f'LW_{b}']).dropna()
         m = x.mean()
@@ -66,7 +61,7 @@ def main():
         p = wilcoxon(x).pvalue
         neg, pos = int((x < 0).sum()), int((x > 0).sum())
         sig = '*' if not (lo <= 0 <= hi) else ' '
-        print(f'{lab:34s} {m:+7.3f} [{lo:+6.3f},{hi:+6.3f}] {p:8.4f}{sig} '
+        print(f'{lab:38s} {m:+7.3f} [{lo:+6.3f},{hi:+6.3f}] {p:8.4f}{sig} '
               f'{neg:4d}/{pos:<4d}')
         rows.append({'contrast': lab, 'a': a, 'b': b, 'dLW': m, 'lo': lo,
                      'hi': hi, 'p': p, 'n_neg': neg, 'n_pos': pos,
@@ -75,12 +70,12 @@ def main():
 
     # the wave penalty, per deploy, both roughness treatments
     print('\n=== wave penalty by deploy ===')
-    for lab, a, b in CONTRASTS[:2]:
+    for lab, a, b in CONTRASTS[:4]:
         x = (d[f'LW_{a}'] - d[f'LW_{b}'])
         per = x.groupby(d['deploy']).mean()
         nd = int((per < 0).sum())
         bt = binomtest(int((x < 0).sum()), len(x), 0.5)
-        print(f'  {lab:34s} {nd}/{len(per)} deploys worse, '
+        print(f'  {lab:38s} {nd}/{len(per)} deploys worse, '
               f'{int((x < 0).sum())}/{len(x)} drifters worse (sign p={bt.pvalue:.4f})')
 
     pd.DataFrame(rows).to_csv(PROC / 'attribution_contrasts.csv', index=False,

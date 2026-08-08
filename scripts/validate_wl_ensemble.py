@@ -28,6 +28,10 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _ensemble import KEYS, MODELDIR
+
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
 MODEL = ROOT / 'model'
@@ -36,13 +40,11 @@ STATIONS = {'BocaNord': 'wl_BocaNord_10min_UTC.csv',
             'BocaSud': 'wl_BocaSud_10min_UTC.csv',
             'AltaVilaEst': 'wl_AltavilaEst_10min_UTC.csv'}
 
-HIS = {'nowaves': 'dflowfm_v04AE_nowaves',
-       'nowaves_vr': 'dflowfm_v04AE_nowaves_vr',
-       'nodm': 'dflowfm_v04AE_nodm',
-       'bl': 'dflowfm_v04AE',
-       'vr': 'dflowfm_v04AE_vr'}
+# The four mobile-bed members moved to the *_dens directories when DensIn=false
+# closed the factorial; MODELDIR in _ensemble.py is the single source for that.
+HIS = {k: MODELDIR[k] for k in KEYS if k != 'nodm_vr'}
 CSV = {'nodm_vr': 'wl_nodm_vr.csv'}
-ORDER = ['nowaves', 'nowaves_vr', 'nodm', 'nodm_vr', 'bl', 'vr']
+ORDER = list(KEYS)
 
 SPINUP_DAYS = 1.0
 
