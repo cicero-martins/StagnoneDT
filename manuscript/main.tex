@@ -59,27 +59,27 @@
 
 % -----------------------------------------------------------------------
 \begin{abstract}
-%% 209 words. ECSS limit is 250 words (confirmed 2026-08-07). Not the 150-word
-%% ENVSOFT cap that applies to the reservoirs manuscripts.
+%% 220 words. ECSS limit is 250 (confirmed 2026-08-07). Not the 150-word ENVSOFT
+%% cap that applies to the reservoirs manuscripts.
 Coastal lagoon models are routinely validated against water level, yet water
 level may constrain transport weakly. We test this in the Stagnone di Marsala,
 a micro-tidal Sicilian lagoon of sub-metre mean depth colonised by
-\emph{Posidonia oceanica}, using a three-dimensional Delft3D Flexible Mesh
-model coupled to SWAN over nine days of July 2025. Six configurations differ in
-wave coupling, bed mobility and whether seagrass resistance is uniform or
-distributed from a satellite classification, and each is scored against three
-tide gauges and 35 GPS surface drifters. The configurations are
-indistinguishable in water level, with anomaly RMSE differing by six
-millimetres or less, while their Liu--Weisberg skill spans 0.505 to 0.655 and
-their endpoint separation 334 to 661~m. No treatment applied alone improves
-Lagrangian skill. Distributed roughness and bed mobility raise it by 0.15 when
-combined, and only that combination reproduces the observed transport rate.
-Separating the trajectory error into magnitude and direction identifies what
-each contributes. Bed mobility restores the distance travelled, from 0.79 to
-0.94 of observed, while distributed roughness reduces the mean heading error
-from 12.5 to 8.4 degrees and does so only once the bed can move. Surface speed
-exceeds bed speed by 1.9 to 4.5 times, a vertical structure that itself depends
-on bed mobility.
+\emph{Posidonia oceanica}, using a three-dimensional Delft3D Flexible Mesh model
+coupled to SWAN over nine days of July 2025. A complete factorial in wave
+coupling, bed mobility and whether seagrass resistance is uniform or distributed
+from a satellite classification gives eight configurations, each scored against
+three tide gauges and 35 GPS surface drifters. The eight are indistinguishable
+in water level, with anomaly RMSE differing by at most four millimetres, while
+their Liu--Weisberg skill spans 0.469 to 0.705 and their endpoint separation 336
+to 625~m. Neither wave coupling nor bed mobility improves Lagrangian skill on
+its own, and each is what makes the other work. Wave coupling on a fixed bed
+costs 0.035 to 0.042; bed mobility without waves costs 0.071 to 0.075 and makes
+every drifter worse; together they gain 0.119 to 0.232. The two worst and the
+two best configurations are built from the same pair of treatments. Distributed
+roughness is a third-order refinement that pays only when both are present.
+Completing the factorial was necessary rather than tidy: measured on a fixed bed
+alone, wave coupling appears to be a consistent small penalty, and the sign
+inverts in the cells that a partial design omits.
 \end{abstract}
 
 %% ECSS allows 1-7 keywords. Avoid multi-word keywords joined by 'and'/'of'.
