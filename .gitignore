@@ -243,3 +243,11 @@ outputs/paraview/v04AE_merged.nc
 
 # Elsevier guide PDF, third-party, regenerable from the journal page
 reference/guide_ecss.pdf
+
+# LaTeX build artefacts in docs/
+docs/*.aux
+docs/*.log
+docs/*.out
+docs/*.fls
+docs/*.fdb_latexmk
+docs/*.synctex.gz
