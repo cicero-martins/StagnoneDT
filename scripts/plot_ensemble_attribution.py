@@ -24,6 +24,10 @@ import numpy as np
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _ensemble import MEMBERS as ENS, KEYS, TAG, LABEL, CONTRASTS, MODELDIR
 from matplotlib.lines import Line2D
 from scipy.stats import wilcoxon
 
@@ -42,22 +46,8 @@ C_FIXED = '#eb6834'
 C_UNIF = '#1baf7a'
 NBOOT = 4000
 
-MEMBERS = [('nowaves', 'v04AE_nowaves', 'no waves'),
-           ('nowaves_vr', 'v04AE_nowaves_vr', 'no waves\n+ rough.'),
-           ('nodm', 'v04AE_nodm', 'waves'),
-           ('nodm_vr', 'v04AE_nodm_vr', 'waves\n+ rough.'),
-           ('bl', 'v04AE', 'waves\n+ morph.'),
-           ('vr', 'v04AE_vr', 'full')]
+MEMBERS = [(k, TAG[k], LABEL[k]) for k in KEYS]
 
-CONTRASTS = [
-    ('Waves | uniform, fixed bed',      'nodm',       'nowaves'),
-    ('Waves | distributed, fixed bed',  'nodm_vr',    'nowaves_vr'),
-    ('Roughness | no waves, fixed bed', 'nowaves_vr', 'nowaves'),
-    ('Roughness | waves, fixed bed',    'nodm_vr',    'nodm'),
-    ('Bed mobility | uniform',          'bl',         'nodm'),
-    ('Roughness | waves, mobile bed',   'vr',         'bl'),
-    ('Bed mobility | distributed',      'vr',         'nodm_vr'),
-]
 
 
 def boot_ci(v, rng, n=NBOOT):

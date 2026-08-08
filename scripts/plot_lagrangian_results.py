@@ -21,6 +21,10 @@ import numpy as np
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _ensemble import MEMBERS as ENS, KEYS, TAG, LABEL, CONTRASTS, MODELDIR
 from matplotlib.lines import Line2D
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,11 +41,7 @@ ACCENT = '#4a3aa7'
 WORSE = '#eb6834'
 BETTER = '#1baf7a'
 
-MEMBERS = [('nowaves', 'v04AE_nowaves', 'no waves'),
-           ('nodm', 'v04AE_nodm', 'waves'),
-           ('nodm_vr', 'v04AE_nodm_vr', '+ roughness'),
-           ('bl', 'v04AE', '+ morph.'),
-           ('vr', 'v04AE_vr', 'full')]
+MEMBERS = [(k, TAG[k], LABEL[k]) for k in KEYS]
 
 
 def hav(lo1, la1, lo2, la2):
