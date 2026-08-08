@@ -56,8 +56,8 @@ LAND_EDGE = '#c9c7c1'
 
 # Same categorical trio as Figure 1, already validated all-pairs for CVD
 # separation. Assigned in fixed order, never cycled.
-MEMBERS = [('v04AE_nodm', 'Waves (fixed bed)', '#eb6834'),
-           ('v04AE', 'Waves + morph.', '#1baf7a'),
+MEMBERS = [('v04AE_nowaves_vrdm', 'No waves, mobile bed', '#eb6834'),
+           ('v04AE_nodm_vr', 'Waves, fixed bed', '#1baf7a'),
            ('v04AE_vr', 'Full', '#4a3aa7')]
 
 DEPLOYS = [1, 2, 3, 10]

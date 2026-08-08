@@ -25,6 +25,10 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _ensemble import KEYS, LABEL as LBL
+
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
 FIG = ROOT / 'figures'
@@ -39,10 +43,8 @@ C_SURF = '#4a3aa7'
 C_ORB = '#1baf7a'
 
 CLASSES = ['sand', 'Cymodocea', 'Posidonia', 'rock']
-ORDER = ['nowaves', 'nowaves_vr', 'nodm', 'nodm_vr', 'bl', 'vr']
-LABEL = {'nowaves': 'no waves', 'nowaves_vr': 'no waves + rough.',
-         'nodm': 'waves', 'nodm_vr': '+ roughness',
-         'bl': '+ morph.', 'vr': 'full'}
+ORDER = list(KEYS)
+LABEL = {k: LBL[k].replace(chr(10), ' ') for k in KEYS}
 
 
 def style(ax):

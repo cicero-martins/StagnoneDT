@@ -1,20 +1,19 @@
-"""Process attribution over the six-member ensemble.
+"""Process attribution over the closed eight-member factorial.
 
-The ensemble covers six of the eight cells of a waves x roughness x bed-mobility
-factorial. The two missing cells are no-waves with a mobile bed, in either
-roughness treatment. Neither is attainable: both abort on the velocity cap,
-before and after morphodynamics was confined to depths above 20 m.
+The design covers all eight cells of waves x roughness x bed mobility. It was
+six until DensIn=false let the two no-wave mobile-bed members run, and the two
+new cells reverse what the earlier version reported: measured on a fixed bed
+alone, wave coupling looked like a small penalty.
 
 (a) Skill for every drifter under every member.
-(b) The wave penalty measured on BOTH roughness axes, deployment by deployment.
-    This is what a single-axis measurement could not show: the penalty is the
-    same size and the same consistency whether roughness is uniform or
-    distributed, so it does not depend on the roughness treatment.
-(c) Paired effect sizes with bootstrap intervals. Marker fill encodes whether
-    the interval clears zero, so a large point estimate with a crossing
-    interval cannot be misread as a result.
-(d) The interaction: roughness does nothing on a fixed bed and a great deal on
-    a mobile one.
+(b) The wave contrast deployment by deployment, on a fixed and on a mobile bed.
+    The sign flips. This is the panel a six-member ensemble could not draw.
+(c) All twelve single-factor contrasts, four per factor, one for each
+    combination of the other two. Marker fill encodes whether the bootstrap
+    interval clears zero, so a large point estimate with a crossing interval
+    cannot be misread as a result.
+(d) The interaction stated directly: waves and bed mobility each cost skill
+    alone and pay only together.
 
 Output: figures/ensemble_attribution.{png,pdf}
 """
@@ -79,7 +78,7 @@ def main():
         d = m if d is None else d.merge(m, on=['deploy', 'drifter_id'])
     print(f'{len(d)} drifters, {d["deploy"].nunique()} deploys')
 
-    fig = plt.figure(figsize=(11.0, 7.6), dpi=300)
+    fig = plt.figure(figsize=(11.4, 8.4), dpi=300)
     gs = fig.add_gridspec(2, 2, hspace=0.48, wspace=0.28,
                           left=0.07, right=0.97, top=0.93, bottom=0.08)
 
@@ -93,17 +92,25 @@ def main():
         ax.plot([i - 0.3, i + 0.3], [v.mean()] * 2, '-', color=c, lw=2.6,
                 zorder=4, solid_capstyle='round')
     ax.set_xticks(range(len(MEMBERS)))
-    ax.set_xticklabels([m[2] for m in MEMBERS], fontsize=7.5)
+    # the eight labels collide when written horizontally; a compact three-slot
+    # code (waves / roughness / bed) reads faster than wrapped words anyway
+    code = {'nowaves': '---', 'nowaves_vr': '-R-', 'nodm': 'W--',
+            'nodm_vr': 'WR-', 'nowaves_dm': '--M', 'nowaves_vrdm': '-RM',
+            'bl': 'W-M', 'vr': 'WRM'}
+    ax.set_xticklabels([code[m[0]] for m in MEMBERS], fontsize=8.5,
+                       family='DejaVu Sans Mono')
+    ax.text(0.0, -0.19, 'W wave coupling   R distributed roughness   '
+            'M mobile bed', transform=ax.transAxes, fontsize=7.2, color=MUTED)
     ax.set_ylabel('Liu--Weisberg skill', fontsize=8.5, color=MUTED)
     ax.set_title('(a) Skill, all 35 drifters', loc='left', fontsize=9.5,
                  color=INK, pad=7)
     style(ax)
 
-    # (b) wave penalty on both roughness axes
+    # (b) the wave contrast on a fixed and on a mobile bed
     ax = fig.add_subplot(gs[0, 1])
     deps = sorted(d['deploy'].unique())
-    pairs = [('uniform roughness', 'nodm', 'nowaves', C_UNIF, -0.19),
-             ('distributed roughness', 'nodm_vr', 'nowaves_vr', C_FIXED, 0.19)]
+    pairs = [('on a fixed bed', 'nodm_vr', 'nowaves_vr', C_FIXED, -0.19),
+             ('on a mobile bed', 'vr', 'nowaves_vrdm', ACCENT, 0.19)]
     for lab, a, b, col, off in pairs:
         xs, vs = [], []
         for i, dp in enumerate(deps):
@@ -116,13 +123,14 @@ def main():
     ax.set_xticks(range(len(deps)))
     ax.set_xticklabels([str(int(x)) for x in deps], fontsize=8)
     ax.set_xlabel('Deployment', fontsize=8.5, color=MUTED)
-    ax.set_ylabel('$\\Delta$ skill from waves', fontsize=8.5, color=MUTED)
-    ax.set_title('(b) The wave penalty on both roughness axes', loc='left',
-                 fontsize=9.5, color=INK, pad=7)
+    ax.set_ylabel('$\Delta$ skill from wave coupling', fontsize=8.5,
+                  color=MUTED)
+    ax.set_title('(b) Waves cost skill on a fixed bed and gain it on a mobile one',
+                 loc='left', fontsize=9.5, color=INK, pad=7)
     style(ax)
     lo, hi = ax.get_ylim()
-    ax.set_ylim(lo, hi + 0.35 * (hi - lo))
-    ax.legend(fontsize=7.5, frameon=False, loc='upper right', ncol=1)
+    ax.set_ylim(lo, hi + 0.30 * (hi - lo))
+    ax.legend(fontsize=7.5, frameon=False, loc='upper left', ncol=2)
 
     # (c) effect sizes
     ax = fig.add_subplot(gs[1, 0])
@@ -138,24 +146,24 @@ def main():
                 solid_capstyle='round')
         ax.plot([m], [y], 'o', ms=8, mfc=SURFACE if crosses else INK, mec=INK,
                 mew=1.6, zorder=4, ls='')
-        ax.text(0.30, y, 'p < 0.001' if p < 0.001 else f'p = {p:.3f}',
-                fontsize=7.2, color=MUTED, va='center', ha='right')
-    ax.axvline(0, color=INK, lw=1.0, zorder=2)
+        ax.axvline(0, color=INK, lw=1.0, zorder=2)
+    for yy in (len(CONTRASTS) - 4.5, len(CONTRASTS) - 8.5):
+        ax.axhline(yy, color=GRID, lw=1.0, zorder=1)
     ax.set_yticks(ys)
-    ax.set_yticklabels([c[0] for c in CONTRASTS], fontsize=8)
+    ax.set_yticklabels([c[0] for c in CONTRASTS], fontsize=7.2)
     ax.set_xlabel('Change in Liu--Weisberg skill', fontsize=8.5, color=MUTED)
-    ax.set_xlim(-0.12, 0.31)
+    ax.set_xlim(-0.12, 0.36)
     ax.set_ylim(-0.6, len(CONTRASTS) - 0.4)
-    ax.set_title('(c) Effect sizes, paired, 95% bootstrap CI', loc='left',
+    ax.set_title('(c) All twelve single-factor contrasts, 95% bootstrap CI', loc='left',
                  fontsize=9.5, color=INK, pad=7)
     style(ax)
     ax.text(0.0, -0.17, 'filled = interval clear of zero',
             transform=ax.transAxes, fontsize=7.2, color=MUTED, ha='left')
 
-    # (d) interaction
+    # (d) the interaction that the closed design exposes
     ax = fig.add_subplot(gs[1, 1])
-    series = [('Fixed bed', ['nodm', 'nodm_vr'], C_FIXED, 'o'),
-              ('Mobile bed', ['bl', 'vr'], ACCENT, 's')]
+    series = [('No wave coupling', ['nowaves_vr', 'nowaves_vrdm'], C_FIXED, 'o'),
+              ('Wave coupling', ['nodm_vr', 'vr'], ACCENT, 's')]
     for lab, keys, col, mk in series:
         m = [d[k].mean() for k in keys]
         ci = [boot_ci(d[k], rng) for k in keys]
@@ -163,16 +171,13 @@ def main():
         ax.errorbar([0, 1], m, yerr=err, color=col, marker=mk, ms=8, lw=2,
                     capsize=4, capthick=1.4, mec='white', mew=1.2, label=lab,
                     zorder=4)
-    nw = [d['nowaves'].mean(), d['nowaves_vr'].mean()]
-    ax.plot([0, 1], nw, ':', color=MUTED, lw=1.8, marker='^', ms=6,
-            mfc=MUTED, mec='white', label='No waves, fixed bed', zorder=3)
     ax.set_xticks([0, 1])
-    ax.set_xticklabels(['Uniform', 'Distributed'], fontsize=8.5)
-    ax.set_xlabel('Seagrass roughness', fontsize=8.5, color=MUTED)
+    ax.set_xticklabels(['Fixed', 'Mobile'], fontsize=8.5)
+    ax.set_xlabel('Bed', fontsize=8.5, color=MUTED)
     ax.set_ylabel('Liu--Weisberg skill', fontsize=8.5, color=MUTED)
     ax.set_xlim(-0.3, 1.3)
-    ax.set_title('(d) Roughness matters only on a mobile bed', loc='left',
-                 fontsize=9.5, color=INK, pad=7)
+    ax.set_title('(d) Waves and bed mobility pay only together',
+                 loc='left', fontsize=9.5, color=INK, pad=7)
     ax.legend(fontsize=7.5, frameon=False, loc='upper left')
     style(ax)
 

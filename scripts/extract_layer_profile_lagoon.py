@@ -8,12 +8,12 @@ import glob, sys
 import numpy as np
 import xarray as xr
 
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _ensemble import KEYS, MODELDIR
+
 ROOT = '/home/ciceromartinsjr/StagnoneDT/model/'
-MEMBERS = [('nowaves', 'dflowfm_v04AE_nowaves'),
-           ('nowaves_vr', 'dflowfm_v04AE_nowaves_vr'),
-           ('nodm', 'dflowfm_v04AE_nodm'),
-           ('nodm_vr', 'dflowfm_v04AE_nodm_vr'), ('bl', 'dflowfm_v04AE'),
-           ('vr', 'dflowfm_v04AE_vr')]
+MEMBERS = [(k, MODELDIR[k]) for k in KEYS]
 LON = (12.432, 12.484)
 LAT = (37.828, 37.900)
 BL_MAX = -0.15

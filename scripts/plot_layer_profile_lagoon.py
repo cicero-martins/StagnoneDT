@@ -35,6 +35,10 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _ensemble import KEYS, LABEL
+
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
 FIG = ROOT / 'figures'
@@ -48,13 +52,16 @@ C_FIXED = '#eb6834'    # fixed bed
 C_MORPH = '#4a3aa7'    # active morphodynamics
 
 STYLE = {                       # member -> (colour, linestyle, label)
-    'nowaves': (C_FIXED, ':',  'no waves, uniform'),
-    'nodm':    (C_FIXED, '--', 'waves, uniform'),
-    'nodm_vr': (C_FIXED, '-',  'waves, distributed'),
-    'bl':      (C_MORPH, '--', 'morph., uniform'),
-    'vr':      (C_MORPH, '-',  'morph., distributed'),
+    'nowaves':      (C_FIXED, ':',  'no waves, uniform, fixed'),
+    'nowaves_vr':   (C_FIXED, '--', 'no waves, distributed, fixed'),
+    'nowaves_dm':   (C_FIXED, '-',  'no waves, uniform, mobile'),
+    'nowaves_vrdm': (C_FIXED, '-.', 'no waves, distributed, mobile'),
+    'nodm':         (C_MORPH, ':',  'waves, uniform, fixed'),
+    'nodm_vr':      (C_MORPH, '--', 'waves, distributed, fixed'),
+    'bl':           (C_MORPH, '-',  'waves, uniform, mobile'),
+    'vr':           (C_MORPH, '-.', 'waves, distributed, mobile'),
 }
-ORDER = ['nowaves', 'nodm', 'nodm_vr', 'bl', 'vr']
+ORDER = list(KEYS)
 
 
 def main():
