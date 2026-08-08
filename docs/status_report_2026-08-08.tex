@@ -45,31 +45,44 @@ Cicero Martins Jr.\\
 Work on the coupled three-dimensional model resumed on 5 August after a pause
 since mid-June, due to the rewriting of the manuscripts related to GEE. As we
 already had several runs done and the skeleton of the paper in place, the main
-outcome of the first three days was to compile everything and finalise the
-first draft, in LaTeX and formatted for \textit{Estuarine, Coastal and Shelf
-Science}.
+outcome of these days was to compile everything and finalise the first draft, in
+LaTeX and formatted for \textit{Estuarine, Coastal and Shelf Science}.
 
-Then the experimental design changed under us, for the better. Two of the eight
-cells of the factorial had been failing to run, and tracing that failure to its
-cause let both complete. Their results reverse the paper's central finding.
-Sections 2 and 3 below are the new picture; the draft has been rewritten
-accordingly and is ready for your reading.
+The experimental design is a complete factorial in three factors, which needed
+eight simulations. Two of them, those combining a mobile bed with no wave
+coupling, required a change to the sediment configuration before they would run
+to completion, and that change had to be applied to the other mobile-bed members
+as well so that all four remain comparable. Those re-runs finished today, and
+the results below are from the complete set.
 
-\section{What changed, and why it matters}
+The manuscript is provisionally titled \textbf{``Interacting effects of wave
+coupling and bed mobility on Lagrangian transport in a shallow vegetated
+lagoon''}, with the three of us as authors. I would be grateful for your
+comments on both the framing and the content.
 
-The design crosses three factors: wave coupling, bed mobility, and whether
-seagrass resistance is uniform or distributed from a satellite classification.
-Until yesterday the two cells combining a mobile bed with no wave coupling could
-not be obtained. The cause turned out to be numerical rather than physical, the
-contribution of suspended sediment to the density field, and disabling it let
-both members run to completion with no other change.
+\section{What the study asks and what it found}
 
-With those two cells in hand the attribution comes out differently. On a fixed
-bed wave coupling costs 0.035 to 0.042 in Liu--Weisberg skill. On a mobile bed
-the same treatment \emph{gains} 0.155 and 0.232. Bed mobility behaves
-symmetrically: without waves it costs 0.071 to 0.075 and makes every one of the
-35 drifters worse, in both roughness treatments; with waves it gains 0.119 to
-0.199.
+Coastal lagoon models are routinely validated against water level and then used
+to describe transport, so I set the paper to ask whether the first licenses the
+second. Eight configurations were run over the same nine days of July 2025,
+covering the drifter deployments, from the same initial condition and forcing,
+differing only in wave coupling, bed mobility, and whether seagrass resistance is
+uniform or distributed from a satellite classification. Each was scored against
+three tide gauges and against 35 GPS drifters over twelve deployments.
+
+\textbf{Water level does not separate the configurations.} Anomaly RMSE differs
+between them by at most 4.2~mm at any station, within the measurement
+uncertainty, and no configuration is consistently best. Over the same
+simulations Liu--Weisberg skill spans 0.469 to 0.705 and endpoint separation 336
+to 625~m. A calibration on water level alone would have had no basis on which to
+prefer any of them.
+
+\textbf{Neither wave coupling nor bed mobility improves Lagrangian skill on its
+own, and each is what makes the other work.} Applied singly they are the two
+treatments that make the model worse. Applied together they give the ensemble
+its two best members. The two worst and the two best configurations are built
+from the same pair of treatments and differ only in whether both are switched
+on.
 
 \begin{center}
 \begin{tabular}{lrr}
@@ -84,49 +97,40 @@ From adding bed mobility  & $-0.071$ to $-0.075$ & $+0.119$ to $+0.199$ \\
 \end{tabular}
 \end{center}
 
-So neither treatment improves prediction on its own, and each is what makes the
-other work. Applied singly they are the two treatments that make the model
-worse. The two worst and the two best members of the ensemble are built from the
-same pair and differ only in whether both are switched on. All eight bootstrap
-intervals behind those numbers are clear of zero.
+Bed mobility without waves makes every one of the 35 drifters worse, in both
+roughness treatments, which is as consistent as a paired comparison can be. All
+eight bootstrap intervals behind the table are clear of zero.
 
-Distributed seagrass roughness has moved to third order on this evidence. It
-changes skill by 0.009 or less in three of its four conditions, and by 0.081 in
-the fourth, which is on a mobile bed with wave coupling. Its effect on the wave
-field remains real and correctly ordered by canopy density, reducing near-bed
-orbital velocity by 14.3\% over \emph{Posidonia} against 3.3\% over exposed
-rock, so the parametrisation works. It simply does not move surface transport
-unless the other two are present.
+\textbf{Distributed seagrass roughness is a third-order refinement on this
+evidence.} It changes skill by 0.009 or less in three of its four conditions,
+and by 0.081 in the fourth, which is on a mobile bed with wave coupling. Its
+effect on the wave field is nonetheless real and correctly ordered by canopy
+density, reducing near-bed orbital velocity by 14.3\% over \emph{Posidonia}
+against 3.3\% over exposed rock, so the parametrisation works. It simply does
+not move surface transport unless the other two are present.
 
-\section{What is unchanged}
-
-Two results survive the reanalysis and support the framing. Water level still cannot
-separate the configurations, and the case is stronger with eight members than
-with six: anomaly RMSE differs by at most 4.2~mm at any station, against a
-Lagrangian skill range of 0.469 to 0.705 and endpoint separation of 336 to
-625~m. And surface current speed exceeds bed speed by a factor of 1.85 to 2.20
+Splitting the trajectory error into a magnitude part and a direction part shows
+the two moving together rather than independently, so the treatments appear to
+act on the velocity field as a whole rather than on separable parts of the
+error. And surface current speed exceeds bed speed by a factor of 1.85 to 2.20
 at sub-metre mean depth, which is the quantitative case for solving in three
-dimensions, consistent with De~Marchis et al.\ (2012) here.
-
-One earlier number was corrected in the process. The vertical shear ratio had
-appeared to reach 4.5 in the mobile-bed members; that was an artefact of the
-same sediment-density coupling suppressing near-bed flow, and the true range
-across all eight members is the narrower one quoted above.
+dimensions, consistent with De~Marchis et al.\ (2012) here. That ratio is set by
+wave coupling rather than by bed mobility.
 
 \section{Two questions for you}
 
 \textbf{First, the title.} The one in the draft is my current preference, but
-the other two are live and I would value your view.
+feel free to suggest changes. Here are other two alternatives that I think are defensible:
 
 \begin{enumerate}[leftmargin=1.4em, itemsep=0.3em]
   \item \emph{Interacting effects of wave coupling and bed mobility on
-  Lagrangian transport in a shallow vegetated lagoon.} In the draft. Conservative
-  and conventional in form.
+  Lagrangian transport in a shallow vegetated lagoon.} In the draft.
+  Conservative and conventional in form.
   \item \emph{Wave coupling helps or hurts lagoon transport prediction depending
-  on whether the bed can move.} States the finding rather than the topic, and the
-  conditional form claims no more than the eight cells show.
+  on whether the bed can move.} A bit more bold, try to state the finding rather than the topic, and
+  the conditional form claims what the eight configurations show.
   \item \emph{Transport validation of a shallow lagoon model: interacting
-  effects of wave coupling and bed mobility.} Method first, mechanism second.
+  effects of wave coupling and bed mobility.} States the method first, then the mechanism.
 \end{enumerate}
 
 \textbf{Second, and more consequential, whether to submit before obtaining a new
@@ -138,25 +142,24 @@ morphology towards the present one, in which case the improvement is a
 compensation rather than a physical result. The manuscript states this openly,
 and notes that the lagoon bed changes by up to 1.4~m over nine days in isolated
 cells, which is not a plausible rate. If there is a realistic chance of
-obtaining new bathymetry soon, I would rather wait and rerun with it than defend
-the present version in review.
+obtaining new bathymetry soon, maybe we should wait for it, and rerun. 
+If not, we can submit valuing to declare a caveat that the improvement may be a compensation 
+for an outdated bathymetry.
 
 \section{Status and plan}
 
 The draft is complete across all six sections, with eight figures and three
-tables, 5950 words against a limit of 8000, and 24 references. Highlights and a
+tables, 5650 words against a limit of 8000, and 25 references. Highlights and a
 cover letter are drafted. Outstanding is a graphical abstract, which
 \textit{ECSS} requires.
 
 After the holidays, and before leaving for Malta, my intention is to close this
-paper and begin drafting the remaining themes we discussed: the effect of the
-multi-decadal \emph{Posidonia} decline on wave attenuation, near-bed exposure and
-residence time; the operational forecast chain with the WetWise portal, together
-with the Isola Grande channel reopening scenario; and wave-driven sediment
-mobilisation with the Trapani canal contribution to lagoon siltation.
+paper and begin drafting the remaining themes that can be made from this model, 
+like the Isola Grande channel reopening scenario; wave-driven sediment
+mobilisation with the Trapani canal contribution to lagoon siltation, etc.
 
 The full draft, figures and analysis code are in the project repository, and I
-can send the compiled PDF on request.
+am sending togheter here the compiled PDF.
 
 \vspace{-0.2em}
 {\footnotesize\itshape Dipartimento di Ingegneria, Universit\`a degli Studi di
