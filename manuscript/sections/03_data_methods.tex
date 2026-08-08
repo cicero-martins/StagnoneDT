@@ -196,22 +196,19 @@ gridded output every 1800~s, so the comparison is not affected by differences
 in output sampling.
 
 The design is a complete factorial in three factors, wave coupling, seagrass
-roughness and bed mobility. All eight cells were obtained, which matters here
-rather than being a formality: the two cells combining a mobile bed with no wave
-coupling are the ones that determine the sign of the wave effect
-(Section~\ref{sec:discussion}).
+roughness and bed mobility, and all eight cells were obtained.
 
-Obtaining those two required one change to the sediment configuration. With the
-contribution of suspended sediment to the density field enabled, both aborted on
-the velocity cap at the same offshore cell and the same simulated instant on
-independent attempts, while the wave-coupled members carrying identical sediment
-settings completed. Suspended sediment feeding the baroclinic pressure gradient
-is the only route by which sediment can move momentum in a deep offshore cell
-holding no erodible material, and disabling that contribution allowed both
-members to complete with no other change. It also removed a spurious 2.4~m
-accumulation at 500~m depth present in the wave-coupled members. All four
-mobile-bed members carry the setting, and the fixed-bed members have no sediment
-module for it to apply to.
+The four mobile-bed members exclude the contribution of suspended sediment to
+the density field. With it enabled, the two members combining a mobile bed with
+no wave coupling abort on the velocity cap at the same offshore cell and the
+same simulated instant on independent attempts, while the wave-coupled members
+carrying identical sediment settings complete. Suspended sediment feeding the
+baroclinic pressure gradient is the only route by which sediment can move
+momentum in a deep offshore cell holding no erodible material, and excluding it
+also removes a spurious 2.4~m accumulation at 500~m depth otherwise present in
+the wave-coupled members. All four mobile-bed members therefore carry the same
+setting, which is what makes them comparable to one another. The fixed-bed
+members have no sediment module for it to apply to.
 
 Erodible sediment is confined to depths at which waves can plausibly move it.
 Available thickness is held at 0.5~m per fraction above 15~m depth and tapered
