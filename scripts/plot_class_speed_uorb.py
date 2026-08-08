@@ -98,7 +98,8 @@ def main():
         Line2D([0], [0], marker='s', color=C_SURF, ms=5, lw=1.2, label='surface'),
         Line2D([0], [0], marker='o', color=C_BED, ms=5, lw=1.2, label='bed'),
         Line2D([0], [0], color='none', label='opaque = full member')],
-        fontsize=7.5, frameon=False, loc='upper left')
+        fontsize=8, frameon=False, loc='upper center',
+        bbox_to_anchor=(0.5, -0.13), ncol=3, columnspacing=1.6)
     style(ax)
 
     # (b) roughness effect on bed speed, fixed bed
