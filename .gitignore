@@ -251,3 +251,6 @@ docs/*.out
 docs/*.fls
 docs/*.fdb_latexmk
 docs/*.synctex.gz
+
+# Ad-hoc short test runs (model/_*): regenerable, ~900 MB of map.nc each
+model/_trt_test_*/

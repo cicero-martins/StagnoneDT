@@ -145,7 +145,15 @@ for i in range(N_edges):
     wrote_any = False
     for cls in range(TRAC_OFFSET, N_TRACHYTOPE + TRAC_OFFSET):   # 1..4
         if fracs[cls] > 0:
-            lines.append(f'{xu:.6f}  {yu:.6f}  0  {cls}  {fracs[cls]:.4f}')
+            # 9 decimals, not 6.  FM matches each .arl record to a net link by
+            # kd-tree and keeps it only if the distance clears dtol_trachy =
+            # 1e-4, which is a SQUARED distance in m^2 -- an effective
+            # tolerance of 1 cm (flow_trachyinit.f90).  At this latitude 6
+            # decimals quantise longitude to 8.8 cm and latitude to 11.1 cm,
+            # roughly ten times that tolerance, so ~94% of records missed
+            # their link and were dropped as TRACHY_NOT_IN_SUBDOMAIN -- with
+            # no warning anywhere.  9 decimals gives ~0.1 mm.
+            lines.append(f'{xu:.9f}  {yu:.9f}  0  {cls}  {fracs[cls]:.4f}')
             class_hist[cls - TRAC_OFFSET] += int(counts[cls])
             wrote_any = True
 
