@@ -44,16 +44,21 @@ ARL_NAME=stagnone_trachytopes_v3.arl
 TTD_NAME=trachytopes.ttd
 LOGDIR=~/154_logs
 
-MEMBERS="v04AE_nowaves_vr v04AE_nodm_vr v04AE_nowaves_vrdm_dens v04AE_vr_dens"
+MEMBERS=${MEMBERS:-"v04AE_nowaves_vr v04AE_nodm_vr v04AE_nowaves_vrdm_dens v04AE_vr_dens"}
+SUFFIX=${SUFFIX:-154}
+# Optional overrides. TTD_FILE replaces the file wholesale, which also skips the
+# 153 -> 154 substitution below: supply a .ttd that already carries 154.
+ARL_FILE=${ARL_FILE:-$ARL}
+TTD_FILE=${TTD_FILE:-}
 
-[ -f "$ARL" ] || { echo "missing $ARL"; exit 1; }
+[ -f "$ARL_FILE" ] || { echo "missing $ARL_FILE"; exit 1; }
 mkdir -p "$LOGDIR"
 
 echo "=== preparing ==="
 fail=0
 for m in $MEMBERS; do
     src=$BASE/dflowfm_$m
-    dst=$BASE/dflowfm_${m}_154
+    dst=$BASE/dflowfm_${m}_${SUFFIX}
     [ -d "$src" ] || { echo "  $m: source missing, SKIPPED"; fail=1; continue; }
     rm -rf "$dst"; mkdir -p "$dst"
 
@@ -77,9 +82,13 @@ for m in $MEMBERS; do
         --exclude='diag/' \
         "$src/" "$dst/"
 
-    cp "$ARL" "$dst/$ARL_NAME"
-    # Classes 2 (Cymodocea) and 3 (Posidonia) only; 1 and 4 are Manning (53).
-    sed -i 's|^\( *[23] *\)153|\1154|' "$dst/$TTD_NAME"
+    cp "$ARL_FILE" "$dst/$ARL_NAME"
+    if [ -n "$TTD_FILE" ]; then
+        cp "$TTD_FILE" "$dst/$TTD_NAME"
+    else
+        # Classes 2 (Cymodocea) and 3 (Posidonia) only; 1 and 4 are Manning (53).
+        sed -i 's|^\( *[23] *\)153|\1154|' "$dst/$TTD_NAME"
+    fi
 
     # Verify rather than assume. Every one of these has failed silently at some
     # point in this project: UTM coordinates in the .arl, 6-decimal rounding,
@@ -96,8 +105,9 @@ for m in $MEMBERS; do
     [ "$n154" -eq 2 ] || { ok="BAD ttd 154 count"; fail=1; }
     [ "$n153" -eq 0 ] || { ok="BAD leftover 153"; fail=1; }
     [ "$hot" -eq 0 ] || { ok="BAD stale hot files"; fail=1; }
-    printf '  %-34s arl_dec=%s ttd154=%s ttd153=%s esmf=%s hot=%s trtRou=%s  %s\n' \
-        "${m}_154" "$dec" "$n154" "$n153" "$esmf" "$hot" "$trt" "$ok"
+    printf '  %-36s arl_dec=%s arl_rec=%s ttd154=%s esmf=%s hot=%s trtRou=%s  %s\n' \
+        "${m}_${SUFFIX}" "$dec" "$(grep -cvE '^#' "$dst/$ARL_NAME")" \
+        "$n154" "$esmf" "$hot" "$trt" "$ok"
 done
 
 # The coupled members need all 26 ESMF weight files; the no-wave ones need none.
@@ -106,7 +116,7 @@ if [ "$fail" -ne 0 ]; then
     echo "verification FAILED -- not launching."
     exit 1
 fi
-echo "all four verified."
+echo "verified."
 
 if [ "$1" != "--launch" ]; then
     echo "re-run with --launch to start."
@@ -117,7 +127,7 @@ echo; echo "=== launching ==="
 # ~/.bashrc sources oneAPI only for interactive shells and nohup gets a
 # non-interactive one, so source it explicitly.
 for m in $MEMBERS; do
-    dst=$BASE/dflowfm_${m}_154
+    dst=$BASE/dflowfm_${m}_${SUFFIX}
     [ -d "$dst" ] || continue
     cd "$dst"
     nohup bash -c "source /opt/intel/oneapi/setvars.sh >/dev/null 2>&1;
@@ -125,11 +135,11 @@ for m in $MEMBERS; do
                    export PATH=\$DELFT3D_HOME/bin:\$PATH;
                    export LD_LIBRARY_PATH=\$DELFT3D_HOME/lib:\$LD_LIBRARY_PATH;
                    bash run_model.sh" \
-          > "$LOGDIR/${m}_154.log" 2>&1 &
-    echo "  $m -> pid $! , log $LOGDIR/${m}_154.log"
+          > "$LOGDIR/${m}_${SUFFIX}.log" 2>&1 &
+    echo "  $m -> pid $! , log $LOGDIR/${m}_${SUFFIX}.log"
     sleep 20        # stagger: the partition step is I/O heavy
 done
 
 echo; echo "monitor with:"
 echo "  grep -c 'below threshold' $LOGDIR/*.log"
-echo "  grep -l 'Computation finished' $BASE/dflowfm_*_154/DFM_OUTPUT_*/*.dia | wc -l"
+echo "  grep -l 'Computation finished' $BASE/dflowfm_*_${SUFFIX}/DFM_OUTPUT_*/*.dia | wc -l"
