@@ -62,6 +62,10 @@ LOGDIR=~/154_logs
 MAPINT=${MAPINT:-1800}
 MAXVEL=${MAXVEL:-10.0}
 RSTINT=${RSTINT:-86400}
+# Optional replacements, copied in under the names the MDU already references,
+# so trtL and trtDef need no patching.
+ARL_FILE=${ARL_FILE:-}
+TTD_FILE=${TTD_FILE:-}
 
 [ -d "$SRC" ] || { echo "missing $SRC"; exit 1; }
 mkdir -p "$LOGDIR"
@@ -81,6 +85,13 @@ rsync -a \
     --exclude='swn-diag.*' \
     --exclude='diag/' \
     "$SRC/" "$DST/"
+
+if [ -n "$ARL_FILE" ]; then
+    cp "$ARL_FILE" "$DST/$(grep -ioE 'trtL *= *\S+' "$DST/Stagnone_dxy01_15m.mdu" | awk '{print $3}')"
+fi
+if [ -n "$TTD_FILE" ]; then
+    cp "$TTD_FILE" "$DST/$(grep -ioE 'trtDef *= *\S+' "$DST/Stagnone_dxy01_15m.mdu" | awk '{print $3}')"
+fi
 
 mkdir -p "$DST/restart_input"
 for n in 0 1 2 3 4 5 6 7; do
@@ -126,7 +137,8 @@ echo "  dimr: $(grep -o '<time>[^<]*</time>' "$DST/dimr_config.xml")"
 echo "  restart files: $(ls "$DST"/restart_input/*.nc | wc -l)/8"
 echo "  partition net/mdu kept: $(ls "$DST"/*_0[0-9][0-9][0-9]_net.nc | wc -l)/$(ls "$DST"/*_0[0-9][0-9][0-9].mdu | wc -l)"
 echo "  esmf: $(ls "$DST"/wave/TMP_ESMF*.nc 2>/dev/null | wc -l)   stale hot: $(ls "$DST"/wave/hot_*.nc 2>/dev/null | wc -l)"
-echo "  ttd: $(grep -E '^ +[23] +15[0-9]' "$DST/trachytopes.ttd" | tr -s ' ' | paste -sd'; ')"
+echo "  ttd: $(grep -E '^ +[0-9]+ +[0-9]+' "$DST/trachytopes.ttd" | tr -s ' ' | paste -sd'; ')"
+echo "  arl: $(grep -cvE '^#' "$DST"/*.arl) records, $(grep -vE '^#' "$DST"/*.arl | head -1 | awk '{print $1}') first x"
 
 [ "$LAUNCH" = "--launch" ] || { echo; echo "re-run with --launch to start."; exit 0; }
 
