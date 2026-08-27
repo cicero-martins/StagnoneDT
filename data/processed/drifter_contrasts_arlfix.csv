@@ -1,0 +1,10 @@
+label,mean,lo,hi,p,n_neg,n_pos,clear_of_zero
+nowaves_vr: corrected - original,0.1540,0.0769,0.2315,0.0004,12,23,True
+nodm_vr: corrected - original,0.2071,0.1169,0.2933,0.0000,3,32,True
+nowaves_vrdm: corrected - original,0.1855,0.1107,0.2643,0.0000,4,31,True
+nowaves_vr vs nowaves [as published],0.0087,0.0043,0.0132,0.0040,14,21,True
+nowaves_vr vs nowaves [corrected],0.1627,0.0854,0.2428,0.0004,12,23,True
+nodm_vr vs nodm [as published],0.0010,-0.0171,0.0175,0.3507,13,22,False
+nodm_vr vs nodm [corrected],0.2081,0.1191,0.2911,0.0000,4,31,True
+nowaves_vrdm vs nowaves_dm [as published],0.0044,-0.0014,0.0102,0.3423,17,18,False
+nowaves_vrdm vs nowaves_dm [corrected],0.1898,0.1157,0.2659,0.0000,8,27,True
