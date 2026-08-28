@@ -1,0 +1,11 @@
+* Equivalent-roughness ladder: what Manning does the [veg] module amount to?
+* Meadow classes 2 and 3 at Manning 0.080; every other class at 0.023, which is
+* the model's unifFrictCoef, so this reproduces the no-trachytope control
+* exactly when the meadow value is also 0.023. Formula 53 is plain Manning and
+* never touches rttfu, the term this build computes and discards.
+* class  formula  n
+  1    53    0.0230
+  2    53    0.080
+  3    53    0.080
+  4    53    0.0230
+  5    53    0.0230
