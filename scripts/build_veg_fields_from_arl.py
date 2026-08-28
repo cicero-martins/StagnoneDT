@@ -53,16 +53,35 @@ import numpy as np
 from scipy.spatial import cKDTree
 
 # class -> (stemheight m, stemdensity 1/m2, stemdiameter m, label)
+#
+# stemheight is the CANOPY height, not the leaf length. Those differ for a
+# plant whose leaves lie over, and conflating them was an error: Ciraolo's h_v
+# is leaf length, "usually over 1 m" in nature, but the canopy occupies far
+# less of the column. Prinos et al. (2010) built their experiment at
+# submergence ratios h_s/D of 0.323, 0.423 and 0.500 precisely because that is
+# what a real meadow does, and Ciraolo's own measured deflected thickness k/h
+# sits mostly between 0.2 and 0.6, reaching 1.0 only in his slowest run
+# (4.3 cm/s). Field observation in this lagoon agrees: Posidonia rarely reaches
+# the surface. For a 1 m column that puts the canopy at 0.3-0.5 m.
 VEG = {
     2: (0.15, 2400.0, 0.004, 'Cymodocea, 800 shoots x 3 leaves x 4 mm'),
-    3: (1.00, 3000.0, 0.010, 'Posidonia, 500 plants x 6 leaves x 1 cm'),
+    3: (0.40, 3000.0, 0.010, 'Posidonia, 500 plants x 6 leaves x 1 cm'),
 }
 # A sample is claimed by a link no further than this, in degrees (~110 m).
 TOL_DEG = 0.001
 
 
 def read_arl(path):
-    xy, cls = [], []
+    """Link position, class, and AREA FRACTION.
+
+    The fraction is not decoration. In this map the median Posidonia link is
+    0.685 covered and the median Cymodocea link 0.181, with only 2% of the
+    Cymodocea links fully covered. Taking the class value and ignoring the
+    fraction overstates Cymodocea density by about 5.5x, and that error would
+    end up absorbed into C_D during calibration -- exactly the cross
+    compensation the calibration design is meant to prevent.
+    """
+    xy, cls, frac = [], [], []
     for line in Path(path).read_text(errors='ignore').splitlines():
         if line.lstrip().startswith('#'):
             continue
@@ -70,7 +89,8 @@ def read_arl(path):
         if len(s) >= 5 and int(s[3]) in VEG:
             xy.append((float(s[0]), float(s[1])))
             cls.append(int(s[3]))
-    return np.array(xy), np.array(cls)
+            frac.append(float(s[4]))
+    return np.array(xy), np.array(cls), np.array(frac)
 
 
 def main():
@@ -79,11 +99,16 @@ def main():
     ap.add_argument('outdir')
     ap.add_argument('--faces', required=True,
                     help='npz or npy with face_x, face_y')
+    ap.add_argument('--posidonia-height', type=float,
+                    help='override the class 3 canopy height, m')
     a = ap.parse_args()
+    if a.posidonia_height:
+        h, d, dia, lab = VEG[3]
+        VEG[3] = (a.posidonia_height, d, dia, lab)
 
     d = np.load(a.faces)
     fx, fy = d['x'], d['y']
-    xy, cls = read_arl(a.arl)
+    xy, cls, frac = read_arl(a.arl)
     print(f'{len(fx)} flow nodes, {len(xy)} vegetated links')
 
     # FM's own consistency check: a plant may not cover more than its share of
@@ -97,25 +122,38 @@ def main():
     hit = dist < TOL_DEG
     node_cls = np.zeros(len(fx), int)
     node_cls[hit] = cls[idx[hit]]
+    node_frac = np.zeros(len(fx))
+    node_frac[hit] = frac[idx[hit]]
 
     out = Path(a.outdir)
     out.mkdir(parents=True, exist_ok=True)
+    # Fractional cover scales the AREAL density and nothing else. Height and
+    # diameter are properties of a plant, not of how much bed it covers, so
+    # scaling them would be a different and wrong claim about the biology.
     fields = {'stemheight': 0, 'stemdensity': 1, 'stemdiameter': 2}
     for name, k in fields.items():
         v = np.zeros(len(fx))
         for c, params in VEG.items():
-            v[node_cls == c] = params[k]
+            sel = node_cls == c
+            v[sel] = params[k] * (node_frac[sel] if name == 'stemdensity' else 1.0)
         f = out / f'veg_{name}.xyz'
         with f.open('w') as fh:
             for x, y, z in zip(fx, fy, v):
                 fh.write(f'{x:.9f} {y:.9f} {z:.6f}\n')
         nz = v > 0
+        u = np.unique(np.round(v[nz], 4))
         print(f'  {f.name:22s} {len(v)} samples, {int(nz.sum())} nonzero, '
-              f'values {sorted(set(np.round(v[nz], 4)))}')
+              + (f'values {list(u)}' if len(u) <= 4
+                 else f'{len(u)} distinct, {u.min():g} to {u.max():g}'))
 
     for c, (h, dens, dia, lab) in VEG.items():
-        n = int((node_cls == c).sum())
-        print(f'  class {c}: {n:6d} nodes  h_v={h} m  mD={dens*dia:.1f} 1/m   {lab}')
+        sel = node_cls == c
+        if not sel.any():
+            continue
+        md = dens * dia * node_frac[sel]
+        print(f'  class {c}: {int(sel.sum()):6d} nodes  h_v={h} m  '
+              f'cover median {np.median(node_frac[sel]):.3f}  '
+              f'mD median {np.median(md):.1f} (was {dens*dia:.1f} at full cover)   {lab}')
     print(f'  bare: {int((node_cls == 0).sum())} nodes')
 
 
