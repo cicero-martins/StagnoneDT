@@ -1,0 +1,184 @@
+%% Two-page status report for Prof. Ciraolo and Prof. De Marchis.
+%% Letterhead images shared with manuscript/cover_letter.tex.
+\documentclass[11pt]{article}
+\usepackage[left=2.2cm, right=2.2cm, bottom=1.7cm, top=3.2cm, headheight=3.2cm,
+            headsep=0.3cm, footskip=1.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{parskip}
+\setlength{\parskip}{0.5em}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{fancyhdr}
+\usepackage{siunitx}
+
+\graphicspath{{../manuscript/figures/}}
+\titleformat{\section}{\normalfont\bfseries\large}{\thesection.}{0.5em}{}
+\titlespacing*{\section}{0pt}{1.1em}{0.4em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[C]{\raggedright\includegraphics[width=0.5\textwidth]{../../manuscript/unipa_header.png}}
+\fancyfoot[C]{\includegraphics[width=0.9\textwidth]{../../manuscript/unipa_footer.png}}
+
+\begin{document}
+\thispagestyle{fancy}
+
+\begin{center}
+{\large\bfseries Stagnone di Marsala digital twin: the seagrass parametrisation
+was not reaching the model}\\[0.3em]
+Cicero Martins Jr.\\
+\textit{To: Prof.\ Giuseppe Ciraolo, Prof.\ Mauro De Marchis} \hfill 28 August 2026
+\end{center}
+
+\vspace{0.2em}
+\hrule
+\vspace{0.6em}
+
+\section{Two faults in the seagrass parametrisation}
+
+My report of 8 August concluded that distributed seagrass roughness is a
+third-order refinement, changing Lagrangian skill by 0.009 or less in three of
+its four conditions. That conclusion was wrong, and the reason is now
+established. Two separate faults meant the seagrass was never actually resisting
+the flow, and once both are repaired the roughness term becomes the strongest
+single effect in the ensemble rather than the weakest.
+
+\textbf{The first fault was in the input file.} D-Flow FM matches the roughness
+area file to the mesh with a tolerance of 1~cm, and our coordinates were written
+with six decimals. That is about 11~cm at this latitude, so 94\% of the seagrass
+links were silently discarded. The model was reporting a distributed roughness
+field of which it had applied 5.5\%.
+
+\textbf{The second fault is in the solver, and it is not ours.} The Baptist
+formulation splits vegetation resistance into a bed roughness and a canopy
+momentum sink, and the D-Flow FM technical reference states that the sink enters
+the momentum equation. It does not. The routine computes it and the solver never
+reads it. I established this by running two identical simulations whose only
+difference was the canopy drag coefficient, zero against 0.8, giving a momentum
+sink of \SI{0}{\per\metre} against \SI{4}{\per\metre} over 16359 links. The two
+solutions are bit-identical across 48 output steps and 27901 cells. The
+formulation had been delivering only half of itself, and the half it delivered
+made the meadow smoother than bare sand.
+
+Both faults look identical from the outside, which is why they survived so long.
+The configuration file is accepted, the diagnostic echoes every parameter back
+correctly, and the simulation runs to completion.
+
+\section{The parametrisation now used, and how it was fixed}
+
+Flexible Mesh carries a second, independent vegetation implementation that is
+separate from the roughness machinery, and there the canopy term does reach the
+momentum equation. I rebuilt the four vegetated members on it. Every parameter
+comes from published measurement, and none was fitted to any observation:
+
+\begin{center}
+\begin{tabular}{llp{6.4cm}}
+\toprule
+Parameter & Value & Source \\
+\midrule
+Shoot density & $500 \times 6$ leaves, times cover & Ciraolo et al.\ (2006), times the satellite classification \\
+Leaf width & \SI{0.01}{\metre} & Ciraolo et al.\ (2006) \\
+Canopy height & \SI{0.40}{\metre} & Prinos et al.\ (2010), submergence 0.32 to 0.50 \\
+Leaf density & \SI{900}{\kilo\gram\per\cubic\metre} & Prinos et al.\ (2010), natural 800 to 1020 \\
+Drag coefficient & 0.8 & rigid cylinder, not adjusted \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The canopy height deserves a note, because I had it wrong first. I took the leaf
+length from your 2006 study, over \SI{1}{\metre} in nature, and used it
+directly. What the model needs is the vertical extent the drag occupies, and for
+a plant whose leaves lie over those differ, which is why your paper reports the
+deflected thickness $k$ separately. Your measured $k/h$ sits mostly between 0.2
+and 0.6, and field observation agrees that \emph{Posidonia} here rarely reaches
+the surface. At \SI{0.40}{\metre} the modelled resistance lands within 3\% of
+your Equation 22, evaluated at the model's own velocities and depths, with
+nothing tuned against it.
+
+Two checks that were not used to choose any parameter. Surface over
+depth-averaged speed on the meadow is 1.60, where the roughest bed roughness we
+can impose reaches 1.335, so the vertical signature is a canopy and not a rough
+bed. And bed shear stress falls by a factor of 11, whereas an equivalent bed
+roughness raises it: the meadow shelters the bed, which the previous
+parametrisation had backwards.
+
+\section{What the corrected ensemble shows}
+
+The 35 drifters were held out of every one of these decisions.
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+& \multicolumn{4}{c}{Liu--Weisberg skill, and change against the cell's uniform control} \\
+\cmidrule(l){2-5}
+Configuration & Uniform & Corrected 153 & Formula 154 & Native module \\
+\midrule
+No waves, fixed bed   & 0.539 & $+0.163$ & $-0.065$ & $+0.195$ \\
+Waves, fixed bed      & 0.505 & $+0.208$ & $-0.082$ & $+0.188$ \\
+No waves, mobile bed  & 0.469 & $+0.190$ & $-0.057$ & $+0.256$ \\
+Waves, mobile bed     & 0.624 & $+0.081$ & $-0.016$ & $+0.087$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Distributed roughness now helps in all four cells, not one, and the cell where
+the August report said it acts is the cell where it acts least. Two independent
+routes agree, the repaired roughness file and the native module, and they differ
+from each other by 0.03 or less. Formula 154 is negative everywhere, which is
+the signature of the inert sink rather than a third opinion.
+
+\section{This bears directly on the bathymetry question}
+
+In August I asked whether to wait for a new survey, on the reasoning that a
+mobile bed might be helping because it moves an outdated morphology towards the
+present one, making the improvement a compensation rather than a result. The
+corrected ensemble gives evidence on exactly that mechanism, and it is not the
+answer I expected.
+
+With uniform roughness, waves alone reduce skill by 0.035 and a mobile bed alone
+reduces it by 0.071, the latter making every one of the 35 drifters worse. Yet
+together they raise it by 0.084. An additive model predicts $-0.106$, so the
+interaction term is $+0.190$. With the seagrass correctly represented, that same
+interaction term falls to $+0.028$. The synergy exists only when the meadow is
+missing.
+
+So the compensation is real, and part of what it compensated for was the absent
+canopy rather than the old bathymetry. This does not remove the bathymetric
+concern, but the earlier evidence for the interaction was resting partly on a
+defect we have since fixed. Standard deviation of skill across the four cells is
+0.057 for the uniform members and 0.016 for the vegetated ones: once the meadow
+is right, transport skill is largely indifferent to whether waves and bed
+mobility are on.
+
+\section{Consequences and what I propose}
+
+Sections 4.3 and 5 have to be rewritten, and the central claim changes from an
+interaction between waves and bed mobility to something I think is stronger: a
+physically grounded canopy is what the transport prediction needs, and omitting
+it manufactures a synergy between two other processes.
+
+I would value your view on two points. Whether to present the inert momentum
+sink as a finding in the paper, with the bit-identical test as evidence, or to
+report it to Deltares separately and keep the paper on the physics. And whether
+the title should now foreground the seagrass.
+
+One limitation to record. Your Equation 22 makes the friction factor depend on
+velocity, and Flexible Mesh offers that only in its depth-averaged solver, while
+ours is three-dimensional. It does carry a mechanical bending model, which I
+verified is genuinely dynamic, but its amplitude over our velocity range is
+about 4\%, against the factor of twelve your measurements span between 2 and
+\SI{30}{\centi\metre\per\second}.
+
+\vspace{-0.2em}
+{\footnotesize\itshape Dipartimento di Ingegneria, Universit\`a degli Studi di
+Palermo \textperiodcentered\
+\href{mailto:cicero.martinsjr@unipa.it}{cicero.martinsjr@unipa.it}}
+
+\end{document}
