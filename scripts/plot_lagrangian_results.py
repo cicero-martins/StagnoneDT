@@ -24,7 +24,8 @@ import matplotlib.pyplot as plt
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import MEMBERS as ENS, KEYS, TAG, LABEL, CONTRASTS, MODELDIR
+from _ensemble import (MEMBERS as ENS, KEYS, TAG, LABEL, CONTRASTS,
+                       MODELDIR, scored)
 from matplotlib.lines import Line2D
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -97,9 +98,11 @@ def main():
     mpl.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 9})
     rng = np.random.default_rng(3)
 
-    met = {k: pd.read_csv(PROC / f'drifter_metrics_{tag}.csv')
+    met = {k: scored(pd.read_csv(PROC / f'drifter_metrics_{tag}.csv'),
+                     verbose=(k == KEYS[0]))
            for k, tag, _ in MEMBERS}
-    obs = pd.read_csv(PROC / 'drifter_tracks_Jul2025.csv', parse_dates=['time'])
+    obs = scored(pd.read_csv(PROC / 'drifter_tracks_Jul2025.csv',
+                             parse_dates=['time']), verbose=False)
     v_obs, v_sim = track_speeds(obs)
 
     fig = plt.figure(figsize=(11.0, 4.3), dpi=300)
@@ -120,7 +123,7 @@ def main():
     ax.set_xticklabels([m[2] for m in MEMBERS], rotation=30, ha='right',
                        fontsize=8)
     ax.set_ylabel('Liu--Weisberg skill', fontsize=8.5, color=MUTED)
-    ax.set_title('(a) Skill, all 35 drifters', loc='left', fontsize=9.5,
+    ax.set_title(f'(a) Skill, all {len(met[KEYS[0]])} drifters', loc='left', fontsize=9.5,
                  color=INK, pad=7)
     style(ax)
 

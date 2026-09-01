@@ -1,19 +1,27 @@
 """Process attribution over the closed eight-member factorial.
 
-The design covers all eight cells of waves x roughness x bed mobility. It was
-six until DensIn=false let the two no-wave mobile-bed members run, and the two
-new cells reverse what the earlier version reported: measured on a fixed bed
-alone, wave coupling looked like a small penalty.
+The design covers all eight cells of waves x canopy x bed mobility. The
+roughness arm changed on 2026-08-31: it used to be the trachytope members,
+which were not resisting the flow, and is now FM's vegetation module with
+every parameter taken from published measurement. That change reverses the
+reading of the whole figure.
+
+The canopy is now the largest single effect in the design, +0.087 to +0.256,
+and it is the only factor whose four contrasts all clear zero in the same
+direction. The waves/bed-mobility interaction that the earlier version made
+the central result survives only in the bare-bed arm: with the canopy present
+the wave contrast on a mobile bed is -0.014 (p=0.61) and the bed contrast with
+waves is +0.018 (p=0.19), against +0.155 and +0.119 without it.
 
 (a) Skill for every drifter under every member.
-(b) The wave contrast deployment by deployment, on a fixed and on a mobile bed.
-    The sign flips. This is the panel a six-member ensemble could not draw.
+(b) The wave contrast on a mobile bed, deployment by deployment, with and
+    without the canopy. The gain is confined to the bare bed.
 (c) All twelve single-factor contrasts, four per factor, one for each
     combination of the other two. Marker fill encodes whether the bootstrap
     interval clears zero, so a large point estimate with a crossing interval
     cannot be misread as a result.
-(d) The interaction stated directly: waves and bed mobility each cost skill
-    alone and pay only together.
+(d) The interaction drawn in both arms. The bare-bed lines cross; the
+    vegetated ones run flat and high.
 
 Output: figures/ensemble_attribution.{png,pdf}
 """
@@ -26,7 +34,8 @@ import matplotlib.pyplot as plt
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import MEMBERS as ENS, KEYS, TAG, LABEL, CONTRASTS, MODELDIR
+from _ensemble import (MEMBERS as ENS, KEYS, TAG, LABEL, CONTRASTS,
+                       MODELDIR, FACTORS, scored)
 from matplotlib.lines import Line2D
 from scipy.stats import wilcoxon
 
@@ -76,6 +85,7 @@ def main():
             ['deploy', 'drifter_id', 'LW_skill']].rename(
                 columns={'LW_skill': key})
         d = m if d is None else d.merge(m, on=['deploy', 'drifter_id'])
+    d = scored(d).reset_index(drop=True)
     print(f'{len(d)} drifters, {d["deploy"].nunique()} deploys')
 
     fig = plt.figure(figsize=(11.4, 8.4), dpi=300)
@@ -86,7 +96,9 @@ def main():
     ax = fig.add_subplot(gs[0, 0])
     for i, (k, _, lab) in enumerate(MEMBERS):
         v = d[k].values
-        c = ACCENT if k == 'vr' else BASE
+        # the whole vegetated arm is highlighted, not just the full member:
+        # what the panel has to show is that the four sit above the four
+        c = ACCENT if FACTORS[k]['roughness'] == 'vegetated' else BASE
         ax.scatter(i + rng.uniform(-0.17, 0.17, len(v)), v, s=11, color=c,
                    alpha=0.5, linewidths=0, zorder=3)
         ax.plot([i - 0.3, i + 0.3], [v.mean()] * 2, '-', color=c, lw=2.6,
@@ -94,23 +106,25 @@ def main():
     ax.set_xticks(range(len(MEMBERS)))
     # the eight labels collide when written horizontally; a compact three-slot
     # code (waves / roughness / bed) reads faster than wrapped words anyway
-    code = {'nowaves': '---', 'nowaves_vr': '-R-', 'nodm': 'W--',
-            'nodm_vr': 'WR-', 'nowaves_dm': '--M', 'nowaves_vrdm': '-RM',
-            'bl': 'W-M', 'vr': 'WRM'}
+    code = {'nowaves': '---', 'nowaves_veg': '-V-', 'nodm': 'W--',
+            'nodm_veg': 'WV-', 'nowaves_dm': '--M', 'nowaves_vegdm': '-VM',
+            'bl': 'W-M', 'veg': 'WVM'}
     ax.set_xticklabels([code[m[0]] for m in MEMBERS], fontsize=8.5,
                        family='DejaVu Sans Mono')
-    ax.text(0.0, -0.19, 'W wave coupling   R distributed roughness   '
+    ax.text(0.0, -0.19, 'W wave coupling   V seagrass canopy   '
             'M mobile bed', transform=ax.transAxes, fontsize=7.2, color=MUTED)
     ax.set_ylabel('Liu--Weisberg skill', fontsize=8.5, color=MUTED)
-    ax.set_title('(a) Skill, all 35 drifters', loc='left', fontsize=9.5,
+    ax.set_title(f'(a) Skill, all {len(d)} drifters', loc='left', fontsize=9.5,
                  color=INK, pad=7)
     style(ax)
 
-    # (b) the wave contrast on a fixed and on a mobile bed
+    # (b) the wave contrast on a mobile bed, with and without the canopy. This
+    # is the panel that carries the result: the wave gain a bare bed shows is
+    # not reproduced once the meadow is there to resist the flow.
     ax = fig.add_subplot(gs[0, 1])
     deps = sorted(d['deploy'].unique())
-    pairs = [('on a fixed bed', 'nodm_vr', 'nowaves_vr', C_FIXED, -0.19),
-             ('on a mobile bed', 'vr', 'nowaves_vrdm', ACCENT, 0.19)]
+    pairs = [('bare bed', 'bl', 'nowaves_dm', C_FIXED, -0.19),
+             ('with canopy', 'veg', 'nowaves_vegdm', ACCENT, 0.19)]
     for lab, a, b, col, off in pairs:
         xs, vs = [], []
         for i, dp in enumerate(deps):
@@ -123,9 +137,9 @@ def main():
     ax.set_xticks(range(len(deps)))
     ax.set_xticklabels([str(int(x)) for x in deps], fontsize=8)
     ax.set_xlabel('Deployment', fontsize=8.5, color=MUTED)
-    ax.set_ylabel('$\Delta$ skill from wave coupling', fontsize=8.5,
+    ax.set_ylabel(r'$\Delta$ skill from wave coupling', fontsize=8.5,
                   color=MUTED)
-    ax.set_title('(b) Waves cost skill on a fixed bed and gain it on a mobile one',
+    ax.set_title('(b) On a mobile bed, waves pay only where the canopy is absent',
                  loc='left', fontsize=9.5, color=INK, pad=7)
     style(ax)
     lo, hi = ax.get_ylim()
@@ -160,25 +174,30 @@ def main():
     ax.text(0.0, -0.17, 'filled = interval clear of zero',
             transform=ax.transAxes, fontsize=7.2, color=MUTED, ha='left')
 
-    # (d) the interaction that the closed design exposes
+    # (d) the interaction, drawn in both arms. Colour is the canopy treatment,
+    # line style the wave treatment: the bare-bed lines cross, the vegetated
+    # ones run flat and high, so the crossing is a property of the bare bed and
+    # not of the basin.
     ax = fig.add_subplot(gs[1, 1])
-    series = [('No wave coupling', ['nowaves_vr', 'nowaves_vrdm'], C_FIXED, 'o'),
-              ('Wave coupling', ['nodm_vr', 'vr'], ACCENT, 's')]
-    for lab, keys, col, mk in series:
+    series = [('Bare bed, no waves', ['nowaves', 'nowaves_dm'], C_FIXED, 'o', '--'),
+              ('Bare bed, waves', ['nodm', 'bl'], C_FIXED, 's', '-'),
+              ('Canopy, no waves', ['nowaves_veg', 'nowaves_vegdm'], ACCENT, 'o', '--'),
+              ('Canopy, waves', ['nodm_veg', 'veg'], ACCENT, 's', '-')]
+    for lab, keys, col, mk, ls in series:
         m = [d[k].mean() for k in keys]
         ci = [boot_ci(d[k], rng) for k in keys]
         err = np.array([[m[i] - ci[i][0], ci[i][1] - m[i]] for i in range(2)]).T
-        ax.errorbar([0, 1], m, yerr=err, color=col, marker=mk, ms=8, lw=2,
-                    capsize=4, capthick=1.4, mec='white', mew=1.2, label=lab,
-                    zorder=4)
+        ax.errorbar([0, 1], m, yerr=err, color=col, marker=mk, ms=7, lw=2,
+                    ls=ls, capsize=4, capthick=1.4, mec='white', mew=1.2,
+                    label=lab, zorder=4)
     ax.set_xticks([0, 1])
     ax.set_xticklabels(['Fixed', 'Mobile'], fontsize=8.5)
     ax.set_xlabel('Bed', fontsize=8.5, color=MUTED)
     ax.set_ylabel('Liu--Weisberg skill', fontsize=8.5, color=MUTED)
-    ax.set_xlim(-0.3, 1.3)
-    ax.set_title('(d) Waves and bed mobility pay only together',
+    ax.set_xlim(-0.3, 1.45)
+    ax.set_title('(d) The crossing belongs to the bare bed, not to the basin',
                  loc='left', fontsize=9.5, color=INK, pad=7)
-    ax.legend(fontsize=7.5, frameon=False, loc='upper left')
+    ax.legend(fontsize=7.2, frameon=False, loc='lower left')
     style(ax)
 
     for ext in ('png', 'pdf'):

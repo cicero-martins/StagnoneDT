@@ -18,7 +18,8 @@ from scipy.stats import wilcoxon, binomtest
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import MEMBERS as ENS, KEYS, TAG, LABEL, CONTRASTS, MODELDIR
+from _ensemble import (MEMBERS as ENS, KEYS, TAG, LABEL, CONTRASTS,
+                       MODELDIR, scored)
 
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
@@ -42,6 +43,7 @@ def main():
                    'LW_skill': f'LW_{key}', 'endpoint_sep_m': f'EP_{key}',
                    'path_ratio': f'PR_{key}'})
         d = m if d is None else d.merge(m, on=['deploy', 'drifter_id'])
+    d = scored(d).reset_index(drop=True)
     print(f'{len(d)} drifters common to all {len(MEMBERS)} members, '
           f'{d["deploy"].nunique()} deploys\n')
 

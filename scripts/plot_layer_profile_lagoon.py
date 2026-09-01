@@ -48,18 +48,22 @@ SURFACE = '#ffffff'
 INK = '#1b1b1b'
 MUTED = '#6b6b6b'
 GRID = '#e8e7e4'
-C_FIXED = '#eb6834'    # fixed bed
-C_MORPH = '#4a3aa7'    # active morphodynamics
+C_BARE = '#eb6834'     # bare bed, uniform roughness
+C_VEG = '#4a3aa7'      # seagrass canopy
 
+# Colour encodes the canopy and line style the wave and bed treatments, which
+# is the reverse of the earlier version. The grouping follows the result: the
+# four canopy members separate from the four bare ones by a factor of 2.5 in
+# shear, where waves and bed mobility move it by 0.2 to 0.3.
 STYLE = {                       # member -> (colour, linestyle, label)
-    'nowaves':      (C_FIXED, ':',  'no waves, uniform, fixed'),
-    'nowaves_vr':   (C_FIXED, '--', 'no waves, distributed, fixed'),
-    'nowaves_dm':   (C_FIXED, '-',  'no waves, uniform, mobile'),
-    'nowaves_vrdm': (C_FIXED, '-.', 'no waves, distributed, mobile'),
-    'nodm':         (C_MORPH, ':',  'waves, uniform, fixed'),
-    'nodm_vr':      (C_MORPH, '--', 'waves, distributed, fixed'),
-    'bl':           (C_MORPH, '-',  'waves, uniform, mobile'),
-    'vr':           (C_MORPH, '-.', 'waves, distributed, mobile'),
+    'nowaves':       (C_BARE, ':',  'no waves, bare, fixed'),
+    'nodm':          (C_BARE, '--', 'waves, bare, fixed'),
+    'nowaves_dm':    (C_BARE, '-',  'no waves, bare, mobile'),
+    'bl':            (C_BARE, '-.', 'waves, bare, mobile'),
+    'nowaves_veg':   (C_VEG,  ':',  'no waves, canopy, fixed'),
+    'nodm_veg':      (C_VEG,  '--', 'waves, canopy, fixed'),
+    'nowaves_vegdm': (C_VEG,  '-',  'no waves, canopy, mobile'),
+    'veg':           (C_VEG,  '-.', 'waves, canopy, mobile'),
 }
 ORDER = list(KEYS)
 
@@ -69,16 +73,21 @@ CODE = {}
 for _k in KEYS:
     _f = FACTORS[_k]
     CODE[_k] = (('W' if _f['waves'] else '-')
-                + ('R' if _f['roughness'] == 'distributed' else '-')
+                + ('V' if _f['roughness'] == 'vegetated' else '-')
                 + ('M' if _f['bed'] == 'mobile' else '-'))
 
 
 def main():
     mpl.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 9})
     df = pd.read_csv(PROC / 'layer_profile_lagoon.csv')
-    nfaces = int(df['n_faces'].iloc[0])
+    nf = df.groupby('member')['n_faces'].first()
+    nfaces = int(nf.min())
+    if nf.nunique() > 1:
+        print(f'wet-face count differs across members: {dict(nf)}')
+        print('the mobile-bed members lose interior cells to accretion, so the '
+              'profiles are not over an identical cell set')
 
-    print(f'Lagoon interior: {nfaces} wet faces')
+    print(f'Lagoon interior: {nfaces} wet faces (smallest member)')
     print(f"{'member':10s} {'bed':>8s} {'surface':>9s} {'shear':>7s}")
     shear = {}
     for k in ORDER:
@@ -115,7 +124,7 @@ def main():
               loc='upper center', bbox_to_anchor=(0.5, -0.13), ncol=4,
               handlelength=2.6, columnspacing=1.4,
               prop={'family': 'DejaVu Sans Mono', 'size': 8},
-              title='W wave coupling    R distributed roughness    M mobile bed', title_fontsize=7.5)
+              title='W wave coupling    V seagrass canopy    M mobile bed', title_fontsize=7.5)
 
     ax2 = axes[1]
     ys = np.arange(len(ORDER))[::-1]
