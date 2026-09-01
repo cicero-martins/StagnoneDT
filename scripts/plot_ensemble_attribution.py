@@ -35,7 +35,7 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _ensemble import (MEMBERS as ENS, KEYS, TAG, LABEL, CONTRASTS,
-                       MODELDIR, FACTORS, scored)
+                       MODELDIR, scored)
 from matplotlib.lines import Line2D
 from scipy.stats import wilcoxon
 
@@ -68,7 +68,7 @@ def style(ax):
     ax.set_facecolor(SURFACE)
     ax.grid(color=GRID, lw=0.7, zorder=0)
     ax.set_axisbelow(True)
-    ax.tick_params(colors=MUTED, labelsize=8)
+    ax.tick_params(colors=MUTED, labelsize=9.5)
     for sp in ['top', 'right']:
         ax.spines[sp].set_visible(False)
     for sp in ['left', 'bottom']:
@@ -76,7 +76,7 @@ def style(ax):
 
 
 def main():
-    mpl.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 9})
+    mpl.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 10})
     rng = np.random.default_rng(17)
 
     d = None
@@ -88,35 +88,10 @@ def main():
     d = scored(d).reset_index(drop=True)
     print(f'{len(d)} drifters, {d["deploy"].nunique()} deploys')
 
-    fig = plt.figure(figsize=(11.4, 8.4), dpi=300)
-    gs = fig.add_gridspec(2, 2, hspace=0.48, wspace=0.28,
-                          left=0.07, right=0.97, top=0.93, bottom=0.08)
-
-    # (a) skill per drifter
-    ax = fig.add_subplot(gs[0, 0])
-    for i, (k, _, lab) in enumerate(MEMBERS):
-        v = d[k].values
-        # the whole vegetated arm is highlighted, not just the full member:
-        # what the panel has to show is that the four sit above the four
-        c = ACCENT if FACTORS[k]['roughness'] == 'vegetated' else BASE
-        ax.scatter(i + rng.uniform(-0.17, 0.17, len(v)), v, s=11, color=c,
-                   alpha=0.5, linewidths=0, zorder=3)
-        ax.plot([i - 0.3, i + 0.3], [v.mean()] * 2, '-', color=c, lw=2.6,
-                zorder=4, solid_capstyle='round')
-    ax.set_xticks(range(len(MEMBERS)))
-    # the eight labels collide when written horizontally; a compact three-slot
-    # code (waves / roughness / bed) reads faster than wrapped words anyway
-    code = {'nowaves': '---', 'nowaves_veg': '-V-', 'nodm': 'W--',
-            'nodm_veg': 'WV-', 'nowaves_dm': '--M', 'nowaves_vegdm': '-VM',
-            'bl': 'W-M', 'veg': 'WVM'}
-    ax.set_xticklabels([code[m[0]] for m in MEMBERS], fontsize=8.5,
-                       family='DejaVu Sans Mono')
-    ax.text(0.0, -0.19, 'W wave coupling   V seagrass canopy   '
-            'M mobile bed', transform=ax.transAxes, fontsize=7.2, color=MUTED)
-    ax.set_ylabel('Liu--Weisberg skill', fontsize=8.5, color=MUTED)
-    ax.set_title(f'(a) Skill, all {len(d)} drifters', loc='left', fontsize=9.5,
-                 color=INK, pad=7)
-    style(ax)
+    fig = plt.figure(figsize=(12.8, 6.4), dpi=300)
+    gs = fig.add_gridspec(2, 2, width_ratios=[1.32, 1.0], hspace=0.62,
+                          wspace=0.30, left=0.155, right=0.975, top=0.91,
+                          bottom=0.12)
 
     # (b) the wave contrast on a mobile bed, with and without the canopy. This
     # is the panel that carries the result: the wave gain a bare bed shows is
@@ -136,18 +111,18 @@ def main():
     ax.axhline(0, color=INK, lw=1.0, zorder=4)
     ax.set_xticks(range(len(deps)))
     ax.set_xticklabels([str(int(x)) for x in deps], fontsize=8)
-    ax.set_xlabel('Deployment', fontsize=8.5, color=MUTED)
-    ax.set_ylabel(r'$\Delta$ skill from wave coupling', fontsize=8.5,
+    ax.set_xlabel('Deployment', fontsize=10, color=MUTED)
+    ax.set_ylabel(r'$\Delta$ skill from wave coupling', fontsize=10,
                   color=MUTED)
-    ax.set_title('(b) On a mobile bed, waves pay only where the canopy is absent',
-                 loc='left', fontsize=9.5, color=INK, pad=7)
+    ax.set_title('(b) Wave contrast on a mobile bed, by deployment',
+                 loc='left', fontsize=11, color=INK, pad=7)
     style(ax)
     lo, hi = ax.get_ylim()
     ax.set_ylim(lo, hi + 0.30 * (hi - lo))
-    ax.legend(fontsize=7.5, frameon=False, loc='upper left', ncol=2)
+    ax.legend(fontsize=9, frameon=False, loc='upper left', ncol=2)
 
-    # (c) effect sizes
-    ax = fig.add_subplot(gs[1, 0])
+    # (a) effect sizes
+    ax = fig.add_subplot(gs[:, 0])
     ys = np.arange(len(CONTRASTS))[::-1]
     for y, (lab, a, b) in zip(ys, CONTRASTS):
         x = (d[a] - d[b]).dropna()
@@ -164,15 +139,15 @@ def main():
     for yy in (len(CONTRASTS) - 4.5, len(CONTRASTS) - 8.5):
         ax.axhline(yy, color=GRID, lw=1.0, zorder=1)
     ax.set_yticks(ys)
-    ax.set_yticklabels([c[0] for c in CONTRASTS], fontsize=7.2)
-    ax.set_xlabel('Change in Liu--Weisberg skill', fontsize=8.5, color=MUTED)
+    ax.set_yticklabels([c[0] for c in CONTRASTS], fontsize=8.8)
+    ax.set_xlabel('Change in Liu--Weisberg skill', fontsize=10, color=MUTED)
     ax.set_xlim(-0.12, 0.36)
     ax.set_ylim(-0.6, len(CONTRASTS) - 0.4)
-    ax.set_title('(c) All twelve single-factor contrasts, 95% bootstrap CI', loc='left',
-                 fontsize=9.5, color=INK, pad=7)
+    ax.set_title('(a) Twelve single-factor contrasts, 95% bootstrap CI', loc='left',
+                 fontsize=11, color=INK, pad=7)
     style(ax)
     ax.text(0.0, -0.17, 'filled = interval clear of zero',
-            transform=ax.transAxes, fontsize=7.2, color=MUTED, ha='left')
+            transform=ax.transAxes, fontsize=8.8, color=MUTED, ha='left')
 
     # (d) the interaction, drawn in both arms. Colour is the canopy treatment,
     # line style the wave treatment: the bare-bed lines cross, the vegetated
@@ -191,13 +166,13 @@ def main():
                     ls=ls, capsize=4, capthick=1.4, mec='white', mew=1.2,
                     label=lab, zorder=4)
     ax.set_xticks([0, 1])
-    ax.set_xticklabels(['Fixed', 'Mobile'], fontsize=8.5)
-    ax.set_xlabel('Bed', fontsize=8.5, color=MUTED)
-    ax.set_ylabel('Liu--Weisberg skill', fontsize=8.5, color=MUTED)
+    ax.set_xticklabels(['Fixed', 'Mobile'], fontsize=10)
+    ax.set_xlabel('Bed', fontsize=10, color=MUTED)
+    ax.set_ylabel('Liu--Weisberg skill', fontsize=10, color=MUTED)
     ax.set_xlim(-0.3, 1.45)
-    ax.set_title('(d) The crossing belongs to the bare bed, not to the basin',
-                 loc='left', fontsize=9.5, color=INK, pad=7)
-    ax.legend(fontsize=7.2, frameon=False, loc='lower left')
+    ax.set_title('(c) Mean skill against bed treatment',
+                 loc='left', fontsize=11, color=INK, pad=7)
+    ax.legend(fontsize=8.8, frameon=False, loc='lower left')
     style(ax)
 
     for ext in ('png', 'pdf'):
