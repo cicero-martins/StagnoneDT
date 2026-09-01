@@ -1,56 +1,32 @@
 \section{Conclusions}
 \label{sec:conclusions}
 
-Eight configurations of a coupled three-dimensional model of the Stagnone di
-Marsala, spanning a complete factorial in wave coupling, bed mobility and the
-presence of a seagrass canopy, were evaluated against interior water level
-records and 35 GPS surface drifters.
+In a shallow Mediterranean lagoon, where the seagrass canopy occupies most of
+the basin and the mean depth is below one metre, the canopy is the first-order
+control on Lagrangian transport. Representing it raises Liu--Weisberg skill by
+0.087 to 0.256 depending on the configuration it enters, with every bootstrap
+interval clear of zero, against $-0.042$ to $+0.155$ for wave coupling and
+$-0.071$ to $+0.119$ for bed mobility, neither of which holds its sign.
 
-The seagrass canopy is the first-order control on transport in this basin. It
-raises Liu--Weisberg skill by 0.087 to 0.256 depending on the configuration it
-enters, with every bootstrap interval clear of zero and 26 to 32 of the 35
-drifters improving in each of the four contrasts. It is the only one of the
-three treatments whose four contrasts share a sign, and it is at least twice the
-size of anything else in the design. No canopy parameter was fitted to any
-observation used to evaluate the model, the values coming from published flume
-and large-scale measurements of the same species scaled by satellite-derived
-fractional cover.
+Where the drag is applied matters more than how it is calibrated. The canopy
+here is a three-dimensional drag field parameterised entirely from published
+measurement of the two species, with nothing fitted. It roughly doubles the
+ratio of surface to bed speed and lowers bed shear stress by a factor of 14,
+where representing the same meadow as an equivalent bed roughness raises that
+stress. A treatment that changes the shape of the velocity profile relocates a
+surface drifter, where a treatment changing only its magnitude does not.
 
-The interaction between wave coupling and bed mobility is confined to the half
-of the design that carries no canopy. There, each of the two costs skill alone,
-by 0.035 and 0.071, and together they gain 0.084, an interaction term of
-$+0.189$ against an additive prediction of $-0.105$. With the canopy present the
-same term is $+0.028$ and both contrasts lose their significance, and the
-standard deviation of skill across the four cells falls from 0.057 to 0.016.
-Canopy drag is often left out of lagoon models or folded into a bed roughness
-coefficient, and this result says what such an ensemble can and cannot support.
-Its interaction terms describe the configurations that produced them rather than
-the basin, and distinguishing the two requires varying the canopy as a factor in
-its own right.
+Process attribution from a factorial is conditional on the factors the
+factorial contains. In the four configurations carrying no canopy, wave coupling
+and bed mobility interact with a term of $+0.189$ against an additive prediction
+of $-0.105$. In the four carrying one, that term is $+0.028$ and both contrasts
+lose their significance. The interaction describes the configurations that
+produced it rather than the basin, and no statistic internal to those
+configurations says so.
 
-Where water level is measured decides whether it can separate such
-configurations. At the two stations near the inlets, anomaly RMSE differs by
-2.1 and 9.2~mm across the eight members with no consistent ordering, while the
-same simulations differ by 0.27 in Liu--Weisberg skill. At the innermost
-station, inside the shallow vegetated basin, it differs by 36.2~mm and separates
-the vegetated members from the bare ones without overlap, with correlations of
-0.94 to 0.98 against 0.78 to 0.82. Water level is not inherently insensitive to
-these processes, it is insensitive near the boundary that forces it.
-
-The canopy reshapes the vertical structure of the basin, taking the ratio of
-surface to bed speed from 1.85--2.14 to 4.45--5.25 while wave coupling moves it
-by 0.2 to 0.8. In a basin of sub-metre mean depth the layer a surface drifter
-samples and the layer that governs bed shear stress differ by a factor of five,
-so a depth-averaged representation of this system would not merely lose vertical
-resolution, it would lose the process that governs where material goes.
-
-Two limitations bound these conclusions. The canopy enters the momentum equation
-of the flow rather than the roughness field passed to the wave model, so the
-waves in these simulations propagate over an effectively bare bed and the wave
-contrasts are conditional on that. And reconfiguration is represented through
-mechanical bending rather than through the empirical velocity-dependent
-formulation that flume measurements support, which the model offers only in its
-depth-averaged solver. The bending does respond to load, but a 13\% change in
-the tabulated leaf density moves the velocity field by 20\% at the upper end of
-the range, so that parameter deserves measurement in this meadow. None of the
-three bears on the canopy contrasts, which are measured on the flow.
+Where a water level gauge sits decides what it can constrain. Across the eight
+configurations, anomaly RMSE differs by 2.1 and 9.2~mm at the two gauges near
+the inlets, with no consistent ordering, and by 36.2~mm at the gauge inside the
+vegetated basin, where the two arms separate without overlap and correlation
+moves from 0.78--0.82 to 0.94--0.98. The same simulations differ by 0.27 in
+Liu--Weisberg skill.
