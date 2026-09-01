@@ -13,7 +13,7 @@ which is what panel (b) does.
     apart and the within-arm spread is the only thing they carried. Colour is
     the canopy treatment throughout the manuscript, so it is the canopy
     treatment here too, and the two depths are separated by marker and dash.
-(b) The canopy effect on bed speed, class by class, averaged over the four cells
+(c) The canopy effect on bed speed, class by class, averaged over the four cells
     of the design.
 
 Wave orbital velocity used to be panel (c) and is now reported in the text only.
@@ -81,42 +81,47 @@ def main():
 
     bed, surf, orb = piv('bed_speed'), piv('surface_speed'), piv('uorb_mean')
 
-    fig, axes = plt.subplots(1, 2, figsize=(10.4, 4.4), dpi=300,
-                             gridspec_kw=dict(width_ratios=[1.35, 1.0],
-                                              wspace=0.26))
+    fig = plt.figure(figsize=(10.4, 4.6), dpi=300)
     fig.patch.set_facecolor(SURFACE)
-    fig.subplots_adjust(left=0.075, right=0.985, top=0.88, bottom=0.24)
-
-    # (a) speed by class, one band per arm and depth
-    ax = axes[0]
+    # The two depths get their own axes rather than sharing one with a dashed
+    # line. Two lines needed a colour AND a dash to identify, which was one
+    # encoding too many, and the vegetated bed band spans 0.0003 to 0.0016 m/s
+    # against an axis of 0.10, so on a shared scale it is thinner than its own
+    # line and reads as a missing band rather than as a narrow one.
+    gs = fig.add_gridspec(2, 2, width_ratios=[1.3, 1.0], height_ratios=[1, 1],
+                          hspace=0.30, wspace=0.26,
+                          left=0.085, right=0.985, top=0.90, bottom=0.20)
     x = np.arange(len(CLASSES))
-    for arm, keys, col in (('Bare', BARE, C_BARE), ('Canopy', VEG, C_VEG)):
-        for tbl, mk, ls in ((surf, 's', '-'), (bed, 'o', '--')):
-            v = tbl.loc[keys]
-            ax.fill_between(x, v.min(), v.max(), color=col, alpha=0.16, lw=0,
-                            zorder=2)
-            ax.plot(x, v.mean(), ls, color=col, marker=mk, ms=6, lw=2.0,
-                    mec='white', mew=1.0, zorder=4)
-    ax.set_xlim(-0.3, len(CLASSES) - 0.7)
-    ax.set_xticks(x)
-    ax.set_xticklabels(CLASSES, fontsize=9.5)
-    ax.set_ylabel('Mean speed (m s$^{-1}$)', fontsize=10, color=MUTED)
-    ax.set_title('(a) Speed by class, mean and range over each arm',
-                 loc='left', fontsize=11, color=INK, pad=8)
-    ax.legend(handles=[
-        Line2D([], [], color=C_BARE, lw=2.4, label='Bare'),
-        Line2D([], [], color=C_VEG, lw=2.4, label='Canopy'),
-        Line2D([], [], color=MUTED, lw=2.0, ls='-', marker='s', ms=6,
-               label='surface layer'),
-        Line2D([], [], color=MUTED, lw=2.0, ls='--', marker='o', ms=6,
-               label='bed layer'),
-        Patch(facecolor=MUTED, alpha=0.22, label='range over the four cells')],
-        fontsize=9, frameon=False, loc='upper center',
-        bbox_to_anchor=(0.5, -0.11), ncol=3, columnspacing=1.5)
-    style(ax)
 
-    # (b) canopy effect on bed speed, averaged over the four cells
-    ax = axes[1]
+    for row, (tbl, mk, name) in enumerate(((surf, 's', 'Surface layer'),
+                                           (bed, 'o', 'Bed layer'))):
+        ax = fig.add_subplot(gs[row, 0])
+        for keys, col in ((BARE, C_BARE), (VEG, C_VEG)):
+            v = tbl.loc[keys]
+            ax.fill_between(x, v.min(), v.max(), color=col, alpha=0.20, lw=0,
+                            zorder=2)
+            ax.plot(x, v.mean(), '-', color=col, marker=mk, ms=5.5, lw=2.0,
+                    mec='white', mew=1.0, zorder=4)
+        ax.set_xlim(-0.3, len(CLASSES) - 0.7)
+        ax.set_xticks(x)
+        ax.set_xticklabels(CLASSES if row else [], fontsize=9.5)
+        ax.set_ylabel('m s$^{-1}$', fontsize=9.5, color=MUTED)
+        ax.set_title(f'({"ab"[row]}) {name}', loc='left', fontsize=10.5,
+                     color=INK, pad=6)
+        style(ax)
+        if row == 1:
+            ax.legend(handles=[
+                Line2D([], [], color=C_BARE, lw=2.4, marker='o', ms=5.5,
+                       mec='white', label='Bare'),
+                Line2D([], [], color=C_VEG, lw=2.4, marker='o', ms=5.5,
+                       mec='white', label='Canopy'),
+                Patch(facecolor=MUTED, alpha=0.26,
+                      label='range over the four configurations')],
+                fontsize=9, frameon=False, loc='upper center',
+                bbox_to_anchor=(0.5, -0.22), ncol=3, columnspacing=1.6)
+
+    # (c) canopy effect on bed speed, averaged over the four cells
+    ax = fig.add_subplot(gs[:, 1])
     rel = pd.DataFrame({c: [100 * (bed.loc[a, c] / bed.loc[b, c] - 1)
                             for a, b in PAIRS] for c in CLASSES})
     ys = np.arange(len(CLASSES))[::-1]
@@ -135,7 +140,7 @@ def main():
     ax.set_xlim(rel.min().min() - 16, 4)
     ax.set_ylim(-0.6, len(CLASSES) - 0.4)
     ax.set_xlabel('Change in bed speed (%)', fontsize=10, color=MUTED)
-    ax.set_title('(b) Canopy effect on bed speed', loc='left', fontsize=11,
+    ax.set_title('(c) Canopy effect on bed speed', loc='left', fontsize=10.5,
                  color=INK, pad=8)
     style(ax)
 
