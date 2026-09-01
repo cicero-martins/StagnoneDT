@@ -81,7 +81,7 @@ def main():
     # No horizontal offset: members sit on the same class positions and are
     # separated by opacity, so the class grouping stays legible.
     for m in ORDER:
-        vr = m == 'vr'
+        vr = m == 'veg'
         ax.plot(x, surf.loc[m], 's-', color=C_SURF, ms=5 if vr else 3.5,
                 lw=2.0 if vr else 1.0, alpha=1.0 if vr else 0.38,
                 zorder=5 if vr else 3)
@@ -104,7 +104,7 @@ def main():
 
     # (b) roughness effect on bed speed, fixed bed
     ax = fig.add_subplot(gs[0, 1])
-    rel = 100 * (bed.loc['nodm_vr'] / bed.loc['nodm'] - 1)
+    rel = 100 * (bed.loc['nodm_veg'] / bed.loc['nodm'] - 1)
     ys = np.arange(len(CLASSES))[::-1]
     for y, c in zip(ys, CLASSES):
         ax.plot([0, rel[c]], [y, y], '-', color=C_BED, lw=3.0, zorder=3,
@@ -125,7 +125,7 @@ def main():
 
     # (c) roughness effect on orbital velocity
     ax = fig.add_subplot(gs[0, 2])
-    relo = 100 * (orb.loc['nodm_vr'] / orb.loc['nodm'] - 1)
+    relo = 100 * (orb.loc['nodm_veg'] / orb.loc['nodm'] - 1)
     for y, c in zip(ys, CLASSES):
         ax.plot([0, relo[c]], [y, y], '-', color=C_ORB, lw=3.0, zorder=3,
                 solid_capstyle='round')
@@ -152,7 +152,7 @@ def main():
     print('\n=== Posidonia/sand bed-speed ratio by member ===')
     for m in ORDER:
         print(f'  {LABEL[m]:14s} {bed.loc[m, "Posidonia"] / bed.loc[m, "sand"]:.3f}')
-    print('\n=== roughness effect, fixed bed (nodm_vr vs nodm) ===')
+    print('\n=== roughness effect, fixed bed (nodm_veg vs nodm) ===')
     for c in CLASSES:
         print(f'  {c:11s} bed {rel[c]:+5.1f}%   u_orb {relo[c]:+5.1f}%')
 

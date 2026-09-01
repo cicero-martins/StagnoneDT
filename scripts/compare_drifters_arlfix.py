@@ -35,18 +35,21 @@ import pandas as pd
 from scipy.stats import wilcoxon
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import TAG
+from _ensemble import TAG, LEGACY_VR
 
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
 NBOOT = 4000
 SEED = 17
 
-# VR member key -> (its arlfix tag, the uniform-roughness control key)
+# roughness member key -> (its arlfix tag, the uniform-roughness control key).
+# The "old" side is LEGACY_VR, not TAG: the canonical roughness arm moved to
+# the vegetation module on 2026-08-31, and what this script compares is the
+# trachytope member before and after the .arl precision fix.
 PAIRS = [
-    ('nowaves_vr',   'v04AE_nowaves_vr_arlfix',   'nowaves'),
-    ('nodm_vr',      'v04AE_nodm_vr_arlfix',      'nodm'),
-    ('nowaves_vrdm', 'v04AE_nowaves_vrdm_arlfix', 'nowaves_dm'),
+    ('nowaves_veg',   'v04AE_nowaves_vr_arlfix',   'nowaves'),
+    ('nodm_veg',      'v04AE_nodm_vr_arlfix',      'nodm'),
+    ('nowaves_vegdm', 'v04AE_nowaves_vrdm_arlfix', 'nowaves_dm'),
 ]
 KEYCOLS = ['deploy', 'drifter_id']
 
@@ -85,7 +88,7 @@ def main():
           f"{'EP old':>7s} {'EP new':>7s} {'path old':>9s} {'path new':>9s}")
     have = {}
     for key, newtag, _ in PAIRS:
-        old, new = load(TAG[key]), load(newtag)
+        old, new = load(LEGACY_VR[key]), load(newtag)
         if new is None:
             print(f'{key:16s} (no metrics yet for {newtag})')
             continue

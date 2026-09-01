@@ -3,6 +3,10 @@
 
 # Ad-hoc/throwaway scripts (often contain signed URLs / temporary tokens)
 scripts/_*
+# ...except the ensemble definition. It is the single source of truth for which
+# runs make up the factorial, seven analysis scripts import it, and the
+# underscore prefix is there to mark it private rather than throwaway.
+!scripts/_ensemble.py
 
 # Local smoke / debug test directories (regenerable from the corresponding production dirs)
 model/dflowfm_*_hdftest_*/

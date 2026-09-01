@@ -31,7 +31,8 @@ import matplotlib.pyplot as plt
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import MEMBERS as ENS, KEYS, TAG, LABEL, CONTRASTS, MODELDIR
+from _ensemble import (MEMBERS as ENS, KEYS, TAG, LABEL, CONTRASTS,
+                       MODELDIR, scored)
 
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
@@ -102,7 +103,7 @@ def main():
                          'disp_ratio': sd / od if od > 0 else np.nan,
                          'heading_err_deg': float(np.degrees(diff.mean()))})
 
-    d = pd.DataFrame(rows)
+    d = scored(pd.DataFrame(rows)).reset_index(drop=True)
     d.to_csv(PROC / 'transport_error_decomposition.csv', index=False,
              float_format='%.4f')
 
