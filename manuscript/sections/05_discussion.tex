@@ -59,19 +59,11 @@ those choices and confirm the result afterwards.
 
 \subsection{What the canopy acts on}
 
-Splitting the trajectory error into a magnitude part and a direction part shows
-that the canopy acts on both at once (Figure~\ref{fig:decomp}). For each drifter
-the simulated path length, the simulated net displacement and the mean angular
-difference between simulated and observed step directions were computed over the
-scored window.
-
-The four bare members span 0.73 to 0.84 of the observed path length and 11.3 to
-19.8$^\circ$ of heading error. The four vegetated members collapse into a much
-narrower band, 0.88 to 0.94 and 8.3 to 9.0$^\circ$, and they do so regardless of
-their wave and bed treatment. Every treatment that improves the trajectory
-improves both components together and every treatment that degrades it degrades
-both, which is what would be expected if they act on the velocity field as a
-whole rather than on separable components of the error.
+The trajectory error splits into a magnitude part and a direction part, and the
+canopy acts on both at once (Figure~\ref{fig:lagrangian}). Every treatment that
+improves the trajectory improves both components together and every treatment
+that degrades it degrades both, which is what would be expected if they act on
+the velocity field as a whole rather than on separable components of the error.
 
 The mechanism the model offers is vertical. Section~\ref{sec:res_3d} shows the
 canopy reducing bed-layer speed by roughly a factor of four while reducing
@@ -81,16 +73,6 @@ from the lower layers redistributes it in a way that changes where the surface
 layer goes, and that is visible in the heading error as much as in the distance
 travelled.
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{transport_error_decomposition}
-  \caption{The trajectory error split into magnitude and direction. (a) Path
-  length and (b) net displacement, both as the ratio of simulated to observed.
-  (c) Mean angular difference between simulated and observed step directions.
-  Deployment 4 is absent from all three panels, its three positions being too
-  few to form the step bearings the heading metric requires.}
-  \label{fig:decomp}
-\end{figure}
 
 \subsection{Waves and bed mobility interact only where the canopy is absent}
 \label{sec:disc_synergy}
