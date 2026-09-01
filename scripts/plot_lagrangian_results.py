@@ -1,189 +1,109 @@
-"""Figure for Section 4.2: the Lagrangian result, shown rather than described.
+"""The three Lagrangian metrics Section 4.2 reports, one panel each.
 
-(a) Liu-Weisberg skill for every drifter under every member. The point of the
-    strip is that the members overlap heavily at drifter level, so the ordering
-    of the means rests on paired comparison rather than on separated groups.
-(b) The wave contrast deployment by deployment, which is the question a reader
-    will ask about a mean effect of -0.035: does it hold, or is it a couple of
-    deployments dragging the average? Twenty-eight of thirty-five drifters and
-    ten of twelve deployments are worse with waves.
-(c) Transport rate. Mean speed along each member's own track against the
-    observed 0.143 m/s, which is the quantity that sets path length.
+This used to carry a wave-contrast panel and a transport-rate panel. The wave
+contrast duplicated a panel of the attribution figure and put waves in the
+subject position of a section whose result is the canopy, and the transport rate
+said in a lollipop what the path ratio says per drifter. Both are gone.
 
-vr is drawn in colour and the other four in grey throughout, because the
-finding is that one member separates from a cluster of four.
+What is here instead is the trajectory error split the way Section 4.2 states
+it: how far the particles went, how well they held their heading, and the skill
+score that combines the two. All three on the same eight categories and the same
+colour convention as the rest of the manuscript, so the reader compares them by
+looking down a column.
+
+Every panel shows one point per drifter, not a summary, because the spread
+within a configuration is comparable to the difference between configurations
+in the bare arm and much smaller in the vegetated one, which is itself a result.
 
 Output: figures/lagrangian_results.{png,pdf}
 """
 from pathlib import Path
+import sys
 
-import numpy as np
-import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
-import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import (MEMBERS as ENS, KEYS, TAG, LABEL, CONTRASTS,
-                       MODELDIR, scored)
-from matplotlib.lines import Line2D
+from _ensemble import KEYS, TAG, FACTORS, scored
 
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
 FIG = ROOT / 'figures'
 FIG.mkdir(parents=True, exist_ok=True)
 
-SURFACE = '#ffffff'
-INK = '#1b1b1b'
-MUTED = '#6b6b6b'
-GRID = '#e8e7e4'
-BASE = '#9a9892'
-ACCENT = '#4a3aa7'
-WORSE = '#eb6834'
-BETTER = '#1baf7a'
+SURFACE, INK, MUTED, GRID = '#ffffff', '#1b1b1b', '#6b6b6b', '#e8e7e4'
+C_BARE, C_VEG = '#eb6834', '#4a3aa7'
 
-MEMBERS = [(k, TAG[k], LABEL[k]) for k in KEYS]
-
-
-def hav(lo1, la1, lo2, la2):
-    R = 6371000.0
-    p1, p2 = np.radians(la1), np.radians(la2)
-    dp, dl = np.radians(la2 - la1), np.radians(lo2 - lo1)
-    a = np.sin(dp / 2) ** 2 + np.cos(p1) * np.cos(p2) * np.sin(dl / 2) ** 2
-    return 2 * R * np.arcsin(np.sqrt(a))
-
-
-def track_speeds(obs):
-    vo = []
-    for _, g in obs.groupby(['deploy', 'source']):
-        g = g.sort_values('time')
-        d = hav(g['lon'].values[:-1], g['lat'].values[:-1],
-                g['lon'].values[1:], g['lat'].values[1:]).sum()
-        dt = (g['time'].iloc[-1] - g['time'].iloc[0]).total_seconds()
-        if dt > 0:
-            vo.append(d / dt)
-    v_sim = {}
-    for key, tag, _ in MEMBERS:
-        sim = pd.read_csv(PROC / f'drifter_sim_{tag}.csv', parse_dates=['time'])
-        vs = []
-        for (dp, did), g in sim.groupby(['deploy', 'drifter_id']):
-            o = obs[(obs['deploy'] == dp) & (obs['source'] == did)]
-            if o.empty:
-                continue
-            g = g[(g['time'] >= o['time'].min()) &
-                  (g['time'] <= o['time'].max())].sort_values('time')
-            if len(g) < 2:
-                continue
-            d = hav(g['lon'].values[:-1], g['lat'].values[:-1],
-                    g['lon'].values[1:], g['lat'].values[1:]).sum()
-            dt = (g['time'].iloc[-1] - g['time'].iloc[0]).total_seconds()
-            if dt > 0:
-                vs.append(d / dt)
-        v_sim[key] = float(np.mean(vs))
-    return float(np.mean(vo)), v_sim
+CODE = {'nowaves': '---', 'nowaves_veg': '-V-', 'nodm': 'W--',
+        'nodm_veg': 'WV-', 'nowaves_dm': '--M', 'nowaves_vegdm': '-VM',
+        'bl': 'W-M', 'veg': 'WVM'}
 
 
 def style(ax):
     ax.set_facecolor(SURFACE)
-    ax.grid(color=GRID, lw=0.7, zorder=0)
+    ax.grid(color=GRID, lw=0.7, axis='y', zorder=0)
     ax.set_axisbelow(True)
-    ax.tick_params(colors=MUTED, labelsize=8)
-    for sp in ['top', 'right']:
+    ax.tick_params(colors=MUTED, labelsize=9.5)
+    for sp in ('top', 'right'):
         ax.spines[sp].set_visible(False)
-    for sp in ['left', 'bottom']:
+    for sp in ('left', 'bottom'):
         ax.spines[sp].set_color('#c9c7c1')
 
 
+def strip(ax, vals, rng, ref=None):
+    """One point per drifter, with the mean drawn as a bar."""
+    for i, k in enumerate(KEYS):
+        v = np.asarray(vals[k], float)
+        v = v[np.isfinite(v)]
+        col = C_VEG if FACTORS[k]['roughness'] == 'vegetated' else C_BARE
+        ax.scatter(i + rng.uniform(-0.19, 0.19, len(v)), v, s=13, color=col,
+                   alpha=0.45, linewidths=0, zorder=3)
+        ax.plot([i - 0.32, i + 0.32], [v.mean()] * 2, '-', color=col, lw=2.8,
+                zorder=5, solid_capstyle='round')
+    if ref is not None:
+        ax.axhline(ref, color=INK, lw=1.0, ls='--', zorder=2)
+    ax.set_xticks(range(len(KEYS)))
+    ax.set_xticklabels([CODE[k] for k in KEYS], fontsize=9.5,
+                       family='DejaVu Sans Mono')
+    ax.set_xlim(-0.6, len(KEYS) - 0.4)
+    style(ax)
+
+
 def main():
-    mpl.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 9})
-    rng = np.random.default_rng(3)
+    mpl.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 10})
+    rng = np.random.default_rng(17)
 
-    met = {k: scored(pd.read_csv(PROC / f'drifter_metrics_{tag}.csv'),
-                     verbose=(k == KEYS[0]))
-           for k, tag, _ in MEMBERS}
-    obs = scored(pd.read_csv(PROC / 'drifter_tracks_Jul2025.csv',
-                             parse_dates=['time']), verbose=False)
-    v_obs, v_sim = track_speeds(obs)
+    met = {k: scored(pd.read_csv(PROC / f'drifter_metrics_{TAG[k]}.csv'),
+                     verbose=(k == KEYS[0])) for k in KEYS}
+    dec = pd.read_csv(PROC / 'transport_error_decomposition.csv')
+    dec = {k: g for k, g in dec.groupby('member')}
 
-    fig = plt.figure(figsize=(11.0, 4.3), dpi=300)
-    gs = fig.add_gridspec(1, 3, width_ratios=[1.0, 1.45, 0.85], wspace=0.30,
-                          left=0.06, right=0.98, top=0.87, bottom=0.17)
+    fig, axes = plt.subplots(1, 3, figsize=(12.4, 4.3), dpi=300)
     fig.patch.set_facecolor(SURFACE)
+    fig.subplots_adjust(left=0.055, right=0.99, top=0.88, bottom=0.20,
+                        wspace=0.22)
 
-    # (a) skill per drifter
-    ax = fig.add_subplot(gs[0, 0])
-    for i, (k, _, lab) in enumerate(MEMBERS):
-        v = met[k]['LW_skill'].values
-        c = ACCENT if k == 'vr' else BASE
-        ax.scatter(i + rng.uniform(-0.18, 0.18, len(v)), v, s=13, color=c,
-                   alpha=0.55, linewidths=0, zorder=3)
-        ax.plot([i - 0.32, i + 0.32], [v.mean()] * 2, '-', color=c, lw=2.6,
-                zorder=4, solid_capstyle='round')
-    ax.set_xticks(range(len(MEMBERS)))
-    ax.set_xticklabels([m[2] for m in MEMBERS], rotation=30, ha='right',
-                       fontsize=8)
-    ax.set_ylabel('Liu--Weisberg skill', fontsize=8.5, color=MUTED)
-    ax.set_title(f'(a) Skill, all {len(met[KEYS[0]])} drifters', loc='left', fontsize=9.5,
-                 color=INK, pad=7)
-    style(ax)
+    strip(axes[0], {k: met[k].LW_skill.values for k in KEYS}, rng)
+    axes[0].set_ylabel('Liu--Weisberg skill', fontsize=10, color=MUTED)
+    axes[0].set_title(f'(a) Skill, {len(met[KEYS[0]])} drifters', loc='left',
+                      fontsize=11, color=INK, pad=8)
 
-    # (b) wave contrast per deploy
-    ax = fig.add_subplot(gs[0, 1])
-    a = met['nodm'].merge(met['nowaves'], on=['deploy', 'drifter_id'],
-                          suffixes=('_on', '_off'))
-    a['d'] = a['LW_skill_on'] - a['LW_skill_off']
-    deps = sorted(a['deploy'].unique())
-    for i, dp in enumerate(deps):
-        sub = a[a['deploy'] == dp]
-        m = sub['d'].mean()
-        c = WORSE if m < 0 else BETTER
-        ax.bar(i, m, width=0.62, color=c, edgecolor='white', lw=0.6, zorder=3)
-        ax.scatter([i] * len(sub) + rng.uniform(-0.13, 0.13, len(sub)),
-                   sub['d'], s=12, color=INK, alpha=0.55, linewidths=0, zorder=5)
-    ax.axhline(0, color=INK, lw=1.0, zorder=4)
-    ax.axhline(a['d'].mean(), color=MUTED, ls='--', lw=1.3, zorder=4)
-    ax.text(0.5, a['d'].mean() - 0.004, f"mean {a['d'].mean():+.3f}",
-            fontsize=7.5, color=MUTED, va='top', ha='left')
-    ax.set_xticks(range(len(deps)))
-    ax.set_xticklabels([str(int(d)) for d in deps], fontsize=8)
-    ax.set_xlabel('Deployment', fontsize=8.5, color=MUTED)
-    ax.set_ylabel('$\\Delta$ skill from wave coupling', fontsize=8.5,
-                  color=MUTED)
-    ax.set_title('(b) Wave coupling, deployment by deployment', loc='left',
-                 fontsize=9.5, color=INK, pad=7)
-    style(ax)
-    ax.legend(handles=[
-        Line2D([0], [0], marker='s', ls='', mfc=WORSE, mec='none', ms=8,
-               label='waves worse (10 of 12)'),
-        Line2D([0], [0], marker='s', ls='', mfc=BETTER, mec='none', ms=8,
-               label='waves better (2 of 12)'),
-        Line2D([0], [0], marker='o', ls='', mfc=INK, mec='none', ms=4,
-               alpha=0.55, label='individual drifter')],
-        fontsize=7.5, frameon=False, loc='lower left', ncol=1)
+    strip(axes[1], {k: dec[k].speed_ratio.values for k in KEYS}, rng, ref=1.0)
+    axes[1].set_ylabel('Simulated / observed path length', fontsize=10,
+                       color=MUTED)
+    axes[1].set_title('(b) Distance travelled', loc='left', fontsize=11,
+                      color=INK, pad=8)
 
-    # (c) transport rate
-    ax = fig.add_subplot(gs[0, 2])
-    ys = np.arange(len(MEMBERS))[::-1]
-    for y, (k, _, lab) in zip(ys, MEMBERS):
-        c = ACCENT if k == 'vr' else BASE
-        ax.plot([0, v_sim[k]], [y, y], '-', color=c, lw=3.0, zorder=3,
-                solid_capstyle='round')
-        ax.plot([v_sim[k]], [y], 'o', ms=8, mfc=c, mec='white', mew=1.2,
-                zorder=4)
-        ax.text(v_sim[k] + 0.004, y, f'{v_sim[k] / v_obs:.2f}', fontsize=7.5,
-                color=INK if k == 'vr' else MUTED, va='center')
-    ax.axvline(v_obs, color=INK, ls='--', lw=1.4, zorder=2)
-    ax.text(v_obs, len(MEMBERS) - 0.3, ' observed', fontsize=7.5, color=INK,
-            ha='left', va='center')
-    ax.set_yticks(ys)
-    ax.set_yticklabels([m[2] for m in MEMBERS], fontsize=8)
-    ax.set_xlim(0, max(v_obs, max(v_sim.values())) * 1.42)
-    ax.set_ylim(-0.6, len(MEMBERS) - 0.4)
-    ax.set_xlabel('Speed along own track (m s$^{-1}$)', fontsize=8.5,
-                  color=MUTED)
-    ax.set_title('(c) Transport rate', loc='left', fontsize=9.5, color=INK,
-                 pad=7)
-    style(ax)
+    strip(axes[2], {k: dec[k].heading_err_deg.values for k in KEYS}, rng)
+    axes[2].set_ylabel('Mean heading error (degrees)', fontsize=10, color=MUTED)
+    axes[2].set_title('(c) Direction held', loc='left', fontsize=11, color=INK,
+                      pad=8)
+
+    fig.text(0.055, 0.035, 'W wave coupling    V seagrass canopy    '
+             'M mobile bed        orange, bare        purple, canopy',
+             fontsize=9, color=MUTED, ha='left')
 
     for ext in ('png', 'pdf'):
         p = FIG / f'lagrangian_results.{ext}'
@@ -191,12 +111,11 @@ def main():
         print(f'Saved {p}')
     plt.close(fig)
 
-    # the table Section 4.2 needs
-    print('\n=== member, LW, EP, path ratio, speed ratio ===')
-    for k, tag, lab in MEMBERS:
-        d = met[k]
-        print(f'{lab:14s} {d["LW_skill"].mean():.3f}  {d["endpoint_sep_m"].mean():4.0f}  '
-              f'{d["path_ratio"].mean():.2f}  {v_sim[k] / v_obs:.2f}')
+    print(f"\n{'member':8s} {'LW':>7s} {'path':>7s} {'heading':>8s}")
+    for k in KEYS:
+        print(f'{CODE[k]:8s} {met[k].LW_skill.mean():7.3f} '
+              f'{dec[k].speed_ratio.mean():7.2f} '
+              f'{dec[k].heading_err_deg.mean():7.1f}d')
 
 
 if __name__ == '__main__':

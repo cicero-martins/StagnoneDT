@@ -16,14 +16,31 @@ bias is a datum and boundary-offset property that all members share and it is
 not what distinguishes them.
 
 The anomaly RMSE behaves differently at the two outer stations and at the inner
-one. At BocaSud it varies by 2.1~mm across the eight members and at BocaNord by
-9.2~mm, in both cases without a consistent ordering. At AltaVilaEst it varies by
-36.2~mm, and there the ordering is consistent and follows a single factor. The
-four members carrying a canopy give 0.015 to 0.027~m with correlations of 0.94
-to 0.98, the four without give 0.045 to 0.051~m with correlations of 0.78 to
-0.82, and no member of one group overlaps the other. Modelled-to-observed
-standard deviation ratios move the same way, from 1.13 to 1.33 without a canopy
-to 0.98 to 1.17 with one.
+one (Figure~\ref{fig:wl}b). At BocaSud it varies by 2.1~mm across the eight
+members and at BocaNord by 9.2~mm, in both cases without a consistent ordering.
+At AltaVilaEst it varies by 36.2~mm, and there the ordering is consistent and
+follows a single factor. The four members carrying a canopy give 0.015 to
+0.027~m with correlations of 0.94 to 0.98, the four without give 0.045 to
+0.051~m with correlations of 0.78 to 0.82, and no member of one group overlaps
+the other. Modelled-to-observed standard deviation ratios move the same way,
+from 1.13 to 1.33 without a canopy to 0.98 to 1.17 with one.
+
+The record itself shows where that error sits (Figure~\ref{fig:wl}a). The bare
+configurations overshoot the range of the observed anomaly and run ahead of it,
+most visibly on the falling limb of 9 July, while the vegetated ones track both
+the amplitude and the phase. The two arms are separated by more than the spread
+within either of them over most of the window.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{water_level_stations}
+  \caption{Water level over the scored window. (a) Anomaly at AltaVilaEst,
+  observed against the two arms, each drawn as its mean and the envelope of its
+  four configurations. Anomalies rather than raw levels, because the bias is
+  common to all eight members. (b) Anomaly RMSE at the three stations for every
+  configuration, coloured by canopy treatment.}
+  \label{fig:wl}
+\end{figure}
 
 AltaVilaEst is the innermost station, in the shallow northern basin where the
 meadow is densest and the mean depth is smallest, so it is where a canopy would
@@ -131,11 +148,11 @@ band of 8.3 to 9.0$^\circ$ that all four vegetated members share.
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{lagrangian_results}
-  \caption{Lagrangian validation. (a) Liu--Weisberg skill for every drifter
-  under every member, with the horizontal bar giving the mean. (b) The change in
-  skill from wave coupling, by deployment, measured separately on a fixed and on
-  a mobile bed. (c) Mean speed along each member's own track against the
-  observed value.}
+  \caption{Lagrangian validation, one point per drifter and the bar giving the
+  mean. (a) Liu--Weisberg skill. (b) Simulated over observed path length, the
+  dashed line marking equality. (c) Mean angular difference between simulated
+  and observed step directions. Panels (b) and (c) carry 32 drifters rather than
+  35, deployment 4 having too few positions to form step bearings.}
   \label{fig:lagrangian}
 \end{figure}
 
