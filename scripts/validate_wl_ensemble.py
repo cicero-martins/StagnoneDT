@@ -30,7 +30,7 @@ import xarray as xr
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import KEYS, MODELDIR
+from _ensemble import KEYS, MODELDIR, TAG
 
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
@@ -42,14 +42,34 @@ STATIONS = {'BocaNord': 'wl_BocaNord_10min_UTC.csv',
 
 # The four mobile-bed members moved to the *_dens directories when DensIn=false
 # closed the factorial; MODELDIR in _ensemble.py is the single source for that.
-HIS = {k: MODELDIR[k] for k in KEYS if k != 'nodm_vr'}
-CSV = {'nodm_vr': 'wl_nodm_vr.csv'}
+HIS = {k: MODELDIR[k] for k in KEYS}
 ORDER = list(KEYS)
+
+# The vegetated members were built and run on the server, and their map.nc set
+# is 40 GB, so only the his.nc came back. They resolve from this cache instead
+# of from a model directory that does not exist on this machine.
+HIS_CACHE = PROC / 'veg_his'
 
 SPINUP_DAYS = 1.0
 
+# Every member is scored on the SAME interval. The uniform members are nine-day
+# runs and the vegetated ones are three-day restart segments, so letting each
+# use its own post-spinup span would compare an eight-day record against a
+# two-day one and attribute the difference to the member. The window is the
+# intersection after each member drops its own spin-up day, computed rather
+# than written down, and printed with the table.
+COMMON_WINDOW = True
 
-def from_his(d):
+
+def from_his(d, key=None):
+    if key is not None:
+        cached = HIS_CACHE / f'{TAG[key]}_his.nc'
+        if cached.exists():
+            return read_his(str(cached))
+    return read_his(pick_his(d))
+
+
+def pick_his(d):
     # Newest wins. The member directories can hold more than one his.nc: the
     # current run writes to the directory root while an earlier run's copy may
     # still sit under DFM_OUTPUT_*. Picking by glob order silently scored a
@@ -57,7 +77,12 @@ def from_his(d):
     cands = (glob.glob(str(MODEL / d / '*_his.nc')) +
              glob.glob(str(MODEL / d / 'DFM_OUTPUT_*' / '*_his.nc')))
     cands = [c for c in cands if not c.endswith('.bak_unrestricted')]
-    f = max(cands, key=os.path.getmtime)
+    if not cands:
+        raise FileNotFoundError(f'no his.nc under {MODEL / d}')
+    return max(cands, key=os.path.getmtime)
+
+
+def read_his(f):
     ds = xr.open_dataset(f)
     names = [b.tobytes().decode('utf-8', 'ignore').strip() if isinstance(b, bytes)
              else str(b).strip()
@@ -74,10 +99,7 @@ def from_his(d):
 
 
 def load_member(key):
-    if key in HIS:
-        return from_his(HIS[key])
-    df = pd.read_csv(PROC / CSV[key], parse_dates=['time'])
-    return df
+    return from_his(HIS[key], key=key)
 
 
 def metrics(mod, obs):
@@ -105,12 +127,24 @@ def main():
         obs[st] = d.set_index('time')[st]
         print(f'obs {st:12s} n={len(d)}  {d["time"].min()} -> {d["time"].max()}')
 
+    loaded = {k: load_member(k) for k in ORDER}
+    starts = {k: v['time'].min() + pd.Timedelta(days=SPINUP_DAYS)
+              for k, v in loaded.items()}
+    ends = {k: v['time'].max() for k, v in loaded.items()}
+    w0, w1 = max(starts.values()), min(ends.values())
+    if COMMON_WINDOW:
+        print(f'\ncommon scoring window {w0} -> {w1}')
+        for k in ORDER:
+            print(f'  {k:15s} own post-spinup span '
+                  f'{starts[k]} -> {ends[k]}')
+
     rows = []
     for key in ORDER:
-        mod = load_member(key)
-        t0 = mod['time'].min() + pd.Timedelta(days=SPINUP_DAYS)
-        m = mod[mod['time'] >= t0].set_index('time')
-        print(f'\n{key}: {len(m)} steps post-spinup, '
+        mod = loaded[key]
+        t0 = w0 if COMMON_WINDOW else starts[key]
+        t1 = w1 if COMMON_WINDOW else ends[key]
+        m = mod[(mod['time'] >= t0) & (mod['time'] <= t1)].set_index('time')
+        print(f'\n{key}: {len(m)} steps scored, '
               f'{m.index.min()} -> {m.index.max()}')
         for st in STATIONS:
             if st not in m.columns:
