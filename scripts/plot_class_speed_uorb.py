@@ -1,19 +1,27 @@
-"""What the roughness classes do to the flow and to the waves.
+"""What the seagrass classes do to the flow.
 
-A caution the figure is built around. Comparing classes WITHIN one member does
-not isolate the roughness treatment, because the classes sit in different parts
-of the basin at different depths. The uniform-roughness members prove it: with
-no roughness distinction at all, their Posidonia cells are still slower at the
-bed than their sand cells, by a ratio near 0.86. That difference is geography,
-not vegetation drag. The roughness effect only becomes visible when the SAME
-class is compared BETWEEN members, which is what panels (b) and (c) do.
+A caution the figure is built around. Comparing classes WITHIN one configuration
+does not isolate the canopy, because the classes sit in different parts of the
+basin at different depths. The bare configurations prove it: with no canopy at
+all, their Posidonia cells are still slower at the bed than their sand cells, by
+a ratio near 0.86. That difference is geography, not canopy drag. The canopy
+effect becomes visible when the SAME class is compared BETWEEN configurations,
+which is what panel (b) does.
 
-(a) Bed and surface speed by class, all members, to show the baseline
-    geographic pattern and how the bed treatment reshapes it.
-(b) The roughness effect on bed speed, fixed bed, as the change from uniform to
-    distributed within each class.
-(c) The same for wave orbital velocity, where the effect is much larger and
-    ordered exactly as canopy attenuation predicts.
+(a) Bed and surface speed by class. The four members of each arm are collapsed
+    into a mean and a band, because sixteen individual lines cannot be told
+    apart and the within-arm spread is the only thing they carried. Colour is
+    the canopy treatment throughout the manuscript, so it is the canopy
+    treatment here too, and the two depths are separated by marker and dash.
+(b) The canopy effect on bed speed, class by class, averaged over the four cells
+    of the design.
+
+Wave orbital velocity used to be panel (c) and is now reported in the text only.
+The canopy enters the momentum equation of the flow and not the roughness field
+passed to the wave model, so what the panel showed was a second-order feedback
+through the current field: changes under 2.5% whose largest value fell on sand,
+which carries no canopy. That is a null result and it reads more honestly as a
+sentence than as a plot with an axis stretched to hold it.
 
 Output: figures/class_speed_uorb.{png,pdf}
 """
@@ -27,7 +35,7 @@ from matplotlib.lines import Line2D
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import KEYS, LABEL as LBL
+from _ensemble import KEYS, FACTORS
 
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
@@ -38,20 +46,23 @@ SURFACE = '#ffffff'
 INK = '#1b1b1b'
 MUTED = '#6b6b6b'
 GRID = '#e8e7e4'
-C_BED = '#eb6834'
-C_SURF = '#4a3aa7'
-C_ORB = '#1baf7a'
+C_BARE = '#eb6834'     # bare bed, uniform roughness
+C_VEG = '#4a3aa7'      # seagrass canopy
 
 CLASSES = ['sand', 'Cymodocea', 'Posidonia', 'rock']
 ORDER = list(KEYS)
-LABEL = {k: LBL[k].replace(chr(10), ' ') for k in KEYS}
+BARE = [k for k in KEYS if FACTORS[k]['roughness'] != 'vegetated']
+VEG = [k for k in KEYS if FACTORS[k]['roughness'] == 'vegetated']
+# the four canopy contrasts, treated minus its own bare control
+PAIRS = [('nowaves_veg', 'nowaves'), ('nodm_veg', 'nodm'),
+         ('nowaves_vegdm', 'nowaves_dm'), ('veg', 'bl')]
 
 
 def style(ax):
     ax.set_facecolor(SURFACE)
     ax.grid(color=GRID, lw=0.7, zorder=0)
     ax.set_axisbelow(True)
-    ax.tick_params(colors=MUTED, labelsize=8)
+    ax.tick_params(colors=MUTED, labelsize=9)
     for sp in ['top', 'right']:
         ax.spines[sp].set_visible(False)
     for sp in ['left', 'bottom']:
@@ -59,7 +70,7 @@ def style(ax):
 
 
 def main():
-    mpl.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 9})
+    mpl.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 10})
     d = pd.read_csv(PROC / 'class_speed_uorb.csv')
 
     def piv(metric):
@@ -67,80 +78,63 @@ def main():
                                         values='value')
         return p.reindex(ORDER)[CLASSES]
 
-    bed, surf = piv('bed_speed'), piv('surface_speed')
-    orb = piv('uorb_mean')
+    bed, surf, orb = piv('bed_speed'), piv('surface_speed'), piv('uorb_mean')
 
-    fig = plt.figure(figsize=(11.0, 4.2), dpi=300)
-    gs = fig.add_gridspec(1, 3, width_ratios=[1.5, 1.0, 1.0], wspace=0.32,
-                          left=0.06, right=0.98, top=0.86, bottom=0.20)
+    fig, axes = plt.subplots(1, 2, figsize=(10.4, 4.4), dpi=300,
+                             gridspec_kw=dict(width_ratios=[1.35, 1.0],
+                                              wspace=0.26))
     fig.patch.set_facecolor(SURFACE)
+    fig.subplots_adjust(left=0.075, right=0.985, top=0.88, bottom=0.24)
 
-    # (a) bed and surface speed by class, per member
-    ax = fig.add_subplot(gs[0, 0])
+    # (a) speed by class, one band per arm and depth
+    ax = axes[0]
     x = np.arange(len(CLASSES))
-    # No horizontal offset: members sit on the same class positions and are
-    # separated by opacity, so the class grouping stays legible.
-    for m in ORDER:
-        vr = m == 'veg'
-        ax.plot(x, surf.loc[m], 's-', color=C_SURF, ms=5 if vr else 3.5,
-                lw=2.0 if vr else 1.0, alpha=1.0 if vr else 0.38,
-                zorder=5 if vr else 3)
-        ax.plot(x, bed.loc[m], 'o-', color=C_BED, ms=5 if vr else 3.5,
-                lw=2.0 if vr else 1.0, alpha=1.0 if vr else 0.38,
-                zorder=5 if vr else 3)
-    ax.set_xlim(-0.35, len(CLASSES) - 0.65)
+    for arm, keys, col in (('Bare', BARE, C_BARE), ('Canopy', VEG, C_VEG)):
+        for tbl, mk, ls in ((surf, 's', '-'), (bed, 'o', '--')):
+            v = tbl.loc[keys]
+            ax.fill_between(x, v.min(), v.max(), color=col, alpha=0.16, lw=0,
+                            zorder=2)
+            ax.plot(x, v.mean(), ls, color=col, marker=mk, ms=6, lw=2.0,
+                    mec='white', mew=1.0, zorder=4)
+    ax.set_xlim(-0.3, len(CLASSES) - 0.7)
     ax.set_xticks(x)
-    ax.set_xticklabels(CLASSES, fontsize=8)
-    ax.set_ylabel('Mean speed (m s$^{-1}$)', fontsize=8.5, color=MUTED)
-    ax.set_title('(a) Speed by class, every member', loc='left', fontsize=9.5,
-                 color=INK, pad=7)
+    ax.set_xticklabels(CLASSES, fontsize=9.5)
+    ax.set_ylabel('Mean speed (m s$^{-1}$)', fontsize=10, color=MUTED)
+    ax.set_title('(a) Speed by class, mean and range over each arm',
+                 loc='left', fontsize=11, color=INK, pad=8)
     ax.legend(handles=[
-        Line2D([0], [0], marker='s', color=C_SURF, ms=5, lw=1.2, label='surface'),
-        Line2D([0], [0], marker='o', color=C_BED, ms=5, lw=1.2, label='bed'),
-        Line2D([0], [0], color='none', label='opaque = full member')],
-        fontsize=8, frameon=False, loc='upper center',
-        bbox_to_anchor=(0.5, -0.13), ncol=3, columnspacing=1.6)
+        Line2D([], [], color=C_BARE, lw=2.4, label='Bare'),
+        Line2D([], [], color=C_VEG, lw=2.4, label='Canopy'),
+        Line2D([], [], color=MUTED, lw=2.0, ls='-', marker='s', ms=6,
+               label='surface layer'),
+        Line2D([], [], color=MUTED, lw=2.0, ls='--', marker='o', ms=6,
+               label='bed layer')],
+        fontsize=9, frameon=False, loc='upper center',
+        bbox_to_anchor=(0.5, -0.11), ncol=4, columnspacing=1.5)
     style(ax)
 
-    # (b) roughness effect on bed speed, fixed bed
-    ax = fig.add_subplot(gs[0, 1])
-    rel = 100 * (bed.loc['nodm_veg'] / bed.loc['nodm'] - 1)
+    # (b) canopy effect on bed speed, averaged over the four cells
+    ax = axes[1]
+    rel = pd.DataFrame({c: [100 * (bed.loc[a, c] / bed.loc[b, c] - 1)
+                            for a, b in PAIRS] for c in CLASSES})
     ys = np.arange(len(CLASSES))[::-1]
     for y, c in zip(ys, CLASSES):
-        ax.plot([0, rel[c]], [y, y], '-', color=C_BED, lw=3.0, zorder=3,
+        m, lo, hi = rel[c].mean(), rel[c].min(), rel[c].max()
+        ax.plot([lo, hi], [y, y], '-', color=C_VEG, lw=6, alpha=0.28,
+                zorder=3, solid_capstyle='round')
+        ax.plot([0, m], [y, y], '-', color=C_VEG, lw=3.0, zorder=4,
                 solid_capstyle='round')
-        ax.plot([rel[c]], [y], 'o', ms=8, mfc=C_BED, mec='white', mew=1.2,
-                zorder=4)
-        ax.text(rel[c] - 0.15, y, f'{rel[c]:+.1f}%', fontsize=7.5, color=INK,
+        ax.plot([m], [y], 'o', ms=9, mfc=C_VEG, mec='white', mew=1.4, zorder=5)
+        ax.text(lo - 2.5, y, f'{m:+.0f}%', fontsize=9.5, color=INK,
                 va='center', ha='right')
     ax.axvline(0, color=INK, lw=1.0, zorder=2)
     ax.set_yticks(ys)
-    ax.set_yticklabels(CLASSES, fontsize=8)
-    ax.set_xlim(rel.min() * 1.65, 0.8)
+    ax.set_yticklabels(CLASSES, fontsize=9.5)
+    ax.set_xlim(rel.min().min() - 16, 4)
     ax.set_ylim(-0.6, len(CLASSES) - 0.4)
-    ax.set_xlabel('Change in bed speed (%)', fontsize=8.5, color=MUTED)
-    ax.set_title('(b) Roughness effect, fixed bed', loc='left', fontsize=9.5,
-                 color=INK, pad=7)
-    style(ax)
-
-    # (c) roughness effect on orbital velocity
-    ax = fig.add_subplot(gs[0, 2])
-    relo = 100 * (orb.loc['nodm_veg'] / orb.loc['nodm'] - 1)
-    for y, c in zip(ys, CLASSES):
-        ax.plot([0, relo[c]], [y, y], '-', color=C_ORB, lw=3.0, zorder=3,
-                solid_capstyle='round')
-        ax.plot([relo[c]], [y], 'o', ms=8, mfc=C_ORB, mec='white', mew=1.2,
-                zorder=4)
-        ax.text(relo[c] - 0.5, y, f'{relo[c]:+.1f}%', fontsize=7.5, color=INK,
-                va='center', ha='right')
-    ax.axvline(0, color=INK, lw=1.0, zorder=2)
-    ax.set_yticks(ys)
-    ax.set_yticklabels(CLASSES, fontsize=8)
-    ax.set_xlim(relo.min() * 1.55, 2.0)
-    ax.set_ylim(-0.6, len(CLASSES) - 0.4)
-    ax.set_xlabel('Change in orbital velocity (%)', fontsize=8.5, color=MUTED)
-    ax.set_title('(c) Roughness effect on waves', loc='left', fontsize=9.5,
-                 color=INK, pad=7)
+    ax.set_xlabel('Change in bed speed (%)', fontsize=10, color=MUTED)
+    ax.set_title('(b) Canopy effect on bed speed', loc='left', fontsize=11,
+                 color=INK, pad=8)
     style(ax)
 
     for ext in ('png', 'pdf'):
@@ -149,12 +143,18 @@ def main():
         print(f'Saved {p}')
     plt.close(fig)
 
-    print('\n=== Posidonia/sand bed-speed ratio by member ===')
+    print('\n=== Posidonia/sand bed-speed ratio by configuration ===')
     for m in ORDER:
-        print(f'  {LABEL[m]:14s} {bed.loc[m, "Posidonia"] / bed.loc[m, "sand"]:.3f}')
-    print('\n=== roughness effect, fixed bed (nodm_veg vs nodm) ===')
+        print(f'  {m:15s} {bed.loc[m, "Posidonia"] / bed.loc[m, "sand"]:.3f}')
+    print('\n=== canopy effect on bed speed, mean over the four cells ===')
     for c in CLASSES:
-        print(f'  {c:11s} bed {rel[c]:+5.1f}%   u_orb {relo[c]:+5.1f}%')
+        print(f'  {c:11s} {rel[c].mean():+6.1f}%  '
+              f'(range {rel[c].min():+.1f} to {rel[c].max():+.1f})')
+    print('\n=== canopy effect on orbital velocity, the two wave-coupled cells ===')
+    for c in CLASSES:
+        a = 100 * (orb.loc['nodm_veg', c] / orb.loc['nodm', c] - 1)
+        b = 100 * (orb.loc['veg', c] / orb.loc['bl', c] - 1)
+        print(f'  {c:11s} fixed bed {a:+5.1f}%   mobile bed {b:+5.1f}%')
 
 
 if __name__ == '__main__':

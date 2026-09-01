@@ -97,37 +97,28 @@ $8.64\times10^{5}$~s, long enough to leave the lagoon interior essentially
 free-running while constraining the offshore extension.
 
 Initial conditions represented the observed summer state, with a hypersaline
-field prescribed over the lagoon. Three passive tracers were carried, one
-labelling the lagoon water mass and two representing the discharges from the
-Trapani airport and saltpan canal systems.
+field prescribed over the lagoon.
 
 \subsection{Seagrass canopy parametrisation}
 \label{sec:methods_roughness}
 
-The canopy was represented as a three-dimensional drag field rather than as an
-equivalent bed roughness. The \citet{Baptist2007} formulation, which the
-trachytope machinery of the model implements, condenses the canopy into a
-depth-averaged equivalent Chezy coefficient at the bed. That is the appropriate
-reduction in a depth-averaged solver, but this model is three-dimensional and
-the quantity the drifters sample is the top of a profile the canopy reshapes.
-The vegetation module was used instead, which resolves the canopy drag per
-sigma layer over the vertical extent the plants occupy, so a cell whose canopy
-fills two fifths of the water column carries drag in the layers within that
-fraction and none above it.
+The canopy was represented as a three-dimensional drag field, resolved per sigma
+layer over the vertical extent the plants occupy. A cell whose canopy fills two
+fifths of the water column carries drag in the layers within that fraction and
+none above it. Drag per unit volume follows the standard quadratic form
+\citep{Nepf2012}, with a drag coefficient $C_D$, a stem diameter $D$, an areal
+stem density $m$ and a canopy height $h_v$.
 
-Drag per unit volume follows the standard quadratic form, with a drag
-coefficient $C_D$, a stem diameter $D$, an areal stem density $m$ and a canopy
-height $h_v$. Table~\ref{tab:veg} gives the values and their provenance. None
-of them was fitted to any observation used to evaluate the model. Densities are
-expressed per leaf rather than per shoot, because it is the leaf that presents
-the frontal area, and \emph{P.\ oceanica} carries about six leaves per shoot
+Table~\ref{tab:veg} gives the values and their provenance. None was fitted to
+any observation used to evaluate the model. Densities are expressed per leaf
+rather than per shoot, since it is the leaf that presents the frontal area and
+\emph{P.\ oceanica} carries about six leaves per shoot
 \citep{CiraoloFerreri2006}. The canopy height is the vertical extent the drag
-occupies, which for a plant whose leaves lie over is not the leaf length. The
-flume measurements of \citet{CiraoloFerreri2006} report deflected canopy
-thickness between 0.2 and 0.6 of the water depth, and the large-scale
-experiments of \citet{Prinos2010} adopt submergence ratios of 0.323, 0.423 and
-0.500 as the realistic range, so 0.40~m was taken for a basin of mean depth
-0.95~m.
+occupies, which for a plant whose leaves lie over is shorter than the leaf. The
+flume measurements of \citet{CiraoloFerreri2006} give deflected canopy thickness
+between 0.2 and 0.6 of the water depth, and the large-scale experiments of
+\citet{Prinos2010} adopt submergence ratios of 0.323, 0.423 and 0.500, so
+0.40~m was taken for a basin of mean depth 0.95~m.
 
 Fractional cover from the classification multiplies the areal density and
 nothing else, height and diameter being properties of the plant rather than of
@@ -141,33 +132,50 @@ confounded by a difference in bare-substrate roughness.
 
 \begin{table}[H]
   \centering
-  \caption{Canopy parameters and their sources. Areal densities are per leaf and
-  are multiplied by the fractional cover of the classification before use. No
-  value was adjusted against an observation used to evaluate the model.}
+  \caption{Canopy parameters. Areal densities are per leaf and are multiplied by
+  the fractional cover of the classification before use. No value was adjusted
+  against an observation used to evaluate the model.}
   \label{tab:veg}
   \begin{tabular}{llll}
     \toprule
     Parameter & \emph{P.\ oceanica} & \emph{C.\ nodosa} & Source \\
     \midrule
-    Shoot density (m$^{-2}$) & 500 & 800 & \citet{CiraoloFerreri2006}; \citet{DeMarchis2012} \\
-    Leaves per shoot & 6 & 3 & \citet{CiraoloFerreri2006} \\
-    Leaf width $D$ (m) & 0.010 & 0.004 & \citet{CiraoloFerreri2006} \\
-    Canopy height $h_v$ (m) & 0.40 & 0.15 & \citet{Prinos2010}; \citet{CiraoloFerreri2006} \\
+    Shoot density (m$^{-2}$) & 500 & 800 &
+      \citet{CiraoloFerreri2006}; \citet{Morris2008}, \citet{Cancemi2002} \\
+    Leaves per shoot & 6 & 3 &
+      \citet{CiraoloFerreri2006}; \citet{Morris2008} \\
+    Leaf width $D$ (m) & 0.010 & 0.004 &
+      \citet{CiraoloFerreri2006}; \citet{Morris2008} \\
+    Canopy height $h_v$ (m) & 0.40 & 0.15 &
+      \citet{Prinos2010}; \citet{Morris2008} \\
     Leaf density (kg~m$^{-3}$) & 900 & 900 & \citet{Prinos2010}, Table 1 \\
-    Drag coefficient $C_D$ & 0.8 & 0.8 & rigid cylinder, not adjusted \\
+    Drag coefficient $C_D$ & 0.8 & 0.8 & rigid cylinder \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-Two checks were made after the parameters were fixed and were not used to
-choose any of them, both of which ask whether the result is a canopy or a
-rougher bed in disguise. Mean bed shear stress over the meadow falls from 0.037
-to 0.0026~Pa when the canopy is introduced, a factor of 14, while representing
-the same meadow as an equivalent bed roughness raises it to 0.049~Pa. A canopy
-shelters the bed and a rough bed does not, and the two treatments separate on
-the sign. Vertical structure gives the same answer. The ratio of surface to bed
-speed in the lagoon interior rises from 1.85 to 4.46, where a bed roughness
-acting alone cannot exceed the value set by the logarithmic profile it imposes.
+The \emph{C.\ nodosa} values come from a flume study of that species collected
+in a sheltered tidal lagoon \citep{Morris2008}, which reports leaf width of
+$3.8 \pm 0.4$~mm, $3.5 \pm 1.1$ leaves per shoot and an undeflected canopy
+height of $0.17 \pm 0.02$~m, deflecting to about 0.04~m at
+0.3~\si{\metre\per\second}. Its shoot density of $520 \pm 69$~m$^{-2}$ brackets
+the value used from below and the Mediterranean field range of 925 to
+1925~m$^{-2}$ \citep{Cancemi2002} brackets it from above. Leaf density is the
+one canopy parameter for which no measurement of \emph{C.\ nodosa} was
+available, and the \emph{P.\ oceanica} value was carried across. It governs
+only the bending response.
+
+One tension should be recorded. \citet{DeMarchis2012} assigned Nikuradse
+roughness heights of 0.3~m to \emph{C.\ nodosa} and 0.1~m to
+\emph{P.\ oceanica} in a depth-averaged model of this lagoon, making
+\emph{C.\ nodosa} the rougher class, where the frontal area implied by
+Table~\ref{tab:veg} makes \emph{P.\ oceanica} the larger obstruction by a factor
+of about eight. The two are not the same quantity, and the difference is
+bounded in any case. \emph{C.\ nodosa} occupies 22.5\% of the classified links
+at a median fractional cover of 0.181, against 48.6\% and 0.685 for
+\emph{P.\ oceanica}, so it carries about 1.5\% of the total canopy frontal area
+in the model, and under the upper Mediterranean density it would carry under
+4\%.
 
 The spatial assignment of classes came from a supervised random-forest
 classification of PlanetScope SuperDove imagery acquired in August 2023 at 3~m
@@ -209,11 +217,7 @@ Stagnone in a depth-averaged model, equivalent to a Manning coefficient of
 Water level was recorded at ten-minute resolution at three stations, BocaNord
 at the northern inlet, BocaSud near the southern inlet, and AltaVilaEst on the
 eastern flank of the central basin. Offshore performance was assessed at the
-Marettimo tide gauge. The model cell used for that comparison was not the cell
-nearest the gauge, which sits in the lee of the island and carries almost no
-free-surface variance. A cell at 12.0753$^\circ$E, 37.9747$^\circ$N with a bed
-level below $-0.3$~m was used instead, consistent with earlier versions of the
-model.
+Marettimo tide gauge.
 
 Water-level skill was quantified with the raw root-mean-square error, the
 bias, and the anomaly root-mean-square error computed after removing the
@@ -221,8 +225,8 @@ respective means, together with the linear correlation and the ratio of
 modelled to observed standard deviation. The three error measures are related
 by $\mathrm{RMSE}^2 = \mathrm{bias}^2 + \mathrm{RMSE}_{\mathrm{anom}}^2$, so
 reporting them jointly separates a constant reference-level offset from
-genuine dynamic error in phase and amplitude. Reporting either measure alone
-would confound the two. The first simulated day was discarded as spin-up.
+genuine dynamic error in phase and amplitude. The first simulated day was
+discarded as spin-up.
 
 Lagrangian skill was assessed against GPS-tracked surface drifters released in
 the lagoon interior during the simulation window. Simulated trajectories were
@@ -247,19 +251,10 @@ gridded output every 1800~s, so the comparison is not affected by differences
 in output sampling.
 
 The design is a complete factorial in three factors, wave coupling, seagrass
-roughness and bed mobility, and all eight cells were obtained.
-
-The four mobile-bed members exclude the contribution of suspended sediment to
-the density field. With it enabled, the two members combining a mobile bed with
-no wave coupling abort on the velocity cap at the same offshore cell and the
-same simulated instant on independent attempts, while the wave-coupled members
-carrying identical sediment settings complete. Suspended sediment feeding the
-baroclinic pressure gradient is the only route by which sediment can move
-momentum in a deep offshore cell holding no erodible material, and excluding it
-also removes a spurious 2.4~m accumulation at 500~m depth otherwise present in
-the wave-coupled members. All four mobile-bed members therefore carry the same
-setting, which is what makes them comparable to one another. The fixed-bed
-members have no sediment module for it to apply to.
+canopy and bed mobility, and all eight cells were obtained. Suspended sediment
+does not contribute to the density field in the four mobile-bed members, which
+therefore share that setting, and the fixed-bed members carry no sediment
+module.
 
 Erodible sediment is confined to depths at which waves can plausibly move it.
 Available thickness is held at 0.5~m per fraction above 15~m depth and tapered
