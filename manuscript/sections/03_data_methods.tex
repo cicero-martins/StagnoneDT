@@ -118,7 +118,8 @@ occupies, which for a plant whose leaves lie over is shorter than the leaf. The
 flume measurements of \citet{CiraoloFerreri2006} give deflected canopy thickness
 between 0.2 and 0.6 of the water depth, and the large-scale experiments of
 \citet{Prinos2010} adopt submergence ratios of 0.323, 0.423 and 0.500, so
-0.40~m was taken for a basin of mean depth 0.95~m.
+0.40~m was taken for a basin of mean depth 0.95~m. The drag coefficient is the
+rigid-cylinder value.
 
 Fractional cover from the classification multiplies the areal density and
 nothing else, height and diameter being properties of the plant rather than of
@@ -132,50 +133,35 @@ confounded by a difference in bare-substrate roughness.
 
 \begin{table}[H]
   \centering
-  \caption{Canopy parameters. Areal densities are per leaf and are multiplied by
-  the fractional cover of the classification before use. No value was adjusted
-  against an observation used to evaluate the model.}
+  \caption{Canopy parameters. \emph{P.\ oceanica} values are from
+  \citet{CiraoloFerreri2006}, except the canopy height, which is from
+  \citet{Prinos2010}. \emph{C.\ nodosa} values are from \citet{Morris2008},
+  with the shoot density also bracketed by \citet{Cancemi2002}.}
   \label{tab:veg}
-  \begin{tabular}{llll}
+  \begin{tabular}{lrr}
     \toprule
-    Parameter & \emph{P.\ oceanica} & \emph{C.\ nodosa} & Source \\
+    Parameter & \emph{P.\ oceanica} & \emph{C.\ nodosa} \\
     \midrule
-    Shoot density (m$^{-2}$) & 500 & 800 &
-      \citet{CiraoloFerreri2006}; \citet{Morris2008}, \citet{Cancemi2002} \\
-    Leaves per shoot & 6 & 3 &
-      \citet{CiraoloFerreri2006}; \citet{Morris2008} \\
-    Leaf width $D$ (m) & 0.010 & 0.004 &
-      \citet{CiraoloFerreri2006}; \citet{Morris2008} \\
-    Canopy height $h_v$ (m) & 0.40 & 0.15 &
-      \citet{Prinos2010}; \citet{Morris2008} \\
-    Leaf density (kg~m$^{-3}$) & 900 & 900 & \citet{Prinos2010}, Table 1 \\
-    Drag coefficient $C_D$ & 0.8 & 0.8 & rigid cylinder \\
+    Shoot density (m$^{-2}$)      & 500   & 800   \\
+    Leaves per shoot              & 6     & 3     \\
+    Leaf width $D$ (m)            & 0.010 & 0.004 \\
+    Canopy height $h_v$ (m)       & 0.40  & 0.15  \\
+    Leaf density (kg~m$^{-3}$)    & 900   & 900   \\
+    Drag coefficient $C_D$        & 0.8   & 0.8   \\
     \bottomrule
   \end{tabular}
 \end{table}
 
 The \emph{C.\ nodosa} values come from a flume study of that species collected
-in a sheltered tidal lagoon \citep{Morris2008}, which reports leaf width of
+in a sheltered tidal lagoon \citep{Morris2008}, which measured leaf width of
 $3.8 \pm 0.4$~mm, $3.5 \pm 1.1$ leaves per shoot and an undeflected canopy
-height of $0.17 \pm 0.02$~m, deflecting to about 0.04~m at
-0.3~\si{\metre\per\second}. Its shoot density of $520 \pm 69$~m$^{-2}$ brackets
-the value used from below and the Mediterranean field range of 925 to
-1925~m$^{-2}$ \citep{Cancemi2002} brackets it from above. Leaf density is the
-one canopy parameter for which no measurement of \emph{C.\ nodosa} was
-available, and the \emph{P.\ oceanica} value was carried across. It governs
-only the bending response.
-
-One tension should be recorded. \citet{DeMarchis2012} assigned Nikuradse
-roughness heights of 0.3~m to \emph{C.\ nodosa} and 0.1~m to
-\emph{P.\ oceanica} in a depth-averaged model of this lagoon, making
-\emph{C.\ nodosa} the rougher class, where the frontal area implied by
-Table~\ref{tab:veg} makes \emph{P.\ oceanica} the larger obstruction by a factor
-of about eight. The two are not the same quantity, and the difference is
-bounded in any case. \emph{C.\ nodosa} occupies 22.5\% of the classified links
-at a median fractional cover of 0.181, against 48.6\% and 0.685 for
-\emph{P.\ oceanica}, so it carries about 1.5\% of the total canopy frontal area
-in the model, and under the upper Mediterranean density it would carry under
-4\%.
+height of $0.17 \pm 0.02$~m. Its shoot density of $520 \pm 69$~m$^{-2}$ and the
+Mediterranean field range of 925 to 1925~m$^{-2}$ \citep{Cancemi2002} bracket
+the value used. Leaf density was carried across from \emph{P.\ oceanica}, no
+measurement of the second species being available, and it governs only the
+bending response. The class occupies 22.5\% of the classified links against
+48.6\% for \emph{P.\ oceanica}, so at the cover fractions above it carries about
+1.5\% of the total canopy frontal area.
 
 The spatial assignment of classes came from a supervised random-forest
 classification of PlanetScope SuperDove imagery acquired in August 2023 at 3~m
