@@ -42,18 +42,22 @@
 
 \begin{frontmatter}
 
-%% Working title, chosen 2026-08-08 after the closed factorial moved the
-%% dominant interaction from roughness x bed mobility to waves x bed mobility.
-%% Seagrass roughness left the subject position because it is third order:
-%% 0.009 or less in three of its four conditions.
-%% Two alternatives are on the table for the co-authors to weigh in on:
-%%   (i)  Wave coupling helps or hurts lagoon transport prediction depending on
-%%        whether the bed can move
-%%          -- states the finding rather than the topic, and the conditional
-%%             form claims no more than the eight cells show
-%%   (ii) Transport validation of a shallow lagoon model: interacting effects of
-%%        wave coupling and bed mobility
-%%          -- the conservative two-part form, method then mechanism
+%% THE TITLE NO LONGER MATCHES THE PAPER and is awaiting the co-authors.
+%% It was chosen on 2026-08-08, when the seagrass arm was believed to be third
+%% order. That arm was not resisting the flow. Rebuilt on the vegetation module
+%% it becomes the largest effect in the design, and the wave x bed interaction
+%% the current title names survives only where the canopy is absent, which
+%% Section 5.3 now reports as an artefact rather than as the result.
+%% Three candidates, in decreasing boldness:
+%%   (i)   An omitted seagrass canopy manufactures an interaction between wave
+%%         coupling and bed mobility in a shallow lagoon
+%%           -- states the finding, and it is the finding
+%%   (ii)  Seagrass canopy drag is the first-order control on Lagrangian
+%%         transport in a shallow Mediterranean lagoon
+%%           -- the positive result without the cautionary one
+%%   (iii) Process attribution in a shallow vegetated lagoon: what an omitted
+%%         canopy does to a factorial ensemble
+%%           -- conservative two-part form, subject then mechanism
 \title{Interacting effects of wave coupling and bed mobility on Lagrangian
        transport in a shallow vegetated lagoon}
 
@@ -73,27 +77,28 @@
 \begin{abstract}
 %% 240 words. ECSS limit is 250 (confirmed 2026-08-07). Not the 150-word ENVSOFT
 %% cap that applies to the reservoirs manuscripts.
-Coastal lagoon models are routinely validated against water level, yet water
-level may constrain transport weakly. We test this in the Stagnone di Marsala,
-a micro-tidal Sicilian lagoon of sub-metre mean depth colonised by
-\emph{Posidonia oceanica}, using a three-dimensional Delft3D Flexible Mesh model
-coupled to SWAN over nine days of July 2025. A complete factorial in wave
-coupling, bed mobility and whether seagrass resistance is uniform or distributed
-from a satellite classification gives eight configurations, each scored against
-three tide gauges and 35 GPS surface drifters. The eight are indistinguishable
-in water level, with anomaly RMSE differing by at most four millimetres, while
-their Liu--Weisberg skill spans 0.469 to 0.705 and their endpoint separation 336
-to 625~m. Neither wave coupling nor bed mobility improves Lagrangian skill on
-its own, and each is what makes the other work. Wave coupling on a fixed bed
-costs 0.035 to 0.042; bed mobility without waves costs 0.071 to 0.075 and makes
-every drifter worse; together they gain 0.119 to 0.232. The two worst and the
-two best configurations are built from the same pair of treatments. Distributed
-roughness is a third-order refinement that pays only when both are present.
-Splitting the trajectory error into magnitude and direction shows the two moving
-together across the design, so the treatments act on the velocity field as a
-whole rather than on separable parts of the error. Surface speed exceeds bed
-speed by 1.85 to 2.20 times, a vertical structure set by wave coupling rather
-than by bed mobility.
+Coastal lagoon models are routinely validated against water level, while the
+quantity governing habitat connectivity and dispersal is transport. We ask
+which modelled processes control transport in a shallow vegetated
+lagoon, and whether water level can identify them. A three-dimensional Delft3D
+Flexible Mesh model of the Stagnone di Marsala, a micro-tidal Sicilian lagoon of
+sub-metre mean depth colonised by \emph{Posidonia oceanica}, was coupled to SWAN
+over nine days of July 2025. Eight configurations form a complete
+factorial in wave coupling, bed mobility and seagrass canopy, the canopy
+parameterised from published measurement and distributed by satellite
+classification. Each was scored against three tide gauges and 35 GPS
+surface drifters held out of every model decision. Liu--Weisberg skill spans
+0.469 to 0.735, and the ensemble divides on the canopy alone, which raises skill
+by 0.087 to 0.256 with every bootstrap interval clear of zero. Without the
+canopy, wave coupling and bed mobility each reduce skill alone yet gain it
+together, an interaction of $+0.189$ that falls to $+0.028$ once the canopy is
+present. Water level separates the configurations only at the gauge inside the
+vegetated basin, by 36~mm in anomaly RMSE against 2 and 9~mm near the inlets.
+The canopy is therefore the first-order control on transport here, and the
+apparent synergy between waves and bed mobility was compensation for its
+absence. Factorial attribution can yield a clean, plausible interaction that is
+an artefact of an omitted process, detectable only against an observation type
+the calibration did not use.
 \end{abstract}
 
 %% ECSS allows 1-7 keywords. Avoid multi-word keywords joined by 'and'/'of'.

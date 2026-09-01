@@ -1,140 +1,213 @@
 \section{Discussion}
 \label{sec:discussion}
 
-\subsection{Water level cannot separate these configurations}
+\subsection{Where water level can and cannot separate configurations}
 
-The eight members differ in wave coupling, bed mobility and the spatial
-treatment of vegetation resistance, and they produce water level records that
-are almost the same. Anomaly RMSE varies by at most 4.2~mm between members at
-any station, and no member is consistently best across the three stations. Over
-the same simulations Liu--Weisberg skill spans 0.469 to 0.705 and endpoint
-separation spans 336 to 625~m.
+The eight members differ in wave coupling, bed mobility and the representation
+of the seagrass canopy, and at the two stations nearest the inlets they produce
+water level records that are almost the same. Anomaly RMSE varies by 2.1~mm
+between members at BocaSud and by 9.2~mm at BocaNord, in neither case with an
+ordering that survives from one station to the other.
 
-A calibration exercise conducted on water level alone would therefore have no
-basis on which to prefer any of these configurations, and would plausibly
-select whichever member happened to minimise a station-averaged RMSE by a
-margin smaller than the measurement uncertainty. This is the case for treating
-Lagrangian observations as a distinct constraint rather than as a confirmation
-of a model already tuned to tide gauges. It also suggests that the frequent
-practice of reporting coastal model skill through water level statistics alone
-may certify transport behaviour that was never examined.
+At AltaVilaEst it varies by 36.2~mm and the ordering is unambiguous. The four
+vegetated members give 0.015 to 0.027~m and the four bare ones 0.045 to
+0.051~m, with correlations of 0.94 to 0.98 against 0.78 to 0.82. That station
+is the innermost of the three, in the shallow northern basin where the meadow is
+densest, and it is the only one whose water level is set more by what happens
+inside the lagoon than by the boundary.
 
-The reason is structural rather than incidental. Water level in a micro-tidal
-basin with two open connections is set largely by the offshore forcing and the
-basin's capacity to fill and drain, both of which the eight members share.
-Transport depends on the velocity field, which they do not.
+Two conclusions follow, and they pull in different directions. The first is the
+familiar one. A calibration exercise conducted on the outer stations alone would
+have no basis on which to prefer any of these configurations, and would
+plausibly select whichever member minimised a station-averaged RMSE by a margin
+smaller than the measurement uncertainty. Over the same simulations
+Liu--Weisberg skill spans 0.469 to 0.735 and endpoint separation spans 345 to
+618~m. Reporting coastal model skill through water level statistics alone can
+certify transport behaviour that was never examined.
 
-\subsection{Wave coupling and bed mobility are not separable}
+The second is a qualification of it. Water level is not inherently blind to
+these processes, it is blind where it is measured. The station inside the
+vegetated basin separates the ensemble on exactly the factor the drifters
+identify, and it does so on the same side. Gauge placement, rather than the
+choice of water level as a variable, is what decided the outcome here. In a
+micro-tidal basin with two open connections the level near an inlet is set
+largely by the offshore forcing and the basin's capacity to fill and drain,
+both of which the eight members share.
 
-The central result is that neither wave coupling nor bed mobility improves
-Lagrangian prediction on its own, and that each is what makes the other work.
+\subsection{The seagrass canopy is the first-order control on transport}
 
-Applied singly they are the two treatments that make the model worse. Wave
-coupling on a fixed bed costs 0.035 to 0.042 in skill. Bed mobility without
-waves costs 0.071 to 0.075, and does so for every drifter in the set, 35 of 35
-in both roughness treatments, which is as consistent as a paired comparison can
-be. Applied together they gain 0.119 to 0.232 depending on which is treated as
-the increment. The two worst and the two best members of the ensemble are built
-from the same pair of treatments and differ only in whether both are switched
-on.
+The central result is that a physically grounded canopy is what this basin's
+transport prediction needs, and that it is the largest of the three treatments
+examined by a wide margin.
 
-The mechanism is available in the model even if this design cannot isolate it.
-Wave orbital motion sets the bed shear stress that mobilises sediment, so a
-mobile bed without waves erodes under current stress alone and evolves towards a
-bathymetry the wave field never shaped. The reverse is equally intelligible: a
-wave field acting on a bed that cannot respond imposes stress with no
-morphological consequence, so its contribution to the momentum balance is
-carried entirely by the flow, and in this basin over this window that
-contribution is slightly negative. Neither half of the argument establishes the
-mechanism, and we report the interaction as an empirical result of the design.
+Introducing the canopy raises Liu--Weisberg skill by 0.087 to 0.256 depending on
+the configuration it is introduced into, with every bootstrap interval clear of
+zero and between 26 and 32 of the 35 drifters improving in each of the four
+contrasts. No other factor in the design produces four contrasts that share a
+sign. Wave coupling ranges from $-0.042$ to $+0.155$ and bed mobility from
+$-0.071$ to $+0.119$, in both cases changing sign according to the state of the
+other two factors.
 
-The practical consequence is that neither treatment can be assessed on its own.
-A wave contribution measured on a fixed bed and a bed contribution measured
-without waves each describe a corner of the design rather than the treatment,
-and in this basin the two corners carry opposite signs to the ones the full
-design gives. Where two model components are expected to interact, the
-conditions under which an effect was measured belong with the effect.
+The effect is also a floor rather than a tuning. None of the canopy parameters
+was fitted to any observation used to score it. Shoot density and leaf width
+come from flume measurements of \emph{Posidonia oceanica}
+\citep{CiraoloFerreri2006}, scaled by the fractional cover of the satellite
+classification. Canopy height and leaf density come from published
+measurements of the same species \citep{Prinos2010}. The drag coefficient is
+the standard rigid-cylinder value. The drifters were held out of every one of
+those choices and confirm the result afterwards.
 
-\subsection{What the interaction acts on}
+\subsection{What the canopy acts on}
 
-Splitting the trajectory error into a magnitude part and a direction part
-locates the interaction (Figure~\ref{fig:decomp}). For each drifter the
-simulated path length, the simulated net displacement and the mean angular
+Splitting the trajectory error into a magnitude part and a direction part shows
+that the canopy acts on both at once (Figure~\ref{fig:decomp}). For each drifter
+the simulated path length, the simulated net displacement and the mean angular
 difference between simulated and observed step directions were computed over the
 scored window.
 
-The ordering is monotonic. The no-wave
-mobile-bed members are worst on both, at 0.73 of the observed path length and
-19.8$^\circ$ of heading error. The four fixed-bed members sit between them and
-the rest, at 0.77 to 0.80 and 15.8 to 16.2$^\circ$, and are indistinguishable
-from each other. Wave coupling with a mobile bed reaches 0.84 and 11.3$^\circ$,
-and adding distributed roughness reaches 0.88 and 8.5$^\circ$.
+The four bare members span 0.73 to 0.84 of the observed path length and 11.3 to
+19.8$^\circ$ of heading error. The four vegetated members collapse into a much
+narrower band, 0.88 to 0.94 and 8.3 to 9.0$^\circ$, and they do so regardless of
+their wave and bed treatment. Every treatment that improves the trajectory
+improves both components together and every treatment that degrades it degrades
+both, which is what would be expected if they act on the velocity field as a
+whole rather than on separable components of the error.
 
-The two parts of the error move together. Every treatment that improves the
-trajectory improves both at once, and every treatment that degrades it degrades
-both. That is what would be expected if they act on the velocity
-field as a whole rather than on separable components of the error, and it means
-no treatment here can be described as correcting distance or direction
-specifically.
-
-Distributed roughness is a third-order refinement. It changes skill by 0.009 or
-less in three of its four conditions and by 0.081 in the fourth, which is on a
-mobile bed with wave coupling. Its effect on the wave field is nonetheless real
-and correctly ordered: mean orbital velocity at the bed falls by 14.3\% over
-\emph{Posidonia}, 13.7\% over \emph{Cymodocea}, 11.3\% over sand and 3.3\% over
-the exposed rock near the inlets, following canopy density. The canopy
-parametrisation does to the waves and to the near-bed layer what a canopy
-should. What it does not do, unless the bed can also respond, is change surface
-transport.
+The mechanism the model offers is vertical. Section~\ref{sec:res_3d} shows the
+canopy reducing bed-layer speed by roughly a factor of four while reducing
+surface speed by much less, taking the surface-to-bed ratio from about 2 to
+about 5. A surface drifter samples the top of that profile. Removing momentum
+from the lower layers redistributes it in a way that changes where the surface
+layer goes, and that is visible in the heading error as much as in the distance
+travelled.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{transport_error_decomposition}
   \caption{The trajectory error split into magnitude and direction. (a) Path
   length and (b) net displacement, both as the ratio of simulated to observed.
-  (c) Mean angular difference between simulated and observed step directions.}
+  (c) Mean angular difference between simulated and observed step directions.
+  Deployment 4 is absent from all three panels, its three positions being too
+  few to form the step bearings the heading metric requires.}
   \label{fig:decomp}
 \end{figure}
 
-\subsection{The bed-mobility caveat}
+\subsection{Waves and bed mobility, and what their apparent synergy was}
+\label{sec:disc_synergy}
 
-The configuration that reproduces observed transport depends on morphodynamics
-whose critical shear stress for erosion has not been constrained by a repeated
-bathymetric survey. Over nine days the lagoon bed changes by up to 1.4~m in
-isolated cells, against a median of 0.05~m, in a basin whose mean depth is
-0.95~m. That rate of bed change is not physically
-plausible rate for this system.
+In the bare arm, wave coupling and bed mobility each reduce Lagrangian skill
+when applied alone, by 0.035 and 0.071, the latter degrading all 35 drifters.
+Applied together they raise it by 0.084. An additive model predicts $-0.105$, so
+the interaction term is $+0.189$, and the two worst and the second-best members
+of the ensemble are built from the same pair of treatments differing only in
+whether both are switched on. Taken on its own that is a striking result about
+process coupling.
 
-Two readings remain open. Bed mobility may be standing in for a deficiency in
-the initial bathymetry, which dates from an earlier survey, in which case the
-improvement is a compensation: an evolving bed would be moving an outdated
-morphology towards the present one, and the gain would not survive a corrected
-bed. Or the model may genuinely require an evolving bed to reproduce transport
-in a system where the seagrass canopy and the sediment surface adjust to one
-another, in which case the calibration problem is real but the physics is too.
+It does not survive the canopy. In the vegetated arm the same interaction term
+is $+0.028$, the wave contrast on a mobile bed is $-0.014$ with an interval
+crossing zero, and the bed contrast with waves is $+0.018$, also crossing zero.
+The standard deviation of skill across the four cells is 0.057 in the bare arm
+and 0.016 in the vegetated one.
 
-The two readings are distinguishable, and the observation that would separate
-them is a bathymetric survey rather than a modelling choice. Satellite-derived
-bathymetry over repeated epochs is the most tractable route currently available.
-Until then the interaction should be read as established in the model and
-unverified against the bed.
+The reading we propose is that the synergy was a compensation. Without a canopy
+the modelled bed is too smooth and the vertical profile too uniform, and a wave
+field acting on a bed that can respond reproduces by another route part of the
+flow structure the meadow would have produced. Put the meadow in and there is
+nothing left for that combination to compensate. This is an inference from the
+design rather than a demonstration of the mechanism, but it is consistent with
+the vertical evidence, where the canopy moves the surface-to-bed ratio by 2.6 to
+3.1 and wave coupling moves it by 0.2 to 0.8.
+
+The practical consequence generalises beyond this basin. An ensemble that omits
+a first-order process can produce a well-defined, statistically clean and
+physically plausible interaction between two of the processes it does include.
+The interaction is a property of the ensemble rather than of the system, and
+nothing internal to the ensemble reveals that. What revealed it here was an
+independent observation type, the drifters, and a treatment that had been
+assumed to be a refinement.
+
+\subsection{The bed-mobility caveat, revisited}
+
+In an earlier reading of this ensemble we asked whether the improvement from a
+mobile bed might be a compensation for an outdated bathymetry, on the reasoning
+that an evolving bed would be moving an old morphology towards the present one.
+Over nine days the modelled lagoon bed changes by up to 1.4~m in isolated cells
+against a median of 0.05~m, in a basin whose mean depth is 0.95~m, which is not
+a physically plausible rate for this system.
+
+The corrected ensemble bears on that question directly. The improvement from a
+mobile bed exists only in the bare arm, where it is $+0.119$ with waves, and
+falls to $+0.018$ with an interval crossing zero once the canopy is present. So
+part of what bed mobility was compensating for was the absent canopy rather than
+the old bathymetry.
+
+This does not remove the bathymetric concern. It does mean that the evidence
+which motivated it was resting partly on a defect that has since been repaired,
+and that the configuration reproducing observed transport no longer depends on
+morphodynamics whose critical shear stress has not been constrained by survey.
+The best-performing member of the ensemble carries a fixed bed. A repeated
+bathymetric survey remains the observation that would settle the question, and
+satellite-derived bathymetry over repeated epochs is the most tractable route
+currently available, but the transport result no longer waits on it.
 
 \subsection{Vertical structure}
 
-Surface speed exceeds bed speed by a factor between 1.85 and 2.20 in the lagoon
-interior, in a basin whose mean depth is below one metre. A depth-averaged
-representation would assign a single velocity to the layer a surface drifter
-samples and the layer that governs bed shear stress, which differ by a factor of
-two.
-
-The ratio is set by wave coupling. The four members without waves lie between
-1.85 and 1.87 whatever their bed treatment, and the four with waves between 2.05
-and 2.20, with bed mobility contributing an order of magnitude less than the
-wave field. Wave-induced mixing and streaming acting on the near-bed layer is
-the expected route, and the sign and magnitude are consistent with it.
+Surface speed exceeds bed speed by a factor between 4.4 and 5.3 in the lagoon
+interior when the canopy is represented, and between 1.8 and 2.1 when it is not,
+in a basin whose mean depth is below one metre. A depth-averaged representation
+would assign a single velocity to the layer a surface drifter samples and the
+layer that governs bed shear stress, and in the vegetated configuration those
+differ by a factor of five.
 
 This is consistent with what \citet{DeMarchis2012} found from field measurements
 and three-dimensional modelling in the same lagoon, and it supplies a
 quantitative basis for the choice of a three-dimensional solver here. It also
-shows that the vertical structure responds to the same model choice that
-dominates transport, so the two are not independent properties of the basin.
+sharpens that basis. The vertical structure is set by the treatment that also
+dominates transport, so a depth-averaged model of this system would not simply
+lose resolution in the vertical, it would lose the representation of the process
+that governs where material goes.
+
+\subsection{Limitations}
+\label{sec:disc_limits}
+
+Three limitations bear on how far these results extend.
+
+\textbf{The canopy does not reach the wave model.} In this coupling the flow
+model passes a bed roughness field to the wave model, and the canopy enters the
+momentum equation of the flow rather than that roughness field. Mean orbital
+velocity at the bed therefore changes by less than 2.5\% when the canopy is
+introduced, and not in an order that follows canopy density
+(Section~\ref{sec:res_classes}). Seagrass is known to attenuate waves as well as
+currents, so the wave field in these simulations is that of a bare bed and the
+wave contrasts reported here are conditional on that. Representing canopy
+dissipation inside the spectral model is the natural next step and would be
+expected to change the wave contrasts rather than the canopy ones, the latter
+being measured on the flow.
+
+\textbf{Reconfiguration is mechanical, and sensitive to a tabulated parameter.}
+The canopy in these runs bends under load rather than holding a fixed height,
+and that response is genuinely dynamic. A controlled pair differing only in
+leaf density, 900 against 1020~\si{\kilo\gram\per\cubic\metre}, gives a velocity
+ratio of 1.005 in the slowest quintile of the record, 0.908 in the fastest and
+0.807 in the fastest 5\%. A fixed shortening of the canopy would give a constant
+ratio, so the bending responds to load rather than to configuration alone.
+
+Two things follow. A 13\% change in leaf density moves the velocity field by
+20\% at the upper end of the range, which is a strong sensitivity to a value
+taken from a published table rather than measured in this meadow. And the
+bending is mechanical, where the flume measurements of
+\citet{CiraoloFerreri2006} describe reconfiguration empirically, through a
+friction factor that varies by a factor of twelve between 2 and
+30~\si{\centi\metre\per\second}. That empirical formulation is available in the
+model only in its depth-averaged solver, and the model used here is
+three-dimensional, so the two cannot be compared directly and the agreement
+between them was not tested.
+
+\textbf{The window is short and the vegetated members are restart segments.}
+The scored interval is two days for water level and thirty-four hours for the
+drifter record, within a single summer season. The vegetated members are
+three-day restart segments while the bare members are continuous nine-day runs,
+and although a control run confirms that the restart contributes nothing to the
+water level result (Section~\ref{sec:res_wl}), seasonal behaviour, winter storm
+conditions and the interaction of the canopy with a mobile bed over longer
+periods are outside what this design can address.

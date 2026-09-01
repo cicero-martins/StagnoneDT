@@ -116,16 +116,17 @@ We apply the three-dimensional unstructured-mesh hydrodynamic solver Delft3D
 Flexible Mesh (D-Flow FM; \citealp{Kernkamp2011}) coupled online with the
 spectral wave model SWAN \citep{Booij1999}, driven by ERA5 reanalysis
 meteorological forcing and CMEMS Mediterranean physical reanalysis boundary
-conditions, over a nine-day period in July 2025. Spatially variable seagrass
-resistance is parametrised through \citet{Baptist2007} trachytopes derived
-from a supervised random-forest classification of PlanetScope multispectral
-imagery acquired in August 2023, following the mapping methodology of
-\citet{Maltese2025}. Model performance is assessed against in-situ water level
+conditions, over a nine-day period in July 2025. The seagrass canopy is
+represented as a three-dimensional drag field resolved per sigma layer, with
+its parameters taken from published flume and large-scale measurements of the
+same species and its spatial distribution from a supervised random-forest
+classification of PlanetScope multispectral imagery acquired in August 2023,
+following the mapping methodology of \citet{Maltese2025}. Model performance is assessed against in-situ water level
 time series at three lagoon stations and an offshore tide gauge, and against
 GPS surface drifter trajectories from a field campaign concurrent with the
 simulation period, using the Liu--Weisberg Lagrangian skill score and endpoint
 proximity as metrics. A complete $2\times2\times2$ factorial in wave coupling,
-seagrass roughness and morphodynamic bed update attributes differences in
+seagrass canopy and morphodynamic bed update attributes differences in
 Lagrangian skill to individual physical mechanisms and to their interactions
 (Section~\ref{sec:methods_experiments}).
 
