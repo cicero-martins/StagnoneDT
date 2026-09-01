@@ -30,7 +30,10 @@ from _ensemble import KEYS, MODELDIR
 
 ROOT = '/home/ciceromartinsjr/StagnoneDT/'
 MODEL = ROOT + 'model/'
-ARL = MODEL + 'dflowfm_v04AE_vr/stagnone_trachytopes_v3.arl'
+# the nine-decimal .arl. Class assignment matches on a 200 m KD-tree
+# tolerance so the precision fix does not change it, but there is no
+# reason to keep reading the file the model could not match.
+ARL = MODEL + 'dflowfm_v04AE_nowaves_vr_arlfix/stagnone_trachytopes_v3.arl'
 
 MEMBERS = [(k, MODELDIR[k]) for k in KEYS]
 LON = (12.432, 12.484)
