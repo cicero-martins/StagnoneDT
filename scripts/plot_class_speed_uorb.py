@@ -32,6 +32,7 @@ import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -108,9 +109,10 @@ def main():
         Line2D([], [], color=MUTED, lw=2.0, ls='-', marker='s', ms=6,
                label='surface layer'),
         Line2D([], [], color=MUTED, lw=2.0, ls='--', marker='o', ms=6,
-               label='bed layer')],
+               label='bed layer'),
+        Patch(facecolor=MUTED, alpha=0.22, label='range over the four cells')],
         fontsize=9, frameon=False, loc='upper center',
-        bbox_to_anchor=(0.5, -0.11), ncol=4, columnspacing=1.5)
+        bbox_to_anchor=(0.5, -0.11), ncol=3, columnspacing=1.5)
     style(ax)
 
     # (b) canopy effect on bed speed, averaged over the four cells
