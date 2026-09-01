@@ -1,54 +1,64 @@
 \section{Discussion}
 \label{sec:discussion}
 
-\subsection{A canopy is not a rough bed, and this basin can tell}
+\subsection{Where the canopy drag is applied}
 
-The question this study set out to answer was which modelled processes control
-transport in a shallow vegetated lagoon. The answer is the seagrass canopy, by a
-margin that leaves the other two treatments second order, and the mechanism the
-model offers is vertical rather than frictional.
+This study asked which modelled processes control transport in a shallow
+vegetated lagoon, and the answer the ensemble gives is the seagrass canopy, by a
+margin that leaves the other two treatments second order. The mechanism the
+model offers for that is vertical rather than frictional, since introducing the
+canopy removes momentum from the lower part of the water column without removing
+a proportionate amount from the upper part, roughly doubling the ratio of
+surface to bed speed. Such a profile is the signature of a canopy shear layer
+rather than of a rougher bed, which acts through a logarithmic profile whose
+surface-to-bed ratio is bounded well below the value observed here
+\citep{Nepf2012}, and the bed shear stress confirms the distinction by its sign,
+falling under the canopy where an equivalent bed roughness raises it over the
+same cells. Since a surface drifter samples the top of that profile, a treatment
+that reshapes the profile relocates the drifter even where it changes the
+depth-averaged transport little.
 
-Introducing the canopy removes momentum from the lower part of the water column
-without removing a proportionate amount from the upper part, so the ratio of
-surface to bed speed roughly doubles. That is the signature of a canopy shear
-layer rather than of a rougher bed, which acts through a logarithmic profile
-whose surface-to-bed ratio is bounded well below the value observed here
-\citep{Nepf2012}. The bed shear stress confirms the distinction by its sign, the
-canopy sheltering the bed where an equivalent bed roughness raises the stress
-over the same cells. A surface drifter samples the top of that profile, so a
-treatment that reshapes the profile relocates the drifter even where it changes
-the depth-averaged transport little.
+That places the present result in a particular relation to the two earlier
+models of this basin rather than in opposition to them.
+\citet{Ingrassia2024} obtained a best-fit uniform Gauckler--Strickler
+coefficient for the vegetated lagoon within a depth-averaged framework, where an
+equivalent bed roughness is the appropriate representation of a canopy because
+there is no vertical profile for the canopy to shape. \citet{DeMarchis2012}
+worked in three dimensions and assigned Nikuradse roughness heights by seagrass
+class, establishing the vertical structure of the wind- and tide-driven
+circulation that motivates using a three-dimensional solver here at all. Both
+answered the questions they set, and a roughness representation reproduces the
+drag the meadow exerts. What has changed since is the availability of a
+canopy formulation that resolves that drag over the vertical extent the plants
+occupy, and the contribution of the present work is to quantify what that
+capability buys in a basin of this depth. The canopy parameters used here were
+taken from published measurement of the two species and were not adjusted
+against any observation, so the improvement follows from where the drag is
+applied rather than from how it was tuned.
 
-This is what separates the present result from earlier models of the same basin.
-\citet{DeMarchis2012} represented the two seagrass species through Nikuradse
-roughness heights in a three-dimensional model, and \citet{Ingrassia2024}
-obtained a best-fit uniform Gauckler--Strickler coefficient for the vegetated
-lagoon in a depth-averaged one. Both treat the meadow as a property of the bed.
-Doing so reproduces the drag but not the profile, and it is the profile that the
-Lagrangian observations respond to. The canopy parameters used here were taken
-from published measurement of the two species and were not adjusted against any
-observation, so the improvement is a consequence of where the drag is applied
-rather than of how it was tuned.
-
-\subsection{Why one gauge saw this and two did not}
+\subsection{What each gauge position constrains}
 
 Water level separated the configurations at AltaVilaEst and at neither of the
-gauges near the inlets. The asymmetry is structural. In a micro-tidal basin with
-two open connections the level near an inlet is set largely by the offshore
-forcing and by the basin's capacity to fill and drain, both of which every
-configuration shares. The level in the interior is set by what the water does on
-its way there, which is what the canopy changes.
+gauges near the inlets, and the three positions constrain different parts of the
+problem. Agreement at the inlet gauges establishes that the offshore forcing,
+the datum and the exchange through the two mouths are right, and in a micro-tidal
+basin with two open connections those are what set the level there, so every
+configuration reproduces it equally well. Agreement in the interior tests
+something the outer pair cannot, because the level there is set by what the
+water does on its way in, which is where the configurations differ. The two
+roles are complementary, and a match in the interior would be difficult to
+interpret without the exchange having been established first.
 
-The familiar reading of this is that water level constrains transport weakly and
-that Lagrangian observations are a distinct constraint rather than a
-confirmation \citep{Liu2011, Revelard2021}. That reading survives, but it needs a
-qualification the present result makes available. Water level is not inherently
-insensitive to the canopy. It is insensitive where it is usually measured, and
-the one gauge sited inside the vegetated basin identified the same factor as the
-drifters and ranked the configurations the same way. For a basin of this type
-the informative question is not whether to validate on water level but where to
-put the instrument, and the interior of the vegetated compartment is a
-substantially more discriminating location than the inlet.
+Read alongside the drifters, this refines the familiar argument that water level
+constrains transport weakly and that Lagrangian observations form a distinct
+constraint rather than a confirmation \citep{Liu2011, Revelard2021}. Water level
+is not inherently insensitive to the canopy, since the one gauge sited inside
+the vegetated basin identified the same factor as the drifters and ranked the
+configurations the same way. For a basin of this type the useful question is
+therefore less whether to validate on water level than where to place the
+instrument intended to discriminate, and the interior of the vegetated
+compartment is a considerably more informative position for that purpose than
+the inlet.
 
 \subsection{What an ensemble without a canopy reports}
 \label{sec:disc_synergy}
@@ -61,29 +71,30 @@ since wave orbital motion sets the bed stress that mobilises sediment and
 wave--tide coupling is known to govern the sediment dynamics of shallow
 micro-tidal basins \citep{Carniello2011}.
 
-That statement does not survive the canopy. In the vegetated half the same
-interaction term falls by most of its value and both contrasts lose their
-significance, and the spread of skill across the four configurations contracts
-by a factor of three.
+That statement weakens considerably once the canopy is present, since in the
+vegetated half the same interaction term falls by most of its value, both
+contrasts lose their significance, and the spread of skill across the four
+configurations contracts by a factor of three.
 
-The reading the rest of the evidence supports is compensation. Without a canopy
-the modelled profile is too uniform, and a wave field acting on a bed that can
-respond reproduces by another route part of the structure the meadow would have
-produced. With the meadow present there is nothing left for that combination to
-reproduce. This is an inference from the design rather than a demonstration of
-the mechanism, and it is consistent with the vertical evidence, where the canopy
-moves the surface-to-bed ratio by an order of magnitude more than wave coupling
-does.
+Compensation is the reading the rest of the evidence supports, in that without a
+canopy the modelled profile is too uniform and a wave field acting on a bed that
+can respond reproduces by another route part of the structure the meadow would
+have produced, leaving nothing for that combination to reproduce once the meadow
+is in place. This remains an inference from the design rather than a
+demonstration of the mechanism, though it is consistent with the vertical
+evidence, where the canopy moves the surface-to-bed ratio by an order of
+magnitude more than wave coupling does.
 
-The consequence is for how such an ensemble is read rather than for this basin
-alone. Canopy drag is commonly left out of lagoon and estuary models or folded
-into a bed roughness coefficient, and an ensemble built that way can still
-return a well-defined and statistically clean interaction between the processes
-it does carry. Here that interaction is confined to the configurations without a
-canopy, so it describes those configurations rather than the system. Nothing
-internal to the bare half of the design distinguishes the two readings. What
-distinguished them was varying the canopy as a factor in its own right and
-scoring the result against an observation type that no model decision had used.
+What follows from this bears on how such an ensemble is read rather than on this
+basin alone, since canopy drag is commonly left out of lagoon and estuary models
+or folded into a bed roughness coefficient, and an ensemble built that way can
+still return a well-defined and statistically clean interaction between the
+processes it does carry. Here that interaction is confined to the configurations
+without a canopy, so it describes those configurations rather than the system,
+and nothing internal to the bare half of the design distinguishes the two
+readings. What distinguished them was varying the canopy as a factor in its own
+right and scoring the result against an observation type that no model decision
+had used.
 
 \subsection{Limitations}
 \label{sec:disc_limits}
