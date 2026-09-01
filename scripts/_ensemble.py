@@ -131,20 +131,20 @@ FACTORS = {m[0]: dict(waves=m[3], roughness=m[4], bed=m[5]) for m in MEMBERS}
 # one for each combination of the two factors held fixed. Written as
 # (label, treated, control) so the effect is treated minus control.
 CONTRASTS = [
-    ('Waves | uniform, fixed bed',        'nodm',          'nowaves'),
-    ('Waves | vegetated, fixed bed',      'nodm_veg',      'nowaves_veg'),
-    ('Waves | uniform, mobile bed',       'bl',            'nowaves_dm'),
-    ('Waves | vegetated, mobile bed',     'veg',           'nowaves_vegdm'),
+    ('Waves | bare, fixed bed',        'nodm',          'nowaves'),
+    ('Waves | canopy, fixed bed',      'nodm_veg',      'nowaves_veg'),
+    ('Waves | bare, mobile bed',       'bl',            'nowaves_dm'),
+    ('Waves | canopy, mobile bed',     'veg',           'nowaves_vegdm'),
 
     ('Canopy | no waves, fixed bed',      'nowaves_veg',   'nowaves'),
     ('Canopy | waves, fixed bed',         'nodm_veg',      'nodm'),
     ('Canopy | no waves, mobile bed',     'nowaves_vegdm', 'nowaves_dm'),
     ('Canopy | waves, mobile bed',        'veg',           'bl'),
 
-    ('Bed mobility | no waves, uniform',  'nowaves_dm',    'nowaves'),
-    ('Bed mobility | no waves, veg.',     'nowaves_vegdm', 'nowaves_veg'),
-    ('Bed mobility | waves, uniform',     'bl',            'nodm'),
-    ('Bed mobility | waves, vegetated',   'veg',           'nodm_veg'),
+    ('Bed mobility | no waves, bare',  'nowaves_dm',    'nowaves'),
+    ('Bed mobility | no waves, canopy',     'nowaves_vegdm', 'nowaves_veg'),
+    ('Bed mobility | waves, bare',     'bl',            'nodm'),
+    ('Bed mobility | waves, canopy',   'veg',           'nodm_veg'),
 ]
 
 
