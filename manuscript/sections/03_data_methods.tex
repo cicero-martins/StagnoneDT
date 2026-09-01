@@ -25,8 +25,8 @@ computed from the UNESCO equation of state, with salinity and temperature both
 transported as active constituents so that the summer hypersaline gradient
 contributes baroclinically to the momentum balance. Bed levels were specified
 at cell centres from the bathymetry file. Bed roughness was prescribed as a
-Manning coefficient, uniform at 0.023~s~m$^{-1/3}$ in the reference
-configuration and spatially variable in the vegetated configurations
+Manning coefficient, uniform at 0.023~s~m$^{-1/3}$ in every member, with the
+seagrass canopy carried separately as a three-dimensional drag field
 (Section~\ref{sec:methods_roughness}). Wind drag followed a linear
 Charnock-type formulation with a drag coefficient of 0.025.
 
@@ -101,22 +101,73 @@ field prescribed over the lagoon. Three passive tracers were carried, one
 labelling the lagoon water mass and two representing the discharges from the
 Trapani airport and saltpan canal systems.
 
-\subsection{Seagrass roughness parametrisation}
+\subsection{Seagrass canopy parametrisation}
 \label{sec:methods_roughness}
 
-Spatially variable bed resistance was applied through the trachytope
-formulation, which assigns a roughness class to each flow link and combines
-classes within a computational cell by area weighting. Four classes were
-defined. Bare substrate was represented by Manning coefficients of 0.020 and
-0.028~s~m$^{-1/3}$ for sand and rock respectively. The two vegetated classes,
-\emph{Cymodocea nodosa} and \emph{Posidonia oceanica}, used the
-\citet{Baptist2007} formulation for submerged canopy resistance, which derives
-an equivalent Chezy coefficient from the canopy height $h_v$, the product of
-stem density and stem diameter $mD$, the drag coefficient $C_D$, and the bed
-Chezy coefficient $C_b$. \emph{C.\ nodosa} took $h_v = 0.15$~m,
-$mD = 3.2$~m$^{-1}$ and $C_D = 1.00$, and \emph{P.\ oceanica} took
-$h_v = 0.50$~m, $mD = 5.0$~m$^{-1}$ and $C_D = 0.80$, both with
-$C_b = 45$~m$^{1/2}$~s$^{-1}$. Roughness was updated every 300~s.
+The canopy was represented as a three-dimensional drag field rather than as an
+equivalent bed roughness. The \citet{Baptist2007} formulation, which the
+trachytope machinery of the model implements, condenses the canopy into a
+depth-averaged equivalent Chezy coefficient at the bed. That is the appropriate
+reduction in a depth-averaged solver, but this model is three-dimensional and
+the quantity the drifters sample is the top of a profile the canopy reshapes.
+The vegetation module was used instead, which resolves the canopy drag per
+sigma layer over the vertical extent the plants occupy, so a cell whose canopy
+fills two fifths of the water column carries drag in the layers within that
+fraction and none above it.
+
+Drag per unit volume follows the standard quadratic form, with a drag
+coefficient $C_D$, a stem diameter $D$, an areal stem density $m$ and a canopy
+height $h_v$. Table~\ref{tab:veg} gives the values and their provenance. None
+of them was fitted to any observation used to evaluate the model. Densities are
+expressed per leaf rather than per shoot, because it is the leaf that presents
+the frontal area, and \emph{P.\ oceanica} carries about six leaves per shoot
+\citep{CiraoloFerreri2006}. The canopy height is the vertical extent the drag
+occupies, which for a plant whose leaves lie over is not the leaf length. The
+flume measurements of \citet{CiraoloFerreri2006} report deflected canopy
+thickness between 0.2 and 0.6 of the water depth, and the large-scale
+experiments of \citet{Prinos2010} adopt submergence ratios of 0.323, 0.423 and
+0.500 as the realistic range, so 0.40~m was taken for a basin of mean depth
+0.95~m.
+
+Fractional cover from the classification multiplies the areal density and
+nothing else, height and diameter being properties of the plant rather than of
+how much bed it covers. Median cover is 0.685 for \emph{P.\ oceanica} and 0.181
+for \emph{C.\ nodosa}.
+
+Bed friction is a uniform Manning coefficient of 0.023~s~m$^{-1/3}$ in every
+member of the ensemble, vegetated or not, so the canopy is the only spatially
+variable resistance in the design and the contrast between the two arms is not
+confounded by a difference in bare-substrate roughness.
+
+\begin{table}[H]
+  \centering
+  \caption{Canopy parameters and their sources. Areal densities are per leaf and
+  are multiplied by the fractional cover of the classification before use. No
+  value was adjusted against an observation used to evaluate the model.}
+  \label{tab:veg}
+  \begin{tabular}{llll}
+    \toprule
+    Parameter & \emph{P.\ oceanica} & \emph{C.\ nodosa} & Source \\
+    \midrule
+    Shoot density (m$^{-2}$) & 500 & 800 & \citet{CiraoloFerreri2006}; \citet{DeMarchis2012} \\
+    Leaves per shoot & 6 & 3 & \citet{CiraoloFerreri2006} \\
+    Leaf width $D$ (m) & 0.010 & 0.004 & \citet{CiraoloFerreri2006} \\
+    Canopy height $h_v$ (m) & 0.40 & 0.15 & \citet{Prinos2010}; \citet{CiraoloFerreri2006} \\
+    Leaf density (kg~m$^{-3}$) & 900 & 900 & \citet{Prinos2010}, Table 1 \\
+    Drag coefficient $C_D$ & 0.8 & 0.8 & rigid cylinder, not adjusted \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Two checks were made after the parameters were fixed and were not used to
+choose any of them, both of which ask whether the result is a canopy or a
+rougher bed in disguise. Mean bed shear stress over the meadow falls from 0.037
+to 0.0026~Pa when the canopy is introduced, a factor of 14, while representing
+the same meadow as an equivalent bed roughness raises it to 0.049~Pa. A canopy
+shelters the bed and a rough bed does not, and the two treatments separate on
+the sign. Vertical structure gives the same answer. The ratio of surface to bed
+speed in the lagoon interior rises from 1.85 to 4.46, where a bed roughness
+acting alone cannot exceed the value set by the logarithmic profile it imposes.
 
 The spatial assignment of classes came from a supervised random-forest
 classification of PlanetScope SuperDove imagery acquired in August 2023 at 3~m
@@ -139,8 +190,8 @@ links at all.
   \includegraphics[width=\textwidth]{seagrass_classification}
   \caption{The seagrass map from imagery to model input. (a) PlanetScope
   SuperDove August 2023 median composite. (b) The random-forest classification,
-  with the six output classes collapsed to the four trachytope classes.
-  (c) The dominant trachytope class at each flow link, from the roughness file
+  with the six output classes collapsed to the four seagrass classes.
+  (c) The dominant class at each flow link, from the classification file
   the model reads, showing the mesh resolution the classification is sampled
   onto. The classification is computed over the whole scene, but only links
   inside the lagoon carry a canopy class.}
@@ -228,21 +279,21 @@ bathymetric survey.
   \centering
   \caption{Ensemble members, a complete $2\times2\times2$ factorial. All eight
   share the mesh, the nine-day window, the initial condition, and the boundary
-  and atmospheric forcing. The code marks wave coupling (W), distributed
-  roughness (R) and mobile bed (M), and is used throughout the results.}
+  and atmospheric forcing. The code marks wave coupling (W), seagrass
+  canopy (V) and mobile bed (M), and is used throughout the results.}
   \label{tab:ensemble}
   \begin{tabular}{lccc}
     \toprule
-    Member & Waves & Seagrass roughness & Bed \\
+    Member & Waves & Seagrass canopy & Bed \\
     \midrule
-    \texttt{{-}{-}{-}} & no  & uniform     & fixed \\
-    \texttt{{-}R{-}}   & no  & distributed & fixed \\
-    \texttt{W{-}{-}}   & yes & uniform     & fixed \\
-    \texttt{WR{-}}     & yes & distributed & fixed \\
-    \texttt{{-}{-}M}   & no  & uniform     & mobile \\
-    \texttt{{-}RM}     & no  & distributed & mobile \\
-    \texttt{W{-}M}     & yes & uniform     & mobile \\
-    \texttt{WRM}       & yes & distributed & mobile \\
+    \texttt{{-}{-}{-}} & no  & no  & fixed \\
+    \texttt{{-}V{-}}   & no  & yes & fixed \\
+    \texttt{W{-}{-}}   & yes & no  & fixed \\
+    \texttt{WV{-}}     & yes & yes & fixed \\
+    \texttt{{-}{-}M}   & no  & no  & mobile \\
+    \texttt{{-}VM}     & no  & yes & mobile \\
+    \texttt{W{-}M}     & yes & no  & mobile \\
+    \texttt{WVM}       & yes & yes & mobile \\
     \bottomrule
   \end{tabular}
 \end{table}

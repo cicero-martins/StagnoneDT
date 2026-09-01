@@ -1,59 +1,83 @@
 \section{Results}
 \label{sec:results}
 
+All eight members are scored on a common interval, 8 to 10 July 2025, which is
+the intersection of the members' post-spinup spans and which contains the whole
+drifter record. Members are coded by wave coupling (W), seagrass canopy (V) and
+mobile bed (M).
+
 \subsection{Water level}
 \label{sec:res_wl}
 
-Table~\ref{tab:wl} reports water level skill at the three interior stations for
-every ensemble member over the post-spinup window. Raw error is dominated by a
-positive bias at BocaNord and AltaVilaEst, between 0.10 and 0.18~m, and is small
-at BocaSud, between $-0.007$ and $+0.018$~m. Removing the respective means
-leaves an anomaly RMSE of 0.021 to 0.042~m at every station in every member,
-with correlations from 0.79 to 0.93 and modelled-to-observed standard deviation
-ratios from 1.06 to 1.16.
+Table~\ref{tab:wl} reports water level skill at the three interior stations.
+Raw error is dominated by a positive bias at BocaNord and AltaVilaEst, between
+0.08 and 0.18~m, and is small at BocaSud, between $-0.021$ and $+0.026$~m. The
+bias is a datum and boundary-offset property that all members share and it is
+not what distinguishes them.
 
-The spread across configurations is smaller than the spread within a tidal
-cycle. Anomaly RMSE varies by 4.2~mm at BocaNord, 2.7~mm at AltaVilaEst and
-1.9~mm at BocaSud between the eight members, and the ordering of members is not
-consistent from one station to another.
+The anomaly RMSE behaves differently at the two outer stations and at the inner
+one. At BocaSud it varies by 2.1~mm across the eight members and at BocaNord by
+9.2~mm, in both cases without a consistent ordering. At AltaVilaEst it varies by
+36.2~mm, and there the ordering is consistent and follows a single factor. The
+four members carrying a canopy give 0.015 to 0.027~m with correlations of 0.94
+to 0.98, the four without give 0.045 to 0.051~m with correlations of 0.78 to
+0.82, and no member of one group overlaps the other. Modelled-to-observed
+standard deviation ratios move the same way, from 1.13 to 1.33 without a canopy
+to 0.98 to 1.17 with one.
+
+AltaVilaEst is the innermost station, in the shallow northern basin where the
+meadow is densest and the mean depth is smallest, so it is where a canopy would
+be expected to matter most, while the two outer stations sit near the inlets
+where the exchange is set by the boundary.
+
+The vegetated members are three-day restart segments and the bare members are
+continuous nine-day runs, so the separation at AltaVilaEst could in principle
+reflect the restart rather than the canopy. A control member settles this. It
+carries the same restart file, window and configuration as the vegetated
+fixed-bed member with the vegetation removed, so it differs from the continuous
+bare member only by being a segment. At AltaVilaEst it gives an anomaly RMSE of
+0.051~m and a correlation of 0.82, against 0.051 and 0.82 for the continuous
+bare member and 0.027 and 0.94 for the vegetated one. The two outer stations
+agree with their continuous counterparts to within 0.4~mm. The restart accounts
+for none of the difference.
 
 \begin{table}[H]
   \centering
-  \caption{Water level skill by member and station, 2--10 July 2025.
+  \caption{Water level skill by member and station, 8--10 July 2025.
   $\mathrm{RMSE}^2 = \mathrm{bias}^2 + \mathrm{RMSE}_{\mathrm{anom}}^2$. Members
-  are coded by wave coupling (W), distributed roughness (R) and mobile bed (M).
+  are coded by wave coupling (W), seagrass canopy (V) and mobile bed (M).
   All values in metres except the dimensionless ratios.}
   \label{tab:wl}
   \begin{tabular}{llrrrrr}
     \toprule
     Station & Member & RMSE & Bias & RMSE$_{\mathrm{anom}}$ & $r$ & $\sigma_m/\sigma_o$ \\
     \midrule
-    BocaNord & \texttt{{-}{-}{-}} & 0.150 & $+0.146$ & 0.034 & 0.86 & 1.11 \\
-             & \texttt{{-}R{-}} & 0.151 & $+0.148$ & 0.033 & 0.86 & 1.12 \\
-             & \texttt{W{-}{-}} & 0.170 & $+0.168$ & 0.030 & 0.88 & 1.09 \\
-             & \texttt{WR{-}} & 0.172 & $+0.170$ & 0.030 & 0.89 & 1.10 \\
-             & \texttt{{-}{-}M} & 0.148 & $+0.144$ & 0.035 & 0.85 & 1.12 \\
-             & \texttt{{-}RM} & 0.149 & $+0.145$ & 0.034 & 0.86 & 1.12 \\
-             & \texttt{W{-}M} & 0.175 & $+0.172$ & 0.032 & 0.88 & 1.12 \\
-             & \texttt{WRM} & 0.178 & $+0.175$ & 0.031 & 0.88 & 1.12 \\
+    BocaNord & \texttt{{-}{-}{-}} & 0.119 & $+0.113$ & 0.040 & 0.88 & 1.17 \\
+             & \texttt{{-}V{-}}   & 0.131 & $+0.125$ & 0.039 & 0.89 & 1.19 \\
+             & \texttt{W{-}{-}}   & 0.161 & $+0.158$ & 0.031 & 0.91 & 1.05 \\
+             & \texttt{WV{-}}     & 0.179 & $+0.176$ & 0.031 & 0.91 & 1.08 \\
+             & \texttt{{-}{-}M}   & 0.116 & $+0.109$ & 0.040 & 0.87 & 1.17 \\
+             & \texttt{{-}VM}     & 0.129 & $+0.123$ & 0.040 & 0.88 & 1.19 \\
+             & \texttt{W{-}M}     & 0.161 & $+0.157$ & 0.036 & 0.89 & 1.12 \\
+             & \texttt{WVM}       & 0.172 & $+0.169$ & 0.035 & 0.90 & 1.12 \\
     \midrule
-    BocaSud  & \texttt{{-}{-}{-}} & 0.023 & $-0.004$ & 0.023 & 0.93 & 1.14 \\
-             & \texttt{{-}R{-}} & 0.023 & $-0.007$ & 0.022 & 0.93 & 1.14 \\
-             & \texttt{W{-}{-}} & 0.028 & $+0.018$ & 0.022 & 0.92 & 1.06 \\
-             & \texttt{WR{-}} & 0.025 & $+0.012$ & 0.023 & 0.92 & 1.07 \\
-             & \texttt{{-}{-}M} & 0.023 & $-0.004$ & 0.023 & 0.93 & 1.14 \\
-             & \texttt{{-}RM} & 0.023 & $-0.007$ & 0.022 & 0.93 & 1.14 \\
-             & \texttt{W{-}M} & 0.026 & $+0.015$ & 0.021 & 0.93 & 1.07 \\
-             & \texttt{WRM} & 0.023 & $+0.008$ & 0.021 & 0.93 & 1.08 \\
+    BocaSud  & \texttt{{-}{-}{-}} & 0.030 & $-0.019$ & 0.024 & 0.95 & 1.17 \\
+             & \texttt{{-}V{-}}   & 0.031 & $-0.021$ & 0.023 & 0.95 & 1.12 \\
+             & \texttt{W{-}{-}}   & 0.034 & $+0.026$ & 0.022 & 0.94 & 1.01 \\
+             & \texttt{WV{-}}     & 0.035 & $+0.026$ & 0.024 & 0.93 & 0.94 \\
+             & \texttt{{-}{-}M}   & 0.030 & $-0.018$ & 0.024 & 0.95 & 1.17 \\
+             & \texttt{{-}VM}     & 0.031 & $-0.021$ & 0.023 & 0.95 & 1.12 \\
+             & \texttt{W{-}M}     & 0.028 & $+0.018$ & 0.022 & 0.94 & 1.03 \\
+             & \texttt{WVM}       & 0.029 & $+0.019$ & 0.022 & 0.94 & 0.99 \\
     \midrule
-    AltaVila & \texttt{{-}{-}{-}} & 0.116 & $+0.108$ & 0.042 & 0.82 & 1.23 \\
-    Est      & \texttt{{-}R{-}} & 0.112 & $+0.105$ & 0.041 & 0.83 & 1.23 \\
-             & \texttt{W{-}{-}} & 0.136 & $+0.130$ & 0.039 & 0.82 & 1.14 \\
-             & \texttt{WR{-}} & 0.130 & $+0.124$ & 0.039 & 0.82 & 1.16 \\
-             & \texttt{{-}{-}M} & 0.121 & $+0.114$ & 0.040 & 0.83 & 1.20 \\
-             & \texttt{{-}RM} & 0.119 & $+0.112$ & 0.039 & 0.84 & 1.20 \\
-             & \texttt{W{-}M} & 0.135 & $+0.129$ & 0.042 & 0.79 & 1.15 \\
-             & \texttt{WRM} & 0.118 & $+0.110$ & 0.041 & 0.81 & 1.16 \\
+    AltaVila & \texttt{{-}{-}{-}} & 0.103 & $+0.089$ & 0.051 & 0.82 & 1.33 \\
+    Est      & \texttt{{-}V{-}}   & 0.083 & $+0.078$ & 0.027 & 0.94 & 1.17 \\
+             & \texttt{W{-}{-}}   & 0.146 & $+0.139$ & 0.045 & 0.80 & 1.13 \\
+             & \texttt{WV{-}}     & 0.131 & $+0.130$ & 0.017 & 0.97 & 0.98 \\
+             & \texttt{{-}{-}M}   & 0.112 & $+0.101$ & 0.049 & 0.82 & 1.28 \\
+             & \texttt{{-}VM}     & 0.090 & $+0.086$ & 0.024 & 0.95 & 1.16 \\
+             & \texttt{W{-}M}     & 0.148 & $+0.140$ & 0.047 & 0.78 & 1.13 \\
+             & \texttt{WVM}       & 0.135 & $+0.134$ & 0.015 & 0.98 & 1.01 \\
       \bottomrule
   \end{tabular}
 \end{table}
@@ -62,39 +86,44 @@ consistent from one station to another.
 \label{sec:res_drifters}
 
 Thirty-five drifters across twelve deployments were scored against each member
-over the interval each drifter was in the water, which ranged from 0.5 to
+over the interval each drifter was in the water, which ranged from 0.4 to
 7.2~hours. Table~\ref{tab:lagrangian} summarises the metrics and
 Figure~\ref{fig:lagrangian} shows their distribution.
 
-Mean Liu--Weisberg skill spans 0.469 to 0.705 across the eight members, a range
-of 50\% of the smallest value, and endpoint separation spans 336 to 625~m. The
-ordering is not what a reading of the individual treatments would predict. The
-two worst members are those combining a mobile bed with no wave coupling, at
-0.469 and 0.473, below all four fixed-bed members. The two best are those
-combining a mobile bed with wave coupling, at 0.624 and 0.705. The same two
-treatments therefore produce the worst and the best members of the ensemble
-depending only on whether they are applied together.
+Mean Liu--Weisberg skill spans 0.469 to 0.735 across the eight members and
+endpoint separation spans 345 to 618~m. The ensemble divides cleanly on one
+factor. The four members carrying a canopy occupy 0.693 to 0.735 and the four
+without occupy 0.469 to 0.624, and again the two groups do not overlap. Within
+the vegetated group the standard deviation of skill across the four cells is
+0.016, against 0.057 in the bare group, so once the canopy is represented the
+choice of wave and bed treatment makes little difference to transport.
+
+The two components of the trajectory error move together and both improve with
+the canopy. Path length ratio rises from 0.73 to 0.84 without a canopy to 0.88
+to 0.94 with one, and mean heading error falls from 11.3 to 19.8$^\circ$ to a
+band of 8.3 to 9.0$^\circ$ that all four vegetated members share.
 
 \begin{table}[H]
   \centering
   \caption{Lagrangian metrics by ensemble member, 35 drifters over twelve
   deployments, scored on the interval each drifter was in the water. Path ratio
   is simulated over observed path length. Heading error is the mean angular
-  difference between simulated and observed step directions.}
+  difference between simulated and observed step directions and is computed on
+  eleven deployments, deployment 4 having too few positions to form the three
+  step bearings it requires.}
   \label{tab:lagrangian}
   \begin{tabular}{lcccrrrr}
     \toprule
-    Member & Waves & Rough. & Bed & LW skill & Endpoint (m) & Path & Heading \\
+    Member & Waves & Canopy & Bed & LW skill & Endpoint (m) & Path & Heading \\
     \midrule
-    \texttt{{-}{-}{-}} & no  & unif. & fixed  & 0.539 & 549 & 0.77 & 16.2$^\circ$ \\
-    \texttt{{-}R{-}}     & no  & dist. & fixed  & 0.548 & 550 & 0.77 & 15.8$^\circ$ \\
-    \texttt{W{-}{-}}   & yes & unif. & fixed  & 0.505 & 569 & 0.79 & 16.0$^\circ$ \\
-    \texttt{WR{-}}     & yes & dist. & fixed  & 0.506 & 583 & 0.80 & 16.0$^\circ$ \\
-    \texttt{{-}{-}M}   & no  & unif. & mobile & 0.469 & 618 & 0.73 & 19.8$^\circ$ \\
-    \texttt{{-}RM}     & no  & dist. & mobile & 0.473 & 625 & 0.73 & 19.8$^\circ$ \\
-    \texttt{W{-}M}     & yes & unif. & mobile & 0.624 & 522 & 0.84 & 11.3$^\circ$ \\
-    \texttt{WRM}     & yes & dist. & mobile & \textbf{0.705} & \textbf{336} &
-      \textbf{0.88} & \textbf{8.5}$^\circ$ \\
+    \texttt{{-}{-}{-}} & no  & no  & fixed  & 0.539 & 549 & 0.77 & 16.2$^\circ$ \\
+    \texttt{{-}V{-}}   & no  & yes & fixed  & \textbf{0.735} & \textbf{345} & 0.88 & 8.7$^\circ$ \\
+    \texttt{W{-}{-}}   & yes & no  & fixed  & 0.505 & 569 & 0.79 & 16.0$^\circ$ \\
+    \texttt{WV{-}}     & yes & yes & fixed  & 0.693 & 363 & \textbf{0.94} & 8.9$^\circ$ \\
+    \texttt{{-}{-}M}   & no  & no  & mobile & 0.469 & 618 & 0.73 & 19.8$^\circ$ \\
+    \texttt{{-}VM}     & no  & yes & mobile & 0.725 & 358 & 0.88 & 9.0$^\circ$ \\
+    \texttt{W{-}M}     & yes & no  & mobile & 0.624 & 522 & 0.84 & 11.3$^\circ$ \\
+    \texttt{WVM}       & yes & yes & mobile & 0.711 & 347 & 0.89 & \textbf{8.3}$^\circ$ \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -111,11 +140,10 @@ depending only on whether they are applied together.
 \end{figure}
 
 Figure~\ref{fig:tracks} shows the tracks these statistics are computed from, for
-four deployments spanning the duration range. The three failure modes are
-visible directly. Without wave coupling a mobile bed sends the particles off the
-observed path early and leaves them short. With wave coupling on a fixed bed
-they follow the right heading but stop short of the observed endpoint. Only the
-combination follows the observed path in both respects.
+four deployments spanning the duration range. Without a canopy the particles
+leave the observed path early and finish short of the observed endpoint,
+whichever wave and bed treatment they carry. With a canopy they hold the
+observed heading and cover most of the observed distance.
 
 \begin{figure}[H]
   \centering
@@ -133,107 +161,132 @@ combination follows the observed path in both respects.
 
 The closed design supports twelve single-factor contrasts, four for each factor,
 one for every combination of the other two. Figure~\ref{fig:attribution} gives
-them with bootstrap confidence intervals.
+them with bootstrap confidence intervals over 4000 paired resamples.
 
-\textbf{Wave coupling changes sign with the bed.} On a fixed bed it reduces
-skill, by 0.035 under uniform roughness (95\% CI $-0.052$ to $-0.017$) and by
-0.042 under distributed roughness (CI $-0.064$ to $-0.023$), with 28 and 29 of
-the 35 drifters worse and 10 of the 12 deployments worse in each. On a mobile
-bed it raises skill, by 0.155 (CI $+0.059$ to $+0.247$) and by 0.232 (CI
-$+0.131$ to $+0.332$), with 27 and 30 drifters better and only 2 of 12
-deployments worse in each. All four intervals are clear of zero.
+\textbf{The canopy acts in every configuration.} It raises skill by 0.195 (95\%
+CI $+0.110$ to $+0.278$) without waves on a fixed bed, 0.188 (CI $+0.111$ to
+$+0.262$) with waves on a fixed bed, 0.256 (CI $+0.169$ to $+0.344$) without
+waves on a mobile bed and 0.087 (CI $+0.054$ to $+0.124$) with waves on a mobile
+bed. All four intervals are clear of zero, 26 to 32 of the 35 drifters improve
+in each, and it is the only factor of the three whose four contrasts share a
+sign. It is also the largest, by a factor of at least two over anything else in
+the design.
 
-\textbf{Bed mobility changes sign with the waves.} Without wave coupling it
-reduces skill by 0.071 (CI $-0.085$ to $-0.057$) and 0.075 (CI $-0.092$ to
-$-0.061$), and it does so for every drifter: 35 of 35 worse in both roughness
-treatments. With wave coupling it raises skill by 0.119 (CI $+0.045$ to
-$+0.191$) and 0.199 (CI $+0.111$ to $+0.284$).
+\textbf{Wave coupling costs skill on a fixed bed and does nothing on a mobile
+one.} On a fixed bed it reduces skill by 0.035 (CI $-0.052$ to $-0.017$) without
+a canopy and 0.042 (CI $-0.057$ to $-0.027$) with one, consistently in both. On
+a mobile bed the two arms disagree. Without a canopy it raises skill by 0.155
+(CI $+0.059$ to $+0.247$), with 27 of 35 drifters better. With a canopy the same
+contrast is $-0.014$, its interval crosses zero, and the drifters split 17
+against 18.
 
-\textbf{Distributed roughness acts only when both are present.} It changes skill
-by 0.009 on a fixed bed without waves, 0.001 on a fixed bed with waves, and
-0.004 on a mobile bed without waves, none of which is material and two of which
-have intervals crossing zero. On a mobile bed with wave coupling it gives
-$+0.081$ (CI $+0.055$ to $+0.113$), improving 34 of the 35 drifters.
+\textbf{Bed mobility behaves the same way.} Without waves it reduces skill by
+0.071 (CI $-0.085$ to $-0.057$) in the bare arm, degrading all 35 drifters, and
+by 0.010 (CI $-0.014$ to $-0.006$) in the vegetated arm. With waves it raises
+skill by 0.119 (CI $+0.045$ to $+0.191$) in the bare arm and by 0.018 in the
+vegetated arm, where the interval crosses zero and the drifters split 16 against
+19.
 
-Neither wave coupling nor bed mobility improves prediction on its own, and each
-is what makes the other work. Applied singly they are the two treatments that
-make the model worse.
+Stated as an interaction, waves and bed mobility each cost skill alone in the
+bare arm, $-0.035$ and $-0.071$, and gain $+0.084$ together, so the interaction
+term is $+0.189$ against an additive prediction of $-0.105$. In the vegetated
+arm the same term is $+0.028$. The synergy between wave coupling and bed
+mobility that the bare arm displays is not reproduced once the canopy is
+present.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{ensemble_attribution}
   \caption{Process attribution over the closed factorial. (a) Skill for every
-  drifter under every member; members are coded by wave coupling (W),
-  distributed roughness (R) and mobile bed (M). (b) The wave contrast by
-  deployment, on a fixed and on a mobile bed. (c) All twelve single-factor
-  contrasts with 95\% bootstrap intervals; filled markers denote intervals clear
-  of zero. (d) Mean skill against bed treatment, one line per wave treatment.}
+  drifter under every member, the four vegetated members drawn in colour.
+  (b) The wave contrast on a mobile bed, deployment by deployment, with and
+  without the canopy. (c) All twelve single-factor contrasts with 95\% bootstrap
+  intervals, filled markers denoting intervals clear of zero. (d) Mean skill
+  against bed treatment, one line per combination of canopy and wave treatment.}
   \label{fig:attribution}
 \end{figure}
+
+Deployment 4 is retained in all of the above and is the one deployment that
+argues against the canopy, its bare members scoring 0.77 to 0.84 against 0.56 to
+0.57 for its vegetated ones. It is also a sampling outlier, 0.4~hours in the
+water over 162~m of observed path against next-lowest values of 1.9~hours and
+723~m. Excluding it widens every canopy contrast, to $+0.240$, $+0.230$,
+$+0.298$ and $+0.095$, and takes the wave contrast on a vegetated mobile bed to
+$-0.002$. Because every difference it makes favours the conclusion, it is kept.
 
 \subsection{Three-dimensional structure}
 \label{sec:res_3d}
 
-Over 4043 wet cells in the lagoon interior, with the inlets excluded, mean
+Over the wet cells of the lagoon interior, with the inlets excluded, mean
 current speed increases monotonically from the bed to the surface in every
-member (Figure~\ref{fig:profile}). Bed-layer speed ranges from 0.026 to
-0.044~\si{\metre\per\second} and surface-layer speed from 0.056 to
-0.083~\si{\metre\per\second}, giving surface-to-bed ratios between 1.85 and
-2.20.
+member (Figure~\ref{fig:profile}). The canopy sets the shape of that profile.
 
-The ratio is set by wave coupling rather than by bed mobility. The four members
-without waves lie between 1.85 and 1.87 regardless of their bed treatment, and
-the four with waves between 2.05 and 2.20. Adding a mobile bed to a wave-coupled
-member raises the ratio by 0.07 to 0.15, an order of magnitude less than the
-wave contribution.
+Without a canopy, bed-layer speed is 0.031 to 0.044~\si{\metre\per\second} and
+surface-layer speed 0.067 to 0.083~\si{\metre\per\second}, for surface-to-bed
+ratios of 1.85 to 2.14. With a canopy, bed-layer speed falls to a narrow band of
+0.0096 to 0.0100~\si{\metre\per\second} while surface speed falls much less, to
+0.043 to 0.052~\si{\metre\per\second}, and the ratio rises to 4.45 to 5.25.
+
+The two other factors move the ratio by far less. Within the bare arm wave
+coupling adds 0.22 on a fixed bed and 0.27 on a mobile one, and within the
+vegetated arm 0.61 and 0.81. The canopy contribution, taken cell by cell, is
+$+2.61$, $+3.00$, $+2.58$ and $+3.11$. The vertical structure of this basin is
+therefore a canopy signature an order of magnitude larger than the wave
+signature, and not the reverse.
 
 Lagoon-mean surface speed does not order the members the way transport does. The
-member reproducing the observed drifter speed has the lowest lagoon-mean surface
-speed of the eight, at 0.056~\si{\metre\per\second}, below the 0.083 of a member
-whose particles travel 27\% too slowly.
+member reproducing the observed drifter behaviour best has a lagoon-mean surface
+speed of 0.043~\si{\metre\per\second}, the lowest of the eight, against 0.083
+for a member whose particles travel 27\% too slowly.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.88\textwidth]{layer_profile_lagoon}
   \caption{Vertical structure in the lagoon interior over the drifter window.
-  (a) Mean speed by sigma layer, colour giving the wave treatment and line style
-  the roughness and bed treatments. (b) The ratio of surface to bed speed.}
+  (a) Mean speed by sigma layer, colour giving the canopy treatment and line
+  style the wave and bed treatments. (b) The ratio of surface to bed speed.}
   \label{fig:profile}
 \end{figure}
 
-\subsection{Response of the roughness classes}
+\subsection{Response of the seagrass classes}
 \label{sec:res_classes}
 
-Cells were grouped by the trachytope class the model assigned them, taking the
-dominant class at the nearest roughness link. Comparing classes within a single
-member does not isolate the roughness treatment, because the classes occupy
-different parts of the basin at different depths. The uniform-roughness members
-make this explicit. With no roughness distinction applied at all, their
-\emph{Posidonia} cells are still slower at the bed than their sand cells, in a
-ratio of 0.85 to 0.87. The roughness effect is therefore read between members
-within a class rather than between classes within a member.
+Cells were grouped by the class assigned to them in the seagrass map, taking the
+dominant class at the nearest classified point to each face centroid. Comparing
+classes within a single member does not isolate the canopy, because the classes
+occupy different parts of the basin at different depths. The bare members make
+this explicit. With no canopy applied at all, their \emph{Posidonia} cells are
+already slower at the bed than their sand cells, in a ratio of 0.84 to 0.94. The
+canopy effect is therefore read between members within a class, or as a change
+in that within-member ratio.
 
-On a fixed bed, moving from uniform to distributed roughness reduces mean bed
-speed by 1.3\% over sand, 1.1\% over \emph{Cymodocea}, 3.6\% over
-\emph{Posidonia} and 4.5\% over rock (Figure~\ref{fig:classes}b). The effect on
-the wave field is larger and ordered as canopy attenuation predicts. Mean
-orbital velocity at the bed falls by 11.3\% over sand, 13.7\% over
-\emph{Cymodocea} and 14.3\% over \emph{Posidonia}, and by only 3.3\% over rock
-(Figure~\ref{fig:classes}c), the rock class being the exposed substrate near the
-inlets where mean orbital velocity reaches 0.27~\si{\metre\per\second} against
-0.05 to 0.09~\si{\metre\per\second} elsewhere in the basin.
+Read either way it is large and correctly ordered. Introducing the canopy
+reduces mean bed speed by 80\% over \emph{Posidonia} and 80\% over
+\emph{Cymodocea}, against 61\% over sand and 60\% over rock, averaged over the
+four cells of the design (Figure~\ref{fig:classes}b). The \emph{Posidonia} to
+sand bed-speed ratio falls from 0.84 to 0.94 without a canopy to 0.45 to 0.47
+with one, in all four cells. The two unvegetated classes respond as well,
+because slowing the flow through the meadow changes the circulation of a basin
+whose interior is largely meadow, but they respond by a quarter less.
 
-The canopy parametrisation therefore does to the wave field and to the near-bed
-layer what a canopy should, on a fixed bed, where it changes surface transport
-by an amount indistinguishable from zero.
+The wave field does not follow. Mean orbital velocity at the bed changes by
+$-1.5$\% over \emph{Posidonia}, $-2.0$\% over \emph{Cymodocea}, $-2.3$\% over
+sand and $-0.6$\% over rock when the canopy is introduced on a fixed bed
+(Figure~\ref{fig:classes}c), which is neither large nor ordered by canopy
+density. The reason is structural rather than numerical. In this coupling the
+flow model passes a bed roughness field to the wave model, and the canopy is
+represented in the momentum equation of the flow rather than in that roughness
+field, so it never reaches the wave computation. The seagrass in these
+simulations attenuates the current and not the waves, and Section~\ref{sec:disc_limits}
+returns to what that leaves unresolved.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{class_speed_uorb}
-  \caption{Flow and wave response by trachytope class in the lagoon interior.
+  \caption{Flow and wave response by seagrass class in the lagoon interior.
   (a) Mean bed and surface speed by class for every member, the full member
-  drawn opaque. (b) Change in mean bed speed from uniform to distributed
-  roughness on a fixed bed. (c) The same for mean wave orbital velocity at the
+  drawn opaque. (b) Change in mean bed speed from the bare to the vegetated
+  member on a fixed bed. (c) The same for mean wave orbital velocity at the
   bed.}
   \label{fig:classes}
 \end{figure}
