@@ -1,6 +1,12 @@
 # Credentials — NEVER commit
 .env
 
+# his.nc pulled back from the server for the members that ran there. 27 MB of
+# binary that does not belong in history. The water level series they carry is
+# frozen into data/processed/wl_series_server_members.csv by
+# scripts/dump_veg_wl_series.py, which is what Table 4.1 needs.
+data/processed/veg_his/
+
 # Ad-hoc/throwaway scripts (often contain signed URLs / temporary tokens)
 scripts/_*
 # ...except the ensemble definition. It is the single source of truth for which
