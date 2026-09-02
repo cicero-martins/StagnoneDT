@@ -14,7 +14,7 @@ project well, and the vegetation and morphodynamics modules in particular have
 let us ask questions we could not have asked otherwise.
 
 Along the way we collected a handful of observations that might be useful to
-you. Five are new and concern how submerged vegetation reaches the solver. Two
+you. Six are new and concern how submerged vegetation reaches the solver. Two
 we wrote up earlier and have attached in full.
 
 We are not certain that all of them are problems. Some may be intended
@@ -133,6 +133,33 @@ and `Rhoveg = 1020`, both inside the published natural range for the species, th
 velocity field over the meadow differs by about 20% at the upper end of our
 velocity range. That is a useful thing for a user to know when choosing the
 value.
+
+## 1.6 The vegetation module is not reachable from the interface
+
+This is the observation that, looking back, explains how the rest of Part 1
+stayed hidden from us for as long as it did.
+
+The Delta Shell interface builds its model-settings panels from
+`plugins/DeltaShell.Plugins.FMSuite.FlowFM/CsvFiles/dflowfm-properties.csv`. We
+count 277 properties in that file, and the only vegetation-related entry is
+`TrtRou`. `Vegetationmodelnr`, `Cdveg`, `Rhoveg` and `Clveg` are not there, and
+the spatial quantities `stemheight`, `stemdensity` and `stemdiameter` appear in
+no GUI resource file at all, only inside `dflowfm.dll` and `dflowfm-cli.exe`.
+
+The module is documented, in the User Manual chapter 13 and section 13.3, so
+this is a gap between the interface and the kernel rather than an undocumented
+feature. The practical effect is that a user configuring submerged vegetation
+through the interface reaches the trachytope route and has no indication that a
+second route exists. In our case that route was also the one whose canopy
+momentum sink does not reach the solver, so we spent a long time concluding that
+seagrass roughness was a third-order effect in our basin.
+
+**Suggestion.** Adding the `[veg]` keys to `dflowfm-properties.csv` would make
+the module visible, and the three spatial quantities would fit the same
+spatial-data mechanism the interface already offers for initial fields and
+friction. Even a single line of documentation in the trachytope panel, pointing
+out that a per-layer vegetation model exists, would have changed our path
+through this considerably.
 
 ---
 
