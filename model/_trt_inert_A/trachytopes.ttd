@@ -1,0 +1,20 @@
+* Inertia test for the Baptist 154 momentum sink: is rttfu applied by D-Flow FM?
+* canopy drag OFF
+*
+* In trtrou.f90 the 154 branch computes hk = max(1, depth/vheigh). With
+* vheigh = 40 m every vegetated link is clamped (the deepest is 31.6 m), so
+*     ch   = cbed                exactly, independent of every other parameter
+*     sink = C_D * mD            carried in rttfu, and nothing else
+* The two files therefore produce a BYTE-IDENTICAL roughness field and differ
+* only in the momentum sink: 0.0 here against 4.0 1/m in the other. If the two
+* runs agree, FM does not consume rttfu and formula 154 reduces to its bed
+* Chezy alone.
+*
+* vheigh = 40 m is deliberately unphysical. This is a diagnostic, not a run.
+*
+* class  formula  h_v[m]   mD[1/m]   C_D[-]   C_b[m^0.5/s]
+  1    53    0.0200
+  2   154   40.000    5.000    0.00    45.0
+  3   154   40.000    5.000    0.00    45.0
+  4    53    0.0280
+  5    53    0.0500
