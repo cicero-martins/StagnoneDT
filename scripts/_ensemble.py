@@ -22,6 +22,7 @@ vegetation module, parameterised entirely from published measurement. The old
 tags are kept below as LEGACY_VR because the diagnostics that established the
 fault compare against them.
 """
+import itertools
 
 # key, drifter/regrid tag, model directory, waves, roughness, bed, short label
 #
@@ -155,3 +156,43 @@ def cell(waves, roughness, bed):
                 and f['bed'] == bed):
             return k
     raise KeyError((waves, roughness, bed))
+
+
+def _assert_closed():
+    """Every combination of the observed factor levels is a member, once.
+
+    The factorial being closed is a premise of the whole analysis. Each of the
+    twelve entries in CONTRASTS holds two factors fixed and varies the third,
+    which measures a single-factor effect only if both corners exist and no
+    corner is occupied twice. Nothing else in the module checks that, and an
+    edit to MEMBERS that broke it would surface as a quietly missing bar in a
+    figure rather than as an error.
+
+    The levels come from MEMBERS rather than being written out here, so a
+    deliberate change of design is read as such instead of tripping a
+    hard-coded 2x2x2.
+    """
+    levels = [sorted({f[name] for f in FACTORS.values()}, key=str)
+              for name in ('waves', 'roughness', 'bed')]
+    shape = ' x '.join(str(len(lv)) for lv in levels)
+    corners = list(itertools.product(*levels))
+    if len(corners) != len(MEMBERS):
+        raise AssertionError(
+            f'{len(MEMBERS)} members against {len(corners)} corners of a '
+            f'{shape} design: the factorial is not full')
+    # Collisions are read off MEMBERS rather than off the sweep below, because
+    # a collision always empties some other corner and cell() would reach that
+    # one first, reporting an absence where the fault is a duplicate.
+    at = {}
+    for k, f in FACTORS.items():
+        corner = (f['waves'], f['roughness'], f['bed'])
+        if corner in at:
+            raise AssertionError(
+                f'members {at[corner]!r} and {k!r} both sit at {corner}')
+        at[corner] = k
+
+    for corner in corners:
+        cell(*corner)              # KeyError names the corner that is absent
+
+
+_assert_closed()
