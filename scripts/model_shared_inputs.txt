@@ -1,0 +1,39 @@
+# Forcing and geometry that every v04AE-derived member carries unchanged.
+#
+# Verified byte-identical by md5 across the seventeen member directories on the
+# run server and against the copy tracked here in
+# model/dflowfm_v04AE_nowaves/, which is the baseline. Together they are 71.4 MB
+# per member, 1.2 GB over the ensemble, so pull_model_inputs.sh leaves them on
+# the wire and complete_model_dir.py copies them in from the baseline when a
+# directory has to actually run.
+#
+# The test is on the pair of path and md5, never on content alone. A blob that
+# appears under one name in one member and another name elsewhere, as
+# sediment.sed does against sediment.sed.orig, is not shared in the sense that
+# matters here, and copying the baseline over it would silently replace a real
+# difference.
+#
+# A file belongs here only while it stays identical everywhere. Anything a
+# member changes must come off this list, or the copy will overwrite the change.
+# check_model_inputs() in complete_model_dir.py re-tests that on every call.
+#
+# One line per path, relative to the member directory.
+
+wind_blendedAE_u10n_20250701to20250710.nc
+wind_blendedAE_v10n_20250701to20250710.nc
+Stagnone_dxy01_15m_net.nc
+bathymetry_v04.xyz
+nudge_salinity_temperature_2025-07-01_00-00-00.nc
+era5_mer_20250701to20250710_ERA5.nc
+era5_u10n_20250701to20250710_ERA5.nc
+era5_v10n_20250701to20250710_ERA5.nc
+era5_chnk_20250701to20250710_ERA5.nc
+era5_msl_20250701to20250710_ERA5.nc
+waterlevelbnd_offset_pernode_Stagnone_dxy01_15m.bc
+Stagnone_dxy01_15m_obs.xyn
+turbid_saltpans_discharge.bc
+turbid_saltpans_tracer.bc
+turbid_airport_discharge.bc
+turbid_airport_tracer.bc
+turbid_saltpans.pli
+turbid_airport.pli

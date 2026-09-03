@@ -85,6 +85,12 @@ model/*/wave/WNDNOW
 model/*/wave/INPUT
 model/*/wave/NEST*
 model/*/wave/SWANIN_*
+# TMP_ESMF_RegridWeightGen_*.nc are kept out of git because they are bound to
+# the mesh, the SWAN grid and the partition count, so a committed copy would be
+# wrong on any other machine. They are NOT optional cache: without them SWAN
+# aborts before writing a log and takes the shared MPI communicator with it.
+# pull_model_inputs.sh therefore brings them across on purpose. Ignored here,
+# required on disk.
 model/*/wave/TMP_*
 model/*/wave/swn-diag.*
 model/*/wave/wavm-*.dat
@@ -264,3 +270,41 @@ docs/*.synctex.gz
 
 # Ad-hoc short test runs (model/_*): regenerable, ~900 MB of map.nc each
 model/_trt_test_*/
+
+# ---------------------------------------------------------------------------
+# Members pulled back from the run server by scripts/pull_model_inputs.sh
+# ---------------------------------------------------------------------------
+# Their inputs are tracked, because until 2026-09-03 seven of the eight
+# factorial members of Paper 1 existed only on simit and the manuscript rested
+# on a single host. What stays out is what a committed copy would get wrong on
+# another machine.
+
+# MPI rank count written at launch, one line, host-specific
+model/*/machinefile
+
+# The eighteen files in scripts/model_shared_inputs.txt are identical in every
+# member and tracked once in model/dflowfm_v04AE_nowaves/. They are absent from
+# the pulled directories on purpose, saving 1.2 GB; restore them with
+# scripts/complete_model_dir.py before running one.
+# Restoring one puts a copy back on disk, so the eighteen are ignored under
+# model/. The baseline's own copies are already tracked and git leaves tracked
+# files alone, so this hides the restored duplicates and nothing else.
+model/*/wind_blendedAE_u10n_20250701to20250710.nc
+model/*/wind_blendedAE_v10n_20250701to20250710.nc
+model/*/Stagnone_dxy01_15m_net.nc
+model/*/bathymetry_v04.xyz
+model/*/nudge_salinity_temperature_2025-07-01_00-00-00.nc
+model/*/era5_mer_20250701to20250710_ERA5.nc
+model/*/era5_u10n_20250701to20250710_ERA5.nc
+model/*/era5_v10n_20250701to20250710_ERA5.nc
+model/*/era5_chnk_20250701to20250710_ERA5.nc
+model/*/era5_msl_20250701to20250710_ERA5.nc
+model/*/waterlevelbnd_offset_pernode_Stagnone_dxy01_15m.bc
+model/*/Stagnone_dxy01_15m_obs.xyn
+model/*/turbid_saltpans_discharge.bc
+model/*/turbid_saltpans_tracer.bc
+model/*/turbid_airport_discharge.bc
+model/*/turbid_airport_tracer.bc
+model/*/turbid_saltpans.pli
+model/*/turbid_airport.pli
+
