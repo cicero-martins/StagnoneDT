@@ -8,6 +8,16 @@ live and where this has to run.
 Usage:
     python regrid_member_for_opendrift.py <model_dir_name> <output_tag>
     python regrid_member_for_opendrift.py dflowfm_v04AE v04AE
+    python regrid_member_for_opendrift.py dflowfm_v04AE v04AE_dx001 --dx 0.001
+
+The target grid is 0.002 degrees, about 222 m. That value came from the first
+regrid script in April 2026 and has never been justified anywhere: no memory, no
+document, no commit message. It is a real coarsening, the FM mesh inside the
+lagoon having a median nearest-neighbour spacing of 61 m, so OpenDrift sees a
+field smoothed by roughly a factor of 3.6 in each direction. --dx exists to test
+whether that matters. The temporal analogue was tested in May 2026 and did not
+(see memory v04r_outcome_mapinterval_not_bottleneck); the spatial one had not
+been.
 
 The wind fields are identical across the v04AE family, so the AE-only blend is
 always read from dflowfm_v04AE.
@@ -16,7 +26,7 @@ Surface layer is the LAST sigma layer. Verified physically rather than assumed:
 mean speed rises monotonically from index 0 to index 9, which is bed friction
 below and wind-driven flow above.
 """
-import sys
+import argparse
 import warnings
 from pathlib import Path
 
@@ -41,10 +51,18 @@ LAND_BL_THRESH = -0.05
 KDIST_DEG = 0.003
 NPART = 8
 
-lons = np.arange(LON_MIN, LON_MAX + DX / 2, DX)
-lats = np.arange(LAT_MIN, LAT_MAX + DY / 2, DY)
-LON, LAT = np.meshgrid(lons, lats)
-tgt = np.column_stack([LON.ravel(), LAT.ravel()])
+
+def build_grid(dx, dy):
+    """The regular target grid, as (lons, lats, LON, LAT, tgt).
+
+    The half-step added to the stop keeps the last row and column: arange
+    excludes its stop, and with a step of 0.002 whether the maximum survives
+    otherwise comes down to floating-point luck rather than intent.
+    """
+    lons = np.arange(LON_MIN, LON_MAX + dx / 2, dx)
+    lats = np.arange(LAT_MIN, LAT_MAX + dy / 2, dy)
+    LON, LAT = np.meshgrid(lons, lats)
+    return lons, lats, LON, LAT, np.column_stack([LON.ravel(), LAT.ravel()])
 
 
 def load_partitions(out_dir):
@@ -72,9 +90,13 @@ def load_partitions(out_dir):
             np.concatenate(ucx, axis=1), np.concatenate(ucy, axis=1), times)
 
 
-def main(model_dir, tag):
+def main(model_dir, tag, dx=DX, dy=None):
+    dy = dx if dy is None else dy
+    lons, lats, LON, _, tgt = build_grid(dx, dy)
     out_dir = MODEL / model_dir / 'DFM_OUTPUT_Stagnone_dxy01_15m'
     print(f'=== {tag}  ({model_dir}) ===')
+    print(f'  grid {dx} deg (~{dx * 111000:.0f} m), '
+          f'{len(lons)} x {len(lats)} = {len(tgt)} cells')
     fx, fy, bl, ucx, ucy, times = load_partitions(out_dir)
     print(f'  {len(fx)} faces, {len(times)} steps, {times[0]} .. {times[-1]}')
 
@@ -121,7 +143,8 @@ def main(model_dir, tag):
         coords={'time': times, 'lat': lats, 'lon': lons},
         attrs={'Conventions': 'CF-1.8',
                'source': f'Regridded from {model_dir}, surface sigma layer, '
-                         f'plus AE blended wind'})
+                         f'plus AE blended wind',
+               'grid_resolution_deg': dx})
     ds_out['time'].attrs.update({'standard_name': 'time'})
     ds_out['lat'].attrs.update({'standard_name': 'latitude',
                                 'units': 'degrees_north'})
@@ -135,4 +158,10 @@ def main(model_dir, tag):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1], sys.argv[2])
+    ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
+    ap.add_argument('model_dir')
+    ap.add_argument('tag')
+    ap.add_argument('--dx', type=float, default=DX,
+                    help=f'target grid spacing in degrees (default {DX})')
+    a = ap.parse_args()
+    main(a.model_dir, a.tag, a.dx)
