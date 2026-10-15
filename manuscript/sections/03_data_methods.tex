@@ -25,19 +25,30 @@ the grading answers is the width of the inlets, which carry the exchange that
 sets the interior response. At the 61~m median spacing around the northern
 inlet, about six cells span its 400~m width, and about forty span the 2900~m
 southern inlet, while the 20~m dredged channel through the northern sill falls
-below the mesh scale and enters only through the cell-centre bathymetry. No
-mesh convergence test was carried out, so the resolution is reported as the
-constraint it answers rather than as a converged choice.
+below the mesh scale and enters only through the cell-centre bathymetry. The
+sensitivity to horizontal resolution was measured on the uncoupled fixed-bed
+configuration with a family of quadtree meshes built in a conformal
+projection, which share the domain, the offshore grading, the open boundary
+and one bed surface and differ only in the cell edge inside the lagoon and
+within 500~m of it, 60, 30 and 15~m, all run under a Courant limit of 0.5.
+Liu--Weisberg skill over the 35 drifters varied within $0.553 \pm 0.004$
+across the three levels without a monotonic trend, since the paired
+differences between consecutive levels, $+0.005$ and $-0.007$ with a standard
+error of 0.002, change sign, and the present mesh carrying the same bed scored
+0.555, inside that band. Water level at the three gauges changed by less than
+1~mm in bias and by at most 1.5~mm in anomaly RMSE between 60 and 15~m. The
+resolution of the present mesh therefore does not limit the quantities the
+study reports.
 
-The vertical was discretised with 10 sigma layers distributed by a growth
-factor of 1.2 towards the bed, which at the mean depth of 0.95~m gives a
-near-bed layer of about 0.04~m and a surface layer of about 0.19~m. The count
-answers two features of the problem, since resolving the wind-driven surface
-drift over a near-bed return flow reported by \citet{DeMarchis2012} requires
-several layers through a sub-metre column, and the 0.40~m canopy of
-Section~\ref{sec:methods_roughness} occupies the lowest six of the ten layers
-at that depth, so that its drag is distributed over the vertical rather than
-collapsed into a single near-bed term. The layer count was likewise not
+The vertical was discretised with 10 sigma layers of uniform thickness, each a
+tenth of the local water depth, which at the mean depth of 0.95~m gives layers
+of about 0.095~m. The count answers two features of the problem, since
+resolving the wind-driven surface drift over a near-bed return flow reported
+by \citet{DeMarchis2012} requires several layers through a sub-metre column,
+and the 0.40~m canopy of Section~\ref{sec:methods_roughness} spans the lowest
+four of the ten layers and part of the fifth at that depth, so that its drag
+is distributed over the vertical rather than collapsed into a single near-bed
+term. The layer count was likewise not
 subjected to a convergence test.
 
 Turbulence closure used the $k$--$\varepsilon$ model with background vertical
@@ -58,8 +69,9 @@ The simulation covered nine days, from 1~July 2025 00:00 to 10~July 2025 00:00
 UTC. External forcing was updated every 300~s, shorter than the interval of
 every forcing record used, so the update does not set the time resolution of
 the forcing. The computational time step was adaptive under a Courant limit of
-0.7 and capped at 30~s, an order of magnitude below the forcing update so that
-no forcing interval is crossed in a single step, and constrained to grow by no
+0.7 and capped at 30~s in the members coupled to the wave model and at 15~s in
+the uncoupled ones, at least an order of magnitude below the forcing update so
+that no forcing interval is crossed in a single step, and constrained to grow by no
 more than a factor 1.1 between successive steps, which keeps the step from
 recovering abruptly after the wetting and drying events on the intertidal flats
 where the Courant limit binds. Initial conditions were ramped over the first
