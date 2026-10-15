@@ -85,6 +85,11 @@ DOMAIN_MAX = 730.0    # m, panel (a): full range; median is 7 m, so the ramp is
 DOMAIN_GAMMA = 0.5    # power-normalised to keep resolution on the shelf
 
 # --- geography ---------------------------------------------------------------
+# DOMAIN is the nominal frame, used only for the locator rectangle in panel (c),
+# where a hundredth of a degree is below the line width. Panel (a) takes its
+# limits from the mesh itself (mesh_extent), since a frame wider than the
+# painted mesh puts an empty band inside the axes and shortens the map it
+# contains relative to panel (b), which paints to its frame.
 DOMAIN = dict(lon=(11.950, 12.570), lat=(37.690, 38.072))
 BBOX = dict(lon=(12.418, 12.492), lat=(37.810, 37.914))
 ASPECT = 1.0 / np.cos(np.radians(37.87))
@@ -194,6 +199,12 @@ def north_arrow(ax, fx=0.072, fy=0.072):
             fontsize=8.5, color=INK, fontweight='bold', zorder=8)
 
 
+def mesh_extent(x, y):
+    """Panel (a) limits, as the bounding box of the painted mesh."""
+    return dict(lon=(float(x.min()), float(x.max())),
+                lat=(float(y.min()), float(y.max())))
+
+
 def style(ax):
     ax.set_aspect(ASPECT)
     ax.tick_params(colors=MUTED, labelsize=7.5)
@@ -213,9 +224,18 @@ def main():
     print(f'Mesh {len(x)} nodes / {len(tris)} triangles | '
           f'{len(releases)} releases over {releases["deploy"].nunique()} deploys')
 
+    extent = mesh_extent(x, y)
+    # Equal map height in the two panels. The aspect is fixed and the axes box
+    # is free, so the panel whose slot is relatively too narrow loses height.
+    # The ratio the two extents require is computed rather than chosen by eye;
+    # the cos(lat) factor is common to both panels and cancels.
+    wr = ((extent['lon'][1] - extent['lon'][0])
+          / (extent['lat'][1] - extent['lat'][0])) \
+        / (np.diff(BBOX['lon'])[0] / np.diff(BBOX['lat'])[0])
+
     fig = plt.figure(figsize=(9.8, 6.4), dpi=300)
     fig.patch.set_facecolor(SURFACE)
-    gs = fig.add_gridspec(1, 2, width_ratios=[2.25, 1.0], wspace=0.06)
+    gs = fig.add_gridspec(1, 2, width_ratios=[wr, 1.0], wspace=0.06)
     ax_d = fig.add_subplot(gs[0, 0])
     ax_l = fig.add_subplot(gs[0, 1])
     for a in (ax_d, ax_l):
@@ -250,8 +270,8 @@ def main():
     ax_d.text(BBOX['lon'][1] + 0.010, np.mean(BBOX['lat']), '(b)', color=BOX,
               fontsize=9, fontweight='bold', ha='left', va='center', zorder=9)
 
-    ax_d.set_xlim(*DOMAIN['lon'])
-    ax_d.set_ylim(*DOMAIN['lat'])
+    ax_d.set_xlim(*extent['lon'])
+    ax_d.set_ylim(*extent['lat'])
     style(ax_d)
     ax_d.set_xlabel('Longitude ($^{\\circ}$E)', color=MUTED, fontsize=8.5)
     ax_d.set_ylabel('Latitude ($^{\\circ}$N)', color=MUTED, fontsize=8.5)
