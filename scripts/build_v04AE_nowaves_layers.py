@@ -25,8 +25,13 @@ at 3.5 m/s at most, on the Marettimo shore, against 2.8 m/s in the 10-layer
 reference, whereas the anti-creep correction of section 10.8.3 alone fails
 at 36 minutes as without it. A stratified initial condition (--ic3d,
 build_ic3d_profiles.py) or the full CMEMS field (IniWithNudge = 1) only
-delays the failure, to 1 h 09 and 1 h 06. The layer test is made on uniform
-sigma with the filter, at 5, 10, 20 and 40 layers.
+delays the failure, to 1 h 09 and 1 h 06. The filter changes the solution,
+by +2 to 6 cm in water level bias at the gauges. Limiting the time step by
+the vertical fluxes as well (--at5, autoTimestep = 5), which the D-Flow FM
+Technical Reference (section 6.3.3.1) recommends with explicit baroclinic
+terms, lets the 20-layer run complete two hours without the filter, at a
+time step of about 2.7 s against 6 s and 3.1 m/s at most. The layer test is
+made on uniform sigma with that time step, at 10, 20 and 40 layers.
 
 The z-sigma variant (--zsigma N) keeps N uniform sigma layers over a sigma
 zone of about 10 m and z layers
@@ -107,6 +112,8 @@ def main():
     grp.add_argument('--kmx', type=int, help='number of uniform sigma layers')
     grp.add_argument('--zsigma', type=int, nargs='?', const=ZSIGMA['numTopSig'], metavar='N',
                      help=f'N sigma layers on top of z layers (default {ZSIGMA["numTopSig"]})')
+    ap.add_argument('--at5', action='store_true',
+                    help='time step limited by the vertical fluxes as well (autoTimestep = 5)')
     ap.add_argument('--hmf', action='store_true',
                     help='horizontal momentum filter (horizontalMomentumFilter = 1)')
     ap.add_argument('--ic3d', action='store_true',
@@ -120,7 +127,7 @@ def main():
         ZSIGMA['kmx'] = args.zsigma + 60
         ZSIGMA['numTopSig'] = args.zsigma
     tag = (f'_zsig{args.zsigma:02d}' if args.zsigma != 10 else '_zsig') if args.zsigma else f'_L{args.kmx:02d}'
-    suffix = tag + ('_hmf' if args.hmf else '') + ('_ic3d' if args.ic3d else '') + ('_smoke' if args.smoke else '')
+    suffix = tag + ('_at5' if args.at5 else '') + ('_hmf' if args.hmf else '') + ('_ic3d' if args.ic3d else '') + ('_smoke' if args.smoke else '')
     dst = ROOT / f'model/dflowfm_v04AE_nowaves_v04bed_cfl05{suffix}'
     if dst.exists():
         raise SystemExit(f'{dst} already exists; remove it before rebuilding')
@@ -135,6 +142,8 @@ def main():
             mdu = patch_line(mdu, k, f'{v:g}', 'z-sigma variant of the layer test')
     else:
         mdu = patch_line(mdu, 'kmx', str(args.kmx), 'uniform sigma layers of the layer test')
+    if args.at5:
+        mdu = patch_line(mdu, 'autoTimestep', '5', 'time step limited by vertical fluxes, Technical Reference 6.3.3.1')
     if args.hmf:
         mdu = patch_line(mdu, 'horizontalMomentumFilter', '1', 'filter of spurious velocity oscillations, User Manual 10.8.4')
     t0, t1 = ((d - REFDATE).total_seconds() for d in MAP_WINDOW)
