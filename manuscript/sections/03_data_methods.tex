@@ -7,61 +7,134 @@
 Circulation was simulated with D-Flow Flexible Mesh (D-Flow FM, kernel
 1.2.184) from the Delft3D FM Suite 2026.01, an unstructured finite-volume
 solver for the three-dimensional shallow-water equations \citep{Kernkamp2011}.
-The computational mesh comprised 21{,}188 nodes and 25{,}212 predominantly
-quadrilateral faces, and covered the lagoon together with an offshore
-extension reaching the western Sicilian channel, spanning
-11.96--12.56$^\circ$E and 37.70--38.06$^\circ$N in geographic (WGS84)
-coordinates. Resolution was graded from the offshore boundary towards the
-lagoon interior, where the inlets and the intertidal flats required the finest
-cells. The vertical was discretised with 10 sigma layers
-(\texttt{SigmaGrowthFactor} 1.2), which distributes resolution towards the bed
-while retaining a terrain-following representation appropriate to a basin
-whose depth varies from a few centimetres to about 3~m.
+Momentum advection used the Perot scheme with a monotone central limiter on
+the cell-centre velocity, and the same limiter was applied to the transport of
+salinity and temperature. The water-level system was solved with a
+preconditioned conjugate-gradient method. Bed levels were specified at cell
+centres from the bathymetry file.
+
+The computational mesh comprised 21{,}188 nodes and 25{,}212 faces, 14{,}969
+of them quadrilateral and 10{,}243 triangular, and covered the lagoon
+together with an offshore extension reaching the
+western Sicilian channel, spanning 11.96--12.56$^\circ$E and
+37.70--38.06$^\circ$N in geographic (WGS84) coordinates. Taking the distance
+between the centres of adjacent wet cells as the measure of resolution, the
+mesh grades from about 880~m in the open offshore to about 60~m in the lagoon
+and in the bands that follow the Egadi and mainland shorelines. The constraint
+the grading answers is the width of the inlets, which carry the exchange that
+sets the interior response. At the 61~m median spacing around the northern
+inlet, about six cells span its 400~m width, and about forty span the 2900~m
+southern inlet, while the 20~m dredged channel through the northern sill falls
+below the mesh scale and enters only through the cell-centre bathymetry. No
+mesh convergence test was carried out, so the resolution is reported as the
+constraint it answers rather than as a converged choice.
+
+The vertical was discretised with 10 sigma layers distributed by a growth
+factor of 1.2 towards the bed, which at the mean depth of 0.95~m gives a
+near-bed layer of about 0.04~m and a surface layer of about 0.19~m. The count
+answers two features of the problem, since resolving the wind-driven surface
+drift over a near-bed return flow reported by \citet{DeMarchis2012} requires
+several layers through a sub-metre column, and the 0.40~m canopy of
+Section~\ref{sec:methods_roughness} occupies the lowest six of the ten layers
+at that depth, so that its drag is distributed over the vertical rather than
+collapsed into a single near-bed term. The layer count was likewise not
+subjected to a convergence test.
 
 Turbulence closure used the $k$--$\varepsilon$ model with background vertical
 eddy viscosity and diffusivity of $10^{-4}$~\si{\metre\squared\per\second} and
 uniform horizontal values of 0.1~\si{\metre\squared\per\second}. Density was
 computed from the UNESCO equation of state, with salinity and temperature both
 transported as active constituents so that the summer hypersaline gradient
-contributes baroclinically to the momentum balance. Bed levels were specified
-at cell centres from the bathymetry file. Bed roughness was prescribed as a
-Manning coefficient, uniform at 0.023~s~m$^{-1/3}$ in every member, with the
-seagrass canopy carried separately as a three-dimensional drag field
-(Section~\ref{sec:methods_roughness}). Wind drag followed a linear
-Charnock-type formulation with a drag coefficient of 0.025.
+contributes baroclinically to the momentum balance. Bed roughness was
+prescribed as a Manning coefficient, uniform at 0.023~s~m$^{-1/3}$ in every
+member. The value is a bare-substrate roughness and was not calibrated, being
+held uniform by design so that the seagrass canopy, carried separately as a
+three-dimensional drag field (Section~\ref{sec:methods_roughness}), is the only
+spatially variable resistance in the ensemble. Wind drag followed the Charnock
+formulation with the Charnock coefficient taken from the ERA5 field
+(Section~\ref{sec:methods_forcing}) rather than held constant.
 
 The simulation covered nine days, from 1~July 2025 00:00 to 10~July 2025 00:00
-UTC. External forcing was updated every 300~s. The computational time step was
-adaptive under a Courant limit of 0.7, capped at 30~s and constrained to grow
-by no more than a factor 1.1 between successive steps. Initial conditions were
-ramped over the first hour. The domain was decomposed into eight partitions
-and run under MPI.
+UTC. External forcing was updated every 300~s, shorter than the interval of
+every forcing record used, so the update does not set the time resolution of
+the forcing. The computational time step was adaptive under a Courant limit of
+0.7 and capped at 30~s, an order of magnitude below the forcing update so that
+no forcing interval is crossed in a single step, and constrained to grow by no
+more than a factor 1.1 between successive steps, which keeps the step from
+recovering abruptly after the wetting and drying events on the intertidal flats
+where the Courant limit binds. Initial conditions were ramped over the first
+hour.
+
+The domain was decomposed into eight partitions and run under MPI. The
+partition count is a throughput choice and carries no physical meaning. Eight
+partitions leave about 3000 cells each, above the few thousand below which the
+communication cost of the parallel solver begins to dominate for meshes of this
+size \citep{Moge2019}, and the coupled nine-day run completed in about twelve
+hours on the 64-core workstation used.
 
 \subsection{Wave model and coupling}
 \label{sec:methods_waves}
 
 Waves were computed with SWAN \citep{Booij1999} through the Delft3D-WAVE
-module, on two nested curvilinear grids. The outer grid covered the full
-D-Flow FM domain at approximately 400~m resolution and supplied boundary
-conditions to an inner grid of approximately 100~m resolution over the lagoon
-and its inlets. The spectral space was discretised into 24 directions over the
-full circle and 24 frequencies logarithmically distributed between 0.05 and
-1.0~Hz.
+module, on two nested curvilinear grids. The outer grid, $69 \times 54$ points
+at approximately 800~m, covered the full D-Flow FM domain and took its
+boundary spectra from the western, southern and northern edges. It supplied
+boundary conditions to an inner grid of $121 \times 221$ points at
+approximately 90~m east--west and 110~m north--south over the lagoon and its
+inlets. The outer grid matches the 880~m background of the hydrodynamic mesh
+offshore. The inner grid is about half as fine as the 60~m flow mesh inside
+the lagoon, spanning the 400~m northern inlet with about five cells against
+the flow mesh's six, so the wave field is the coarser of the two
+representations of the inlets and is interpolated onto a finer flow mesh.
+
+The spectral space was discretised into 24 directions over the full circle,
+a resolution of 15$^\circ$, and 24 frequencies logarithmically distributed
+between 0.05 and 1.0~Hz. The range spans periods from 1 to 20~s, which brackets
+both the swell entering through the inlets and the short waves generated
+within the basin, whose fetch-limited peak period over the 2.5~km cross-basin
+fetch is of the order of 2~s at the wind speeds observed.
 
 Third-generation source terms were used, with Komen whitecapping,
 quadruplet wave--wave interactions, refraction, and frequency shifting all
-active. Triad interactions and wave setup were disabled. Depth-induced
-breaking followed the Battjes--Janssen formulation with $\alpha = 1.0$ and
-$\gamma = 0.73$, and bottom friction used the JONSWAP formulation with a
-coefficient of 0.067~\si{\metre\squared\per\cubic\second}. A minimum depth of
-0.05~m was imposed. Wave forces were passed to the flow solver as
-three-dimensional dissipation.
+active, which is the standard set for a wind-sea dominated application.
+Triad interactions were left inactive. They redistribute energy within the
+spectrum in very shallow water, and the quantity exchanged with the flow
+solver is the depth-integrated dissipation rather than the spectral shape, so
+their omission bears on the distribution of energy over frequency more than on
+the momentum passed to the flow. Wave setup was also left inactive, since the
+free surface is computed by the flow solver, which already receives the wave
+forcing, and activating it in the wave model would apply that contribution
+twice. Depth-induced breaking followed the formulation of
+\citet{BattjesJanssen1978} with $\alpha = 1.0$ and $\gamma = 0.73$, the mean
+value \citet{BattjesStive1985} obtained over laboratory and field data, and
+bottom friction used the JONSWAP formulation with a coefficient of
+0.067~\si{\metre\squared\per\cubic\second}, the value for wind sea rather
+than the lower value appropriate to swell \citep{BouwsKomen1983}. A minimum
+depth of 0.05~m excluded the thin films on the intertidal flats, where the
+spectral formulation carries no meaning, from the wave computation. Wave
+forces were passed to the flow solver as three-dimensional dissipation.
 
 Flow and waves were coupled online through the DIMR framework, exchanging
-fields every 3600~s. Within each exchange the wave model ran in stationary
-mode, so the time variation of the wave field followed from the re-evaluated
-water levels, currents, wind, and boundary spectra rather than from spectral
-propagation in time. Communication files were written in classic NetCDF
+fields every 3600~s. The interval was set by the time scales the coupling has
+to resolve, the 12.4~h tide and the diurnal sea breeze, and by cost, the wave
+model accounting for about four fifths of the wall time of a coupled run. It
+bounds the time resolution of the wave field, and since the drifter
+deployments of Section~\ref{sec:methods_validation} last between 0.4 and
+7.2~h, the shortest of them are advected through a single wave field.
+
+Within each exchange the wave model ran in stationary mode, so the time
+variation of the wave field followed from the re-evaluated water levels,
+currents, wind, and boundary spectra rather than from spectral propagation in
+time. The assumption this rests on is that the wave field equilibrates with
+its forcing faster than the forcing changes. Inside the lagoon, where the
+fetch is at most 2.5~km across the basin and the depth is of order 1~m, wave
+energy crosses the generation area in about fifteen minutes at the
+shallow-water group velocity, well within the hourly exchange. Offshore the
+crossing time is longer, but the sea state there is prescribed from the
+boundary spectra rather than generated inside the domain. Each stationary
+computation was iterated until the significant wave height and mean period
+changed by less than 2\% at 98\% of the wet points, to a maximum of fifteen
+iterations. Communication files were written in classic NetCDF
 (\texttt{ncFormat = 3}), which was required for the wave module to re-open the
 communication file reliably across the coupled run.
 
@@ -80,8 +153,14 @@ rather than a geodetic level, so it cannot be imposed directly as a free
 surface without a reference correction. A per-node offset was therefore added
 to the water-level boundary, anchored on the tide gauge at Marettimo island
 (JRC TAD 658) and distributed along the boundary using the CMEMS mean dynamic
-topography. The anchor was estimated from a thirteen-month record spanning
-January 2025 to January 2026.
+topography. The anchor is the mean difference between the gauge record and the
+CMEMS field interpolated to the gauge, both reduced to daily means, over 384
+aligned days spanning January 2025 to January 2026. It amounts to
+$+0.449$~m, of which the gauge contributes $+0.091$~m and the CMEMS rest-state
+reference the remaining $-0.358$~m. The monthly means of that difference range
+from $+0.361$ to $+0.505$~m, so a seasonal residual of about 0.07~m either side
+of the annual value is not removed by a constant anchor, which bounds the
+accuracy of the reference level the model can be held to.
 
 Atmospheric forcing combined ERA5 reanalysis with in-situ observation. Wind
 components, mean sea level pressure, and the Charnock parameter were taken
@@ -108,6 +187,14 @@ fifths of the water column carries drag in the layers within that fraction and
 none above it. Drag per unit volume follows the standard quadratic form
 \citep{Nepf2012}, with a drag coefficient $C_D$, a stem diameter $D$, an areal
 stem density $m$ and a canopy height $h_v$.
+
+The alternative available in this solver is the trachytope framework, in which
+vegetation enters as a composite bed roughness following \citet{Baptist2007},
+and which the earlier depth-averaged work on this lagoon uses. It was not
+adopted here. A roughness term acts at the bed, whereas the quantity the
+factorial has to separate is a momentum sink distributed through the part of
+the column the plants occupy, which is the distinction between a canopy that
+shelters the bed and one that resists the flow over four tenths of the depth.
 
 Table~\ref{tab:veg} gives the values and their provenance. None was fitted to
 any observation used to evaluate the model. Densities are expressed per leaf
@@ -212,13 +299,23 @@ modelled to observed standard deviation. The three error measures are related
 by $\mathrm{RMSE}^2 = \mathrm{bias}^2 + \mathrm{RMSE}_{\mathrm{anom}}^2$, so
 reporting them jointly separates a constant reference-level offset from
 genuine dynamic error in phase and amplitude. The first simulated day was
-discarded as spin-up.
+discarded as spin-up, over which the initial condition relaxes and the
+transients it generates leave the basin.
 
 Lagrangian skill was assessed against GPS-tracked surface drifters released in
 the lagoon interior during the simulation window. Simulated trajectories were
 obtained by advecting particles with OpenDrift \citep{Dagestad2018} through the
-modelled surface
-current field. Agreement was quantified with the normalised cumulative
+modelled surface current field, at an advection step of 300~s and with
+positions written every 600~s. Scoring was restricted, for each drifter, to
+the interval between its first and last observation, since the advection
+continues to the end of the forcing while the deployments last between 0.4 and
+7.2~h. A wind drift factor of 0.02 was applied to every member. A sweep over
+this parameter found no single value optimal across deployments, the optimum
+instead falling as the mean wind speed rose, so a per-member or per-deployment
+value would have confounded the process attribution with a tuning difference
+and the one value was held fixed throughout.
+
+Agreement was quantified with the normalised cumulative
 Lagrangian separation skill score of \citet{Liu2011}, which accumulates the
 separation between modelled and observed positions and normalises it by the
 distance travelled by the observed drifter, and with the endpoint proximity,
@@ -231,16 +328,33 @@ metric to the normalisation choice in coastal applications.
 
 Eight simulations were run over the same nine-day window, from the same initial
 condition and with identical boundary and atmospheric forcing, so that the
-differences between them isolate individual model components
-(Table~\ref{tab:ensemble}). All eight wrote station output every 600~s and
-gridded output every 1800~s, so the comparison is not affected by differences
-in output sampling.
+differences between them isolate individual model components. All eight share
+the mesh, and all wrote station output every 600~s and gridded output every
+1800~s, so the comparison is not affected by differences in output sampling.
+
+Members are identified by a three-slot code whose slots mark wave coupling,
+seagrass canopy and mobile bed in that order, carrying \texttt{W}, \texttt{V}
+or \texttt{M} where the factor is active and a dash where it is not. The eight
+are \texttt{{-}{-}{-}}, \texttt{{-}V{-}}, \texttt{W{-}{-}}, \texttt{WV{-}},
+\texttt{{-}{-}M}, \texttt{{-}VM}, \texttt{W{-}M} and \texttt{WVM}, and the code
+is used throughout the results.
 
 The design is a complete factorial in three factors, wave coupling, seagrass
 canopy and bed mobility, and all eight cells were obtained. Suspended sediment
 does not contribute to the density field in the four mobile-bed members, which
 therefore share that setting, and the fixed-bed members carry no sediment
 module.
+
+The setting is not a free parameter, since with suspended sediment feeding the
+density field the two mobile-bed members without waves terminated on a
+velocity overflow in a deep offshore cell, at the same cell and the same
+simulated instant to six decimal places in the velocity. In a cell that deep
+and carrying no erodible thickness, the baroclinic pressure gradient is the
+only route by which advected sediment can move momentum, and restricting the
+erodible layer by depth therefore leaves it untouched. Removing that
+contribution completed both runs and also removed a spurious 2.4~m deposition
+at 500~m depth, bringing the largest modelled bed-level change in the domain
+inside the lagoon.
 
 Erodible sediment is confined to depths at which waves can plausibly move it.
 Available thickness is held at 0.5~m per fraction above 15~m depth and tapered
@@ -255,25 +369,3 @@ The morphodynamic factor is a sensitivity test rather than a calibrated
 prediction, the critical shear stress for erosion not having been constrained
 against a repeated bathymetric survey.
 
-\begin{table}[H]
-  \centering
-  \caption{Ensemble members, a complete $2\times2\times2$ factorial. All eight
-  share the mesh, the nine-day window, the initial condition, and the boundary
-  and atmospheric forcing. The code marks wave coupling (W), seagrass
-  canopy (V) and mobile bed (M), and is used throughout the results.}
-  \label{tab:ensemble}
-  \begin{tabular}{lccc}
-    \toprule
-    Member & Waves & Seagrass canopy & Bed \\
-    \midrule
-    \texttt{{-}{-}{-}} & no  & no  & fixed \\
-    \texttt{{-}V{-}}   & no  & yes & fixed \\
-    \texttt{W{-}{-}}   & yes & no  & fixed \\
-    \texttt{WV{-}}     & yes & yes & fixed \\
-    \texttt{{-}{-}M}   & no  & no  & mobile \\
-    \texttt{{-}VM}     & no  & yes & mobile \\
-    \texttt{W{-}M}     & yes & no  & mobile \\
-    \texttt{WVM}       & yes & yes & mobile \\
-    \bottomrule
-  \end{tabular}
-\end{table}
