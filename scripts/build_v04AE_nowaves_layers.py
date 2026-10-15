@@ -112,6 +112,9 @@ def main():
     grp.add_argument('--kmx', type=int, help='number of uniform sigma layers')
     grp.add_argument('--zsigma', type=int, nargs='?', const=ZSIGMA['numTopSig'], metavar='N',
                      help=f'N sigma layers on top of z layers (default {ZSIGMA["numTopSig"]})')
+    ap.add_argument('--stretch', type=float, nargs='+', metavar='PCT',
+                    help='user-defined sigma layer thicknesses in percent of the column (stretchType = 1), '
+                         'in the order FM reads stretchCoef')
     ap.add_argument('--at5', action='store_true',
                     help='time step limited by the vertical fluxes as well (autoTimestep = 5)')
     ap.add_argument('--hmf', action='store_true',
@@ -127,7 +130,10 @@ def main():
         ZSIGMA['kmx'] = args.zsigma + 60
         ZSIGMA['numTopSig'] = args.zsigma
     tag = (f'_zsig{args.zsigma:02d}' if args.zsigma != 10 else '_zsig') if args.zsigma else f'_L{args.kmx:02d}'
-    suffix = tag + ('_at5' if args.at5 else '') + ('_hmf' if args.hmf else '') + ('_ic3d' if args.ic3d else '') + ('_smoke' if args.smoke else '')
+    if args.stretch:
+        assert args.kmx == len(args.stretch), 'one thickness per layer'
+        assert abs(sum(args.stretch) - 100.0) < 1e-6, 'thicknesses must add to 100 %'
+    suffix = tag + ('_str' if args.stretch else '') + ('_at5' if args.at5 else '') + ('_hmf' if args.hmf else '') + ('_ic3d' if args.ic3d else '') + ('_smoke' if args.smoke else '')
     dst = ROOT / f'model/dflowfm_v04AE_nowaves_v04bed_cfl05{suffix}'
     if dst.exists():
         raise SystemExit(f'{dst} already exists; remove it before rebuilding')
@@ -142,6 +148,14 @@ def main():
             mdu = patch_line(mdu, k, f'{v:g}', 'z-sigma variant of the layer test')
     else:
         mdu = patch_line(mdu, 'kmx', str(args.kmx), 'uniform sigma layers of the layer test')
+    if args.stretch:
+        mdu = patch_line(mdu, 'stretchType', '1', 'user-defined sigma layer thicknesses')
+        # The reference MDU has no stretchCoef line, so it is added after stretchType.
+        coef = ' '.join(f'{p:g}' for p in args.stretch)
+        mdu = re.sub(r'(?im)^(\s*stretchType\s*=.*\n)',
+                     lambda m: m.group(1) + f'stretchCoef                    = {coef} # percent of the column per layer\n',
+                     mdu, count=1)
+        assert 'stretchcoef' in mdu.lower(), 'stretchCoef not written'
     if args.at5:
         mdu = patch_line(mdu, 'autoTimestep', '5', 'time step limited by vertical fluxes, Technical Reference 6.3.3.1')
     if args.hmf:
