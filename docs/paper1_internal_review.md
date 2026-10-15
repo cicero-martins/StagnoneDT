@@ -7,11 +7,14 @@ review-mode PDF.
 
 | # | Item | Touches | Status |
 |---|------|---------|--------|
-| 1 | Co-authorship of Nasello and Maltese | frontmatter, CRediT | open |
-| 2 | Lagoon geometry in the Introduction | `01_introduction.tex` | open |
-| 3 | Age of the Introduction's reference set | `01_introduction.tex`, `references.bib` | open |
-| 4 | Subplot sizing in Figure 1 | `plot_study_area_paper1.py` | open |
-| 5 | Justification of the numerical choices in 3.1 | `03_data_methods.tex` | open |
+| 1 | Co-authorship of Nasello and Maltese | frontmatter, CRediT | applied, three points await the authors |
+| 2 | Lagoon geometry in the Introduction | `01_introduction.tex` | applied |
+| 3 | Age of the Introduction's reference set | `01_introduction.tex`, `references.bib` | partly applied |
+| 4 | Subplot sizing in Figure 1 | `plot_study_area_paper1.py` | applied |
+| 5 | Justification of the numerical choices in 3.1 | `03_data_methods.tex` | applied |
+
+What each change consists of is recorded under "Changes carried into the
+manuscript" below.
 
 ## 1. Co-authorship of Nasello and Maltese
 
@@ -391,11 +394,146 @@ description of one lagoon.
 
 Points not raised in the received review that follow from the criteria above:
 
-| # | Item | Source of the criterion |
+| # | Item | Source of the criterion | Status |
+|---|---|---|---|
+| A | Four tables against a limit of three | ECSS Guide for Authors | applied |
+| B | Abstract carries no limitation | Elsevier reviewer guidance | applied |
+| C | Introduction closes on a roadmap rather than on objectives | Elsevier reviewer guidance | applied |
+| D | Generality claim absent from abstract and Introduction | ECSS local interest exclusion | applied |
+| E | Language editing before submission | editorial Table 1, referees decline unclear papers | open, external |
+| F | Deployment-level sensitivity | Elsevier reviewer guidance on further analyses | not an exposure |
+
+Item F does not stand. The deployment-4 sensitivity is reported in
+Section 4.3, which gives the deployment's duration and observed path against
+the next-lowest values, the four canopy contrasts recomputed without it, and
+the wave contrast on a vegetated mobile bed. Panel (b) of the attribution
+figure carries the wave contrast deployment by deployment. The criterion is
+met.
+
+## Changes carried into the manuscript
+
+### Figure 1
+
+Panel (a) now takes its limits from the mesh rather than from the `DOMAIN`
+constant, which removes the margin, and the gridspec width ratio is computed
+from the two panels' extents rather than set by eye, which equalises the two
+map heights. The ratio the extents require is 2.315 against the 2.25 that was
+in place, and at the figure's proportions that difference accounted for about
+3% of panel height, the residual that remained once the margin was gone.
+
+### Introduction
+
+The second paragraph loses the extent, area, inlet geometry and shoot density
+that Section 2 already carries, and keeps the two elements that argue rather
+than describe, the sub-metre mean depth and the 75% decline in *P. oceanica*
+extent. The microtidal amplitude is also dropped, which removes a discrepancy
+with Section 2, where the figure is 0.30 m against the 0.25 m the Introduction
+gave.
+
+The closing paragraph is now three objectives in place of the section-by-section
+roadmap, and states that the second and third are not specific to this basin.
+That addresses items C and D together, and acts on the same exposure as item 2,
+since the Introduction is what an editor reads when applying the local interest
+exclusion.
+
+### Section 3, grounds for the stated settings
+
+All nine settings listed above now carry the constraint they answer. The mesh
+resolution and the layer count are stated with the constraint and with the
+explicit note that no convergence test was run, rather than with an implied
+convergence study. The partition count is stated as a throughput choice, with
+the cells-per-partition threshold from PRACE WP284 and the measured wall time.
+The remaining three anticipated sections are also addressed: the Marettimo
+anchor now carries its magnitude, its 384-day basis and the seasonal spread it
+leaves behind; Section 3.4 states why a distributed canopy drag was preferred
+to the trachytope roughness; Section 3.5 states the advection step, the scoring
+window and the fixed wind drift factor with the sweep result behind it; and
+Section 3.6 gives the evidence that the density setting was a necessity.
+
+The scan in `scripts/audit_methods_justification.py` now returns 15 flagged
+sentences against the earlier 11. The rise is an artefact of its window. The
+pattern reads a sentence and its immediate neighbour, and the grounds added
+here often sit one sentence further on, or the flagged sentence is itself the
+ground for the value stated before it. Reading the fifteen, two are the
+evaporation and sediment-taper false positives identified earlier, and the
+remaining thirteen each have a ground within their paragraph. The scan was
+useful for finding the gaps and is not a measure of whether they were closed.
+
+One ground was deliberately left out of Section 3.4. The project record holds
+that this build's trachytope canopy term does not reach the momentum equation,
+noted in `fm_trachytope_sink_inert`, which is a second and independent reason
+not to use it. The manuscript gives only the physical reason, since the
+software claim concerns a released product and would need its own evidence in
+print.
+
+### Table count
+
+Table 2, the ensemble members, is replaced by a sentence defining the
+three-slot code, which brings the count to three. Figures stand at eight.
+
+### Abstract
+
+A limitation now appears, naming the unconstrained erosion threshold and the
+single nine-day window. Two sentences were compressed to pay for it, leaving
+248 words against the 250 limit.
+
+## Statements in Section 3 that did not match the model
+
+Two claims were found to be wrong while the grounds were being assembled. Each
+is a statement a referee could check against the model files, which are
+published with the manuscript.
+
+| Statement as drafted | The model |
+|---|---|
+| Outer SWAN grid at approximately 400 m | 69 × 54 points at 800 m, read from `swan_grid_outer.grd` |
+| Wind drag with a drag coefficient of 0.025 | 0.025 is the Charnock coefficient carried in the model definition under `iCdTyp = 4`, and the `charnock` quantity in the external forcing file overrides it with the time-varying ERA5 field |
+
+The second was flagged in the anticipation above as an ungrounded value in
+Section 3.3. It was not a missing ground but a misdescription, and the
+sentence now names the ERA5 field and drops the number.
+
+The face composition is also now given exactly, 14,969 quadrilaterals and
+10,243 triangles, in place of "predominantly quadrilateral".
+
+### Measuring resolution
+
+Resolution is now reported as the distance between the centres of adjacent wet
+cells, and that choice matters. Edge length and centroid spacing disagree in
+this mesh, because two fifths of the faces are triangles and many cells are
+elongated, so edge length runs high where centroid spacing does not.
+
+| Region | Median edge length | Median centroid spacing |
 |---|---|---|
-| A | Four tables against a limit of three | ECSS Guide for Authors |
-| B | Abstract carries no limitation | Elsevier reviewer guidance |
-| C | Introduction closes on a roadmap rather than on objectives | Elsevier reviewer guidance |
-| D | Generality claim absent from abstract and Introduction | ECSS local interest exclusion |
-| E | Language editing before submission | editorial Table 1, referees decline unclear papers |
-| F | Deployment-level sensitivity computed but not reported | Elsevier reviewer guidance on further analyses |
+| Lagoon interior | 105 m | 61 m |
+| Open offshore background | 878 m | 880 m |
+| Shoreline refinement bands | 55 m | 55 m |
+
+On centroid spacing the lagoon sits at the fine end of the mesh alongside the
+shoreline bands, which is what the manuscript claimed. On edge length it
+appears to sit between the fine bands and the background, which it does not.
+The inlet cell counts follow the same measure: about six cells across the
+400 m northern inlet at the 61 m spacing there, and about forty across the
+2900 m southern inlet.
+
+The SWAN inner grid, at 88 m east-west and 111 m north-south, is the coarser
+of the two representations of the lagoon, not the equal of the flow mesh.
+Section 3.2 now says so.
+
+## Open after this pass
+
+| Item | What remains |
+|---|---|
+| 1 | Author order, affiliations and CRediT roles need the authors' agreement. The frontmatter carries the assumptions as comments. |
+| 3 | The forward-citation search is not complete. Three entries were added, Dunic et al. (2021) and Turschwell et al. (2021) beside Waycott (2009), and Mogé et al. (2019) for the partition count. The framing claims still resting on a single older source are the 13% of global shoreline from Kjerfve (1994) and the Mediterranean lagoon comparison from Niedda and Greppi (2007) and Umgiesser et al. (2014). |
+| E | Language editing is external to the repository. |
+| Graphical abstract | The journal requires one, at 531 × 1328 px. None exists. |
+| Funding | The WETWISE project identifier is still a placeholder. |
+
+The reference set now stands at 35 entries, 25 of them predating 2015. Three
+of the four pre-2015 additions are formulation sources for wave settings,
+Battjes and Janssen (1978), Battjes and Stive (1985) and Bouws and Komen
+(1983), which the reasoning under item 3 exempts from replacement.
+
+Sections 3.2 onward of the review have not yet arrived. The anticipation above
+stands as written, and the grounds added in this pass answer the part of it
+that a scan for ungrounded values could identify.

@@ -1,0 +1,289 @@
+%% Review response for Mauro De Marchis. Same substance as
+%% docs/paper1_internal_review.md, with the internal shorthand resolved:
+%% memory keys, script paths and repository-relative links mean nothing to a
+%% reader outside the project. Letterhead shared with manuscript/cover_letter.tex.
+\documentclass[11pt]{article}
+\usepackage[left=2.2cm, right=2.2cm, bottom=1.8cm, top=3.2cm, headheight=3.2cm,
+            headsep=0.3cm, footskip=1.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{parskip}
+\setlength{\parskip}{0.5em}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{fancyhdr}
+\usepackage{siunitx}
+
+\titleformat{\section}{\normalfont\bfseries\large}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalfont\bfseries}{\thesubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{0.9em}{0.3em}
+\titlespacing*{\subsection}{0pt}{0.7em}{0.25em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[C]{\raggedright\includegraphics[width=0.5\textwidth]{../manuscript/unipa_header.png}}
+\fancyfoot[C]{\includegraphics[width=0.9\textwidth]{../manuscript/unipa_footer.png}}
+
+\newcommand{\itemhead}[1]{\vspace{0.3em}\noindent\textbf{#1}\par}
+
+\begin{document}
+\thispagestyle{fancy}
+
+\begin{center}
+{\large\bfseries Paper 1: response to the internal review}\\[0.3em]
+Cicero Martins Jr.\\
+\textit{To: Prof.\ Mauro De Marchis} \hfill 13 October 2026
+\end{center}
+
+\vspace{0.2em}
+\hrule
+\vspace{0.5em}
+
+Each of the five observations is recorded below with what was found on
+checking it against the manuscript, so that the scope of each change is known
+before it is made. None has been implemented yet.
+
+Two further sections follow. The first carries the sections not yet reviewed,
+scanned against the criterion the five observations share. The second measures
+the manuscript against the journal's stated requirements.
+
+\section{The five observations}
+
+\itemhead{1. Carmelo Nasello and Antonino Maltese as co-authors}
+
+Three details are not settled by the observation and would benefit from a
+decision: position in the author order, affiliation where it differs from
+Dipartimento di Ingegneria, and the CRediT roles. The three current entries
+follow the pattern of the Sentinel-1 reservoir manuscripts, where supervising
+co-authors carry Conceptualization, Supervision, Methodology and Writing
+(review and editing). Antonino Maltese supplied the classification method that
+Section 3.4 builds on, which may warrant a role beyond that pattern.
+
+Elsevier does not permit authorship changes after acceptance, and changes
+before acceptance require written agreement from every author, so the list
+should be definitive at submission.
+
+\itemhead{2. Lagoon geometry in the Introduction}
+
+The duplication is complete. The second Introduction paragraph and Section 2
+carry the same quantities: 11~km north to south, 2.5~km east to west, 2200~ha,
+the northern inlet at 400~m wide and 0.30--0.40~m deep, the southern at 2900~m
+and 1.0--1.5~m, and shoot densities of 1000--1200 plants~\si{\per\metre\squared}.
+The figures can therefore be cut from the Introduction without loss.
+
+Two elements of that paragraph are argument rather than description, and a
+decision on where they belong is separate from the geometry: the sub-metre mean
+depth, which is the ground for rejecting the depth-averaging assumption, and
+the 75\% reduction in \emph{P.\ oceanica} extent over 2003--2024, which
+motivates the vegetated arm of the design.
+
+\itemhead{3. Age of the reference set}
+
+Twenty-two of the 29 entries predate 2015, and the Introduction draws on
+nineteen works of which most fall in that group.
+
+The set divides between the formulations the model implements and the claims
+that frame the problem. Booij et al.\ (1999), Baptist et al.\ (2007), Kernkamp
+et al.\ (2011) and Liu and Weisberg (2011) are cited because the model implements
+those specific formulations, and a newer reference does not substitute for
+them. The candidates for refreshment are the framing claims, where a recent
+synthesis can stand beside or in place of an older source, and the
+Mediterranean lagoon context presently carried by Niedda and Greppi (2007) and
+Umgiesser et al.\ (2014).
+
+A forward-citation search on each older work, filtered to coastal lagoon
+hydrodynamics, seagrass canopy flow and Lagrangian validation, is the method
+proposed.
+
+\itemhead{4. Figure 1}
+
+The margin is in panel (a), between the map and the axes frame, and the panel
+takes its limits from a constant that does not match the mesh it paints:
+
+\begin{center}
+\begin{tabular}{llll}
+\toprule
+ & Panel (a) limits & Mesh extent & Margin \\
+\midrule
+Longitude & 11.950 to 12.570 & 11.9600 to 12.5581 & 0.0100 W, 0.0119 E \\
+Latitude  & 37.690 to 38.072 & 37.7000 to 38.0631 & 0.0100 S, 0.0089 N \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Panel (b) takes its limits from the lagoon bounding box and paints to the
+frame, so no margin appears there. The latitude band in panel (a) is 2.6\% of
+the panel range, which accounts for the millimetre-scale difference in apparent
+map height. Matching panel (a) to the mesh extent removes it.
+
+\itemhead{5. Justification of the choices in Section 3.1}
+
+Section 3.1 states the mesh, the ten sigma layers, the eight partitions and the
+time step without the ground for each. Two can be supplied immediately. The
+partition count is a throughput choice rather than a physical one, and the
+supporting measurement exists, the eight-rank configuration reaching about nine
+hours per nine simulated days on the 64-core machine; saying so removes the
+implication that eight carries physical meaning. The discretisation method is
+documented in the project record, from the Navier--Stokes equations to the
+discrete system the solver advances, and Section 3.1 can draw on it.
+
+The mesh resolution and the layer count are different. Neither has a
+convergence test behind it. A defensible treatment is to state the constraint
+each choice answers and to record that no sensitivity test was run, rather than
+to imply a convergence study that does not exist.
+
+\section{The sections not yet reviewed}
+
+Four of the five observations express one criterion, that a value stated is a
+value to be grounded. The remaining sections were scanned against it by rule: a
+sentence asserting a setting is flagged where neither it nor its neighbour
+carries a causal clause, a constraint answered, or a citation.
+
+Eleven sentences flag in Section 3. Two are grounded on re-reading, the
+evaporation sign convention and the sediment thickness taper, which the pattern
+missed. Nine assert a setting with no ground:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Section & Setting & Value \\
+\midrule
+3.1 & Uniform Manning coefficient & 0.023~s~m$^{-1/3}$ \\
+3.1 & External forcing update interval & 300~s \\
+3.1 & Courant limit, step cap, growth factor & 0.7, 30~s, 1.1 \\
+3.2 & Spectral discretisation & 24 directions, 24 frequencies, 0.05--1.0~Hz \\
+3.2 & Source terms & third generation, Komen, quadruplets, refraction \\
+3.2 & Processes disabled & triads, wave setup \\
+3.2 & Breaking and bottom friction & $\alpha=1.0$, $\gamma=0.73$; JONSWAP 0.067 \\
+3.2 & Minimum depth & 0.05~m \\
+3.2 & Coupling exchange interval & 3600~s \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Six of the nine fall in Section 3.2, where the review stopped. The
+concentration is not an artefact of the scan: Section 3.2 is a list of SWAN
+settings, and the only ground it offers anywhere is for the NetCDF format of
+the communication file. Applied to Sections 4 and 5 the same scan returns
+reported measurements rather than settings, so the criterion is a Methods one.
+
+\subsection{Points in the same sections that a scan does not reach}
+
+The two nested SWAN grids, at 400~m and 100~m, have no stated relation to the
+unstructured mesh they exchange with. Whether the inner grid resolves the
+inlets, which are 400~m and 2900~m wide, is the question a reader of Section
+3.1 carries into 3.2.
+
+The 3600~s exchange interval sets the time resolution of the whole coupling,
+against drifter deployments lasting 0.4 to 7.2 hours.
+
+Stationary mode within each exchange is explained mechanically. The ground for
+it being adequate, that the wave field equilibrates faster than the hourly
+exchange in a fetch-limited basin, is not given.
+
+Section 3.4 does not say why the vegetation module was used rather than
+trachytopes, which is the route the earlier literature on this lagoon takes.
+The reason held in the project record is that the trachytope canopy term does
+not enter the momentum equation in this build. How much of that belongs in the
+manuscript is a judgement, but silence invites the question.
+
+Section 3.6 states the exclusion of the suspended sediment contribution to
+density as a property of the design. A reviewer may read it as a parameter
+tuned until the runs completed. The evidence against that reading, that the two
+affected members abort at the same cell and the same instant to six decimal
+places on independent attempts, is not in the manuscript.
+
+\section{The journal's requirements}
+
+Two sources carry assessable criteria: Elsevier's reviewer guidance for
+original research articles, and the \textit{Estuarine, Coastal and Shelf
+Science} Guide for Authors. The editorial by the journal's Editors-in-Chief,
+Borja and Elliott (2024), was read and concerns the shortage of referees rather
+than the assessment of manuscripts. It contributes one fact that bears on this
+submission: its Table 1 lists a badly written or not understandable paper among
+the acceptable reasons for a referee to decline an invitation, so clarity
+affects whether a manuscript is reviewed at all.
+
+\subsection{Measurable compliance}
+
+\begin{center}
+\begin{tabular}{llll}
+\toprule
+Limit & Journal & Manuscript & \\
+\midrule
+Abstract & 250 words & 238 & within \\
+Body text & 8000 words & 6580 & within \\
+Figures & 8 & 8 & at the limit \\
+Tables & 3 & 4 & \textbf{over} \\
+Keywords & 1 to 7 & 6 & within \\
+Highlights & 3 to 5 bullets, 85 characters & 5, all within & within \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+One table must go, and the smallest is not the cheapest to lose. Table 1 holds
+the published source for every canopy parameter, which is what supports the claim
+that nothing was fitted. Table 2, the ensemble members, is reproducible as a
+sentence plus the member code already defined, and is the least destructive
+reduction. Figures stand exactly at the limit, so any figure added in revision
+displaces another.
+
+\subsection{Criterion by criterion}
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{lXl}
+\toprule
+Criterion & State & Exposure \\
+\midrule
+Title describes the content & Names the three factors and the ranking & none \\
+Abstract stands alone, with limitations & Reports the ranking with intervals; carries no limitation & moderate \\
+Introduction current, objectives at the end & 22 of 29 references predate 2015; closes on a roadmap paragraph & high (item 3) \\
+Methods replicable & Nine settings ungrounded; no convergence test & high (item 5) \\
+Results well presented & Four tables against three; a deployment-level sensitivity exists and is not reported & moderate \\
+Conclusions supported, limitations emphasised & A Limitations subsection names the uncalibrated erosion threshold & low \\
+References up to date & 22 of 29 predate 2015 & high (item 3) \\
+Language quality & No professional editing & moderate \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Scope}
+
+The Guide for Authors states that the journal does not accept manuscripts on
+data of mainly local interest, and discourages reports of mainly local and
+descriptive nature. This is the one criterion on which a rejection would be
+structural rather than correctable in revision, and it is applied by the
+editors before referees are invited, on the title, abstract and Introduction
+alone.
+
+The manuscript's defence is that its claims concern what a class of validation
+data can certify, and how a factorial behaves when a dominant factor is
+omitted, neither of which is specific to this basin. That defence currently
+sits in Sections 5 and 6. Removing the geometry from the Introduction, as
+observation 2 proposes, acts in the same direction.
+
+\subsection{Points arising from the criteria}
+
+\begin{enumerate}[leftmargin=1.5em, itemsep=0.15em]
+  \item Four tables against a limit of three.
+  \item The abstract carries no limitation.
+  \item The Introduction closes on a roadmap rather than on the objectives.
+  \item The generality claim is absent from the abstract and the Introduction.
+  \item Language editing before submission.
+  \item A deployment-level sensitivity is computed and not reported.
+\end{enumerate}
+
+\vspace{0.4em}
+{\footnotesize\itshape Dipartimento di Ingegneria, Universit\`a degli Studi di
+Palermo \textperiodcentered\
+\href{mailto:cicero.martinsjr@unipa.it}{cicero.martinsjr@unipa.it}}
+
+\end{document}
