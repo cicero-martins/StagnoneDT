@@ -324,3 +324,48 @@ returns to what that leaves unresolved.
   cells of the design and the band their range.}
   \label{fig:classes}
 \end{figure}
+
+\subsection{Sensitivity to the discretisation}
+\label{sec:res_numerics}
+
+Liu--Weisberg skill over the 35 drifters varied within $0.553 \pm 0.004$
+across the three quadtree meshes without a monotonic trend, since the paired
+differences between consecutive levels, $+0.005$ and $-0.007$ with a standard
+error of 0.002, change sign, and the present mesh carrying the same bed scored
+0.555, inside that band. Water level at the three gauges changed by less than
+1~mm in bias and by at most 1.5~mm in anomaly RMSE between 60 and 15~m.
+
+Between 10 and 40 layers water level at the gauges changed by at most 6~mm in
+bias and 1.3~mm in anomaly RMSE, whereas drifter skill, unlike in the
+horizontal set, rose with the layer count at each of the three sampling depths
+(Table~\ref{tab:layers}), and the increment from 20 to 40 layers exceeded the
+increment from 10 to 20 in each case. The rise is therefore not an effect of
+the thinning of the top layer from which the current is read. At 10 layers the
+momentum filter on its own raised skill by $0.026 \pm 0.005$ and the
+water-level bias at the gauges by 2 to 6~cm, so the vertical set measures the
+dependence on the layer count under the filter and not the skill of the
+ensemble configuration.
+
+\begin{table}[H]
+  \centering
+  \caption{Liu--Weisberg skill of the uncoupled fixed-bed configuration without
+  canopy by layer count and by the depth over which the surface current is
+  sampled, all runs with the horizontal momentum filter. The last column is the
+  mean paired difference between 40 and 10 layers over the 35 drifters, with its
+  standard error.}
+  \label{tab:layers}
+  \begin{tabular}{lcccc}
+    \toprule
+    Current sampled & 10 layers & 20 layers & 40 layers & 40 minus 10 \\
+    \midrule
+    Top layer          & 0.567 & 0.570 & 0.581 & $+0.014 \pm 0.006$ \\
+    Upper 0.04~m       & 0.567 & 0.571 & 0.585 & $+0.018 \pm 0.006$ \\
+    Upper 0.2~m        & 0.581 & 0.593 & 0.609 & $+0.028 \pm 0.004$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+On the present mesh the uncoupled member of the ensemble scored $0.034 \pm
+0.004$ lower on four partitions on the second computer than on eight on the
+server, with all 35 drifters worse, whereas the 60~m quadtree mesh gave the
+same skill on both computers to the third decimal place.

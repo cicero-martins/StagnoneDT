@@ -25,20 +25,7 @@ the grading answers is the width of the inlets, which carry the exchange that
 sets the interior response. At the 61~m median spacing around the northern
 inlet, about six cells span its 400~m width, and about forty span the 2900~m
 southern inlet, while the 20~m dredged channel through the northern sill falls
-below the mesh scale and enters only through the cell-centre bathymetry. The
-sensitivity to horizontal resolution was measured on the uncoupled fixed-bed
-configuration with a family of quadtree meshes built in a conformal
-projection, which share the domain, the offshore grading, the open boundary
-and one bed surface and differ only in the cell edge inside the lagoon and
-within 500~m of it, 60, 30 and 15~m, all run under a Courant limit of 0.5.
-Liu--Weisberg skill over the 35 drifters varied within $0.553 \pm 0.004$
-across the three levels without a monotonic trend, since the paired
-differences between consecutive levels, $+0.005$ and $-0.007$ with a standard
-error of 0.002, change sign, and the present mesh carrying the same bed scored
-0.555, inside that band. Water level at the three gauges changed by less than
-1~mm in bias and by at most 1.5~mm in anomaly RMSE between 60 and 15~m. The
-resolution of the present mesh therefore does not limit the quantities the
-study reports.
+below the mesh scale and enters only through the cell-centre bathymetry.
 
 The vertical was discretised with 10 sigma layers of uniform thickness, each a
 tenth of the local water depth, which at the mean depth of 0.95~m gives layers
@@ -48,8 +35,8 @@ by \citet{DeMarchis2012} requires several layers through a sub-metre column,
 and the 0.40~m canopy of Section~\ref{sec:methods_roughness} spans the lowest
 four of the ten layers and part of the fifth at that depth, so that its drag
 is distributed over the vertical rather than collapsed into a single near-bed
-term. The layer count was likewise not
-subjected to a convergence test.
+term. The sensitivity of the results to the horizontal and the vertical
+discretisation was tested separately (Section~\ref{sec:methods_experiments}).
 
 Turbulence closure used the $k$--$\varepsilon$ model with background vertical
 eddy viscosity and diffusivity of $10^{-4}$~\si{\metre\squared\per\second} and
@@ -77,12 +64,13 @@ recovering abruptly after the wetting and drying events on the intertidal flats
 where the Courant limit binds. Initial conditions were ramped over the first
 hour.
 
-The domain was decomposed into eight partitions and run under MPI. The
-partition count is a throughput choice and carries no physical meaning. Eight
+The domain was decomposed into eight partitions and run under MPI. Eight
 partitions leave about 3000 cells each, above the few thousand below which the
 communication cost of the parallel solver begins to dominate for meshes of this
-size \citep{Moge2019}, and the coupled nine-day run completed in about twelve
-hours on the 64-core workstation used.
+size \citep{Moge2019}. All members were run on the same 48-core Linux server
+with the same decomposition, where a coupled nine-day member completed in four
+and a half to six hours of wall-clock time and an uncoupled member in under
+three.
 
 \subsection{Wave model and coupling}
 \label{sec:methods_waves}
@@ -380,4 +368,18 @@ mobilised in shallow water still settles offshore.
 The morphodynamic factor is a sensitivity test rather than a calibrated
 prediction, the critical shear stress for erosion not having been constrained
 against a repeated bathymetric survey.
+
+The sensitivity to the numerical discretisation was tested outside the
+factorial on the uncoupled fixed-bed configuration without canopy, under a
+Courant limit of 0.5. Horizontal resolution was varied with a family of quadtree
+meshes built in a conformal projection, with the domain, offshore grading and
+open boundary of the present mesh, one bed surface common to the family and to
+a run of the present mesh, and a cell edge of 60, 30 and 15~m inside the lagoon
+and within 500~m of it. Vertical resolution was varied with
+10, 20 and 40 uniform layers on the present mesh, run with the horizontal
+momentum filter of the solver \citep{Deltares2025}, which the ensemble members
+do not use. In the layer set the drifters were scored with the current of
+the top layer and with the current averaged over the upper 0.04 and 0.2~m. The
+uncoupled member was also repeated on four partitions on a second computer, to
+test the dependence on the host and the decomposition.
 
