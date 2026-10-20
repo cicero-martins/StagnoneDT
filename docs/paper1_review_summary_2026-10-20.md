@@ -2,7 +2,7 @@
 
 Observations of M. De Marchis on the review-mode draft, read as far as
 Section 3.1, against the changes carried into the manuscript. The revised
-manuscript is [`paper1_revised_2026-10-15.pdf`](paper1_revised_2026-10-15.pdf),
+manuscript is [`paper1_revised_2026-10-20.pdf`](paper1_revised_2026-10-20.pdf),
 and the full record of each item, with the evidence behind it, is in
 [`paper1_internal_review.md`](paper1_internal_review.md).
 
@@ -14,35 +14,45 @@ and the full record of each item, with the evidence behind it, is in
 | 2 | Lagoon geometry repeated in the Introduction | Remove the figures that Section 2 already carries | Extent, area, inlet geometry and shoot density removed. The sub-metre mean depth and the 75% decline of *P. oceanica* (2003–2024) kept, since they carry the argument | Section 1 |
 | 3 | Age of the reference set | Forward-citation search from the older works | Dunic et al. (2021) and Turschwell et al. (2021) beside Waycott et al. (2009), and Mogé et al. (2019) for the partition count. Formulation sources (Booij, Baptist, Kernkamp, Liu and Weisberg) retained as primary | Section 1, bibliography |
 | 4 | Panel sizes in Figure 1 | Remove the margin in panel (a) | Panel (a) limits taken from the mesh, and the width ratio computed from the two extents, which equalises the map heights | Figure 1 |
-| 5 | Grounds for the numerical choices in Section 3.1 | State the constraint behind each choice, and state that mesh and layer count were not tested | Each choice carries its constraint. Mesh and layer count were tested instead of declared untested (see the next table). Partition count grounded on cells per partition (Mogé et al., 2019), with the wall time on the server where all members ran | Sections 3.1, 3.6, 4.6, 5.4 |
+| 5 | Grounds for the numerical choices in Section 3.1 | State the constraint behind each choice, and state that mesh and layer count were not tested | Each choice carries its constraint. Mesh, layer count, time-step limit, host and initial condition were tested (see the next section). Partition count grounded on cells per partition (Mogé et al., 2019), with the wall time on the server where all members ran | Sections 3.1, 3.6, 4.6, 5.4 |
 
-## Sensitivity to the discretisation
+## Sensitivity to the discretisation and the initial condition
 
-The tests behind item 5 were run on the uncoupled fixed-bed configuration
-without canopy, under a Courant limit of 0.5. Skill is the mean Liu–Weisberg
-score over the 35 drifters.
+Skill is the mean Liu–Weisberg score over the 35 drifters, with the paired
+difference between runs and its standard error or 95% bootstrap interval.
 
-| Test | Levels | Water level at the gauges | Drifter skill |
+| Test | Configuration | Water level at the gauges | Drifter skill |
 |---|---|---|---|
-| Horizontal, quadtree meshes in the lagoon | 60, 30, 15 m | < 1 mm in bias, ≤ 1.5 mm in anomaly RMSE | 0.553 ± 0.004, no monotonic trend; present mesh 0.555 |
-| Vertical, uniform sigma layers, horizontal momentum filter | 10, 20, 40 | ≤ 6 mm in bias, ≤ 1.3 mm in anomaly RMSE | +0.014 to +0.028 from 10 to 40, depending on the sampled depth (top layer, upper 0.04 m, upper 0.2 m) |
-| Host and decomposition, present mesh | 8 partitions on the server, 4 on a second computer | not compared | 0.034 lower on the second computer, all 35 drifters; no difference on the 60 m quadtree mesh |
+| Horizontal resolution, quadtree meshes in the lagoon, 60, 30, 15 m | uncoupled, fixed bed, no canopy, Courant 0.5 | < 1 mm in bias, ≤ 1.5 mm in anomaly RMSE | 0.553 ± 0.004, no monotonic trend; present mesh 0.555 |
+| Vertical resolution, 10 and 20 uniform sigma layers | as above, stratified start, time step limited also by vertical fluxes | ≤ 2.4 mm in bias, ≤ 1.6 mm in anomaly RMSE | 0.619 at both, +0.0003 ± 0.0036 |
+| Time-step limit by vertical fluxes, 10 layers | as above, uniform start | < 0.3 mm | +0.0007 ± 0.0007 |
+| Host and decomposition, 8 partitions on the server against 4 on a second computer | uncoupled member, Courant 0.7 (ensemble) | not compared | 0.034 lower on the second computer, all 35 drifters |
+| Same | Courant 0.5 | identical to 0.1 mm | +0.002 ± 0.001; no difference on the 60 m quadtree mesh |
+| Initial condition, stratified against uniform offshore column | ensemble configuration, member `---` | mean level 2 to 8 cm lower; anomaly RMSE within 3 mm | 0.619 against 0.539, +0.080 (CI +0.041 to +0.119), 31 of 35 better |
+| Same | member `-V-` | mean level lower; anomaly RMSE unchanged | +0.005 (CI −0.003 to +0.011) |
 
-The horizontal resolution does not limit the reported quantities. The
-vertical dependence and the host dependence are an order of magnitude below
-the canopy contrasts (0.087 to 0.256) and comparable to the smaller contrasts
-of the vegetated arm (0.010 to 0.018). All members share the 10-layer
-discretisation, the server and the decomposition, and Section 5.4 states this
-as a limitation. The layer runs required the momentum filter above 10 layers,
-which the ensemble does not use, and the same set without the filter is
-running.
+Neither the horizontal nor the vertical resolution limits the reported
+quantities. Above 10 layers the start from a uniform column is unstable next
+to the open boundary, so the layer test started from the stratified condition,
+the CMEMS profiles of temperature and salinity at the start time. The initial
+condition is the one choice with an effect of the order of the ensemble
+contrasts. From the stratified start the canopy contrast on the uncoupled fixed
+bed is +0.120 (CI +0.061 to +0.180) against +0.195 from the uniform start, still
+clear of zero, and its water-level signature at AltaVilaEst is unchanged. The
+uniform start lowers the skill of the bare member and leaves the vegetated
+member nearly unaffected. Sections 3.3, 3.6, 4.6 and 5.4 and the abstract state
+this, and the ensemble numbers in the present version remain those of the
+uniform start.
+
+The full ensemble is being rerun from the stratified condition, with the
+configuration otherwise unchanged, for the submitted version.
 
 ## Points arising from the journal criteria
 
 | # | Criterion | Carried out |
 |---|---|---|
-| A | Four tables against the limit of three (ECSS Guide for Authors) | The table of ensemble members replaced by the three-slot member code defined in Section 3.6. Section 4.6 adds a table, which returns the count to four |
-| B | Limitations in the abstract (Elsevier reviewer guidance) | Erosion threshold and single nine-day window stated; 248 words against 250 |
+| A | Four tables against the limit of three (ECSS Guide for Authors) | The table of ensemble members replaced by the three-slot member code defined in Section 3.6; three tables |
+| B | Limitations in the abstract (Elsevier reviewer guidance) | Uncalibrated bed mobility, single nine-day window and uniform initial state stated |
 | C | Introduction closing on objectives | Roadmap paragraph replaced by three objectives |
 | D | Generality of the claims (local interest exclusion) | Introduction states that the second and third objectives are not specific to this basin |
 | E | Language editing | Not yet done, external to the manuscript |
@@ -65,7 +75,9 @@ running.
 | Time step capped at 30 s | 30 s in the coupled members, 15 s in the uncoupled ones |
 | Outer SWAN grid at about 400 m | 69 × 54 points at 800 m |
 | Wind drag coefficient of 0.025 | Charnock formulation with the time-varying ERA5 Charnock parameter |
-| Partition count without physical meaning | Solution depends on host and decomposition on the present mesh (table above) |
+| Partition count without physical meaning | Solution depends on host and decomposition at the Courant limit of 0.7 of the ensemble (table above) |
+| Initial conditions represented the observed summer state | Uniform 24 °C and salinity 37.5 outside the lagoon, 42 inside |
+| Ensemble runs completed in about twelve hours on a 64-core workstation | All members ran on a 48-core Linux server, 4.5 to 6 h for a coupled nine-day member |
 
 ## Open items
 
@@ -73,7 +85,6 @@ running.
 |---|---|
 | Author order, affiliations, CRediT roles | Require the agreement of every author before submission |
 | Reference set | Kjerfve (1994), Niedda and Greppi (2007) and Umgiesser et al. (2014) still the only sources for their claims |
-| Table count | Four against the limit of three after Section 4.6 |
-| Vertical test without the filter | Runs in progress, to be added to Section 4.6 |
+| Ensemble from the stratified initial condition | Runs in progress on the server; all numbers of Sections 4 and 5, the abstract and the conclusions to be updated from them |
 | Language editing, graphical abstract, funding identifier | Not yet done |
 | Review of Sections 3.2 onward | Awaited |
