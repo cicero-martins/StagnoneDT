@@ -45,8 +45,8 @@ computed from the UNESCO equation of state, with salinity and temperature both
 transported as active constituents so that the summer hypersaline gradient
 contributes baroclinically to the momentum balance. Bed roughness was
 prescribed as a Manning coefficient, uniform at 0.023~s~m$^{-1/3}$ in every
-member. The value is a bare-substrate roughness and was not calibrated, being
-held uniform by design so that the seagrass canopy, carried separately as a
+member, which is the default of the solver. The value stands for the bare
+substrate alone and was not calibrated, being held uniform by design so that the seagrass canopy, carried separately as a
 three-dimensional drag field (Section~\ref{sec:methods_roughness}), is the only
 spatially variable resistance in the ensemble. Wind drag followed the Charnock
 formulation with the Charnock coefficient taken from the ERA5 field
@@ -280,10 +280,12 @@ links at all.
   \label{fig:seagrass}
 \end{figure}
 
-For reference, \citet{Ingrassia2024} obtained a best-fit uniform
-Gauckler--Strickler coefficient of 20~m$^{1/3}$~s$^{-1}$ for the vegetated
-Stagnone in a depth-averaged model, equivalent to a Manning coefficient of
-0.050~s~m$^{-1/3}$.
+\citet{Ingrassia2024} obtained a best-fit uniform Gauckler--Strickler
+coefficient of 20~m$^{1/3}$~s$^{-1}$ for the vegetated Stagnone in a
+depth-averaged model, equivalent to a Manning coefficient of
+0.050~s~m$^{-1/3}$. That value is a bulk roughness of the vegetated lagoon, and
+used as the bare-substrate roughness of a model that resolves the canopy
+separately it would count the canopy twice.
 
 \subsection{Observational data and validation metrics}
 \label{sec:methods_validation}

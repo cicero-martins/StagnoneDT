@@ -49,7 +49,7 @@ water does on its way in, which is where the configurations differ. The two
 roles are complementary, and a match in the interior would be difficult to
 interpret without the exchange having been established first.
 
-Read alongside the drifters, this refines the familiar argument that water level
+Together with the drifter result, the gauge result refines the familiar argument that water level
 constrains transport weakly and that Lagrangian observations form a distinct
 constraint rather than a confirmation \citep{Liu2011, Revelard2021}. Water level
 is not inherently insensitive to the canopy, since the one gauge sited inside
@@ -63,7 +63,7 @@ the inlet.
 \subsection{What an ensemble without a canopy reports}
 \label{sec:disc_synergy}
 
-Read on its own, the bare half of this design supports a strong statement about
+Taken on its own, the bare half of this design supports a strong statement about
 process coupling. Wave coupling and bed mobility each reduce Lagrangian skill
 when applied alone and raise it when applied together, with a large interaction
 term, tight bootstrap intervals and a mechanism available in the literature,
@@ -99,52 +99,53 @@ had used.
 \subsection{Limitations}
 \label{sec:disc_limits}
 
-\textbf{The canopy does not reach the wave model.} The coupling passes a bed
-roughness field to the spectral model, and the canopy enters the momentum
-equation of the flow rather than that field, so mean orbital velocity at the bed
+\textbf{Wave dissipation by the canopy.} The canopy does not reach the wave
+model, because the coupling passes a bed roughness field to the spectral model
+while the canopy enters the momentum equation of the flow, so mean orbital
+velocity at the bed
 changes by under 2.5\% when the canopy is introduced and not in an order that
 follows canopy density. Seagrass meadows do attenuate waves, in this species and
 at this scale \citep{Infantes2012, Prinos2010}, and shallow restricted
 Mediterranean lagoons carry wave fields that respond to bed conditions
 \citep{Morote2025}. The wave field in these simulations is therefore that of a
 bare bed, and the wave contrasts reported here are conditional on that.
-Representing canopy dissipation inside the spectral model is the natural next
-step. It would be expected to change the wave contrasts rather than the canopy
+Representing canopy dissipation inside the spectral model is the corresponding
+extension. It would be expected to change the wave contrasts rather than the canopy
 ones, which are measured on the flow.
 
-\textbf{Reconfiguration is mechanical, and sensitive to a tabulated parameter.}
-The canopy bends under load rather than holding a fixed height, and the response
-is genuinely dynamic, the velocity ratio between two runs differing only in leaf
-stiffness moving from 1.005 in the slowest quintile of the record to 0.807 in
-the fastest 5\%. A fixed shortening would give a constant ratio. Two things
-follow. A 13\% change in leaf density moves the velocity field by 20\% at the
-upper end of the range, which is a strong sensitivity to a value taken from a
-published table rather than measured in this meadow. And the bending is
-mechanical, where the flume measurements of \citet{CiraoloFerreri2006} describe
+\textbf{Canopy reconfiguration.} The canopy bends under load rather than holding
+a fixed height, and the response is dynamic, the velocity ratio between two runs
+differing only in leaf stiffness moving from 1.005 in the slowest quintile of
+the record to 0.807 in the fastest 5\%, where a fixed shortening would give a
+constant ratio. A 13\% change in leaf density moves the velocity field by 20\%
+at the upper end of the range, which is a strong sensitivity to a value taken
+from a published table rather than measured in this meadow. The bending is
+moreover mechanical, whereas the flume measurements of \citet{CiraoloFerreri2006} describe
 reconfiguration empirically through a friction factor that varies by a factor of
 twelve over the velocity range they tested. That empirical formulation is
 available in the model only in its depth-averaged solver, so the two could not
 be compared directly and the agreement between them was not tested.
 
-\textbf{The morphodynamic factor is not calibrated.} The critical shear stress
-for erosion has not been constrained against a repeated bathymetric survey, and
-over nine days the modelled bed changes by up to 1.4~m in isolated cells against
-a median of 0.05~m in a basin of 0.95~m mean depth, which is not a plausible
-rate for this system. The factor is a sensitivity test rather than a prediction.
-It matters less to the conclusions than it would have before, because the
-configuration reproducing observed transport no longer depends on it. The
-best-performing configuration of the eight carries a fixed bed.
+\textbf{Bed mobility.} The morphodynamic factor is not calibrated, since the
+critical shear stress for erosion has not been constrained against a repeated
+bathymetric survey, and over nine days the modelled bed changes by up to 1.4~m
+in isolated cells against a median of 0.05~m in a basin of 0.95~m mean depth,
+which is not a plausible rate for this system. The factor is therefore a
+sensitivity test rather than a prediction, and its bearing on the conclusions is
+limited by the best-performing configuration of the eight carrying a fixed
+bed.
 
-\textbf{The window is short and the vegetated configurations are restart
-segments.} Two days of water level and thirty-four hours of drifter record,
-within one summer season. A control run establishes that the restart accounts
-for none of the water level result (Section~\ref{sec:res_wl}), but seasonal
+\textbf{Window and restart segments.} The record covers two days of water level
+and thirty-four hours of drifter observations within one summer season, and the
+vegetated configurations are three-day restart segments. A control run
+establishes that the restart accounts for none of the water level result or of
+the drifter skill (Section~\ref{sec:res_wl}), but seasonal
 behaviour, storm conditions and the interaction of a canopy with a mobile bed
 over longer periods are outside what this design addresses.
 
-\textbf{The ensemble starts from a uniform offshore column.} From the
-stratified condition the canopy contrast on the uncoupled fixed bed is 0.120
-rather than 0.195, since the uniform start lowers the skill of the bare member
+\textbf{Initial condition.} Started from the stratified condition instead of the
+uniform offshore column of the ensemble, the canopy contrast on the uncoupled
+fixed bed is 0.120 rather than 0.195, since the uniform start lowers the skill of the bare member
 by 0.080 and leaves the vegetated member within 0.005
 (Section~\ref{sec:res_numerics}). The contrast remains clear of zero under
 either start, and water level responds only by a shift of its mean, but the
@@ -154,8 +155,9 @@ decomposition at the Courant limit of the ensemble, by 0.034 in skill, which all
 members share, while the horizontal and vertical resolution do not limit the
 reported quantities.
 
-\textbf{One of the two species is loosely constrained.} The
-\emph{C.\ nodosa} parameters come from a flume study of plants collected
-elsewhere, and no measurement of that species in this lagoon was available. It
-carries about 1.5\% of the canopy frontal area in the model, which bounds the
-consequence, but the \emph{P.\ oceanica} column is the one doing the work.
+\textbf{\emph{Cymodocea nodosa} parameters.} The \emph{C.\ nodosa} parameters
+are loosely constrained, coming from a flume study of plants collected
+elsewhere, since no measurement of that species in this lagoon was available.
+The species carries about 1.5\% of the canopy frontal area in the model, which
+bounds the consequence, and the drag is carried almost entirely by the
+\emph{P.\ oceanica} column.

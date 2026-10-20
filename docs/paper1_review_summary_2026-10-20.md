@@ -1,7 +1,7 @@
 # Paper 1, internal review of Sections 1 to 3.1
 
-Observations of M. De Marchis on the review-mode draft, read as far as
-Section 3.1, against the changes carried into the manuscript. The revised
+M. De Marchis reviewed the review-mode draft as far as Section 3.1, and each
+observation is paired with the change carried into the manuscript. The revised
 manuscript is [`paper1_revised_2026-10-20.pdf`](paper1_revised_2026-10-20.pdf),
 and the full record of each item, with the evidence behind it, is in
 [`paper1_internal_review.md`](paper1_internal_review.md).
@@ -32,11 +32,11 @@ difference between runs and its standard error or 95% bootstrap interval.
 | Same | member `-V-` | mean level lower; anomaly RMSE unchanged | +0.005 (CI −0.003 to +0.011) |
 
 Neither the horizontal nor the vertical resolution limits the reported
-quantities. Above 10 layers the start from a uniform column is unstable next
-to the open boundary, so the layer test started from the stratified condition,
-the CMEMS profiles of temperature and salinity at the start time. The initial
-condition is the one choice with an effect of the order of the ensemble
-contrasts. From the stratified start the canopy contrast on the uncoupled fixed
+quantities, the layer test having started from the stratified condition, the
+CMEMS profiles of temperature and salinity at the start time, because above 10
+layers the start from a uniform column is unstable next to the open boundary.
+The initial condition is the one choice with an effect of the order of the
+ensemble contrasts. From the stratified start the canopy contrast on the uncoupled fixed
 bed is +0.120 (CI +0.061 to +0.180) against +0.195 from the uniform start, still
 clear of zero, and its water-level signature at AltaVilaEst is unchanged. The
 uniform start lowers the skill of the bare member and leaves the vegetated
@@ -52,7 +52,7 @@ configuration otherwise unchanged, for the submitted version.
 | # | Criterion | Carried out |
 |---|---|---|
 | A | Four tables against the limit of three (ECSS Guide for Authors) | The table of ensemble members replaced by the three-slot member code defined in Section 3.6; three tables |
-| B | Limitations in the abstract (Elsevier reviewer guidance) | Uncalibrated bed mobility, single nine-day window and uniform initial state stated |
+| B | Limitations in the abstract (Elsevier reviewer guidance) | Single nine-day window, uncalibrated bed mobility and uniform initial state stated, in an abstract of about 245 words written in impersonal construction |
 | C | Introduction closing on objectives | Roadmap paragraph replaced by three objectives |
 | D | Generality of the claims (local interest exclusion) | Introduction states that the second and third objectives are not specific to this basin |
 | E | Language editing | Not yet done, external to the manuscript |
@@ -76,6 +76,7 @@ configuration otherwise unchanged, for the submitted version.
 | Outer SWAN grid at about 400 m | 69 × 54 points at 800 m |
 | Wind drag coefficient of 0.025 | Charnock formulation with the time-varying ERA5 Charnock parameter |
 | Partition count without physical meaning | Solution depends on host and decomposition at the Courant limit of 0.7 of the ensemble (table above) |
+| Manning coefficient of 0.023 stated as uncalibrated without a source | Default of the solver, standing for the bare substrate; the 0.050 of Ingrassia et al. (2024) is a bulk roughness of the vegetated lagoon and would count the canopy twice in a model that resolves it |
 | Initial conditions represented the observed summer state | Uniform 24 °C and salinity 37.5 outside the lagoon, 42 inside |
 | Ensemble runs completed in about twelve hours on a 64-core workstation | All members ran on a 48-core Linux server, 4.5 to 6 h for a coupled nine-day member |
 
