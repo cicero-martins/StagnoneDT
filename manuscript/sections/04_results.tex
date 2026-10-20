@@ -55,8 +55,9 @@ fixed-bed member with the vegetation removed, so it differs from the continuous
 bare member only by being a segment. At AltaVilaEst it gives an anomaly RMSE of
 0.051~m and a correlation of 0.82, against 0.051 and 0.82 for the continuous
 bare member and 0.027 and 0.94 for the vegetated one. The two outer stations
-agree with their continuous counterparts to within 0.4~mm. The restart accounts
-for none of the difference.
+agree with their continuous counterparts to within 0.4~mm, and its
+Liu--Weisberg skill is within 0.001 of that of the continuous bare member. The
+restart accounts for none of the difference.
 
 \begin{table}[H]
   \centering
@@ -335,37 +336,27 @@ error of 0.002, change sign, and the present mesh carrying the same bed scored
 0.555, inside that band. Water level at the three gauges changed by less than
 1~mm in bias and by at most 1.5~mm in anomaly RMSE between 60 and 15~m.
 
-Between 10 and 40 layers water level at the gauges changed by at most 6~mm in
-bias and 1.3~mm in anomaly RMSE, whereas drifter skill, unlike in the
-horizontal set, rose with the layer count at each of the three sampling depths
-(Table~\ref{tab:layers}), and the increment from 20 to 40 layers exceeded the
-increment from 10 to 20 in each case. The rise is therefore not an effect of
-the thinning of the top layer from which the current is read. At 10 layers the
-momentum filter on its own raised skill by $0.026 \pm 0.005$ and the
-water-level bias at the gauges by 2 to 6~cm, so the vertical set measures the
-dependence on the layer count under the filter and not the skill of the
-ensemble configuration.
+From the stratified condition, skill was 0.619 at both 10 and 20 layers, a
+paired difference of $+0.0003 \pm 0.0036$, and water level at the gauges
+differed by at most 2.4~mm in bias and 1.6~mm in anomaly RMSE. Limiting the
+time step also by the vertical fluxes changed skill at 10 layers by $+0.0007
+\pm 0.0007$ and water level by less than 0.3~mm. Neither the horizontal nor the
+vertical resolution of the present configuration therefore limits the
+quantities the study reports.
 
-\begin{table}[H]
-  \centering
-  \caption{Liu--Weisberg skill of the uncoupled fixed-bed configuration without
-  canopy by layer count and by the depth over which the surface current is
-  sampled, all runs with the horizontal momentum filter. The last column is the
-  mean paired difference between 40 and 10 layers over the 35 drifters, with its
-  standard error.}
-  \label{tab:layers}
-  \begin{tabular}{lcccc}
-    \toprule
-    Current sampled & 10 layers & 20 layers & 40 layers & 40 minus 10 \\
-    \midrule
-    Top layer          & 0.567 & 0.570 & 0.581 & $+0.014 \pm 0.006$ \\
-    Upper 0.04~m       & 0.567 & 0.571 & 0.585 & $+0.018 \pm 0.006$ \\
-    Upper 0.2~m        & 0.581 & 0.593 & 0.609 & $+0.028 \pm 0.004$ \\
-    \bottomrule
-  \end{tabular}
-\end{table}
+Started from the stratified condition, the bare member \texttt{{-}{-}{-}}
+scored 0.619 against 0.539 from the uniform column, a paired difference of
+$+0.080$ (95\% CI $+0.041$ to $+0.119$) with 31 of the 35 drifters better, and
+modelled water level at the three gauges fell by 2 to 8~cm, while anomaly RMSE
+changed by at most 3~mm and correlation by at most 0.01. The vegetated member
+\texttt{{-}V{-}} changed by $+0.005$ (CI $-0.003$ to $+0.011$). The canopy
+contrast on the uncoupled fixed bed is therefore $+0.120$ (CI $+0.061$ to
+$+0.180$) from the stratified condition, against $+0.195$ from the uniform one,
+and its signature at AltaVilaEst, anomaly RMSE falling from 0.054 to 0.028~m and
+correlation rising from 0.81 to 0.94, is unchanged.
 
-On the present mesh the uncoupled member of the ensemble scored $0.034 \pm
-0.004$ lower on four partitions on the second computer than on eight on the
-server, with all 35 drifters worse, whereas the 60~m quadtree mesh gave the
-same skill on both computers to the third decimal place.
+Under the Courant limit of 0.7 used by the ensemble, the uncoupled member scored
+$0.034 \pm 0.004$ lower on four partitions on the second computer than on eight
+on the server, with all 35 drifters worse. Under a limit of 0.5 the same
+comparison gave $+0.002 \pm 0.001$ on the present mesh and no difference on the
+60~m quadtree mesh.

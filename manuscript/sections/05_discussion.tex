@@ -142,19 +142,17 @@ for none of the water level result (Section~\ref{sec:res_wl}), but seasonal
 behaviour, storm conditions and the interaction of a canopy with a mobile bed
 over longer periods are outside what this design addresses.
 
-\textbf{The vertical discretisation and the host are not neutral for the
-drifter skill.} Skill rose by 0.014 to 0.028 between 10 and 40 layers,
-depending on the depth over which the current is sampled, and differed by 0.034
-between two hosts and decompositions on the present mesh
-(Section~\ref{sec:res_numerics}), while the horizontal resolution of the mesh
-moved it by less than 0.01. Both dependences are an order of magnitude below the
-canopy contrasts, which range from 0.087 to 0.256, and comparable to the
-contrasts of 0.010 to 0.018 in magnitude that bed mobility, and waves on a
-mobile bed, produce in the vegetated arm. All members
-share the 10-layer discretisation, the host and the decomposition, so the
-contrasts are formed between runs that carry the same numerical choices, but
-the extent to which those choices modulate the contrasts was not measured, and
-the smaller contrasts of the vegetated arm are read with that caveat.
+\textbf{The ensemble starts from a uniform offshore column.} From the
+stratified condition the canopy contrast on the uncoupled fixed bed is 0.120
+rather than 0.195, since the uniform start lowers the skill of the bare member
+by 0.080 and leaves the vegetated member within 0.005
+(Section~\ref{sec:res_numerics}). The contrast remains clear of zero under
+either start, and water level responds only by a shift of its mean, but the
+magnitudes reported here, those of the bare arm in particular, are conditional
+on the uniform start. The solution also depends on the host and the
+decomposition at the Courant limit of the ensemble, by 0.034 in skill, which all
+members share, while the horizontal and vertical resolution do not limit the
+reported quantities.
 
 \textbf{One of the two species is loosely constrained.} The
 \emph{C.\ nodosa} parameters come from a flume study of plants collected

@@ -175,8 +175,9 @@ temperature were nudged towards the CMEMS fields with a relaxation time of
 $8.64\times10^{5}$~s, long enough to leave the lagoon interior essentially
 free-running while constraining the offshore extension.
 
-Initial conditions represented the observed summer state, with a hypersaline
-field prescribed over the lagoon.
+Temperature was initialised at a uniform 24~$^\circ$C over the domain and
+salinity at a uniform 37.5 outside the lagoon, with the hypersaline value of 42
+prescribed over the lagoon.
 
 \subsection{Seagrass canopy parametrisation}
 \label{sec:methods_roughness}
@@ -369,17 +370,24 @@ The morphodynamic factor is a sensitivity test rather than a calibrated
 prediction, the critical shear stress for erosion not having been constrained
 against a repeated bathymetric survey.
 
-The sensitivity to the numerical discretisation was tested outside the
-factorial on the uncoupled fixed-bed configuration without canopy, under a
-Courant limit of 0.5. Horizontal resolution was varied with a family of quadtree
-meshes built in a conformal projection, with the domain, offshore grading and
-open boundary of the present mesh, one bed surface common to the family and to
-a run of the present mesh, and a cell edge of 60, 30 and 15~m inside the lagoon
-and within 500~m of it. Vertical resolution was varied with
-10, 20 and 40 uniform layers on the present mesh, run with the horizontal
-momentum filter of the solver \citep{Deltares2025}, which the ensemble members
-do not use. In the layer set the drifters were scored with the current of
-the top layer and with the current averaged over the upper 0.04 and 0.2~m. The
+The sensitivity to the numerical discretisation and to the initial condition
+was tested outside the factorial. Horizontal resolution was varied on the
+uncoupled fixed-bed configuration without canopy, under a Courant limit of 0.5,
+with a family of quadtree meshes built in a conformal projection, with the
+domain, offshore grading and open boundary of the present mesh, one bed surface
+common to the family and to a run of the present mesh, and a cell edge of 60,
+30 and 15~m inside the lagoon and within 500~m of it. Vertical resolution was
+varied on the same configuration with 10 and 20 uniform layers. The start from
+a uniform column is not stable above 10 layers next to the open boundary, so the
+two layer counts started from a stratified condition, in which the depth
+profiles of temperature and salinity of the CMEMS nudging field at the start
+time replace the uniform values and the lagoon keeps its hypersaline salinity,
+with the time step limited
+also by the vertical fluxes \citep{Deltares2025}. The effect of that time-step
+limit was measured separately at 10 layers. The initial condition was tested on
+the ensemble configuration itself by repeating the members
+\texttt{{-}{-}{-}} and \texttt{{-}V{-}} from the stratified condition. The
 uncoupled member was also repeated on four partitions on a second computer, to
-test the dependence on the host and the decomposition.
+test the dependence on the host and the decomposition, under the Courant limit
+of 0.7 used by the ensemble and under 0.5.
 
