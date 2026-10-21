@@ -1,0 +1,13 @@
+contrast,a,b,dLW,lo,hi,p,n_neg,n_pos,clear_of_zero
+"Waves | bare, fixed bed",nodm,nowaves,-0.0222,-0.0429,-0.0030,0.0840,21,14,True
+"Waves | canopy, fixed bed",nodm_veg,nowaves_veg,-0.0281,-0.0404,-0.0166,0.0004,25,10,True
+"Waves | bare, mobile bed",bl,nowaves_dm,0.0937,0.0121,0.1673,0.0036,8,27,True
+"Waves | canopy, mobile bed",veg,nowaves_vegdm,-0.0201,-0.0346,-0.0069,0.0182,21,14,True
+"Canopy | no waves, fixed bed",nowaves_veg,nowaves,0.1199,0.0614,0.1797,0.0012,10,25,True
+"Canopy | waves, fixed bed",nodm_veg,nodm,0.1140,0.0558,0.1702,0.0006,8,27,True
+"Canopy | no waves, mobile bed",nowaves_vegdm,nowaves_dm,0.1246,0.0621,0.1864,0.0009,10,25,True
+"Canopy | waves, mobile bed",veg,bl,0.0108,-0.0102,0.0332,0.6563,16,19,False
+"Bed mobility | no waves, bare",nowaves_dm,nowaves,-0.0053,-0.0075,-0.0031,0.0001,28,7,True
+"Bed mobility | no waves, canopy",nowaves_vegdm,nowaves_veg,-0.0006,-0.0015,0.0002,0.3101,20,15,False
+"Bed mobility | waves, bare",bl,nodm,0.1105,0.0384,0.1802,0.0002,4,31,True
+"Bed mobility | waves, canopy",veg,nodm_veg,0.0073,-0.0080,0.0224,0.1397,13,22,False
