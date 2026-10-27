@@ -9,7 +9,9 @@ condition and the implausible state of the mobile bed under waves, changed the
 design of the study, and the eight members were rerun from a stratified start.
 The manuscript of this version is
 [`paper1_revised_2026-10-27.pdf`](paper1_revised_2026-10-27.pdf), built from
-`manuscript_v2/`. The version of 20 October, with the ensemble started from a
+`manuscript_v2/`, with its Supplementary Material in
+[`paper1_supplementary_2026-10-27.pdf`](paper1_supplementary_2026-10-27.pdf),
+which holds the settings and grounds that Section 3 states in one clause. The version of 20 October, with the ensemble started from a
 uniform column, remains in `manuscript/` and in
 [`paper1_review_summary_2026-10-20.md`](paper1_review_summary_2026-10-20.md).
 The full record of each review item, with the evidence behind it, is in
@@ -62,13 +64,41 @@ secondary result is an artefact of the mobile bed.
 | Host and decomposition, 8 partitions on the server against 4 on a second computer | uncoupled member, uniform start, Courant 0.7 (ensemble) | not compared | 0.034 lower on the second computer |
 | Same | Courant 0.5 | identical to 0.1 mm | +0.002 ± 0.001 |
 
+## Structure, length and Supplementary Material
+
+The grounding of every numerical choice (item 5) and the sensitivity tests had
+brought the body of the text to about 9600 words, against the ECSS limit of
+8000. The manuscript was restructured so that the main text keeps what the
+reported results need, with the ground of each choice in one clause, and the
+full settings and grounds moved to the Supplementary Material.
+
+| Change | Where |
+|---|---|
+| Introduction rewritten in three parts, context, knowledge gap and plan, following the Elsevier paper-writing guidance; the methodological detail moved to Section 3, and the prior studies presented by the question each addressed, with the open aspects stated as building on them | Section 1 |
+| Mesh composition, turbulence and time-step grounds, partitions and run times | Section 3.1 → S1 |
+| SWAN settings and their grounds, as a table, and the ground of the stationary mode | Section 3.2 → S2, Table S1 |
+| Construction of the Marettimo offset and the wind blending choice | Section 3.3 → S3 |
+| Provenance of the canopy parameters and detail of the seagrass classification | Section 3.4 → S4 |
+| Density and erodible-thickness settings of the mobile bed | Section 3.6 → S5 |
+| Design and results of the discretisation and host tests | Sections 3.6 and 4.6 → S6 |
+| Restart control and the detail of deployment 4 | Sections 4.1 and 4.3 → S7 |
+| Repetitions removed between Sections 4.5 and 5.4, 5.1 and 1, 5.3 and 4.6, and 6 and 5.3 | Sections 4 to 6 |
+| Water level table restored to the eight members at each station | Table 2 |
+| Closing sentence of the abstract restricted to an inference for shallow meadows of this kind | Abstract |
+
+Section 3 went from about 3600 to 1700 words and the body of the text from
+about 9600 to 7000, counted without captions, tables and equations, and the
+manuscript from 38 to 31 pages. The grounds listed under Sections 3.2 to 3.6
+below are now given in the Supplementary Material, with one clause each in the
+main text.
+
 ## Points arising from the journal criteria
 
 | # | Criterion | Carried out |
 |---|---|---|
 | A | Four tables against the limit of three (ECSS Guide for Authors) | The table of ensemble members replaced by the three-slot member code defined in Section 3.6; three tables |
 | B | Limitations in the abstract (Elsevier reviewer guidance) | Single nine-day window, stratified initial state and the compensation in the uncalibrated mobile bed stated, in an abstract of 250 words written in impersonal construction, closing on a scoped inference rather than a general prescription |
-| C | Introduction closing on objectives | Roadmap paragraph replaced by three objectives |
+| C | Introduction closing on objectives | Roadmap paragraph replaced by a short plan and three objectives, with no results and no methodological detail |
 | D | Generality of the claims (local interest exclusion) | Introduction states that the second and third objectives are not specific to this basin |
 | E | Language editing | Not yet done, external to the manuscript |
 
@@ -104,4 +134,6 @@ secondary result is an artefact of the mobile bed.
 | Bed shear stress over the meadow and canopy reconfiguration (Sections 4.4 and 5.4) | Taken from one-day probes started from the uniform column, as the text states; to be recomputed from the stratified start |
 | Calibration of the mobile bed | Erosion parameters to be brought to suspended sediment of tens of mg/l before the arm can enter the attribution |
 | Language editing, graphical abstract, funding identifier | Not yet done |
+| Figures of the Supplementary Material | In preparation: mesh resolution, SWAN grids, Marettimo offset, initial profiles and the discretisation tests; the mobile-bed state awaits the server |
+| Research data (ECSS Option C) | Data to be deposited in a repository and cited, with a data availability statement |
 | Review of Sections 3.2 onward | Awaited |
