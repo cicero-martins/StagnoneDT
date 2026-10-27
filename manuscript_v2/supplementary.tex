@@ -7,6 +7,8 @@
 \usepackage{lmodern}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
+\usepackage{graphicx}
+\graphicspath{{figures/}}
 \usepackage{float}
 \usepackage{siunitx}
 \usepackage[margin=2.5cm]{geometry}
@@ -31,30 +33,41 @@ Carmelo Nasello, Antonino Maltese}
 \section{Hydrodynamic model settings}
 \label{sec:s_model}
 
-Momentum advection used the Perot scheme with a monotone central limiter on
-the cell-centre velocity, and the same limiter was applied to the transport of
-salinity and temperature. The water-level system was solved with a
-preconditioned conjugate-gradient method. Bed levels were specified at cell
-centres from the bathymetry file.
-
 The computational mesh comprised 21{,}188 nodes and 25{,}212 faces, 14{,}969
 of them quadrilateral and 10{,}243 triangular, spanning 11.96--12.56$^\circ$E
 and 37.70--38.06$^\circ$N in geographic (WGS84) coordinates. Taking the
 distance between the centres of adjacent wet cells as the measure of
 resolution, the mesh grades from about 880~m in the open offshore to about
 60~m in the lagoon and in the bands that follow the Egadi and mainland
-shorelines. The constraint the grading answers is the width of the inlets,
+shorelines (Fig.~\ref{fig:s_mesh}). The constraint the grading answers is the width of the inlets,
 which carry the exchange that sets the interior response. At the 61~m median
 spacing around the northern inlet, about six cells span its 400~m width, and
 about forty span the 2900~m southern inlet, while the 20~m dredged channel
 through the northern sill falls below the mesh scale and enters only through
 the cell-centre bathymetry.
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figS1}
+  \caption{Resolution of the hydrodynamic mesh, given as the distance from each
+  cell centre to the nearest neighbouring cell centre, over (a) the whole
+  domain, (b) the lagoon and its inlets and (c) the northern inlet, Bocca Nord,
+  with the cell edges drawn. The boxes in (a) and (b) mark the extent of the
+  next panel.}
+  \label{fig:s_mesh}
+\end{figure}
+
 The 10 uniform sigma layers answer two features of the problem, since resolving
 the wind-driven surface drift over a near-bed return flow requires several
 layers through a sub-metre column, and the 0.40~m canopy spans the lowest four
 of the ten layers and part of the fifth at the mean depth, so that its drag is
 distributed over the vertical rather than collapsed into a single near-bed term.
+
+Momentum advection used the Perot scheme with a monotone central limiter on
+the cell-centre velocity, and the same limiter was applied to the transport of
+salinity and temperature. The water-level system was solved with a
+preconditioned conjugate-gradient method. Bed levels were specified at cell
+centres from the bathymetry file.
 
 Turbulence closure used the $k$--$\varepsilon$ model with background vertical
 eddy viscosity and diffusivity of $10^{-4}$~\si{\metre\squared\per\second} and
@@ -88,13 +101,25 @@ three.
 The outer grid, $69 \times 54$ points at approximately 800~m, covered the full
 flow domain and took its boundary spectra from the western, southern and
 northern edges, and it supplied boundary conditions to an inner grid of
-$121 \times 221$ points at approximately 90~m east--west and 110~m
-north--south over the lagoon and its inlets. The outer grid matches the 880~m
-background of the hydrodynamic mesh offshore. The inner grid is about half as
-fine as the 60~m flow mesh inside the lagoon, spanning the 400~m northern inlet
-with about five cells against the flow mesh's six, so the wave field is the
-coarser of the two representations of the inlets and is interpolated onto a
-finer flow mesh. Table~\ref{tab:swan} lists the settings and their grounds.
+$121 \times 221$ points at 88~m east--west and 111~m north--south over the
+lagoon and its inlets. The outer grid matches the 880~m background of the
+hydrodynamic mesh offshore. The inner grid is 1.5 to 1.8 times coarser than the
+60~m flow mesh inside the lagoon, spanning the 400~m northern inlet with about
+four cells against the flow mesh's six, so the wave field is the coarser of
+the two representations of the inlets and is interpolated onto a finer flow
+mesh (Fig.~\ref{fig:s_swan}). Table~\ref{tab:swan} lists the
+settings and their grounds.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figS2}
+  \caption{SWAN computational grids over the hydrodynamic mesh, in grey. (a)
+  Outer grid of $69 \times 54$ points and inner grid of $121 \times 221$
+  points nested over the lagoon, with every fourth line of the outer grid and
+  every tenth line of the inner grid drawn. (b) Lagoon and inlets, with every
+  line of the inner grid drawn.}
+  \label{fig:s_swan}
+\end{figure}
 
 \begin{table}[H]
   \centering
@@ -138,7 +163,7 @@ well within the hourly exchange. Offshore the crossing time is longer, but the
 sea state there is prescribed from the boundary spectra rather than generated
 inside the domain.
 
-\section{Boundary offset and atmospheric forcing}
+\section{Boundary offset, initial condition and atmospheric forcing}
 \label{sec:s_forcing}
 
 The per-node offset added to the water-level boundary is anchored on the tide
@@ -151,11 +176,60 @@ the CMEMS rest-state reference the remaining $-0.358$~m. The monthly means of
 that difference range from $+0.361$ to $+0.505$~m, so a seasonal residual of
 about 0.07~m either side of the annual value is not removed by a constant
 anchor, which bounds the accuracy of the reference level the model can be held
-to.
+to (Fig.~\ref{fig:s_offset}).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figS3}
+  \caption{Difference between the water level at the Marettimo gauge and the
+  CMEMS sea surface height interpolated to the gauge, as daily means over the
+  384 aligned days, with the monthly means and the mean of $+0.449$~m taken as
+  the anchor of the boundary offset. The horizontal band spans 0.07~m either
+  side of the anchor, and the vertical band marks the simulated window.}
+  \label{fig:s_offset}
+\end{figure}
+
+The stratified start takes the CMEMS temperature and salinity profiles at the
+start time and applies them over the domain outside the lagoon, while the
+uniform start holds the whole column at 24~$^\circ$C and 37.5
+(Fig.~\ref{fig:s_ic}). Over the lagoon both starts carry the hypersaline value
+of 42. The two profiles differ most in the upper 50~m, where the CMEMS
+temperature falls from 25.8 to 17.6~$^\circ$C and the salinity passes
+through a minimum of 37.33 at about 22~m.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{figS4}
+  \caption{Initial (a) temperature and (b) salinity outside the lagoon, as the
+  CMEMS profile used by the stratified start and the vertically uniform values
+  of the uniform start.}
+  \label{fig:s_ic}
+\end{figure}
 
 The wind field was blended with the record of the AltaVilaEst station alone.
 Configurations that additionally blended a second in-situ station produced a
-systematic rotation of the wind vector along the eastern lagoon margin.
+systematic rotation of the wind vector along the eastern lagoon margin. The
+hourly ERA5 field was interpolated to a 0.005$^\circ$ grid and combined with
+the hourly mean of the station record through a weight that depends on the
+distance from the lagoon centre, equal to one within 3~km, which covers the
+central basin and the station, and decreasing linearly to zero at 8~km, beyond
+which ERA5 applies unchanged, so that the northern and southern ends of the
+lagoon, 4 to 7~km from the centre, carry a mixture of the two (Fig.~\ref{fig:s_wind}). Over the
+simulation window the station recorded a mean speed of 4.5~m~s$^{-1}$ against
+3.3~m~s$^{-1}$ for ERA5 at the lagoon centre, with a median absolute
+difference in direction of 17$^\circ$. During the drifter campaign the two
+means were 6.6 and 5.5~m~s$^{-1}$ and the median difference in direction
+11$^\circ$.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figS3_wind}
+  \caption{Wind forcing. (a) Weight of the AltaVilaEst record in the blended
+  field, with the circles of 3 and 8~km around the lagoon centre. (b) Hourly
+  wind speed and (c) direction from which the wind blows, at the AltaVilaEst
+  station and in ERA5 at the lagoon centre, with the drifter campaign shaded.}
+  \label{fig:s_wind}
+\end{figure}
 Evaporation was imposed through the rainfall quantity with a negative sign,
 which is the convention D-Flow FM expects, with both the rainfall and
 evaporation switches enabled in the model definition.
@@ -249,7 +323,22 @@ at most 2.4~mm in bias and 1.6~mm in anomaly RMSE. Limiting the time step also
 by the vertical fluxes changed skill at 10 layers by $+0.0007 \pm 0.0007$ and
 water level by less than 0.3~mm. Neither the horizontal nor the vertical
 resolution of the present configuration therefore limits the quantities the
-study reports.
+study reports (Fig.~\ref{fig:s_numerics}).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figS6}
+  \caption{Discretisation tests on the uncoupled fixed-bed configuration
+  without canopy. (a--c) Quadtree meshes with a cell edge of 60, 30 and 15~m
+  in the lagoon and within 500~m of it, and (d--f) the same meshes at the
+  northern inlet, Bocca Nord, over the extent of the boxes in (a--c). (g) Paired change in Liu--Weisberg
+  skill over the 35 drifters against the 60~m mesh, from the uniform start
+  under a Courant limit of 0.5, for the 30 and 15~m meshes and for the present
+  mesh carrying the same bed. (h) Paired change from 10 to 20 layers, from the
+  stratified start. Error bars give one standard error of the paired
+  difference.}
+  \label{fig:s_numerics}
+\end{figure}
 
 Under the Courant limit of 0.7 used by the ensemble, the uncoupled member started
 from the uniform column scored
@@ -273,6 +362,34 @@ widens the two canopy contrasts on the fixed bed to $+0.148$ and $+0.144$ and
 leaves the wave contrasts at $-0.025$ and $-0.029$. In its tracks both
 fixed-bed configurations leave to the east and northeast where the observed
 drifter went east-southeast.
+
+\section{Online access to the model output}
+\label{sec:s_portal}
+
+The model output can be inspected in a web portal hosted on the object storage
+of the European Digital Twin of the Ocean platform (EDITO), at
+\url{https://minio.dive.edito.eu/oidc-cmartinsjr/wetwise-portal/index.html}.
+The portal is a static page served directly from the storage bucket, and it
+animates water level, surface velocity and significant wave height over the
+simulation window at 30-minute intervals, with the observed and modelled water
+level at the gauge stations alongside the map (Fig.~\ref{fig:s_portal}). The
+fields were interpolated from the unstructured mesh onto two regular grids, a
+base grid of 0.003$^\circ$, about 270~m, over the whole domain and a detail
+grid of 0.0005$^\circ$, about 45~m, over the lagoon, which is drawn over the
+base grid when the map is zoomed onto the lagoon. The land mask follows the
+mesh faces exactly, so that islands smaller than the grid spacing are
+retained. The run displayed couples the wave model, a canopy represented as
+bed roughness and a mobile bed.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figS8_portal}
+  \caption{Web portal of the model output on the EDITO object storage, showing
+  the water level over the whole domain at one instant of the simulation
+  window, the layer controls and the water level time series at the Bocca Nord
+  and Bocca Sud gauges.}
+  \label{fig:s_portal}
+\end{figure}
 
 \bibliographystyle{elsarticle-harv}
 \bibliography{references}
