@@ -18,23 +18,16 @@ equivalent bed roughness raises it over the same cells. Since a surface drifter
 samples the top of that profile, a treatment that reshapes the profile relocates
 the drifter even where it changes the depth-averaged transport little.
 
-That places the present result in a particular relation to the two earlier
-models of this basin rather than in opposition to them.
-\citet{Ingrassia2024} obtained a best-fit uniform Gauckler--Strickler
-coefficient for the vegetated lagoon within a depth-averaged framework, where an
-equivalent bed roughness is the appropriate representation of a canopy because
-there is no vertical profile for the canopy to shape. \citet{DeMarchis2012}
-worked in three dimensions and assigned Nikuradse roughness heights by seagrass
-class, establishing the vertical structure of the wind- and tide-driven
-circulation that motivates using a three-dimensional solver here at all. Both
-answered the questions they set, and a roughness representation reproduces the
-drag the meadow exerts. What has changed since is the availability of a
-canopy formulation that resolves that drag over the vertical extent the plants
-occupy, and the contribution of the present work is to quantify what that
-capability buys in a basin of this depth. The canopy parameters used here were
-taken from published measurement of the two species and were not adjusted
-against any observation, so the improvement follows from where the drag is
-applied rather than from how it was tuned.
+The result stands in a complementary relation to the two earlier models of this
+basin. In the depth-averaged framework of \citet{Ingrassia2024} an equivalent
+bed roughness is the appropriate representation of a canopy, since there is no
+vertical profile for the canopy to shape, and the three-dimensional circulation
+established by \citet{DeMarchis2012} is what motivates a three-dimensional
+solver here. The contribution of the present work is to quantify what a canopy
+formulation resolving the drag over the vertical extent of the plants adds in a
+basin of this depth. Its parameters were taken from published measurement and
+not adjusted against any observation, so the improvement follows from where the
+drag is applied rather than from how it was tuned.
 
 \subsection{Information carried by each gauge position}
 
@@ -78,16 +71,14 @@ contrast in that cell.
 
 The segments restarted on 7~July show that the statement has no physical basis
 in this model. The skill is carried by the bathymetry that six days of
-wave-driven erosion reshaped, through a lagoon holding near
-9~\si{\gram\per\litre} of suspended sediment and losing 4~million~\si{\metre\cubed}
-of bed in nine days, a state the basin does not reach in summer. The reshaped
+implausible wave-driven erosion reshaped (Section~\ref{sec:res_sensitivity}), a
+state the basin does not reach in summer. The reshaped
 bed does not reproduce the vertical structure of the canopy either, the
 surface-to-bed speed ratio of that member remaining at 2.17 against 5.13 with
 the canopy, so the agreement in skill is reached through a different flow. A
 model without a canopy can therefore reach the drifter skill of a model with
 one through a mechanism that is wrong, and the drifters alone do not separate
-the two. The interior gauge does, since at AltaVilaEst the bare member keeps an
-anomaly RMSE of 0.040~m and a correlation of 0.86 against 0.024~m and 0.94 for
+the two. The interior gauge does, keeping the bare member well apart from
 its vegetated counterpart.
 
 The initial condition shows the same asymmetry by another route. A start from a
@@ -116,30 +107,22 @@ observation types that no model decision had used.
 \textbf{Wave dissipation by the canopy.} The canopy does not reach the wave
 model, because the coupling passes a bed roughness field to the spectral model
 while the canopy enters the momentum equation of the flow, so mean orbital
-velocity at the bed changes by under 1\% when the canopy is introduced and not
-in an order that follows canopy density. Seagrass meadows do attenuate waves, in
-this species and at this scale \citep{Infantes2012, Prinos2010}, and shallow
-restricted Mediterranean lagoons carry wave fields that respond to bed
-conditions \citep{Morote2025}. The wave field in these simulations is therefore
-that of a bare bed, the wave contrasts reported here are conditional on that,
-and so is the wave-driven erosion that the canopy fails to shield in the
-mobile-bed arm. Representing canopy dissipation inside the spectral model is the
-corresponding extension. It would be expected to change the wave contrasts
-rather than the canopy ones, which are measured on the flow.
+velocity at the bed changes by under 1\% when the canopy is introduced. Seagrass
+meadows do attenuate waves, in this species and at this scale
+\citep{Infantes2012, Prinos2010}, and shallow restricted Mediterranean lagoons
+carry wave fields that respond to bed conditions \citep{Morote2025}. The wave
+field here is therefore that of a bare bed, and the wave contrasts, together
+with the wave-driven erosion of the mobile-bed arm, are conditional on that.
 
-\textbf{Canopy reconfiguration.} The canopy bends under load rather than holding
-a fixed height, and the response is dynamic, the velocity ratio between two
-probes differing only in leaf stiffness moving from 1.005 in the slowest
-quintile of the record to 0.807 in the fastest 5\%, where a fixed shortening
-would give a constant ratio. A 13\% change in leaf density moves the velocity
-field by 20\% at the upper end of the range, which is a strong sensitivity to a
-value taken from a published table rather than measured in this meadow. The
-bending is moreover mechanical, whereas the flume measurements of
+\textbf{Canopy reconfiguration.} The canopy bends under load, the velocity ratio
+between two probes differing only in leaf stiffness moving from 1.005 in the
+slowest quintile of the record to 0.807 in the fastest 5\%, and a 13\% change in
+leaf density moves the velocity field by 20\% at the upper end of the range, a
+strong sensitivity to a value taken from a published table rather than measured
+in this meadow. The bending is mechanical, whereas the flume measurements of
 \citet{CiraoloFerreri2006} describe reconfiguration empirically through a
-friction factor that varies by a factor of twelve over the velocity range they
-tested. That empirical formulation is available in the model only in its
-depth-averaged solver, so the two could not be compared directly and the
-agreement between them was not tested.
+friction factor, a formulation available in the model only in its
+depth-averaged solver, so the agreement between the two was not tested.
 
 \textbf{Bed mobility.} The morphodynamic arm is not calibrated, the critical
 shear stress for erosion having been constrained by neither a repeated
@@ -159,17 +142,13 @@ skill (Section~\ref{sec:res_wl}), but seasonal behaviour, storm conditions and
 the interaction of a canopy with a mobile bed over longer periods are outside
 what this design addresses.
 
-\textbf{Initial condition.} The ensemble starts from the depth profiles of the
-CMEMS field at the start time, which a start from a uniform column does not
-approach within the nine days, and from the uniform start the canopy contrasts
-on the fixed bed are $+0.195$ and $+0.188$ rather than $+0.120$ and $+0.114$
-(Section~\ref{sec:res_sensitivity}). The stratified start is itself a single
-profile applied over the domain and leaves out the horizontal structure of the
-CMEMS field, so the canopy contrasts reported here may still carry part of a
-start-up adjustment. The solution also depends on the host and the
-decomposition at the Courant limit of the ensemble, by 0.034 in skill from the
-uniform start, which all members share, while the horizontal and vertical
-resolution do not limit the reported quantities.
+\textbf{Initial condition.} The stratified start is a single profile applied
+over the domain and leaves out the horizontal structure of the CMEMS field, so
+the canopy contrasts reported here may still carry part of a start-up
+adjustment, whose size the uniform start bounds
+(Section~\ref{sec:disc_synergy}). The solution also depends on the host and the
+decomposition at the Courant limit of the ensemble, by 0.034 in skill, which
+all members share.
 
 \textbf{\emph{Cymodocea nodosa} parameters.} The \emph{C.\ nodosa} parameters
 are loosely constrained, coming from a flume study of plants collected

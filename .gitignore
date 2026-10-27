@@ -199,6 +199,7 @@ manuscript_v2/*.out
 manuscript_v2/*.spl
 manuscript_v2/*.synctex.gz
 manuscript_v2/main.pdf
+manuscript_v2/supplementary.pdf
 
 # ---------------------------------------------------------------------------
 # Working-tree triage 2026-08-05 (~5.8 GB of regenerable artefacts)

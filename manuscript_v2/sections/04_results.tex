@@ -21,7 +21,8 @@ The anomaly RMSE responds to different factors at the three stations
 (Figure~\ref{fig:wl}b). At BocaSud it varies by 1.6~mm across the four
 fixed-bed members. At BocaNord it varies by 12~mm and follows wave coupling,
 falling from 0.039 to 0.027~m without a canopy and from 0.038 to 0.031~m with
-one. At AltaVilaEst it varies by 32~mm and follows the canopy, the two
+one. At AltaVilaEst, the innermost station, in the northern basin where the meadow
+is densest, it varies by 32~mm and follows the canopy, the two
 vegetated members giving 0.021 and 0.028~m with correlations of 0.94 and 0.95
 and the two bare members 0.048 and 0.054~m with correlations of 0.79 and 0.81.
 Modelled-to-observed standard deviation ratios move the same way, from 1.18 and
@@ -48,49 +49,49 @@ than the spread within either of them over most of the window.
   \label{fig:wl}
 \end{figure}
 
-AltaVilaEst is the innermost station, in the shallow northern basin where the
-meadow is densest and the mean depth is smallest, so it is where a canopy would
-be expected to matter most, while the two outer stations sit near the inlets
-where the exchange is set by the boundary.
-
 The vegetated members are three-day segments restarted from the bare member of
-the same cell, so the separation at AltaVilaEst could in principle reflect the
-restart rather than the canopy. A segment of the bare wave-coupled mobile-bed
-member, restarted on 7~July without any other change, reproduces the
-continuous member to within 1.5~mm in anomaly RMSE at all three stations and
-to within 0.003 in Liu--Weisberg skill. The restart accounts for none of the
-difference.
+the same cell, and a segment run without any other change reproduces its
+continuous member in water level and drifter skill (Supplementary Material,
+Section~S7), so the separation at AltaVilaEst does not reflect the restart.
 
 \begin{table}[H]
   \centering
   \caption{Water level skill by member and station, 8--10 July 2025.
   $\mathrm{RMSE}^2 = \mathrm{bias}^2 + \mathrm{RMSE}_{\mathrm{anom}}^2$. Members
-  are coded by wave coupling (W), seagrass canopy (V) and mobile bed (M). The
-  last row of each station gives the range over the four members of the
-  mobile-bed arm. All values in metres except the dimensionless ratios.}
+  are coded by wave coupling (W), seagrass canopy (V) and mobile bed (M); the
+  last four of each station form the mobile-bed arm. All values in metres
+  except the dimensionless ratios.}
   \label{tab:wl}
-  \small
   \begin{tabular}{llrrrrr}
     \toprule
     Station & Member & RMSE & Bias & RMSE$_{\mathrm{anom}}$ & $r$ & $\sigma_m/\sigma_o$ \\
     \midrule
-    BocaNord & \texttt{{-}{-}{-}} & 0.052 & $+0.035$ & 0.039 & 0.89 & 1.20 \\
-             & \texttt{{-}V{-}}   & 0.050 & $+0.033$ & 0.038 & 0.90 & 1.22 \\
-             & \texttt{W{-}{-}}   & 0.065 & $+0.059$ & 0.027 & 0.94 & 1.08 \\
-             & \texttt{WV{-}}     & 0.059 & $+0.051$ & 0.031 & 0.92 & 1.09 \\
-             & \textit{M arm}     & 0.050--0.066 & $+0.032$ to $+0.060$ & 0.028--0.039 & 0.89--0.94 & 1.12--1.22 \\
+    BocaNord & \texttt{{-}{-}{-}}  & 0.052 & $+0.035$ & 0.039 & 0.89 & 1.20 \\
+             & \texttt{{-}V{-}}    & 0.050 & $+0.033$ & 0.038 & 0.90 & 1.22 \\
+             & \texttt{W{-}{-}}    & 0.065 & $+0.059$ & 0.027 & 0.94 & 1.08 \\
+             & \texttt{WV{-}}      & 0.059 & $+0.051$ & 0.031 & 0.92 & 1.09 \\
+             & \texttt{{-}{-}M}    & 0.052 & $+0.034$ & 0.039 & 0.89 & 1.20 \\
+             & \texttt{{-}VM}      & 0.050 & $+0.032$ & 0.038 & 0.90 & 1.22 \\
+             & \texttt{W{-}M}      & 0.066 & $+0.060$ & 0.028 & 0.94 & 1.12 \\
+             & \texttt{WVM}        & 0.059 & $+0.051$ & 0.029 & 0.94 & 1.15 \\
     \midrule
-    BocaSud  & \texttt{{-}{-}{-}} & 0.050 & $-0.043$ & 0.025 & 0.95 & 1.20 \\
-             & \texttt{{-}V{-}}   & 0.057 & $-0.051$ & 0.025 & 0.95 & 1.16 \\
-             & \texttt{W{-}{-}}   & 0.028 & $-0.015$ & 0.024 & 0.94 & 1.06 \\
-             & \texttt{WV{-}}     & 0.035 & $-0.025$ & 0.025 & 0.93 & 1.02 \\
-             & \textit{M arm}     & 0.033--0.057 & $-0.051$ to $-0.023$ & 0.023--0.025 & 0.93--0.95 & 1.05--1.20 \\
+    BocaSud  & \texttt{{-}{-}{-}}  & 0.050 & $-0.043$ & 0.025 & 0.95 & 1.20 \\
+             & \texttt{{-}V{-}}    & 0.057 & $-0.051$ & 0.025 & 0.95 & 1.16 \\
+             & \texttt{W{-}{-}}    & 0.028 & $-0.015$ & 0.024 & 0.94 & 1.06 \\
+             & \texttt{WV{-}}      & 0.035 & $-0.025$ & 0.025 & 0.93 & 1.02 \\
+             & \texttt{{-}{-}M}    & 0.049 & $-0.043$ & 0.025 & 0.95 & 1.20 \\
+             & \texttt{{-}VM}      & 0.057 & $-0.051$ & 0.025 & 0.95 & 1.16 \\
+             & \texttt{W{-}M}      & 0.033 & $-0.023$ & 0.023 & 0.94 & 1.08 \\
+             & \texttt{WVM}        & 0.037 & $-0.028$ & 0.024 & 0.93 & 1.05 \\
     \midrule
-    AltaVila & \texttt{{-}{-}{-}} & 0.076 & $+0.053$ & 0.054 & 0.81 & 1.37 \\
-    Est      & \texttt{{-}V{-}}   & 0.049 & $+0.040$ & 0.028 & 0.94 & 1.18 \\
-             & \texttt{W{-}{-}}   & 0.097 & $+0.085$ & 0.048 & 0.79 & 1.18 \\
-             & \texttt{WV{-}}     & 0.070 & $+0.067$ & 0.021 & 0.95 & 1.01 \\
-             & \textit{M arm}     & 0.050--0.077 & $+0.042$ to $+0.062$ & 0.024--0.053 & 0.81--0.94 & 1.01--1.36 \\
+    AltaVila & \texttt{{-}{-}{-}}  & 0.076 & $+0.053$ & 0.054 & 0.81 & 1.37 \\
+    Est      & \texttt{{-}V{-}}    & 0.049 & $+0.040$ & 0.028 & 0.94 & 1.18 \\
+             & \texttt{W{-}{-}}    & 0.097 & $+0.085$ & 0.048 & 0.79 & 1.18 \\
+             & \texttt{WV{-}}      & 0.070 & $+0.067$ & 0.021 & 0.95 & 1.01 \\
+             & \texttt{{-}{-}M}    & 0.077 & $+0.055$ & 0.053 & 0.81 & 1.36 \\
+             & \texttt{{-}VM}      & 0.050 & $+0.042$ & 0.028 & 0.94 & 1.17 \\
+             & \texttt{W{-}M}      & 0.074 & $+0.062$ & 0.040 & 0.86 & 1.19 \\
+             & \texttt{WVM}        & 0.062 & $+0.057$ & 0.024 & 0.94 & 1.01 \\
       \bottomrule
   \end{tabular}
 \end{table}
@@ -151,15 +152,12 @@ error falling from 11.2 and 10.4$^\circ$ to 8.5 and 8.4$^\circ$.
   \label{fig:lagrangian}
 \end{figure}
 
-Figure~\ref{fig:tracks} shows the tracks these statistics are computed from, for
-every deployment and for the wave-coupled fixed-bed pair that differs only in
-the canopy. In the deployments of the central basin, 1 to 3, the bare particles
-leave the observed path early and finish short of the observed endpoint while
-the vegetated ones hold the observed heading. In the southern deployments, 8
-to 12, both follow the observed path closely, and the vegetated particles run
-beyond the observed endpoint in deployments 10 and 11. Deployment 4 is the
-exception, both configurations leaving to the east and northeast where the
-observed drifter went east-southeast over 162~m.
+Figure~\ref{fig:tracks} shows the tracks for every deployment and for the
+wave-coupled fixed-bed pair that differs only in the canopy. In the central
+basin the bare particles leave the observed path early and finish short of the
+observed endpoint while the vegetated ones hold its heading, and in the
+southern deployments both follow the observed path closely, deployment 4 being
+the exception.
 
 \begin{figure}[H]
   \centering
@@ -195,12 +193,9 @@ canopy, and the interaction term of the two factors is $-0.006$.
 
 The canopy contrast holds deployment by deployment (Figure~\ref{fig:attribution}b),
 with the same sign under both wave treatments in ten of the twelve deployments.
-Deployment 4 is retained in all of the above and is the one deployment that
-argues against the canopy, its bare members scoring 0.68 and 0.69 against 0.48
-and 0.50 for its vegetated ones. It is also a sampling outlier, 0.4~hours in the
-water over 162~m of observed path against next-lowest values of 1.9~hours and
-723~m. Excluding it widens the two canopy contrasts to $+0.148$ and $+0.144$ and
-leaves the wave contrasts at $-0.025$ and $-0.029$.
+Deployment 4, the shortest record and the one deployment in which the bare
+members score higher, is retained, and excluding it widens the two canopy
+contrasts to $+0.148$ and $+0.144$ (Section~S7).
 
 \begin{figure}[H]
   \centering
@@ -257,14 +252,12 @@ lagoon-mean surface speed of the fixed-bed members at
 \subsection{Response of the seagrass classes}
 \label{sec:res_classes}
 
-Cells were grouped by the class assigned to them in the seagrass map, taking the
-dominant class at the nearest classified point to each face centroid. Comparing
-classes within one configuration does not isolate the canopy, since the classes
-occupy different parts of the basin at different depths, and with no canopy
-applied at all the bare fixed-bed configurations already have their
-\emph{Posidonia} cells slower at the bed than their sand cells, in a ratio of
-0.91 and 0.92. The canopy effect is therefore read between configurations
-within a class, or as a change in that within-configuration ratio.
+Cells were grouped by the seagrass class of the nearest classified point. The
+classes occupy different parts of the basin at different depths, and the bare
+fixed-bed configurations already have their \emph{Posidonia} cells slower at
+the bed than their sand cells, in a ratio of 0.91 and 0.92, so the canopy
+effect is read between configurations within a class or as a change in that
+ratio.
 
 Under either reading the effect is large and correctly ordered, since on the
 fixed bed introducing the canopy reduces mean bed speed by 78\% over
@@ -283,16 +276,10 @@ flow is nearly the same whatever the wave treatment, which is the near-bed
 counterpart of the agreement in transport skill reported in
 Section~\ref{sec:res_drifters}.
 
-The wave field does not follow the flow in this respect, mean orbital velocity at
-the bed changing by $-0.4$\% over \emph{Posidonia}, $-0.9$\% over
-\emph{Cymodocea}, $-0.8$\% over sand and $-0.2$\% over rock when the canopy is
-introduced on the fixed bed (Figure~\ref{fig:classes}c), which is neither large
-nor ordered by canopy density. The reason is structural rather than numerical.
-In this coupling the flow model passes a bed roughness field to the wave model,
-and the canopy is represented in the momentum equation of the flow rather than
-in that roughness field, so it never reaches the wave computation. The seagrass
-in these simulations attenuates the current and not the waves, and
-Section~\ref{sec:disc_limits} returns to what that leaves unresolved.
+The wave field does not follow the flow, mean orbital velocity at the bed
+changing by 0.2 to 0.9\% over the four classes when the canopy is introduced on
+the fixed bed (Figure~\ref{fig:classes}c), since the canopy does not reach the
+wave computation (Section~\ref{sec:disc_limits}).
 
 \begin{figure}[H]
   \centering
@@ -343,24 +330,10 @@ by 2 to 10~cm and, on the fixed bed, changes anomaly RMSE by at most 4~mm and
 correlation by at most 0.03, and the canopy signature at AltaVilaEst is the same
 under both starts.
 
-On the uncoupled fixed-bed configuration from the uniform start,
-Liu--Weisberg skill over the 35 drifters varied within $0.553 \pm 0.004$
-across the three quadtree meshes without a monotonic trend, since the paired
-differences between consecutive levels, $+0.005$ and $-0.007$ with a standard
-error of 0.002, change sign, and the present mesh carrying the same bed scored
-0.555, inside that band. Water level at the three gauges changed by less than
-1~mm in bias and by at most 1.5~mm in anomaly RMSE between 60 and 15~m. From
-the stratified start, skill was 0.619 at both 10 and 20 layers, a paired
-difference of $+0.0003 \pm 0.0036$, and water level at the gauges differed by
-at most 2.4~mm in bias and 1.6~mm in anomaly RMSE. Limiting the time step also
-by the vertical fluxes changed skill at 10 layers by $+0.0007 \pm 0.0007$ and
-water level by less than 0.3~mm. Neither the horizontal nor the vertical
-resolution of the present configuration therefore limits the quantities the
-study reports.
+The horizontal and vertical resolution, the time-step limit and the host and
+decomposition change skill by less than 0.01 under a Courant limit of 0.5 and
+water level by at most 2.4~mm, so they do not limit the quantities the study
+reports (Section~S6). Under the Courant limit of 0.7 used by the ensemble the
+uncoupled member scores $0.034 \pm 0.004$ lower on four partitions on a second
+computer than on eight on the server, a dependence that all members share.
 
-Under the Courant limit of 0.7 used by the ensemble, the uncoupled member started
-from the uniform column scored
-$0.034 \pm 0.004$ lower on four partitions on the second computer than on eight
-on the server, with all 35 drifters worse. Under a limit of 0.5 the same
-comparison gave $+0.002 \pm 0.001$ on the present mesh and no difference on the
-60~m quadtree mesh.
