@@ -347,5 +347,22 @@ def fig_s6():
     save(fig, 'figS6')
 
 
+def fig_s8_portal():
+    """Two browser captures of the published portal, side by side at equal height."""
+    a = plt.imread(FIG / 'portal_capture_domain.png')
+    b = plt.imread(FIG / 'portal_capture_lagoon.png')
+    ra, rb = a.shape[1] / a.shape[0], b.shape[1] / b.shape[0]
+    h = 4.2
+    fig, axes = plt.subplots(1, 2, figsize=(h * (ra + rb) + 0.3, h + 0.4),
+                             gridspec_kw={'width_ratios': [ra, rb], 'wspace': 0.03})
+    for ax, im, t in ((axes[0], a, '(a) Whole domain'), (axes[1], b, '(b) Lagoon, detail grid')):
+        ax.imshow(im)
+        ax.set_axis_off()
+        ax.set_title(t, loc='left', fontsize=11, color=INK)
+    fig.savefig(FIG / 'figS8_portal.png', dpi=250, bbox_inches='tight', facecolor=SURFACE)
+    plt.close(fig)
+    print('saved', FIG / 'figS8_portal.png')
+
+
 if __name__ == '__main__':
-    fig_s1(); fig_s2(); fig_s3(); fig_s3_wind(); fig_s4(); fig_s6()
+    fig_s1(); fig_s2(); fig_s3(); fig_s3_wind(); fig_s4(); fig_s6(); fig_s8_portal()
