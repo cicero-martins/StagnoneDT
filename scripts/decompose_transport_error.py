@@ -32,11 +32,11 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _ensemble import (MEMBERS as ENS, KEYS, TAG, LABEL, CONTRASTS,
-                       MODELDIR, scored)
+                       MODELDIR, SUFFIX, scored)
 
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
-FIG = ROOT / 'figures'
+FIG = ROOT / 'figures' / SUFFIX.lstrip('_')
 FIG.mkdir(parents=True, exist_ok=True)
 
 SURFACE = '#ffffff'
@@ -104,7 +104,7 @@ def main():
                          'heading_err_deg': float(np.degrees(diff.mean()))})
 
     d = scored(pd.DataFrame(rows)).reset_index(drop=True)
-    d.to_csv(PROC / 'transport_error_decomposition.csv', index=False,
+    d.to_csv(PROC / f'transport_error_decomposition{SUFFIX}.csv', index=False,
              float_format='%.4f')
 
     g = d.groupby('member')

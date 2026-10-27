@@ -23,6 +23,7 @@ tags are kept below as LEGACY_VR because the diagnostics that established the
 fault compare against them.
 """
 import itertools
+import os
 
 # key, drifter/regrid tag, model directory, waves, roughness, bed, short label
 #
@@ -121,6 +122,28 @@ def scored(df, exclude=EXCLUDE_DEPLOYS, verbose=True):
               f'{n} drifter records dropped, {len(out)} kept')
     return out
 
+
+# STAGNONE_ENSEMBLE=ic3d selects the members rerun from the stratified start,
+# the CMEMS depth profiles at the start time in place of the uniform 24 C and
+# 37.5 column (build_ic3d_profiles.py, _ic3d_ensemble_simit.sh). Each vegetated
+# member is then its three-day segment restarted from the bare member of the
+# same cell. SUFFIX names the derived files and the figure folder of that
+# ensemble, so that both ensembles coexist; unset, nothing changes.
+ENSEMBLE = os.environ.get('STAGNONE_ENSEMBLE', 'uniform')
+assert ENSEMBLE in ('uniform', 'ic3d'), ENSEMBLE
+SUFFIX = '' if ENSEMBLE == 'uniform' else '_ic3d'
+IC3D = {
+    'nowaves':       ('v04AE_nowaves_ic3d',        'dflowfm_v04AE_nowaves_ic3d'),
+    'nowaves_veg':   ('v04AE_veg_hv040_ic3d',      '_veg_hv040_3d_ic3d'),
+    'nodm':          ('v04AE_nodm_ic3d',           'dflowfm_v04AE_nodm_ic3d'),
+    'nodm_veg':      ('v04AE_veg_waves_ic3d',      '_veg_waves_ic3d'),
+    'nowaves_dm':    ('v04AE_nowaves_dm_ic3d',     'dflowfm_v04AE_nowaves_dm_dens_ic3d'),
+    'nowaves_vegdm': ('v04AE_veg_nowaves_dm_ic3d', '_veg_nowaves_dm_ic3d'),
+    'bl':            ('v04AE_ic3d',                'dflowfm_v04AE_dens_ic3d'),
+    'veg':           ('v04AE_veg_waves_dm_ic3d',   '_veg_waves_dm_ic3d'),
+}
+if ENSEMBLE == 'ic3d':
+    MEMBERS = [(m[0], *IC3D[m[0]], *m[3:]) for m in MEMBERS]
 
 KEYS = [m[0] for m in MEMBERS]
 TAG = {m[0]: m[1] for m in MEMBERS}

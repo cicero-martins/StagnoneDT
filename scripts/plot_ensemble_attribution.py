@@ -35,13 +35,13 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _ensemble import (MEMBERS as ENS, KEYS, TAG, LABEL, CONTRASTS,
-                       MODELDIR, scored)
+                       MODELDIR, SUFFIX, scored)
 from matplotlib.lines import Line2D
 from scipy.stats import wilcoxon
 
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
-FIG = ROOT / 'figures'
+FIG = ROOT / 'figures' / SUFFIX.lstrip('_')
 FIG.mkdir(parents=True, exist_ok=True)
 
 SURFACE = '#ffffff'
@@ -96,10 +96,17 @@ def main():
     # (b) the wave contrast on a mobile bed, with and without the canopy. This
     # is the panel that carries the result: the wave gain a bare bed shows is
     # not reproduced once the meadow is there to resist the flow.
+    # From the stratified start the mobile bed is a sensitivity arm, and the
+    # panel shows instead the canopy contrast on the fixed bed, without and
+    # with wave coupling.
     ax = fig.add_subplot(gs[0, 1])
     deps = sorted(d['deploy'].unique())
-    pairs = [('bare bed', 'bl', 'nowaves_dm', C_FIXED, -0.19),
-             ('with canopy', 'veg', 'nowaves_vegdm', ACCENT, 0.19)]
+    if SUFFIX:
+        pairs = [('no waves', 'nowaves_veg', 'nowaves', '#9b8fd9', -0.19),
+                 ('waves', 'nodm_veg', 'nodm', ACCENT, 0.19)]
+    else:
+        pairs = [('bare bed', 'bl', 'nowaves_dm', C_FIXED, -0.19),
+                 ('with canopy', 'veg', 'nowaves_vegdm', ACCENT, 0.19)]
     for lab, a, b, col, off in pairs:
         xs, vs = [], []
         for i, dp in enumerate(deps):
@@ -112,9 +119,11 @@ def main():
     ax.set_xticks(range(len(deps)))
     ax.set_xticklabels([str(int(x)) for x in deps], fontsize=8)
     ax.set_xlabel('Deployment', fontsize=10, color=MUTED)
-    ax.set_ylabel(r'$\Delta$ skill from wave coupling', fontsize=10,
+    ax.set_ylabel(r'$\Delta$ skill from the canopy' if SUFFIX
+                  else r'$\Delta$ skill from wave coupling', fontsize=10,
                   color=MUTED)
-    ax.set_title('(b) Wave contrast on a mobile bed, by deployment',
+    ax.set_title('(b) Canopy contrast on a fixed bed, by deployment' if SUFFIX
+                 else '(b) Wave contrast on a mobile bed, by deployment',
                  loc='left', fontsize=11, color=INK, pad=7)
     style(ax)
     lo, hi = ax.get_ylim()
@@ -172,7 +181,9 @@ def main():
     ax.set_xlim(-0.3, 1.45)
     ax.set_title('(c) Mean skill against bed treatment',
                  loc='left', fontsize=11, color=INK, pad=7)
-    ax.legend(fontsize=8.8, frameon=False, loc='lower left')
+    # Below the axes, where it cannot cover a line.
+    ax.legend(fontsize=8.8, frameon=False, loc='upper center',
+              bbox_to_anchor=(0.5, -0.30), ncol=2)
     style(ax)
 
     for ext in ('png', 'pdf'):

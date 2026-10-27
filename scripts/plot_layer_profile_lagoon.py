@@ -37,11 +37,11 @@ from matplotlib.lines import Line2D
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import KEYS, LABEL, FACTORS
+from _ensemble import KEYS, LABEL, FACTORS, SUFFIX
 
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
-FIG = ROOT / 'figures'
+FIG = ROOT / 'figures' / SUFFIX.lstrip('_')
 FIG.mkdir(parents=True, exist_ok=True)
 
 SURFACE = '#ffffff'
@@ -79,7 +79,7 @@ for _k in KEYS:
 
 def main():
     mpl.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 9})
-    df = pd.read_csv(PROC / 'layer_profile_lagoon.csv')
+    df = pd.read_csv(PROC / f'layer_profile_lagoon{SUFFIX}.csv')
     nf = df.groupby('member')['n_faces'].first()
     nfaces = int(nf.min())
     if nf.nunique() > 1:

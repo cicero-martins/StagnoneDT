@@ -26,11 +26,11 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import KEYS, TAG, FACTORS, scored
+from _ensemble import KEYS, TAG, FACTORS, SUFFIX, scored
 
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
-FIG = ROOT / 'figures'
+FIG = ROOT / 'figures' / SUFFIX.lstrip('_')
 FIG.mkdir(parents=True, exist_ok=True)
 
 SURFACE, INK, MUTED, GRID = '#ffffff', '#1b1b1b', '#6b6b6b', '#e8e7e4'
@@ -77,7 +77,7 @@ def main():
 
     met = {k: scored(pd.read_csv(PROC / f'drifter_metrics_{TAG[k]}.csv'),
                      verbose=(k == KEYS[0])) for k in KEYS}
-    dec = pd.read_csv(PROC / 'transport_error_decomposition.csv')
+    dec = pd.read_csv(PROC / f'transport_error_decomposition{SUFFIX}.csv')
     dec = {k: g for k, g in dec.groupby('member')}
 
     fig, axes = plt.subplots(1, 3, figsize=(12.4, 4.3), dpi=300)

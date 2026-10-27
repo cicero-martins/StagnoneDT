@@ -31,11 +31,11 @@ from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import KEYS, FACTORS
+from _ensemble import KEYS, FACTORS, SUFFIX
 from validate_wl_ensemble import load_member, STATIONS, PROC
 
 ROOT = Path(__file__).resolve().parents[1]
-FIG = ROOT / 'figures'
+FIG = ROOT / 'figures' / SUFFIX.lstrip('_')
 FIG.mkdir(parents=True, exist_ok=True)
 
 SURFACE, INK, MUTED, GRID = '#ffffff', '#1b1b1b', '#6b6b6b', '#e8e7e4'

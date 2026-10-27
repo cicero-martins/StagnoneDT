@@ -30,7 +30,7 @@ import xarray as xr
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import KEYS, MODELDIR, TAG
+from _ensemble import KEYS, MODELDIR, TAG, SUFFIX
 
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
@@ -162,7 +162,7 @@ def main():
                   f"std {r.get('std_ratio', np.nan):.2f}")
 
     df = pd.DataFrame(rows)
-    out = PROC / 'wl_metrics_ensemble.csv'
+    out = PROC / f'wl_metrics_ensemble{SUFFIX}.csv'
     df.to_csv(out, index=False, float_format='%.4f')
     print(f'\nSaved {out}')
 

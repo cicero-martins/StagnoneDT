@@ -30,10 +30,14 @@ import numpy as np
 import pandas as pd
 from matplotlib.lines import Line2D
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _ensemble import TAG, SUFFIX  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
 MODEL = ROOT / 'model' / 'dflowfm_v04AE'
-FIG = ROOT / 'figures'
+FIG = ROOT / 'figures' / SUFFIX.lstrip('_')
 FIG.mkdir(parents=True, exist_ok=True)
 
 SURFACE = '#ffffff'
@@ -44,8 +48,14 @@ LAND = '#efece6'
 LAND_EDGE = '#c9c7c1'
 
 # The canopy treatment carries the colour, as everywhere else in the manuscript.
-MEMBERS = [('v04AE', 'Bare (W-M)', '#eb6834'),
-           ('v04AE_veg_waves_dm', 'Canopy (WVM)', '#4a3aa7')]
+# From the stratified start the mobile bed enters only as a sensitivity test,
+# so the pair shown is the wave-coupled fixed-bed one.
+if SUFFIX:
+    MEMBERS = [(TAG['nodm'], 'Bare (W--)', '#eb6834'),
+               (TAG['nodm_veg'], 'Canopy (WV-)', '#4a3aa7')]
+else:
+    MEMBERS = [('v04AE', 'Bare (W-M)', '#eb6834'),
+               ('v04AE_veg_waves_dm', 'Canopy (WVM)', '#4a3aa7')]
 PAD_FRAC = 0.16
 
 

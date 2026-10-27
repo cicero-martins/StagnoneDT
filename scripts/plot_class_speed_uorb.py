@@ -36,11 +36,11 @@ from matplotlib.patches import Patch
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import KEYS, FACTORS
+from _ensemble import KEYS, FACTORS, SUFFIX
 
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
-FIG = ROOT / 'figures'
+FIG = ROOT / 'figures' / SUFFIX.lstrip('_')
 FIG.mkdir(parents=True, exist_ok=True)
 
 SURFACE = '#ffffff'
@@ -72,7 +72,7 @@ def style(ax):
 
 def main():
     mpl.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 10})
-    d = pd.read_csv(PROC / 'class_speed_uorb.csv')
+    d = pd.read_csv(PROC / f'class_speed_uorb{SUFFIX}.csv')
 
     def piv(metric):
         p = d[d.metric == metric].pivot(index='member', columns='klass',
