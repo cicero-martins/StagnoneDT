@@ -134,6 +134,6 @@ main text.
 | Bed shear stress over the meadow and canopy reconfiguration (Sections 4.4 and 5.4) | Taken from one-day probes started from the uniform column, as the text states; to be recomputed from the stratified start |
 | Calibration of the mobile bed | Erosion parameters to be brought to suspended sediment of tens of mg/l before the arm can enter the attribution |
 | Language editing, graphical abstract, funding identifier | Not yet done |
-| Figures of the Supplementary Material | In preparation: mesh resolution, SWAN grids, Marettimo offset, initial profiles and the discretisation tests; the mobile-bed state awaits the server |
+| Figures of the Supplementary Material | Seven figures included, on mesh resolution with the northern inlet in detail, SWAN grids, Marettimo offset, wind blending, initial profiles, the discretisation tests with the meshes at the northern inlet, and the web portal of the model output on the EDITO storage (Section S8); the figure of the mobile-bed state awaits the server |
 | Research data (ECSS Option C) | Data to be deposited in a repository and cited, with a data availability statement |
 | Review of Sections 3.2 onward | Awaited |
