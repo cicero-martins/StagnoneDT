@@ -199,6 +199,9 @@ def main():
                      fontsize=9.5, color=INK, pad=4)
         ax.set_xticks([]); ax.set_yticks([])
         ax.set_facecolor(SURFACE)
+        # the unclipped Sicily coastline in every panel made the PDF 8 MB;
+        # land and coast are rasterised, the tracks stay vector
+        ax.set_rasterization_zorder(3)
         for s_ in ax.spines.values():
             s_.set_color(GRID)
 
