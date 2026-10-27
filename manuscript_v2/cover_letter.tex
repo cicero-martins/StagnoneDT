@@ -1,0 +1,104 @@
+%% Cover letter for a NEW submission. The reservoirs_s1_svm cover_letter.tex is
+%% a point-by-point revision response and is not the right shape for this.
+%% Letterhead images copied from that project.
+\documentclass[11pt]{article}
+\usepackage[left=2.5cm, right=2.5cm, bottom=2.5cm, top=3.5cm, headheight=3.2cm,
+            headsep=0.5cm, footskip=2.1cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{parskip}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+
+% Universita degli Studi di Palermo - Dipartimento di Ingegneria letterhead
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[C]{\raggedright\includegraphics[width=0.5\textwidth]{unipa_header.png}}
+\fancyfoot[C]{\includegraphics[width=0.9\textwidth]{unipa_footer.png}}
+
+\begin{document}
+\thispagestyle{fancy}
+
+\vspace{0.3cm}
+\begin{flushright}
+To the Editors of\\
+\textit{Estuarine, Coastal and Shelf Science}
+\end{flushright}
+
+\vspace{0.5cm}
+Dear Editors,
+
+\vspace{0.2cm}
+The manuscript \textbf{``Relative effects of seagrass canopy, wave coupling and bed mobility on Lagrangian transport in a shallow lagoon''}, by Cicero Martins Jr., Mauro De Marchis, Giuseppe Ciraolo, Carmelo Nasello, Antonino Maltese, is
+submitted for consideration as an original research paper. The corresponding
+author is MSc.\ Cicero Martins Jr.
+
+\vspace{0.3cm}
+Coastal lagoon models are commonly validated against water level and then used
+to describe transport. The manuscript asks which modelled processes control
+transport in a shallow vegetated lagoon and whether water level can identify
+them. A complete factorial in wave coupling, seagrass canopy and bed mobility
+gives eight configurations of a three-dimensional Delft3D Flexible Mesh model
+coupled online with SWAN, each scored against three tide gauges and 35 GPS
+surface drifters over the same nine days.
+
+On the fixed bed the seagrass canopy raises Liu--Weisberg skill by 0.120 and
+0.114, with both bootstrap intervals clear of zero, against $-0.022$ and
+$-0.028$ for wave coupling. The canopy is represented as a three-dimensional
+drag field whose parameters come from published measurement of the two species,
+with nothing fitted. Water level separates the canopy treatments only at the
+gauge inside the vegetated basin, where anomaly RMSE differs by 26 and 27~mm,
+against at most 4~mm at the two gauges near the inlets.
+
+The mobile-bed arm shows how an attribution can mislead. With waves, the
+uncalibrated bed lets a configuration without a canopy reach the skill of the
+vegetated ones, through a bathymetry reshaped by erosion that holds near
+9~g~l$^{-1}$ of suspended sediment in the lagoon. A segment with the
+bed held fixed over the drifter window keeps the same skill, which locates the
+gain in the reshaped bed rather than in any transport process, and the interior
+gauge exposes the compensation where the drifters do not. A start from a
+uniform offshore column inflates the canopy effect in the same way, from 0.12
+to 0.19.
+
+The work falls within the scope of \textit{Estuarine, Coastal and Shelf
+Science} as a study of lagoon phenomena and of coastal sedimentary processes.
+Although the model is built for one basin, the questions it answers concern
+what a class of validation data can certify and how a factorial behaves when a
+dominant factor is left out or another is unconstrained, and both apply wherever
+drifter observations and a circulation model exist together. The prior study
+closest to the wave treatment, Carniello et al.\ (2011), appeared in this
+journal. The limitations are stated in the manuscript, including the
+uncalibrated morphodynamic arm, kept out of the attribution for that reason,
+and the single nine-day window.
+
+\vspace{0.3cm}
+The corresponding author affirms that:
+
+\begin{itemize}[noitemsep, leftmargin=1.2em]
+\item{All authors have directly participated in the planning, execution, or analysis of this study;}
+\item{All authors have read and approved the version submitted;}
+\item{The contents of this manuscript have not been copyrighted or published previously;}
+\item{The contents of this manuscript are not now under consideration for publication elsewhere.}
+\end{itemize}
+
+\vspace{0.3cm}
+%% TODO add suggested reviewers here if the submission system requests them.
+
+The authors remain available for any further clarification the review may
+require.
+
+\vspace{0.5cm}
+Sincerely,
+
+\vspace{0.3cm}
+Cicero Martins Jr.\\
+\textit{on behalf of all co-authors}\\
+Dipartimento di Ingegneria, Universit\`a degli Studi di Palermo\\
+\href{mailto:cicero.martinsjr@unipa.it}{cicero.martinsjr@unipa.it}
+
+\end{document}

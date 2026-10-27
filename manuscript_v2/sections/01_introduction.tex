@@ -1,0 +1,129 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Coastal lagoons are among the most productive coastal environments on Earth.
+Their shallow, semi-enclosed geometry concentrates fisheries and biodiversity
+along roughly 13\% of the global shoreline \citep{Carrasco2016, Kjerfve1994},
+while making these systems acutely sensitive to the atmospheric and tidal
+forcing that drives water exchange and renewal. In the Mediterranean basin,
+where tidal amplitudes rarely exceed 0.3~m, the balance among tidal
+oscillations, wind stress, and seiche phenomena varies considerably among
+systems, yet wind consistently emerges as a significant driver of horizontal
+exchange and a key modulator of the residence times and salinity gradients
+that condition benthic habitat \citep{Niedda2007, Umgiesser2014}. The presence
+of dense submerged vegetation, principally \emph{Posidonia oceanica} (L.)
+Delile and \emph{Cymodocea nodosa} (Ucria) Ascherson along Mediterranean
+shores, introduces a further layer of complexity. Seagrass canopies attenuate
+incident wave energy \citep{Infantes2012} and extract momentum from the mean
+flow through canopy drag, modifying near-bed turbulence and the vertical
+velocity structure \citep{Nepf2012}. Global seagrass extent has fallen in all
+seven bioregions over the long record, by 19.1\% of the surveyed meadow area
+since 1880 \citep{Waycott2009, Dunic2021}, and the steepest recent
+trajectories track coastal development and water quality rather than any
+single driver \citep{Turschwell2021}. How circulation controls residence
+times, dispersal, and habitat connectivity in vegetated coastal systems is
+therefore a question for management as much as for science. Addressing it
+requires circulation models that accurately reproduce
+transport pathways rather than water levels alone, and this distinction makes
+Lagrangian validation essential. By tracking the cumulative separation between
+simulated and observed drifter trajectories over time, the Lagrangian skill
+score provides a direct and discriminating measure of model accuracy that
+conventional scalar metrics cannot replicate
+\citep{Liu2011, Revelard2021}.
+
+The \emph{Stagnone di Marsala}, on the north-western coast of Sicily, offers a
+natural laboratory for these questions. Its mean water depth of approximately
+0.95~m places it firmly in the class of very shallow coastal systems in which
+the depth-averaging assumption is, a priori, difficult to justify, and its
+floor carries meadows of \emph{P.\ oceanica} and \emph{C.\ nodosa} dense enough
+to be a candidate first-order control on the flow
+\citep{DeMarchis2012, Ciraolo2009a}. Satellite monitoring over 2003--2024 has
+documented a 75\% reduction in the extent of the \emph{P.\ oceanica} atoll and
+cordon formations \citep{Maltese2025}, so the vegetated state a model of this
+system must represent is itself changing. The physical setting is described in
+Section~\ref{sec:study_area}.
+
+The absence of riverine input leaves circulation driven almost exclusively by
+tidal oscillation and wind stress. Field experiments and 3D
+numerical modelling conducted by \citet{DeMarchis2012} during a July 2006
+campaign showed that tidal action dominates north--south exchange, while wind
+is the controlling agent of east--west currents and generates
+pronounced vertical recirculation structures entirely absent in tide-only
+simulations. This established that vertical velocity shear between wind-driven
+surface drift and near-bed return flow is quantitatively significant even at
+sub-metre depths, and that the tendency towards hypersaline conditions in
+summer \citep{LaLoggia2004} adds a baroclinic component that reinforces
+stratification in the vertical.
+
+Prior numerical investigations of the Stagnone have employed both
+depth-averaged and three-dimensional approaches, each appropriate to the
+research objective pursued. \citet{LaLoggia2004} and \citet{DiMarca2009}
+applied 2D depth-averaged models to characterise tidal flushing, residence
+times, and turbidity dynamics, yielding useful insight into the basin-scale
+water budget and the role of biological productivity in light attenuation.
+\citet{Ciraolo2009a} demonstrated through particle tracking the sensitivity of
+simulated trajectories to the assumed velocity field, highlighting the
+importance of current accuracy for transport prediction.
+\citet{DeMarchis2012} showed that resolving the vertical dimension is
+necessary to reproduce wind-driven recirculation. Their 3D non-hydrostatic
+finite-volume model, validated against simultaneous velocity and water-level
+measurements at multiple stations, achieved substantially better agreement
+with observed east--west currents than any depth-averaged simulation. More
+recently, \citet{Ingrassia2024} returned to a 2D unstructured-mesh framework
+(MIKE 21) and conducted systematic sensitivity tests of bed friction, varying
+the Gauckler--Strickler coefficient uniformly across the lagoon for different
+vegetation scenarios. The value $K_s = 20$~m$^{1/3}$~s$^{-1}$ was identified
+as most representative for the vegetated basin, yielding Nash--Sutcliffe
+efficiencies up to 0.92 for water level. The authors noted that the 2D
+approximation remains adequate for large-scale water-level budgeting while
+acknowledging reduced predictive skill for horizontal velocity, particularly
+in the northern, shallower sub-basin.
+
+Building on these foundations, the present study addresses two aspects that
+have not yet been incorporated jointly into a Stagnone circulation model. The
+first is wave--current coupling. Spectral ocean waves generated in the western
+Sicilian channel can penetrate both inlets and interact with the mean flow,
+altering near-bed turbulence and the effective drag experienced by the
+seagrass canopy. Coupled wave and flow modelling in comparably shallow
+Mediterranean basins has shown this to be non-negligible. In the Venice Lagoon
+\citet{Carniello2011} found the wave-induced contribution to bed shear stress
+to interact non-linearly with the current-induced contribution, so that neither
+can be obtained from the other. In the Mar Menor, a restricted micro-tidal
+lagoon of comparable depth, \citet{Morote2025} found locally generated waves to
+produce near-bed orbital velocities sufficient to mobilise bottom sediment over
+most of the basin. Neither process has been represented in previous Stagnone
+simulations. The second is the combined use of a spatially distributed canopy
+drag, its parameters taken from published measurement and its distribution from
+satellite classification rather than assumed uniform, and of Lagrangian drifter
+observations as a validation target. Together, these extensions allow the
+relative contributions of three-dimensional dynamics, wave forcing, and
+seagrass heterogeneity to transport skill to be quantified within a controlled
+process-attribution framework.
+
+The study applies the three-dimensional unstructured-mesh hydrodynamic solver Delft3D
+Flexible Mesh (D-Flow FM; \citealp{Kernkamp2011}) coupled online with the
+spectral wave model SWAN \citep{Booij1999}, driven by ERA5 reanalysis
+meteorological forcing and CMEMS Mediterranean physical reanalysis boundary
+conditions, over a nine-day period in July 2025. The seagrass canopy is
+represented as a three-dimensional drag field resolved per sigma layer, with
+its parameters taken from published flume and large-scale measurements of the
+same species and its spatial distribution from a supervised random-forest
+classification of PlanetScope multispectral imagery acquired in August 2023,
+following the mapping methodology of \citet{Maltese2025}. Model performance is assessed against in-situ water level
+time series at three lagoon stations and an offshore tide gauge, and against
+GPS surface drifter trajectories from a field campaign concurrent with the
+simulation period, using the Liu--Weisberg Lagrangian skill score and endpoint
+proximity as metrics. A complete $2\times2\times2$ factorial in wave coupling,
+seagrass canopy and morphodynamic bed update attributes differences in
+Lagrangian skill to individual physical mechanisms and to their interactions,
+with the attribution made on its fixed-bed half and the mobile-bed half kept as
+a sensitivity test (Section~\ref{sec:methods_experiments}).
+
+The study pursues three objectives. The first is to rank the three processes by
+their effect on Lagrangian transport skill. The second is to establish whether
+water level, the quantity against which shallow lagoon models are
+conventionally validated, can identify that ranking. The third is to measure
+how far the apparent effect of each process depends on how the other two are
+represented. The second and third are not specific to this basin, concerning
+what a class of validation data can certify and how a factorial behaves when a
+dominant factor is left out of it.

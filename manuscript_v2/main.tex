@@ -1,0 +1,194 @@
+%% Estuarine, Coastal and Shelf Science — elsarticle, author-year (Harvard)
+%% Review mode: double-spaced, line numbers, single column.
+%% Preamble mirrors reservoirs_s1_svm/manuscript/main.tex (Paper 1 and Paper 2).
+\documentclass[review,12pt,authoryear]{elsarticle}
+
+%% --- Encoding & fonts ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+
+%% --- Math ---
+\usepackage{amsmath,amssymb}
+
+%% --- Graphics & tables ---
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{multirow}
+
+%% --- Hyperlinks ---
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+%% --- Units ---
+\usepackage{siunitx}
+\sisetup{detect-all, group-separator={,}}
+
+%% --- Misc ---
+\usepackage{microtype}
+\usepackage{lineno}       % line numbers (activated by 'review' class option)
+\usepackage{setspace}
+\usepackage[margin=2.5cm]{geometry}
+
+%% --- Bibliography (natbib, Harvard author-year) ---
+\biboptions{authoryear,round,semicolon}
+
+% -----------------------------------------------------------------------
+\begin{document}
+
+\begin{frontmatter}
+
+%% Chosen 2026-09-01, replacing the 2026-08-08 title, which named an
+%% interaction between wave coupling and bed mobility. That interaction
+%% survives only where the canopy is absent, so it can no longer sit in the
+%% subject position.
+%% "Relative" rather than "Interacting" is deliberate. The canopy is a clean
+%% main effect, same sign in all four cells with every interval clear of zero,
+%% and the word interacting would put the reader in the frame the paper
+%% demotes. "Relative" promises the ranking the paper actually delivers.
+%% "Vegetated" is dropped because "seagrass canopy" already carries it.
+\title{Relative effects of seagrass canopy, wave coupling and bed mobility on
+       Lagrangian transport in a shallow lagoon}
+
+%% Nasello and Maltese added on De Marchis's review of 2026-10-13. Three points
+%% still need the authors' own confirmation before submission, because Elsevier
+%% requires written agreement from every author for any change before
+%% acceptance and permits none after it:
+%%   (i)   the order below, De Marchis, Ciraolo, Nasello, Maltese after the
+%%         corresponding author, was set by the corresponding author on
+%%         2026-10-15 and still needs the agreement of the others;
+%%   (ii)  Nasello and Maltese are assumed to be at Dipartimento di Ingegneria;
+%%   (iii) the CRediT roles follow the reservoirs_s1_svm pattern for
+%%         supervising co-authors, with Methodology for Maltese on the strength
+%%         of the classification approach Section 3.4 builds on.
+\author[unipa]{Cicero Martins Jr.\corref{cor1}}
+\ead{cicero.martinsjr@unipa.it}
+
+\author[unipa]{Mauro De Marchis}
+\author[unipa]{Giuseppe Ciraolo}
+\author[unipa]{Carmelo Nasello}
+\author[unipa]{Antonino Maltese}
+
+\cortext[cor1]{Corresponding author}
+\affiliation[unipa]{organization={Dipartimento di Ingegneria,
+                    Università degli Studi di Palermo},
+                    city={Palermo},
+                    country={Italy}}
+
+% -----------------------------------------------------------------------
+\begin{abstract}
+%% About 245 words. ECSS limit is 250.
+Coastal lagoon models are routinely validated against water level, although
+habitat connectivity and dispersal depend on transport. This study asks which
+modelled processes control transport in a shallow vegetated lagoon and whether
+water level can identify them. A three-dimensional Delft3D Flexible Mesh model
+of the Stagnone di Marsala, a micro-tidal Sicilian lagoon of sub-metre mean
+depth colonised by \emph{Posidonia oceanica}, was coupled to SWAN over nine days
+of July 2025. Eight configurations form a complete factorial in wave coupling,
+bed mobility and seagrass canopy, with the canopy parameterised from published
+measurements and distributed by satellite classification, and each was scored
+against three tide gauges and 35 GPS surface drifters withheld from every model
+decision. On the fixed bed, Liu--Weisberg skill ranges from 0.597 to 0.739 and
+divides on the canopy, which raises it by 0.120 and 0.114 with both bootstrap
+intervals clear of zero, against $-0.022$ and $-0.028$ for wave coupling. Water
+level separates the canopy treatments only at the gauge inside the vegetated
+basin, by 26 and 27~mm in anomaly RMSE against at most 4~mm near the inlets.
+With waves, the uncalibrated mobile bed brings a configuration without canopy to
+the skill of the vegetated ones through a bathymetry reshaped by implausible
+erosion, a compensation that the interior gauge exposes and the drifters do not.
+The canopy is therefore the first-order control on transport here, and leaving
+it out lets errors elsewhere pass as process effects. These results rest on one
+nine-day window and a stratified initial state. Transport prediction in
+vegetated lagoons requires canopy drag resolved rather than absorbed into bed
+roughness, and published measurements with satellite mapping suffice to specify
+it without tuning.
+\end{abstract}
+
+%% ECSS allows 1-7 keywords. Avoid multi-word keywords joined by 'and'/'of'.
+\begin{keyword}
+Coastal lagoon \sep
+Delft3D Flexible Mesh \sep
+Canopy drag \sep
+\emph{Posidonia oceanica} \sep
+Lagrangian drifters \sep
+Three-dimensional circulation
+\end{keyword}
+
+\end{frontmatter}
+
+\linenumbers   % activate line numbering for review
+
+% -----------------------------------------------------------------------
+\input{sections/01_introduction}
+\input{sections/02_study_area}
+\input{sections/03_data_methods}
+\input{sections/04_results}
+\input{sections/05_discussion}
+\input{sections/06_conclusions}
+
+% -----------------------------------------------------------------------
+\section*{CRediT authorship contribution statement}
+\textbf{Martins Jr, C.:} Conceptualization, Methodology, Software, Formal
+analysis, Investigation, Data curation, Visualization, Writing -- original
+draft. \textbf{De Marchis, M.:} Conceptualization, Supervision, Methodology,
+Writing -- review \& editing. \textbf{Ciraolo, G.:} Conceptualization,
+Supervision, Methodology, Writing -- review \& editing. \textbf{Nasello, C.:}
+Conceptualization, Supervision, Methodology, Writing -- review \& editing.
+\textbf{Maltese, A.:} Conceptualization, Methodology, Writing -- review \&
+editing.
+
+\section*{Declaration of competing interest}
+The authors declare that they have no known competing financial interests or
+personal relationships that could have appeared to influence the work reported
+in this paper.
+
+\section*{Funding}
+%% TODO insert the WETWISE project ID. The application form annex leaves it to
+%% the Joint Secretariat, so it is not in the document at
+%% Documents/PeriodoAllEstero. UNIPA is partner PP3.
+This work was carried out within the project WETWISE, WETland ecosystem
+restoration through WISE strategic adaptation across borders, funded by the
+Interreg VI-A Italia--Malta Programme under Public Notice 01/2023 and
+co-funded by the European Union.
+
+\section*{Acknowledgements}
+
+The authors acknowledge the Copernicus Marine Environment Monitoring Service
+(CMEMS) for the Mediterranean physical reanalysis products, the ECMWF for ERA5
+atmospheric reanalysis, Planet Labs PBC for the PlanetScope imagery used in
+the seagrass classification, and Deltares for the Delft3D Flexible Mesh suite.
+
+\section*{Software and data availability}
+\begin{itemize}
+  \item \textbf{Model:} Delft3D Flexible Mesh Suite 2026.01 HMWQ (D-Flow FM
+  kernel 1.2.184) coupled online with SWAN through DIMR.
+  \item \textbf{Source code repository:} \url{https://github.com/cicero-martins/StagnoneDT}
+  \item \textbf{Data availability:} ERA5 and CMEMS products are openly
+  available from the Copernicus programme. PlanetScope imagery is under
+  commercial licence, and scene identifiers are listed in the repository for
+  traceability. In-situ water level, wind, and drifter records are archived
+  in the repository.
+\end{itemize}
+
+%% Generative-AI declaration: withheld by the corresponding author's decision of
+%% 2026-08-07, on the grounds that it is not visible in recent ECSS articles.
+%% Note that the guide requires it when AI tools were used, and does not condition
+%% it on other authors having declared. Restore the block below to include it.
+%
+% \section*{Declaration of generative AI and AI-assisted technologies in the
+% manuscript preparation process}
+% During the preparation of this work the authors used Claude (Anthropic) in
+% order to assist with drafting and editing the text, with the analysis code used
+% to compute the reported diagnostics, and with the preparation of figures from
+% model output. After using this tool the authors reviewed and edited the content
+% as needed and take full responsibility for the content of the published
+% article.
+
+\bibliographystyle{elsarticle-harv}
+\bibliography{references}
+
+\end{document}
