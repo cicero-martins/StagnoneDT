@@ -1,8 +1,13 @@
 # Paper 1, internal review of Sections 1 to 3.1, and the stratified-start ensemble
 
-M. De Marchis reviewed the review-mode draft as far as Section 3.1, and each
-observation is paired with the change carried into the manuscript. The
-manuscript of this version is
+This summary records what has been applied to the manuscript of the changes
+planned in the response of 13 October
+([`paper1_review_response_2026-10-13.pdf`](paper1_review_response_2026-10-13.pdf)),
+adjusted to the results of the sensitivity reruns that the grounding of the
+numerical choices required. Two of those results, the effect of the initial
+condition and the implausible state of the mobile bed under waves, changed the
+design of the study, and the eight members were rerun from a stratified start.
+The manuscript of this version is
 [`paper1_revised_2026-10-27.pdf`](paper1_revised_2026-10-27.pdf), built from
 `manuscript_v2/`. The version of 20 October, with the ensemble started from a
 uniform column, remains in `manuscript/` and in
@@ -62,7 +67,7 @@ secondary result is an artefact of the mobile bed.
 | # | Criterion | Carried out |
 |---|---|---|
 | A | Four tables against the limit of three (ECSS Guide for Authors) | The table of ensemble members replaced by the three-slot member code defined in Section 3.6; three tables |
-| B | Limitations in the abstract (Elsevier reviewer guidance) | Single nine-day window, stratified initial state and the compensation in the uncalibrated mobile bed stated, in an abstract of about 245 words written in impersonal construction |
+| B | Limitations in the abstract (Elsevier reviewer guidance) | Single nine-day window, stratified initial state and the compensation in the uncalibrated mobile bed stated, in an abstract of 250 words written in impersonal construction, closing on a scoped inference rather than a general prescription |
 | C | Introduction closing on objectives | Roadmap paragraph replaced by three objectives |
 | D | Generality of the claims (local interest exclusion) | Introduction states that the second and third objectives are not specific to this basin |
 | E | Language editing | Not yet done, external to the manuscript |
