@@ -113,6 +113,12 @@ select { padding:3px 6px; background:var(--bg); }
   flex-direction:column; gap:4px; }
 #zoom button { width:30px; height:30px; padding:0; font-size:17px; line-height:1;
   background:var(--bg); }
+#cap, #clock { display:none; }
+body.rec header, body.rec #ctl, body.rec #tools, body.rec #zoom { display:none; }
+body.rec #cap { display:block; position:absolute; top:22px; left:28px; z-index:5;
+  font-size:24px; font-weight:600; }
+body.rec #clock { display:block; position:absolute; bottom:22px; left:28px; z-index:5;
+  font-size:18px; color:var(--muted); font-variant-numeric:tabular-nums; }
 #tools label { display:flex; gap:4px; align-items:center; padding:2px 8px;
   border:1px solid var(--line); border-radius:6px; background:var(--bg); cursor:pointer; }
 </style>
@@ -130,6 +136,7 @@ select { padding:3px 6px; background:var(--bg); }
     <div class="row" id="views"><span class="lbl">View</span></div>
     <div class="row" id="layers"><span class="lbl">Layers</span></div>
   </div>
+  <div id="cap"></div><div id="clock"></div>
   <div id="zoom"><button id="zin" title="Zoom in">+</button><button id="zout" title="Zoom out">&minus;</button></div>
 </div>
 <div id="ctl">
@@ -201,7 +208,8 @@ const lin = (arr, p) => { const j = Math.floor(p), t = p - j;
   return arr[j] + (arr[Math.min(j + 1, arr.length - 1)] - arr[j]) * t; };
 
 // ---------------------------------------------------------------- particles
-const TRAIL = 16, TICK = 50;           // positions kept per trail, ms per step
+let TRAIL = 16, LW = 1;                // positions kept per trail, trail width factor
+const TICK = 50;                       // ms per step
 const SECS = Object.keys(D.sections);
 const P = [];                          // {kind, sec, x, y, s, sig, age, life, hx, hy, hz}
 function wetSurfaceCells(i) {
@@ -288,7 +296,7 @@ function particleTraces() {
   return ['surface', 'section'].map(kind => {
     const t = trailTrace(kind);
     return {type:'scatter3d', mode:'lines', x:t.x, y:t.y, z:t.z,
-      line:{color:t.c, colorscale:TRAILSCALE, cmin:0, cmax:1, width:kind === 'surface' ? 3 : 2.5},
+      line:{color:t.c, colorscale:TRAILSCALE, cmin:0, cmax:1, width:LW * (kind === 'surface' ? 3 : 2.5)},
       hoverinfo:'skip', showlegend:false};
   });
 }
@@ -298,12 +306,13 @@ const SECTION_LABEL = {ns_axis:'N–S section', ew_centre:'E–W section'};
 const ON = {surface:true, coast:true};
 for (const name of SECS) ON[name] = true;
 
-// particle traces come first, so that their indices stay 0 and 1 whatever
-// the layer selection
+// particle traces come first, so that their indices stay 0 and 1.  A layer
+// switched off stays in the list as an invisible trace, because a Plotly.react
+// that changes the number of 3D traces can leave its promise unresolved.
 function traces(i) {
   const out = particleTraces();
   const M = D.mesh;
-  if (ON.surface) out.push({type:'mesh3d', x:M.x, y:M.y, z:M.z[i], i:M.i, j:M.j, k:M.k,
+  out.push({type:'mesh3d', visible:ON.surface, x:M.x, y:M.y, z:M.z[i], i:M.i, j:M.j, k:M.k,
     intensity:M.speed[i], intensitymode:'cell',
     cmin:0, cmax:SMAX, colorscale:'Viridis', opacity:0.45, showscale:true,
     colorbar:{title:{text:'surface |u| (m/s)', side:'right'}, len:0.42, y:0.78, thickness:12,
@@ -311,25 +320,23 @@ function traces(i) {
     hoverinfo:'skip', flatshading:true, lighting:{ambient:1, diffuse:0, specular:0}});
   let first = true;
   for (const [name, s] of Object.entries(D.sections)) {
-    if (!ON[name]) continue;
-    const nk = s.z[i].length;
+    const vis = ON[name], nk = s.z[i].length;
     const xs = Array.from({length:nk}, () => s.x), ys = Array.from({length:nk}, () => s.y);
-    out.push({type:'surface', x:xs, y:ys, z:s.z[i], surfacecolor:s.un[i],
-      cmin:-VMAX, cmax:VMAX, colorscale:DIV, showscale:first, opacity:0.85,
+    out.push({type:'surface', visible:vis, x:xs, y:ys, z:s.z[i], surfacecolor:s.un[i],
+      cmin:-VMAX, cmax:VMAX, colorscale:DIV, showscale:vis && first, opacity:0.85,
       colorbar:{title:{text:'normal velocity (m/s)', side:'right'}, len:0.42, y:0.26, thickness:12,
                 tickfont:{color:INK}, titlefont:{color:INK}},
       hovertemplate:`${SECTION_LABEL[name] || name}<br>z %{z:.2f} m<br>uₙ %{surfacecolor:.3f} m/s<extra></extra>`,
       lighting:{ambient:1, diffuse:0, specular:0}});
-    out.push({type:'scatter3d', mode:'lines', x:s.x, y:s.y, z:s.bl[i],
+    out.push({type:'scatter3d', mode:'lines', visible:vis, x:s.x, y:s.y, z:s.bl[i],
       line:{color:INK, width:3}, hoverinfo:'skip', showlegend:false});
-    first = false;
+    if (vis) first = false;
   }
-  if (!ON.coast) return out;
-  out.push({type:'scatter3d', mode:'text', x:D.labels.map(l => l[0]), y:D.labels.map(l => l[1]),
+  out.push({type:'scatter3d', mode:'text', visible:ON.coast, x:D.labels.map(l => l[0]), y:D.labels.map(l => l[1]),
     z:D.labels.map(() => 0.45), text:D.labels.map(l => l[2]),
     textfont:{color:INK, size:12}, hoverinfo:'skip', showlegend:false});
   for (const [cx, cy] of D.coast) {
-    out.push({type:'scatter3d', mode:'lines', x:cx, y:cy, z:cx.map(() => 0.15),
+    out.push({type:'scatter3d', mode:'lines', visible:ON.coast, x:cx, y:cy, z:cx.map(() => 0.15),
       line:{color:COAST, width:2}, hoverinfo:'skip', showlegend:false});
   }
   return out;
@@ -435,9 +442,56 @@ function tick() {
 }
 initParticles(D.start);
 sl.value = D.start;
+// ---------------------------------------------------------------- recording
+// With ?record in the address the page runs no clock of its own and hides its
+// controls.  A frame grabber (record_wetwise_sections_video.py) then calls
+// REC.frame once per video frame, so the particles advance by a fixed model
+// time step however long each frame takes to render.
+const RECORD = new URLSearchParams(location.search).has('record');
+const raf2 = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+function stamp() {
+  const i0 = Math.floor(tc);
+  const t = new Date(Date.parse(D.times[i0].replace(' ', 'T') + 'Z') + (tc - i0) * D.dt_frame * 1000);
+  return t.toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+}
+function recorder() {
+  document.body.classList.add('rec');
+  Plotly.Plots.resize(el);
+  return {
+    D: {times:D.times, extent:D.extent, aspect:D.aspect, zrange:D.zrange, dt_frame:D.dt_frame,
+        sections:Object.fromEntries(SECS.map(n => [n, {x:D.sections[n].x, y:D.sections[n].y,
+                                                         bl:D.sections[n].bl[0]}]))},
+    set(o) {
+      if (o.trail) TRAIL = o.trail;
+      if (o.lw) LW = o.lw;
+      if (o.tc !== undefined) { tc = o.tc; initParticles(Math.floor(tc)); shown = -1; }
+      if (o.layers) Object.assign(ON, o.layers);
+      if (o.caption !== undefined) document.getElementById('cap').textContent = o.caption;
+      if (o.layers) shown = -1;
+    },
+    // dt model seconds; the field advances with the particles unless frozen
+    frame(dt, cam, frozen) {
+      if (!frozen) tc = Math.min(tc + dt / D.dt_frame, D.times.length - 1.000001);
+      for (const pt of P) step(pt, tc, dt);
+      if (cam) layout.scene.camera = {...layout.scene.camera, ...cam};
+      document.getElementById('clock').textContent = stamp();
+      const i = Math.floor(tc);
+      let job;
+      if (i !== shown) { refreshWet(i); job = show(i); }
+      else {
+        const a = trailTrace('surface'), b = trailTrace('section');
+        job = Plotly.update(el, {x:[a.x, b.x], y:[a.y, b.y], z:[a.z, b.z], 'line.color':[a.c, b.c]},
+                            {'scene.camera':layout.scene.camera}, [0, 1]);
+      }
+      window.__stage = 'plotly';
+      return job.then(() => { window.__stage = 'raf'; return raf2(); })
+                .then(() => { window.__stage = 'done'; });
+    },
+  };
+}
 show(D.start).then(() => {
   el.on('plotly_relayout', ev => { if (ev['scene.camera']) layout.scene.camera = ev['scene.camera']; });
-  setInterval(tick, TICK);
+  if (RECORD) window.REC = recorder(); else setInterval(tick, TICK);
 });
 </script>
 </body>
