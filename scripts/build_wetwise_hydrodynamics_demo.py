@@ -173,6 +173,42 @@ def build_land_geojson():
 
 # -- payload ----------------------------------------------------------------
 
+# The point-in-face mask leaves a strip between the outermost mesh faces and
+# the drawn coastline, up to one face wide, and the cells that fall dry along
+# the shore leave patches of their own; both showed as dark bands along every
+# coast.  Empty cells within COAST_FILL_M of a cell holding a value take the
+# value of the nearest such cell, frame by frame.  The land overlay is drawn
+# above the fields, so the extension shows only on the water side of the
+# coastline, and dry intertidal cells near the shore take the colour of the
+# adjacent water.
+COAST_FILL_M = 400.0
+
+
+def fill_coast(ds):
+    """Nearest-valid-cell extension of every field into the coastal strip."""
+    from scipy.ndimage import distance_transform_edt
+    lons, lats = ds['lon'].values, ds['lat'].values
+    dy = abs(lats[1] - lats[0]) * 111320.0
+    dx = abs(lons[1] - lons[0]) * 111320.0 * np.cos(np.radians(lats.mean()))
+    n = 0
+    for v in ds.data_vars:
+        if ds[v].dims != ('time', 'lat', 'lon'):
+            continue
+        a = ds[v].values
+        for t in range(a.shape[0]):
+            empty = ~np.isfinite(a[t])
+            if not empty.any() or empty.all():
+                continue
+            dist, (ii, jj) = distance_transform_edt(
+                empty, sampling=(dy, dx), return_indices=True)
+            fill = empty & (dist <= COAST_FILL_M)
+            a[t][fill] = a[t][ii[fill], jj[fill]]
+            n += int(fill.sum())
+        ds[v].values = a
+    print(f'  coastal strip: {n / max(ds.sizes["time"], 1):.0f} cells '
+          f'filled per frame and variable set')
+    return ds
+
 def write_scalar(ds, var, grid, vmax_hint=None):
     """uint16 with scale/offset; U16_NAN marks dry / outside the mesh."""
     a = ds[var].values.astype(np.float32)
@@ -282,7 +318,7 @@ def build():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     VEL_DIR.mkdir(parents=True, exist_ok=True)
 
-    ds = {g: xr.open_dataset(p) for g, p in CACHE.items()}
+    ds = {g: fill_coast(xr.open_dataset(p).load()) for g, p in CACHE.items()}
     times = pd.to_datetime(ds['coarse']['time'].values)
     n_t = len(times)
     n_days = int(np.ceil(n_t / FRAMES_PER_DAY))
