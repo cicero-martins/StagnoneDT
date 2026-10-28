@@ -969,10 +969,18 @@ function badgeVel(){
 }
 
 /* ---- map --------------------------------------------------------------- */
+/* CARTO now requires an API key for its basemaps and serves a placeholder tile
+   stamped "API key required" to anonymous requests, which is what the published
+   portal was showing. The Esri grey canvases need no key and read the same way
+   behind the data layers. Their tile path is {z}/{y}/{x}, not {z}/{x}/{y}, they
+   take no {s} subdomain or {r} retina suffix, and they stop at native zoom 16,
+   so maxNativeZoom lets Leaflet upsample the last level instead of asking for
+   tiles that do not exist. */
+const ESRI='https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/';
 const BASEMAPS={
-  dark:{tiles:'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+  dark:{tiles:ESRI+'World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
         land:{fillColor:'#0a0f18',fillOpacity:.95,color:'#28323f',weight:.6}},
-  light:{tiles:'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+  light:{tiles:ESRI+'World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
          land:{fillColor:'#e6e2da',fillOpacity:.95,color:'#a8a49b',weight:.6}},
 };
 let baseTheme='dark', tileLyr=null, landLyr=null, landGJ=null;
@@ -981,8 +989,8 @@ function applyBasemap(name){
   baseTheme=name;
   const b=BASEMAPS[name];
   if(tileLyr)map.removeLayer(tileLyr);
-  tileLyr=L.tileLayer(b.tiles,{attribution:'&copy; OSM &copy; CARTO',
-    subdomains:'abcd',maxZoom:19}).addTo(map);
+  tileLyr=L.tileLayer(b.tiles,{attribution:'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+    maxNativeZoom:16,maxZoom:19}).addTo(map);
   if(landLyr)map.removeLayer(landLyr);
   if(landGJ)landLyr=L.geoJSON(landGJ,{pane:'landPane',style:b.land}).addTo(map);
   document.body.className=(name==='light')?'light':'';
