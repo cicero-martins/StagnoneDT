@@ -512,11 +512,15 @@ body.light #modal{background:rgba(230,234,240,.86)}
 .sta-toggle{width:100%;text-align:left;padding:11px 16px;background:none;border:0;
   border-bottom:1px solid var(--line);color:var(--ink);font-size:12px;cursor:pointer;
   font-weight:600;font-family:inherit}
-#sec3d{display:none;padding:4px 16px 12px;border-bottom:1px solid var(--line);
-  font-size:11.5px;line-height:1.5}
-#sec3d .s3-m{color:var(--ink3);font-size:10.5px;margin-top:6px}
-#sec3d a{color:var(--accent);text-decoration:none;margin-right:12px}
-#sec3d a:hover{text-decoration:underline}
+#sec3d{padding:11px 16px 13px;border-bottom:1px solid var(--line);font-size:11.5px;
+  line-height:1.5}
+#sec3d .s3-h{font-size:12px;font-weight:600;color:var(--ink)}
+#sec3d .s3-m{color:var(--ink3);font-size:10.5px;margin-top:7px}
+#sec3d .s3-r{display:flex;gap:6px;margin-top:3px}
+#sec3d a{flex:1;text-align:center;padding:5px 0;border-radius:6px;font-weight:600;
+  border:1px solid var(--accent);color:var(--accent);text-decoration:none}
+#sec3d a:first-child{background:var(--accent);color:var(--bg)}
+#sec3d a:hover{filter:brightness(1.12)}
 .sc{padding:10px 12px;border-bottom:1px solid var(--line)}
 .sc h4{margin:0 0 5px;font-size:11.5px;color:var(--ink2);font-weight:600;
   display:flex;align-items:center;justify-content:space-between}
@@ -570,18 +574,18 @@ body.light #modal{background:rgba(230,234,240,.86)}
         <button id="base-btn" onclick="toggleBasemap()">light basemap</button>
       </div>
       <div id="layer-list"></div>
+      <!-- perspective views of the vertical sections, published under
+           sections/<member>/ by publish_wetwise_edito.py --sections; kept
+           above the station series, which push everything below them down -->
+      <div id="sec3d">
+        <div class="s3-h">Vertical sections in 3D</div>
+        <div class="s3-m">WV- &middot; waves and canopy, fixed bed, stratified initial state</div>
+        <div class="s3-r"><a href="sections/WV-/particles.html">Particles</a><a href="sections/WV-/index.html">Arrows</a></div>
+        <div class="s3-m">v04AE &middot; uniform initial state, outside the Paper 1 ensemble</div>
+        <div class="s3-r"><a href="sections/v04AE/particles.html">Particles</a><a href="sections/v04AE/index.html">Arrows</a></div>
+      </div>
       <button class="sta-toggle" onclick="toggleSta()">Station time series</button>
       <div id="sta-sec"></div>
-      <!-- perspective views of the vertical sections, published under
-           sections/<member>/ by publish_wetwise_edito.py --sections -->
-      <button class="sta-toggle" onclick="const s=document.getElementById('sec3d');
-        s.style.display=s.style.display==='block'?'none':'block'">Vertical sections (3D)</button>
-      <div id="sec3d">
-        <div class="s3-m">WV- &middot; waves and canopy, fixed bed, stratified initial state</div>
-        <a href="sections/WV-/particles.html">particles</a><a href="sections/WV-/index.html">arrows</a>
-        <div class="s3-m">v04AE &middot; uniform initial state, outside the Paper 1 ensemble</div>
-        <a href="sections/v04AE/particles.html">particles</a><a href="sections/v04AE/index.html">arrows</a>
-      </div>
       <div id="modal" onclick="closeSta(event)">
         <div id="modal-box">
           <div id="modal-head"><span id="modal-title"></span>
