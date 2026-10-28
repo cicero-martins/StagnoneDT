@@ -13,6 +13,11 @@ exist".
 
     python scripts/publish_wetwise_edito.py
     python scripts/publish_wetwise_edito.py --html-only   # after a front-end tweak
+    python scripts/publish_wetwise_edito.py --sections WV- v04AE
+
+The --sections form publishes only the perspective views of the vertical
+sections, outputs/wetwise_tab/sections_<member>/{index,particles}.html, to
+<prefix>/sections/<member>/, leaving the portal itself untouched.
 """
 from pathlib import Path
 import argparse
@@ -81,9 +86,17 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--html-only', action='store_true',
                     help='push index.html only, skipping the data payload')
+    ap.add_argument('--sections', nargs='+', metavar='MEMBER',
+                    help='publish the section views of these members instead')
     args = ap.parse_args()
 
-    if not (PORTAL / 'index.html').exists():
+    if args.sections:
+        pages = {m: [p for p in (PORTAL.parent / f'sections_{m}').glob('*.html')]
+                 for m in args.sections}
+        empty = [m for m, p in pages.items() if not p]
+        if empty:
+            sys.exit('no section pages for: ' + ', '.join(empty))
+    elif not (PORTAL / 'index.html').exists():
         sys.exit(f'no portal at {PORTAL} -- run the build first')
 
     env = load_env()
@@ -96,6 +109,20 @@ def main():
 
     environ = mc_env(env)
     dest = f'{ALIAS}/{BUCKET}/{PREFIX}'
+    base = '{}/{}/{}'.format(env['AWS_S3_ENDPOINT'].rstrip('/'), BUCKET, PREFIX)
+
+    if args.sections:
+        for m, files in pages.items():
+            for p in files:
+                print(f'uploading sections/{m}/{p.name} ...')
+                run(['cp', str(p), f'{dest}/sections/{m}/{p.name}'],
+                    environ, check=True)
+        run(['anonymous', 'set', 'download', dest], environ, check=True)
+        print('\npublic URLs:')
+        for m, files in pages.items():
+            for p in files:
+                print(f'  {base}/sections/{m}/{p.name}')
+        return
 
     print('uploading index.html ...')
     run(['cp', str(PORTAL / 'index.html'), f'{dest}/index.html'],
