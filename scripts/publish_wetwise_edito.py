@@ -16,7 +16,8 @@ exist".
     python scripts/publish_wetwise_edito.py --sections WV- v04AE
 
 The --sections form publishes only the perspective views of the vertical
-sections, outputs/wetwise_tab/sections_<member>/{index,particles}.html, to
+sections, outputs/wetwise_tab/sections_<member>/{index,particles}.html with
+their *_data.json payloads, to
 <prefix>/sections/<member>/, leaving the portal itself untouched.
 """
 from pathlib import Path
@@ -34,6 +35,9 @@ PORTAL = ROOT / 'outputs' / 'wetwise_tab' / 'demo_hydrodynamics'
 BUCKET = 'oidc-cmartinsjr'
 PREFIX = 'wetwise-portal'
 ALIAS = 'edpub'          # transient, defined through the environment only
+# Pages go up with no-cache, since without a header the browser kept serving
+# the previous index.html after a republish; the data files keep the default.
+NO_CACHE = '--attr=Cache-Control=no-cache'
 
 
 def load_env():
@@ -91,7 +95,8 @@ def main():
     args = ap.parse_args()
 
     if args.sections:
-        pages = {m: [p for p in (PORTAL.parent / f'sections_{m}').glob('*.html')]
+        pages = {m: sorted((PORTAL.parent / f'sections_{m}').glob('*.html')) +
+                 sorted((PORTAL.parent / f'sections_{m}').glob('*_data.json'))
                  for m in args.sections}
         empty = [m for m, p in pages.items() if not p]
         if empty:
@@ -115,7 +120,7 @@ def main():
         for m, files in pages.items():
             for p in files:
                 print(f'uploading sections/{m}/{p.name} ...')
-                run(['cp', str(p), f'{dest}/sections/{m}/{p.name}'],
+                run(['cp', NO_CACHE, str(p), f'{dest}/sections/{m}/{p.name}'],
                     environ, check=True)
         run(['anonymous', 'set', 'download', dest], environ, check=True)
         print('\npublic URLs:')
@@ -125,7 +130,7 @@ def main():
         return
 
     print('uploading index.html ...')
-    run(['cp', str(PORTAL / 'index.html'), f'{dest}/index.html'],
+    run(['cp', NO_CACHE, str(PORTAL / 'index.html'), f'{dest}/index.html'],
         environ, check=True)
 
     if not args.html_only:
