@@ -89,6 +89,10 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--ink);
 #wrap { display:flex; flex-direction:column; height:100%; }
 header { padding:10px 16px 6px; border-bottom:1px solid var(--line); }
 header h1 { font-size:16px; margin:0 0 2px; font-weight:600; }
+header nav { float:right; font-size:12px; }
+header nav a { color:var(--ink); margin-left:14px; text-decoration:none;
+  border:1px solid var(--line); border-radius:6px; padding:3px 10px; }
+header nav a:hover { border-color:var(--ink); }
 header p { font-size:12px; margin:0; color:var(--muted); }
 #ctl { display:flex; gap:12px; align-items:center; padding:8px 16px 12px;
   border-top:1px solid var(--line); font-size:13px; flex-wrap:wrap; }
@@ -112,6 +116,7 @@ select { padding:3px 6px; background:var(--bg); }
 <body>
 <div id="wrap">
 <header>
+  <nav><a href="index.html">Arrow view</a><a href="../../index.html">&larr; WetWise portal</a></nav>
   <h1>__TITLE__</h1>
   <p id="sub"></p>
 </header>
