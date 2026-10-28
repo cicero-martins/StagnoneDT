@@ -68,6 +68,11 @@ body.light #modal{background:rgba(230,234,240,.86)}
 .sta-toggle{width:100%;text-align:left;padding:11px 16px;background:none;border:0;
   border-bottom:1px solid var(--line);color:var(--ink);font-size:12px;cursor:pointer;
   font-weight:600;font-family:inherit}
+#sec3d{display:none;padding:4px 16px 12px;border-bottom:1px solid var(--line);
+  font-size:11.5px;line-height:1.5}
+#sec3d .s3-m{color:var(--ink3);font-size:10.5px;margin-top:6px}
+#sec3d a{color:var(--accent);text-decoration:none;margin-right:12px}
+#sec3d a:hover{text-decoration:underline}
 .sc{padding:10px 12px;border-bottom:1px solid var(--line)}
 .sc h4{margin:0 0 5px;font-size:11.5px;color:var(--ink2);font-weight:600;
   display:flex;align-items:center;justify-content:space-between}
@@ -123,6 +128,16 @@ body.light #modal{background:rgba(230,234,240,.86)}
       <div id="layer-list"></div>
       <button class="sta-toggle" onclick="toggleSta()">Station time series</button>
       <div id="sta-sec"></div>
+      <!-- perspective views of the vertical sections, published under
+           sections/<member>/ by publish_wetwise_edito.py --sections -->
+      <button class="sta-toggle" onclick="const s=document.getElementById('sec3d');
+        s.style.display=s.style.display==='block'?'none':'block'">Vertical sections (3D)</button>
+      <div id="sec3d">
+        <div class="s3-m">WV- &middot; waves and canopy, fixed bed, stratified initial state</div>
+        <a href="sections/WV-/particles.html">particles</a><a href="sections/WV-/index.html">arrows</a>
+        <div class="s3-m">v04AE &middot; uniform initial state, outside the Paper 1 ensemble</div>
+        <a href="sections/v04AE/particles.html">particles</a><a href="sections/v04AE/index.html">arrows</a>
+      </div>
       <div id="modal" onclick="closeSta(event)">
         <div id="modal-box">
           <div id="modal-head"><span id="modal-title"></span>
@@ -561,10 +576,18 @@ function badgeVel(){
 }
 
 /* ---- map --------------------------------------------------------------- */
+/* CARTO now requires an API key for its basemaps and serves a placeholder tile
+   stamped "API key required" to anonymous requests, which is what the published
+   portal was showing. The Esri grey canvases need no key and read the same way
+   behind the data layers. Their tile path is {z}/{y}/{x}, not {z}/{x}/{y}, they
+   take no {s} subdomain or {r} retina suffix, and they stop at native zoom 16,
+   so maxNativeZoom lets Leaflet upsample the last level instead of asking for
+   tiles that do not exist. */
+const ESRI='https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/';
 const BASEMAPS={
-  dark:{tiles:'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+  dark:{tiles:ESRI+'World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
         land:{fillColor:'#0a0f18',fillOpacity:.95,color:'#28323f',weight:.6}},
-  light:{tiles:'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+  light:{tiles:ESRI+'World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
          land:{fillColor:'#e6e2da',fillOpacity:.95,color:'#a8a49b',weight:.6}},
 };
 let baseTheme='dark', tileLyr=null, landLyr=null, landGJ=null;
@@ -573,8 +596,8 @@ function applyBasemap(name){
   baseTheme=name;
   const b=BASEMAPS[name];
   if(tileLyr)map.removeLayer(tileLyr);
-  tileLyr=L.tileLayer(b.tiles,{attribution:'&copy; OSM &copy; CARTO',
-    subdomains:'abcd',maxZoom:19}).addTo(map);
+  tileLyr=L.tileLayer(b.tiles,{attribution:'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+    maxNativeZoom:16,maxZoom:19}).addTo(map);
   if(landLyr)map.removeLayer(landLyr);
   if(landGJ)landLyr=L.geoJSON(landGJ,{pane:'landPane',style:b.land}).addTo(map);
   document.body.className=(name==='light')?'light':'';
