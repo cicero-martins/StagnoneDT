@@ -27,8 +27,13 @@ probes share, so the members are compared over identical times and cells.
     ssh simit "source ~/miniconda3/etc/profile.d/conda.sh && \
                conda activate stagnone_extract && \
                python ~/StagnoneDT/scripts/extract_canopy_diagnostics.py"
+
+STAGNONE_ENSEMBLE=ic3d, as in _ensemble.py, reads the members run from the
+stratified initial condition (_ic3d_probes_simit.sh for the trachytope member
+and the bending pair) and writes the CSVs with the suffix _ic3d.
 """
 import glob
+import os
 import sys
 
 import numpy as np
@@ -58,6 +63,11 @@ TRT = 'dflowfm_v04AE_nowaves_vr_arlfix'    # the meadow as bed roughness
 # which is the canopy effect and not a reconfiguration effect. Comparing 900
 # against 1020 kg/m3 keeps the canopy in both and varies only how far it bends.
 BEND_SOFT, BEND_STIFF = '_veg_RHO900', '_veg_RHO1020'
+
+SUFFIX = '_ic3d' if os.environ.get('STAGNONE_ENSEMBLE') == 'ic3d' else ''
+if SUFFIX:
+    BARE, VEG, TRT, BEND_SOFT, BEND_STIFF = (
+        m + SUFFIX for m in (BARE, VEG, TRT, BEND_SOFT, BEND_STIFF))
 
 
 def parts(d):
@@ -129,7 +139,7 @@ def part_A():
     byu = d.groupby('ubin', observed=True).agg(
         n=('ratio', 'size'), U_mean=('U', 'mean'),
         ratio_median=('ratio', 'median')).reset_index()
-    byu.to_csv(OUT + 'canopy_A_ratio_by_speed.csv', index=False)
+    byu.to_csv(OUT + f'canopy_A_ratio_by_speed{SUFFIX}.csv', index=False)
     sys.stderr.write('A, ratio by speed band (cm/s):\n'
                      + byu.to_string(index=False) + '\n')
     q = d.ratio.quantile([0.25, 0.5, 0.75])
@@ -143,7 +153,7 @@ def part_A():
         'hv_over_h_q95': d.hv_over_h.quantile(0.95),
         'sf_model_median': d.sf_model.median(),
         'sf_ciraolo_median': d.sf_ciraolo.median()}])
-    summary.to_csv(OUT + 'canopy_A_ciraolo_ratio.csv', index=False)
+    summary.to_csv(OUT + f'canopy_A_ciraolo_ratio{SUFFIX}.csv', index=False)
     sys.stderr.write(f'A: median ratio {q[0.5]:.3f} over {len(d)} samples\n')
     return summary
 
@@ -182,7 +192,7 @@ def part_B():
                      'n_values': n})
         sys.stderr.write(f'B: {label:11s} taus {tot / n:.4f} Pa\n')
     out = pd.DataFrame(rows)
-    out.to_csv(OUT + 'canopy_B_bed_stress.csv', index=False)
+    out.to_csv(OUT + f'canopy_B_bed_stress{SUFFIX}.csv', index=False)
     return out
 
 
@@ -222,7 +232,7 @@ def part_C():
         'bin': 'top5pct', 'n': len(top), 'speed_mean': top.stiff.mean(),
         'ratio_mean': top.ratio.mean(),
         'ratio_median': top.ratio.median()}])], ignore_index=True)
-    g.to_csv(OUT + 'canopy_C_reconfiguration.csv', index=False)
+    g.to_csv(OUT + f'canopy_C_reconfiguration{SUFFIX}.csv', index=False)
     sys.stderr.write('C:\n' + g.to_string(index=False) + '\n')
     return g
 

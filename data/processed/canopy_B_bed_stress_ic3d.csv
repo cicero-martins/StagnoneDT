@@ -1,0 +1,4 @@
+member,dir,mean_taus_Pa,n_values
+bare,dflowfm_v04AE_nowaves_ic3d,0.02838782600648007,384480
+canopy,_veg_hv040_3d_ic3d,0.0025767891463360617,384480
+trachytope,dflowfm_v04AE_nowaves_vr_arlfix_ic3d,0.043059574549327115,384480
