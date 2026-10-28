@@ -319,3 +319,7 @@ model/*/turbid_airport_tracer.bc
 model/*/turbid_saltpans.pli
 model/*/turbid_airport.pli
 
+
+# Vistas em perspectiva das secoes verticais (sections.nc e paginas html),
+# regeneraveis por scripts/extract_velocity_sections.py e pelos dois builders.
+outputs/wetwise_tab/sections_*/
