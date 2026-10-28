@@ -109,6 +109,10 @@ select { padding:3px 6px; background:var(--bg); }
 #tools .lbl { color:var(--muted); min-width:44px; }
 #tools button { padding:2px 8px; font-size:12px; background:var(--bg); }
 #tools button.on { border-color:var(--ink); }
+#zoom { position:absolute; left:12px; bottom:12px; z-index:5; display:flex;
+  flex-direction:column; gap:4px; }
+#zoom button { width:30px; height:30px; padding:0; font-size:17px; line-height:1;
+  background:var(--bg); }
 #tools label { display:flex; gap:4px; align-items:center; padding:2px 8px;
   border:1px solid var(--line); border-radius:6px; background:var(--bg); cursor:pointer; }
 </style>
@@ -126,6 +130,7 @@ select { padding:3px 6px; background:var(--bg); }
     <div class="row" id="views"><span class="lbl">View</span></div>
     <div class="row" id="layers"><span class="lbl">Layers</span></div>
   </div>
+  <div id="zoom"><button id="zin" title="Zoom in">+</button><button id="zout" title="Zoom out">&minus;</button></div>
 </div>
 <div id="ctl">
   <button id="play">Play</button>
@@ -329,6 +334,10 @@ function traces(i) {
   }
   return out;
 }
+// Every preset eye is pulled in by ZOOM, so the box fills the stage instead of
+// floating in it.  The buttons scale the current eye about the box centre in
+// steps of ZSTEP, finer than the scroll wheel.
+const ZOOM = 0.72, ZSTEP = 1.15, CENTER = {x:0, y:0, z:0.12};
 const ax = (t, rng) => ({title:{text:t, font:{color:MUTED, size:11}}, range:rng,
   color:MUTED, gridcolor:dark ? '#2a2b30' : '#ecebe7', zeroline:false,
   backgroundcolor:'rgba(0,0,0,0)', showbackground:false});
@@ -339,7 +348,7 @@ const layout = {
          yaxis:{...ax('', [D.extent[2], D.extent[3]]), showticklabels:false, showgrid:false},
          zaxis:ax('z (m)', D.zrange),
          aspectmode:'manual', aspectratio:D.aspect,
-         camera:{eye:{x:0.95, y:-0.40, z:0.45}, projection:{type:'perspective'}}}
+         camera:{eye:{x:0.95 * ZOOM, y:-0.40 * ZOOM, z:0.45 * ZOOM}, center:CENTER, projection:{type:'perspective'}}}
 };
 const el = document.getElementById('scene');
 const sl = document.getElementById('slider'), tl = document.getElementById('t');
@@ -369,7 +378,9 @@ for (const [name, cam] of VIEWS) {
   const b = document.createElement('button');
   b.textContent = name;
   b.addEventListener('click', () => {
-    layout.scene.camera = {...cam, center:{x:0, y:0, z:0}, projection:{type:'perspective'}};
+    const e = cam.eye;
+    layout.scene.camera = {...cam, eye:{x:e.x * ZOOM, y:e.y * ZOOM, z:e.z * ZOOM},
+                           center:CENTER, projection:{type:'perspective'}};
     Plotly.relayout(el, {'scene.camera': layout.scene.camera});
     vbox.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
   });
@@ -377,6 +388,14 @@ for (const [name, cam] of VIEWS) {
 }
 el.addEventListener('mousedown', () =>
   vbox.querySelectorAll('button').forEach(x => x.classList.remove('on')));
+function zoom(f) {
+  const c = layout.scene.camera, e = c.eye, o = c.center || CENTER;
+  layout.scene.camera = {...c, eye:{x:o.x + (e.x - o.x) * f, y:o.y + (e.y - o.y) * f,
+                                    z:o.z + (e.z - o.z) * f}};
+  Plotly.relayout(el, {'scene.camera': layout.scene.camera});
+}
+document.getElementById('zin').addEventListener('click', () => zoom(1 / ZSTEP));
+document.getElementById('zout').addEventListener('click', () => zoom(ZSTEP));
 
 const lbox = document.getElementById('layers');
 const LAYERS = [['surface', 'Surface'], ...SECS.map(n => [n, SECTION_LABEL[n] || n]),
