@@ -212,11 +212,61 @@ def build_payload(ds, args):
     return payload
 
 
+# The payload goes in a JSON file beside the page and is fetched with a
+# progress bar, since inline it made a 10-15 MB page that stayed blank while
+# downloading.  The scene script waits as text until the data has arrived.
+# Fetching needs http, so the pages are opened locally through
+# serve_wetwise.py rather than as files.
+LOADER = r"""<div id="ld" style="position:fixed;inset:0;z-index:20;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  background:var(--bg);color:var(--ink);font-size:13px">
+  <div style="font-weight:600">Loading the sections</div>
+  <div id="ld-t" style="color:var(--muted);font-size:12px">connecting ...</div>
+  <div style="width:260px;height:4px;background:var(--line);border-radius:2px;overflow:hidden">
+    <div id="ld-b" style="height:100%;width:2%;background:var(--ink);transition:width .2s"></div></div>
+</div>
+<script>
+(() => {
+  const bar = document.getElementById('ld-b'), txt = document.getElementById('ld-t');
+  const fail = m => { txt.textContent = 'could not load the data (' + m + ')'; };
+  const x = new XMLHttpRequest();
+  x.open('GET', '__DATA_URL__');
+  x.setRequestHeader('Cache-Control', 'no-cache');
+  x.onprogress = e => {
+    const mb = (e.loaded / 1e6).toFixed(1);
+    txt.textContent = e.lengthComputable ? `${mb} of ${(e.total / 1e6).toFixed(1)} MB` : `${mb} MB`;
+    if (e.lengthComputable) bar.style.width = Math.max(2, 100 * e.loaded / e.total) + '%';
+  };
+  x.onerror = () => fail('network error');
+  x.onload = () => {
+    if (x.status !== 200) return fail('HTTP ' + x.status);
+    txt.textContent = 'building the scene ...'; bar.style.width = '100%';
+    // let the message paint before the parse blocks the page
+    setTimeout(() => {
+      try { window.__D = JSON.parse(x.responseText); } catch (e) { return fail(e.message); }
+      const s = document.createElement('script');
+      s.textContent = document.getElementById('main-js').textContent;
+      document.body.appendChild(s);
+      document.getElementById('ld').remove();
+    }, 30);
+  };
+  x.send();
+})();
+</script>
+"""
+
+
 def write_page(payload, template, out, title):
+    data = out.with_name(out.stem + '_data.json')
+    data.write_text(json.dumps(payload, separators=(',', ':')), encoding='utf-8')
     html = template.replace('__TITLE__', title).replace(
-        '__DATA__', json.dumps(payload, separators=(',', ':')))
+        '<script>\nconst D = __DATA__;',
+        LOADER.replace('__DATA_URL__', data.name) +
+        '<script type="text/plain" id="main-js">\nconst D = window.__D;')
+    if 'window.__D' not in html:
+        raise SystemExit('template has no data hook')
     out.write_text(html, encoding='utf-8')
-    print(f'wrote {out}  ({out.stat().st_size / 1e6:.1f} MB, '
+    print(f'wrote {out} and {data.name}  ({data.stat().st_size / 1e6:.1f} MB, '
           f'{len(payload["times"])} frames, vertical exaggeration '
           f'{payload["exag"]:.0f}x)')
 
