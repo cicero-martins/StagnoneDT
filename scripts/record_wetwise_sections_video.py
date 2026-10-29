@@ -7,15 +7,20 @@ advancing the particles by a fixed model time step, and every frame is captured
 and encoded with ffmpeg.  Rendering speed therefore does not affect the timing
 of the result.
 
-The sequence follows SHOTS.  It opens on the top view with every layer on,
+The tour view follows SHOTS.  It opens on the top view with every layer on,
 moves to the perspective view, isolates the north-south section, then the
 east-west section with the camera closing in on it, and returns to the
-perspective view with every layer on.
+perspective view with every layer on.  With --at the field is held at one
+stored instant and only the particles move through it.
+
+The fixed views (south, east, surface) keep one camera and one layer set and
+run through the whole stored period.
 
 Usage
-    python scripts/record_wetwise_sections_video.py --member WV-
-        [--out docs/dsd2026/assets/sections_3d_WV-.mp4] [--fps 30]
-        [--rate 3600] [--size 1920x1080] [--no-captions] [--frames-only]
+    python scripts/record_wetwise_sections_video.py --member WV- --at "2025-07-09 02:00"
+    python scripts/record_wetwise_sections_video.py --member WV- --view south
+        [--out ...] [--fps 30] [--rate 3600] [--size 1920x1080] [--no-captions]
+        [--frames-only]
 """
 import argparse
 import base64
@@ -48,6 +53,17 @@ PERSP = {'eye': {'x': 0.95 * ZOOM, 'y': -0.40 * ZOOM, 'z': 0.45 * ZOOM},
 ALL = {'surface': True, 'ns_axis': True, 'ew_centre': True, 'coast': True}
 NS = {'surface': False, 'ns_axis': True, 'ew_centre': False, 'coast': True}
 EW = {'surface': False, 'ns_axis': False, 'ew_centre': True, 'coast': True}
+SURF = {'surface': True, 'ns_axis': False, 'ew_centre': False, 'coast': True}
+
+# Fixed views over the whole period: camera (or a key of the cameras built
+# from the page metadata), layers, caption, default frame size.  The lagoon is
+# long north-south, so the surface view is upright.
+FIXED = {
+    'south': ('SOUTH', EW, 'East–west section, seen from the south', '1280x720'),
+    'east': ({'eye': {'x': 1.10 * ZOOM, 'y': 0, 'z': 0.08 * ZOOM}, 'center': CENTER, 'up': UP},
+             NS, 'North–south section, seen from the east', '1280x720'),
+    'surface': ({**TOP, 'eye': {'x': 0, 'y': -0.001, 'z': 1.38}}, SURF, 'Surface currents', '720x1080'),
+}
 
 # (seconds, camera at the end of the shot or None to hold, layers set at its
 # start or None to keep, caption)
@@ -64,8 +80,9 @@ SHOTS = [
 ]
 
 
-def ew_close(meta):
-    """Camera looking north at the middle of the east-west section."""
+def ew_close(meta, back=0.26, rise=0.06, side=0.02):
+    """Camera looking north at the middle of the east-west section, from
+    `back` box units to the south."""
     e, a, zr = meta['extent'], meta['aspect'], meta['zrange']
     s = meta['sections']['ew_centre']
     xm = (min(s['x']) + max(s['x'])) / 2
@@ -76,7 +93,7 @@ def ew_close(meta):
     ny = ((ym - e[2]) / (e[3] - e[2]) - 0.5) * a['y']
     nz = ((-0.6 - zr[0]) / (zr[1] - zr[0]) - 0.5) * a['z']
     c = {'x': nx, 'y': ny, 'z': nz}
-    return {'eye': {'x': nx + 0.02, 'y': ny - 0.26, 'z': nz + 0.06}, 'center': c, 'up': UP}
+    return {'eye': {'x': nx + side, 'y': ny - back, 'z': nz + rise}, 'center': c, 'up': UP}
 
 
 def ease(t):
@@ -119,11 +136,11 @@ class Quiet(SimpleHTTPRequestHandler):
         pass
 
 
-def frame(cdp, dt, cam):
+def frame(cdp, dt, cam, frozen=False):
     """One frame, with a time limit so that a stalled renderer fails loudly."""
     if cdp.js('document.hidden'):
         cdp.call('Page.bringToFront')
-    r = cdp.js(f"Promise.race([REC.frame({dt}, {json.dumps(cam)}).then(() => 'ok'), "
+    r = cdp.js(f"Promise.race([REC.frame({dt}, {json.dumps(cam)}, {json.dumps(frozen)}).then(() => 'ok'), "
                f"new Promise(r => setTimeout(() => r('stall'), 30000))])")
     if r != 'ok':
         raise RuntimeError(f"renderer stalled at {cdp.js('window.__stage')}, "
@@ -167,19 +184,24 @@ def serve(root):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--member', default='WV-')
+    ap.add_argument('--view', default='tour', choices=['tour', *FIXED])
+    ap.add_argument('--at', default=None,
+                    help='tour only: hold the field at this stored instant, e.g. "2025-07-09 02:00"')
     ap.add_argument('--out', default=None)
     ap.add_argument('--fps', type=int, default=30)
     ap.add_argument('--rate', type=float, default=3600.0,
                     help='model seconds per video second')
     ap.add_argument('--start', type=int, default=0, help='stored instant to start from')
     ap.add_argument('--trail', type=int, default=24)
-    ap.add_argument('--size', default='1920x1080')
+    ap.add_argument('--size', default=None, help='1920x1080 for the tour, else per FIXED')
     ap.add_argument('--no-captions', action='store_true')
     ap.add_argument('--frames-only', action='store_true',
                     help='stop after the first frame of each shot, as PNGs')
     a = ap.parse_args()
-    w, h = (int(v) for v in a.size.split('x'))
-    out = Path(a.out) if a.out else ROOT / 'docs' / 'dsd2026' / 'assets' / f'sections_3d_{a.member}.mp4'
+    size = a.size or ('1920x1080' if a.view == 'tour' else FIXED[a.view][3])
+    w, h = (int(v) for v in size.split('x'))
+    tag = '' if a.view == 'tour' else f'_{a.view}'
+    out = Path(a.out) if a.out else ROOT / 'docs' / 'dsd2026' / 'assets' / f'sections_3d_{a.member}{tag}.mp4'
     frames = out.with_suffix('')
     frames = frames.parent / (frames.name + '_frames')
 
@@ -212,23 +234,44 @@ def main():
         cdp.call('Emulation.setFocusEmulationEnabled', enabled=True)
         cdp.call('Page.enable')
         cdp.call('Page.bringToFront')
-        cdp.call('Page.navigate', url=f'http://127.0.0.1:{HTTP_PORT}/particles.html?record')
-        t0 = time.time()
-        while not cdp.js('!!window.REC'):
-            if time.time() - t0 > 300:
-                raise TimeoutError('page did not reach record mode')
-            time.sleep(1)
+        # The first draw waits on requestAnimationFrame, which a page deemed
+        # hidden never fires; such a page is brought to the front, and one
+        # that stays stuck is loaded again.
+        url = f'http://127.0.0.1:{HTTP_PORT}/particles.html?record'
+        for attempt in range(3):
+            cdp.call('Page.navigate', url=url)
+            t0 = time.time()
+            while not cdp.js('!!window.REC') and time.time() - t0 < 120:
+                if cdp.js('document.hidden'):
+                    cdp.call('Page.bringToFront')
+                time.sleep(1)
+            if cdp.js('!!window.REC'):
+                break
+            print(f"  page stuck (readyState {cdp.js('document.readyState')}, "
+                  f"hidden {cdp.js('document.hidden')}), reloading", flush=True)
+        else:
+            raise TimeoutError('page did not reach record mode')
         meta = cdp.js('REC.D')
-        cams = {'EW_CLOSE': ew_close(meta)}
-        cdp.js(f'REC.set({json.dumps({"trail": a.trail, "tc": a.start, "lw": 1.5})})')
-
+        cams = {'EW_CLOSE': ew_close(meta), 'SOUTH': ew_close(meta, back=0.40, rise=0.03, side=0)}
         dt = a.rate / a.fps
-        # run the particles in for a moment, so the first frame shows trails
-        cdp.js(f'REC.set({json.dumps({"layers": ALL, "caption": ""})})')
-        cdp.js(f'(async () => {{ for (let k = 0; k < {a.trail}; k++) await REC.frame({dt}, {json.dumps(TOP)}, true); }})()')
+        frozen = a.view == 'tour' and a.at is not None
+        if a.view == 'tour':
+            shots, cam0 = SHOTS, TOP
+            start = meta['times'].index(a.at) if frozen else a.start
+        else:
+            cam0, layers, cap, _ = FIXED[a.view]
+            cam0 = cams.get(cam0, cam0) if isinstance(cam0, str) else cam0
+            start = 0
+            secs = (len(meta['times']) - 1) * meta['dt_frame'] / a.rate
+            shots = [(secs, None, layers, cap)]
+        cdp.js(f'REC.set({json.dumps({"trail": a.trail, "tc": start, "lw": 1.5})})')
 
-        cam, k = dict(TOP), 0
-        for secs, target, layers, cap in SHOTS:
+        # run the particles in for a moment, so the first frame shows trails
+        cdp.js(f'REC.set({json.dumps({"layers": shots[0][2], "caption": ""})})')
+        cdp.js(f'(async () => {{ for (let k = 0; k < {a.trail}; k++) await REC.frame({dt}, {json.dumps(cam0)}, true); }})()')
+
+        cam, k = dict(cam0), 0
+        for secs, target, layers, cap in shots:
             setting = {}
             if layers is not None:
                 setting['layers'] = layers
@@ -241,7 +284,7 @@ def main():
             end = cams[target] if isinstance(target, str) else (target or cam)
             for j in range(n):
                 cam = mix(start, end, ease((j + 1) / n)) if target else start
-                frame(cdp, dt, cam)
+                frame(cdp, dt, cam, frozen)
                 png = grab(cdp)
                 (frames / f'{k:05d}.png').write_bytes(base64.b64decode(png))
                 k += 1
@@ -262,8 +305,8 @@ def main():
                     '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18',
                     '-movflags', '+faststart', str(out)], check=True)
     shutil.rmtree(frames)
-    print(f'wrote {out}  ({out.stat().st_size / 1e6:.1f} MB, {k} frames, '
-          f'{k / a.fps:.0f} s, {a.rate / 3600:g} h of flow per s)')
+    flow = f'field held at {a.at}' if frozen else f'{a.rate / 3600:g} h of flow per s'
+    print(f'wrote {out}  ({out.stat().st_size / 1e6:.1f} MB, {k} frames, {k / a.fps:.0f} s, {flow})')
 
 
 if __name__ == '__main__':
