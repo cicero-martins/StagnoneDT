@@ -100,23 +100,16 @@ COMWriteInterval     = 600     # 10 min coupling
 5. **Switching the MDW boundary definitions from `xy-coordinates` to the manual-recommended `grid-coordinates` (M/N indices) drops the HDF error count by ~40× (1796 → 44) but still leaves `hwav` constant after iteration 1.** SWAN is still called every coupling step (12 wave.Update entries in the 2-hour log), but the com.nc reopen-for-write step fails just as it does with xy-coordinates — the failure is logged less verbosely. This isolates the bug further: it is not about how the boundaries are declared in the MDW; it is strictly about the HDF5 write-after-read access pattern when SWAN serialises its output back to a NetCDF-4 / HDF5 com.nc that D-Flow FM has open. (We will adopt grid-coordinates anyway as a manual-conformance / log-noise hygiene fix in v03d.)
 6. **Doubling the coupling interval from 600 s to 1200 s** (matching the 20-minute convention used by Choo et al. 2024 *Investigation of Coastal Effects of Current-Wave Coupling during a Typhoon Event using Delft3D-FM*) **does not restore time-varying waves**. Total error count drops from 1796 → 780 because there are simply fewer wave.Update cycles per run (6 vs 12), but the per-cycle failure pattern is unchanged — every cycle after iteration 1 still produces the same HDF + cascade-`Not a valid ID` block. **This rules out a timing/race-condition root cause**: spacing the FM-side flush and the SWAN-side reopen further apart in wall-clock time does not help. The bug is in the access pattern itself, not in concurrency.
 
-## Our provisional workaround, and why we cannot rely on it
+## Workaround in production use
 
-`ncFormat = 3` (classic NetCDF) is our current workaround because it completely eliminates the HDF errors and restores time-varying waves at all stations. However, classic NetCDF has a **2 GB per-file limit** which is not viable for our production runs:
-
-- Our typical map.nc grows to ~14 GB per partition for a 9-day 3D run (4 MPI partitions, `mapInterval = 900`, ~60 output variables).
-- For 30-day residence-time studies the per-partition map.nc would reach ~47 GB.
-- Even aggressive reductions via `wrimap_*` flags + longer `mapInterval` only halve the volume, leaving us above 2 GB per partition for any run longer than ~5 days.
-
-We have therefore built the model so that we can produce scientifically meaningful results via `ncFormat = 3` for short demonstrations, but we cannot run longer simulations, which blocks the residence-time and resuspension studies that are the main objective of the project.
+`ncFormat = 3` (classic NetCDF) eliminates the HDF errors and restores time-varying waves at all stations, and every coupled run of the project has used it since. The 2 GB ceiling of the classic format applies to the fixed-size part of a file and to each record of a variable, not to the file as a whole, and FM writes the output fields as record variables. The nine-day 3D runs on eight partitions with `mapInterval = 1800` produce `map.nc` files of 4.5 to 5.0 GB per partition in `NETCDF3_CLASSIC`, with all 433 frames readable. The workaround therefore carries no practical cost at the present mesh size, and the request below concerns the `ncFormat = 4` path itself.
 
 ## Ask
 
 1. Is this a known issue with the 2026.01 release? (The same Delft3D FM version runs on both Windows and the EDITO Linux Docker image with identical symptoms.)
 2. Is there an undocumented MDU / MDW / `dimr_config.xml` option that controls how SWAN re-opens `com.nc` — or a separate file-format setting specifically for `com.nc` (as opposed to the global `ncFormat` that also dictates `map.nc`)?
 3. If the underlying issue is how D-Waves' C-level `put_var` calls interact with HDF5 after `nc_close`/`nc_open` cycles, is there a patched kernel build we can try?
-4. Alternatively, would it be possible to extend `[output] ncFormat` to accept `64BIT_OFFSET` (CDF-2) or `64BIT_DATA` (CDF-5) as non-HDF5 large-file formats? This would preserve the fix while eliminating the 2 GB constraint.
-5. Attempted regression test with **Delft3D FM Suite 2025.01 HMWQ** (pointing the same `dimr_config.xml` to the 2025.01 kernels) was inconclusive: 2025.01 rejected the `initialFields.ini` entries that 2026.01 accepts (`initialsalinity`, `initialtracerlagoon_tracer`), so the run aborted before any wave iteration. If there is a compatibility note between the two releases for `[Initial]` block keywords, a confirmation that the HDF symptom is new in 2026.01 would help us narrow the scope.
+4. Attempted regression test with **Delft3D FM Suite 2025.01 HMWQ** (pointing the same `dimr_config.xml` to the 2025.01 kernels) was inconclusive: 2025.01 rejected the `initialFields.ini` entries that 2026.01 accepts (`initialsalinity`, `initialtracerlagoon_tracer`), so the run aborted before any wave iteration. If there is a compatibility note between the two releases for `[Initial]` block keywords, a confirmation that the HDF symptom is new in 2026.01 would help us narrow the scope.
 
 Full logs, the reproducer model directory, and the test scripts used to generate the isolation matrix above are available on request.
 

@@ -177,11 +177,11 @@ held constant. The report includes an eight-configuration isolation matrix,
 which suggests MPI concurrency, HDF5 file locking, the coupling interval and the
 MDW boundary declaration style are not the cause.
 
-`ncFormat = 3` removes the symptom entirely and is our workaround. The cost is
-the 2 GB classic-NetCDF per-file limit, which our `map.nc` passes for runs longer
-than about five days. Our suggestion there was whether `[output] ncFormat` might
-accept a large-file non-HDF5 format such as CDF-2 or CDF-5, which would keep the
-fix without the size ceiling.
+`ncFormat = 3` removes the symptom entirely and is our workaround. The 2 GB
+ceiling of the classic format applies per record of a variable rather than per
+file, and our nine-day `map.nc` files reach 5 GB per partition without
+difficulty, so the workaround carries no practical cost at this mesh size. The
+open question is the `ncFormat = 4` path itself.
 
 ## 2.2 modelbuilder example, three water level boundary blocks
 
@@ -189,9 +189,12 @@ Attached as `deltares_modelbuilder_observation.md`.
 
 The public `modelbuilder_example.ipynb` demonstrates `constant_to_bc`,
 `interpolate_tide_to_bc` and `cmems_nc_to_bc` in sequence, each appending a
-`waterlevelbnd` block for the same polyline, and FM sums them. For Mediterranean
-setups the CMEMS `zos` field already carries the tide, so the combination
-double-counts it. We took the example as a self-consistent setup and carried it
+`waterlevelbnd` block for the same polyline, and FM sums them. The `zos` of the
+Mediterranean analysis and forecast product (`MEDSEA_ANALYSISFORECAST_PHY_006_013`)
+already carries eight FES2014 tidal constituents, so with that product the
+combination double-counts the tide. The multi-year reanalysis
+(`MEDSEA_MULTIYEAR_PHY_006_004`) carries none, and there the TPXO block is
+needed. We took the example as a self-consistent setup and carried it
 through four model versions, reaching about 0.5 m boundary amplitude against a
 prescribed 0.24 m.
 
