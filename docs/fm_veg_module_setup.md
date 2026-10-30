@@ -1,28 +1,36 @@
-# Configuring FM's native vegetation module by hand
+# Configuring the FM vegetation module by hand
 
-D-Flow FM carries submerged vegetation in two unrelated places. Only one of them
-is reachable from the Delft3D FM Suite interface, and it is not the one that
-delivers the canopy term.
+These notes describe how we set up the `[veg]` module of D-Flow FM for our
+seagrass lagoon model, in case they are useful to others doing the same. We
+configured it by editing the input files, since we could not find the module
+in the Delta Shell interface, and we may well have missed a route that exists.
+
+As far as we can tell, D-Flow FM can represent submerged vegetation in two
+ways. The interface offers the trachytope route, and the per-layer vegetation
+module is configured through the files. In our three-dimensional runs only the
+second produced a response to the canopy drag, as described in
+[deltares_report_2026-09-01.md](deltares_report_2026-09-01.md).
 
 | | trachytopes | `[veg]` module |
 |---|---|---|
-| in the GUI | yes, `TrtRou` | **no** |
-| in `dflowfm-properties.csv` | yes | absent |
-| canopy momentum sink reaches the solver | **no** in kernel 1.2.184 | yes |
+| in the GUI | yes, `TrtRou` | not found |
+| in `dflowfm-properties.csv` | yes | not found |
+| response to the canopy drag in our 3D runs (kernel 1.2.184) | none observed | yes |
 | resolution | depth-averaged equivalent roughness | per sigma layer |
 | documented | User Manual ch. 13 | User Manual §13.3 |
 
-The GUI builds its model-settings panels from
+The GUI appears to build its model-settings panels from
 `plugins/DeltaShell.Plugins.FMSuite.FlowFM/CsvFiles/dflowfm-properties.csv`,
-which holds 277 properties. The only vegetation entry is `TrtRou`. The strings
-`Vegetationmodelnr`, `stemheight`, `stemdensity` and `stemdiameter` appear
-nowhere in any GUI resource, only inside `dflowfm.dll` and `dflowfm-cli.exe`.
+which holds 277 properties, and the only vegetation entry we found there is
+`TrtRou`. We found the strings `Vegetationmodelnr`, `stemheight`,
+`stemdensity` and `stemdiameter` inside `dflowfm.dll` and `dflowfm-cli.exe`
+but in no GUI resource.
 
-So the module has to be configured by editing files. There are three pieces.
+The setup has three pieces.
 
 ## 1. The `[veg]` block, appended to every partition MDU
 
-Append to each `*_000?.mdu` as well as the master `.mdu`. Ours:
+We append it to each `*_000?.mdu` as well as to the master `.mdu`. Ours reads
 
 ```ini
 [veg]
@@ -39,27 +47,29 @@ Densvegminbap             = 0.0
 Rhoveg                    = 900
 ```
 
-Three things about this block that cost us time.
+Three points about this block took us some time to work out, and may save
+others the same.
 
-**`Rhoveg = 0` does not mean a rigid canopy, it disables the vegetation.**
-Measured against an otherwise identical run at 900, the zero case runs 3 to 4
-times faster over the meadow, which is the whole canopy effect and not a
-reconfiguration effect. To vary stiffness, vary `Rhoveg` between two non-zero
-values.
+**`Rhoveg = 0` appears to switch the vegetation off rather than make the canopy
+rigid.** Against an otherwise identical run at 900, the zero case ran 3 to 4
+times faster over the meadow, which is the size of the whole canopy effect
+rather than of a reconfiguration effect. To vary the stiffness we therefore
+varied `Rhoveg` between two non-zero values.
 
-**The Järvelä and Västilä keys are read, echoed to the `.dia`, and inert in
-3D.** `Uchistem`, `Expchistem`, `Uchileaf`, `Expchileaf`, `Cdleaf` and
-`Arealeaf` are consumed by `setbaptist.f90`, which is guarded by `kmx == 0`.
-With layers the per-layer path in `setveg.f90` runs instead. Consistent with
-that, `Vegetationmodelnr` 1, 2 and 3 give bit-identical solutions in 3D.
+**The Järvelä and Västilä keys seem to act only in depth-averaged runs.**
+`Uchistem`, `Expchistem`, `Uchileaf`, `Expchileaf`, `Cdleaf` and `Arealeaf`
+are read and echoed to the `.dia`. Our reading of the source is that they are
+consumed in `setbaptist.f90`, under a `kmx == 0` guard, and that with layers the
+per-layer path in `setveg.f90` is taken instead. Consistent with that,
+`Vegetationmodelnr` 1, 2 and 3 gave bit-identical solutions in our 3D runs.
 
-**Turn trachytopes off**, `trtRou = N`. The kernel refuses trachytopes together
-with `Vegetationmodelnr >= 2`, and where it does not refuse them the two would
-add a second, redundant resistance on top of the canopy.
+**We keep trachytopes off, `trtRou = N`.** The kernel refuses trachytopes
+together with `Vegetationmodelnr >= 2`, and where both are accepted they would
+add a second resistance on top of the canopy.
 
 ## 2. `initialFields.ini`, three `[Parameter]` blocks
 
-Alongside whatever `[Initial]` blocks the model already has:
+These go alongside the `[Initial]` blocks the model already has.
 
 ```ini
 [Parameter]
@@ -71,51 +81,55 @@ Alongside whatever `[Initial]` blocks the model already has:
     operand               = O
 ```
 
-and the same for `stemdensity` and `stemdiameter`.
+The blocks for `stemdensity` and `stemdiameter` follow the same pattern.
 
 ## 3. Three `.xyz` sample files, one value per flow node
 
-Plain text, `x y value` per line, in the **same CRS as the mesh**.
+Each is plain text with `x y value` per line, in the same coordinate system as
+the mesh.
 
 ```
 12.432104881  37.861993204  0.400000
 12.432338115  37.861774903  0.400000
 ```
 
-**Cover the whole domain, not just the meadow.** A sample file that only carries
-the vegetated cells leaves every other cell to whatever the interpolation
-defaults to. Write an explicit zero everywhere the canopy is absent.
+A few things we learned while building them.
 
-**Fractional cover scales the areal density and nothing else.** Height and
-diameter are properties of a plant, not of how much bed it covers, so scaling
-them would be a different and wrong claim about the biology.
-
-**FM applies a plant-area consistency check.** A plant may not cover more than
-its share of bed, so `pi/4 * D^2` must not exceed `1/density`. Check it when
-building the file rather than letting the kernel complain per cell.
-
-Units are metres for `stemheight` and `stemdiameter`, and stems per square metre
-for `stemdensity`, counted **per leaf** if that is what presents the frontal
-area. For *P. oceanica*, six leaves per shoot means the areal density is six
-times the shoot density.
+- **Covering the whole domain.** We write an explicit zero wherever the canopy
+  is absent, so that no cell is left to the interpolation default.
+- **Applying fractional cover.** We scale only the areal density by the cover
+  fraction. Height and diameter describe the plant rather than how much of the
+  bed it occupies, so we leave them unscaled.
+- **The plant-area check.** FM checks that a plant does not cover more than its
+  share of bed, so that `pi/4 * D^2` does not exceed `1/density`. We now check
+  this when building the file, which is quicker than reading the per-cell
+  messages from the kernel.
+- **Units.** Metres for `stemheight` and `stemdiameter`, stems per square metre
+  for `stemdensity`. We count density per leaf, since the leaf presents the
+  frontal area. For *P. oceanica*, with six leaves per shoot, the areal density
+  is six times the shoot density.
 
 ## Building the files
 
-`scripts/build_veg_fields_from_arl.py` writes the three `.xyz` from a
+`scripts/build_veg_fields_from_arl.py` writes the three `.xyz` files from a
 trachytope `.arl` and the mesh face coordinates:
 
 ```bash
 python scripts/build_veg_fields_from_arl.py <arl> <outdir> --faces faces.npz
 ```
 
-`scripts/setup_veg_member.sh` assembles a complete member, copying the fields
-and `initialFields.ini` from a reference directory, setting `trtRou = N` and
-appending the `[veg]` block to every MDU.
+`scripts/setup_veg_member.sh` assembles a complete member. It copies the fields
+and `initialFields.ini` from a reference directory, sets `trtRou = N` and
+appends the `[veg]` block to every MDU.
 
-## Checking it took effect
+## Checking that the module is active
 
 The vegetation fields are written to `map.nc` as `mesh2d_stemheight`,
-`mesh2d_rnveg` and `mesh2d_diaveg`. If they are absent or all zero the module
-is not running. A live canopy also shows up as a large drop in `mesh2d_taus`
-over the meadow, where an equivalent bed roughness raises it instead, and as a
-surface-to-bed speed ratio well above what a logarithmic profile can produce.
+`mesh2d_rnveg` and `mesh2d_diaveg`, and if they are absent or all zero the
+module is probably not running. In our runs a live canopy also showed as a
+marked drop in `mesh2d_taus` over the meadow, where an equivalent bed roughness
+raises it instead, and as a surface-to-bed speed ratio well above what a
+logarithmic profile gives.
+
+We would be glad to hear of a simpler route, or of anything above that we have
+misread.
