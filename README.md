@@ -1,201 +1,176 @@
-# Stagnone di Marsala — Digital Twin
+# Stagnone di Marsala Digital Twin
 
-3D coupled wave-hydrodynamic Delft3D FM + SWAN digital twin of the Stagnone di Marsala lagoon (Sicily, Italy). PhD project at the Università degli Studi di Palermo, with execution on local Windows workstations and the simit-server Linux HPC (IntelMPI, 2.5× speedup vs Windows).
+This repository holds a three-dimensional coupled wave and hydrodynamic model of the Stagnone di Marsala, a shallow vegetated lagoon on the western coast of Sicily. The model is built with Delft3D Flexible Mesh coupled to SWAN. The work is a PhD project at the Università degli Studi di Palermo. Runs are executed on a Linux server of the university (simit, Intel MPI) and on Windows workstations.
 
 <p align="center">
-  <img src="figures/planet_composite_rgb_preview.png" width="520" alt="PlanetScope summer 2025 median composite"/><br/>
-  <em>PlanetScope SuperDove 8-band median composite, 9 dates Jun–Sep 2025, 3 m GSD. Lagoon (centre-left), Trapani airport + city (top), western Sicily coastline.</em>
+  <img src="manuscript_v2/figures/study_area_stagnone.png" width="620" alt="Study area, model domain and lagoon"/><br/>
+  <em>Model domain, lagoon and observation stations.</em>
 </p>
 
-## Status (June 2026)
+## Status, October 2026
 
 | Area | Status |
 |------|--------|
-| Mesh + bathymetry | Complete — v04 mesh (21 k nodes); EMODnet 2024 Trapani port patch (172 → 85 emerged nodes); `mesh2d_face_z` for D-Morph |
-| Input forcing | ERA5+in-situ blended (AE station only) wind; CMEMS time-varying wave BCs; hypersaline init; ERA5 evap; uxuyadvectionvelocitybnd for offshore stability |
-| v01–v03d | Complete and archived |
-| **v04AE** | **Current primary validated model** — 9-day Jul 2025, AE-only wind blend, 8 MPI (~9 h wall). WL anomaly RMSE 2.3–4.3 cm. Drifter LW skill 0.570 (12 deploys, EP 566 m). |
-| **v04AE_vr** | **VR variant validated** — Baptist canopy drag from Maltese 2025 seagrass classification (2023 epoch). Reduces WL setup bias 11–13 cm at BN/AE; drifter improvement in seagrass areas. |
-| Continuation runs | **Operational** — Jul 1–20 stable; N−2 restart chain workflow; `v04AE_d10d12` as reference window (corr 0.98/0.90/0.36 at BN/BS/AE vs CMEMS anfc) |
-| Offshore validation | Marettimo JRC TAD 658 — annual mean δ = +0.4489 m (13 months); per-node spatial spread via CMEMS MDT; v04AE_vr residual bias +5–6 cm at BN/AE |
-| Satellite roughness | RF classification (Planet Aug 2023, Maltese 2025 method), 4 classes, OOB ≈ 0.92. Applied to FM via `.arl` trachytope (WGS84 CRS). |
-| Satellite bathymetry (SDB) | Lyzenga + ELC pipeline established; Aug 2023 vs Aug 2025 Δz dominated by radiometric offset; multi-epoch approach needed |
-| Particle tracking | LW skill 0.570, EP 566 m (12 deploys Jul 2025); D7 east-boundary bias resolved with AE-only wind blend |
-| Morphology | D-Morph 2 fractions functional but TcrEro=0.1 unphysical (Δbl=2.4 m/9d); **disabled** in operational runs (`Sedimentmodelnr=0`); to be recalibrated in v05 |
-| WetWise portal | Prototype operational — Leaflet single-map, external-JSON files, 30-min resolution, coarse/fine pyramid |
-| Paper 1 | §1 Introduction + §2 Study Area drafted and verified (Jun 2026); target journal: *ECSS* |
-| v05 new mesh | In progress — orthogonality issue in FM 2026.01 blocking; workaround under investigation |
-| EDITO deployment | Functional — `delft3dfmrun-docker`; simit-server (Linux, IntelMPI) as primary HPC (2.5× faster than Win) |
+| Model configuration | `v04AE` lineage, 25,212-face mesh with 10 uniform sigma layers, SWAN on nested grids, CMEMS boundary with a per-node offset anchored at Marettimo, ERA5 wind blended with the AltaVilaEst record |
+| Seagrass canopy | Three-dimensional drag through the `[veg]` module of D-Flow FM, with parameters from published measurements and a PlanetScope classification of August 2023; no parameter fitted to the validation data |
+| Process ensemble | Complete 2 × 2 × 2 factorial in wave coupling, canopy and bed mobility over 1 to 10 July 2025, run from a stratified initial state |
+| Validation | Three lagoon tide gauges, the Marettimo gauge offshore, and 35 surface drifters in twelve deployments withheld from model decisions |
+| Paper 1 | Manuscript revised after internal review, with a Supplementary Material ([docs/paper1_revised_2026-10-27.pdf](docs/paper1_revised_2026-10-27.pdf), [docs/paper1_supplementary_2026-10-27.pdf](docs/paper1_supplementary_2026-10-27.pdf)); target journal *Estuarine, Coastal and Shelf Science* |
+| Mobile bed | D-Morphology with two fractions runs, but the present parameters give implausible suspended load and bed change under waves; a plausibility sweep of the deposition threshold and skin friction is running on simit |
+| WetWise portal | Published on EDITO, with surface fields, station series and vertical velocity sections |
+| Infrastructure | Runs on simit through a shared core allocator; a 14.6 TB volume is mounted at `/storage` for long runs |
 
-## Site description
+## Site
 
-The Stagnone di Marsala is a shallow coastal lagoon on Sicily's western coast:
+The Stagnone di Marsala is a shallow coastal lagoon on the western coast of Sicily.
 
-- **Area:** ~2200 ha (~22 km²); ~11 km N–S, ~2.5 km E–W
-- **Sub-basins:** northern (~14 km², ~1 m depth) and southern (~6 km², ~2 m depth), separated by a *Posidonia oceanica* barrier reef
-- **Islands:** Mothia (archaeological site), Santa Maria, Scola
-- **Depth:** 0.3–3 m (max); mean ~0.95–1 m
-- **Tidal regime:** microtidal, ~0.30 m semi-diurnal amplitude
-- **Salinity:** 33–46 psu annual range (Basso et al., 2008); peak ~48 psu in northern sub-basin in summer (Mancuso et al., 2023)
-- **Vegetation:** *Posidonia oceanica* (central–southern, atoll + barrier-reef formations), *Cymodocea nodosa* (northern), *Cymodocea prolifera* (degraded areas)
-- **Saltworks:** primarily on Isola Grande (western barrier island) and eastern mainland shore near Mothia
-- **Inlets:** Bocca Nord (~400 m wide, ~0.35 m deep + 20 m dredged channel) and Bocca Grande (~2900 m wide, ~1.0–1.5 m deep)
-- **Centre:** ~37.86°N, 12.46°E (WGS84)
-- **Regime:** wind dominates E–W circulation; tidal exchange controls the N–S component
+- Area of about 22 km², about 11 km north to south and 2.5 km east to west, centred at 37.86° N, 12.46° E
+- A northern sub-basin of about 1 m depth and a southern one of about 2 m, separated by a *Posidonia oceanica* barrier reef
+- Islands of Mothia, Santa Maria and Scola
+- Mean depth of about 0.95 m, with a maximum near 3 m
+- Micro-tidal regime with a semi-diurnal amplitude of about 0.30 m
+- Salinity from 33 to 46 over the year (Basso et al., 2008), reaching about 48 in the northern sub-basin in summer (Mancuso et al., 2023)
+- *Posidonia oceanica* in the central and southern basin, as atolls and barrier-reef formations, and *Cymodocea nodosa* in the north
+- Two inlets, Bocca Nord (about 400 m wide and 0.35 m deep, with a dredged channel) and Bocca Grande (about 2.9 km wide and 1.0 to 1.5 m deep)
 
-Despite very shallow depth, significant vertical flow structure is observed (wind-driven surface currents vs. bottom return flow) — this demands a **3D model**.
+Wind drives the east-west circulation and tidal exchange the north-south component. The wind-driven surface drift over a near-bed return flow reported by De Marchis et al. (2012) requires a vertically resolved model despite the sub-metre depth.
 
 ## Research questions
 
 | # | Research question | Paper | Target journal |
 |---|---|---|---|
 | RQ1 | What is the 3D wind-driven flow structure in a sub-metre-deep vegetated lagoon, and how does it differ from depth-averaged dynamics? | Paper 1 | *ECSS* |
-| RQ2 | Do wave–current coupling and spatially distributed seagrass roughness improve Lagrangian transport prediction, and what is the relative contribution of each? | Paper 1 | *ECSS* |
+| RQ2 | Do wave–current coupling and spatially distributed seagrass canopy improve Lagrangian transport prediction, and what is the relative contribution of each? | Paper 1 | *ECSS* |
 | RQ3 | Is Lagrangian drifter validation more discriminating than water-level metrics for evaluating competing model configurations in a micro-tidal lagoon? | Paper 1 | *ECSS* |
-| RQ4 | How has the multi-decadal decline of *Posidonia oceanica* (2003–2025) altered the wave attenuation capacity, near-bed current exposure, and water residence time of the Stagnone, and what are the environmental consequences of projected continued cover loss? (Maltese 2025 provides the historical cover baseline; automated RF/PlanetScope pipeline extends it to 2025 as input for scenario-based coupled modelling.) | Paper 2 | *ECSS* / *MEPS* |
-| RQ5 | Can satellite-derived bathymetry capture bathymetric change accompanying seagrass decline (2023–2025) and constrain D-Morph sediment calibration? | Paper 4 (supporting) | *Continental Shelf Research* |
-| RQ6 | Can the calibrated coupled model support skillful operational short-range forecasts served through a web interface for lagoon management? | Paper 3 | *EMS* / *OCM* |
-| RQ7 | Are wave events capable of mobilising lagoon sediment, and to what extent do fine-sediment inputs from the Trapani coastal canal system (airport + saltpan drainage) contribute to lagoon siltation? | Paper 4 | *Continental Shelf Research* / *Geomorphology* |
+| RQ4 | How has the decline of *Posidonia oceanica* (2003–2025) altered wave attenuation, near-bed current exposure and water residence time, and what are the consequences of projected further cover loss? | Paper 2 | *ECSS* / *MEPS* |
+| RQ5 | Can satellite-derived bathymetry capture bathymetric change accompanying seagrass decline (2023–2025) and constrain the sediment calibration? | Paper 4 (supporting) | *Continental Shelf Research* |
+| RQ6 | Can the coupled model support short-range forecasts served through a web interface for lagoon management? | Paper 3 | *EMS* / *OCM* |
+| RQ7 | Are wave events capable of mobilising lagoon sediment, and how much do fine-sediment inputs from the Trapani canal system (airport and saltpan drainage) contribute to lagoon siltation? | Paper 4 | *Continental Shelf Research* / *Geomorphology* |
 | RQ8 | What would be the hydrodynamic and environmental impact of reopening the historic channel at Isola Grande, restoring exchange between the northern sub-basin and the open sea? | Paper 3 | *OCM* / *ECSS* |
-| RQ9 | Does implementing velocity-dependent *Posidonia oceanica* canopy roughness calibrated from the Ciraolo et al. (2006) flume resistance law (S_f ∝ U^0.44) improve hydrodynamic skill and alter the simulated cover-change response relative to fixed Baptist trachytopes? | Paper 2 | *ECSS* / *MEPS* |
+| RQ9 | Does a velocity-dependent *Posidonia oceanica* resistance following the flume law of Ciraolo et al. (2006), S_f ∝ U^0.44, improve hydrodynamic skill and alter the simulated response to cover change relative to a fixed canopy drag? | Paper 2 | *ECSS* / *MEPS* |
 
-## Methodology — architecture
+## Model configuration
 
-- **D-Flow FM**: 3D unstructured grid (21,188 nodes / 25,212 faces), 10 sigma layers (growth 1.2), k-epsilon turbulence, UNESCO density, WGS84, `bedLevType=1` (cell centres from bathymetry file), Manning 0.023 uniform baseline, 8 MPI partitions
-  - **Run window gotcha**: `tStop` in the MDU reads 259200 s (3 days) but is overridden by `startDateTime`/`stopDateTime`, which set the actual 9-day Jul 1–10 2025 window. Read the datetime pair, not `tStop`.
-- **SWAN**: nested outer (~400 m, full FM domain) + inner (~100 m, lagoon) grids; 24 directions × 24 frequencies (0.05–1.0 Hz); Komen whitecapping; JONSWAP friction (0.067); breaking α=1.0, γ=0.73
-- **DIMR**: couples Flow + Wave every 3600 s (`ComInterval=3600`); `ncFormat=3` (classic NetCDF, resolves HDF5 re-open bug)
-- **Trachytopes (VR)**: Baptist canopy drag via `.arl` file; CRS must match mesh (WGS84); built from RF seagrass classification
-- **Reference models** (in `oldModel/`): Model A (simple, lagoon-only) and Model B (modelbuilder-based, offshore boundary); v01 starts from Model B
+- **D-Flow FM** (Delft3D FM Suite 2026.01, kernel 1.2.184). The unstructured mesh has 21,188 nodes and 25,212 faces over 11.96–12.56° E and 37.70–38.06° N, grading from about 880 m offshore to about 60 m in the lagoon, so that about six cells span the northern inlet. The vertical has 10 sigma layers of uniform thickness. Turbulence uses the k–ε closure and density the UNESCO equation of state with active salinity and temperature. The bare-substrate roughness is a uniform Manning coefficient of 0.023 s m^-1/3. The adaptive time step runs under a Courant limit of 0.7, capped at 30 s with wave coupling and 15 s without, on eight MPI partitions.
+- **SWAN** through Delft3D-WAVE, on an outer grid of about 800 m over the whole domain and an inner grid of about 90 × 110 m over the lagoon and its inlets. DIMR exchanges fields every 3600 s, and `ncFormat = 3` keeps the communication file readable by SWAN.
+- **Boundary forcing** from the CMEMS Mediterranean physical reanalysis (water level, salinity, temperature and a depth-resolved advection velocity). The CMEMS sea surface height is an anomaly about the NEMO rest state, so a per-node offset of +0.449 m, anchored on 384 days of the Marettimo gauge (JRC TAD 658) and spread along the boundary by the CMEMS mean dynamic topography, is added ([docs/marettimo_offset_anchor_2025.md](docs/marettimo_offset_anchor_2025.md)).
+- **Atmospheric forcing** from ERA5 (wind, pressure, Charnock coefficient, evaporation as negative rainfall), with the wind blended with the AltaVilaEst station. Interior salinity and temperature are nudged to CMEMS with a relaxation time of 8.64 × 10^5 s.
+- **Initial state** from the CMEMS depth profiles at the start time outside the lagoon and a hypersaline value of 42 inside it.
+- **Seagrass canopy** as a drag per sigma layer over the height the plants occupy, following the quadratic form of Nepf (2012). *P. oceanica* values are from Ciraolo and Ferreri (2006) with the canopy height of 0.40 m from Prinos et al. (2010), and *C. nodosa* values are from Morris et al. (2008). Fractional cover from a random-forest classification of PlanetScope imagery (August 2023, 3 m), following the depth-invariant approach of Maltese et al. (2025), scales the stem density.
+- **D-Morphology** with a sand fraction (d50 = 150 µm) and a silt fraction (d50 = 30 µm), with erodible sediment confined to depths above 15 to 20 m and suspended sediment kept out of the density field.
 
-## Model version history
+Parser and runtime issues of FM 2026.01 met while building the configuration are collected in [docs/fm_2026_gotchas.md](docs/fm_2026_gotchas.md) and [docs/fm_veg_module_setup.md](docs/fm_veg_module_setup.md).
 
-| Feature | v01 | v02 | v03a–c | v03d | v04 | **v04AE** | **v04AE_vr** |
-|---------|:---:|:---:|:------:|:----:|:---:|:---------:|:------------:|
-| WL boundary offset | 0.0 m | +0.42 m | +0.42 m | +0.42 m | per-node δ (+0.455–0.501 m) | per-node δ | per-node δ |
-| Blended wind (ERA5 + in-situ) | — | ✓ | ✓ | ✓ | ✓ (AE+ERA5+SiAM) | **AE only** | AE only |
-| Hypersaline init (42 psu) | — | — | ✓ | ✓ | ✓ | ✓ | ✓ |
-| SWAN wave coupling | — | — | stationary / TPAR | TPAR (stat.) | TPAR (stat.) | TPAR (stat.) | TPAR (stat.) |
-| `ncFormat=3` (HDF5 fix) | — | — | — | ✓ | ✓ | ✓ | ✓ |
-| BC superposition fix (TPXO removed) | — | — | — | ✓ | ✓ | ✓ | ✓ |
-| Trapani port mesh patch | — | — | — | — | ✓ | ✓ | ✓ |
-| ERA5 evaporation forcing | — | — | — | — | ✓ | ✓ | ✓ |
-| `nudgeTimeUni` | 3600 s | 3600 s | 3600 s | 3600 s | 864000 s | 864000 s | 864000 s |
-| uxuyadvectionvelocitybnd | — | — | — | — | — | ✓ | ✓ |
-| D-Morph (disabled operational) | — | — | — | — | active | off | off |
-| Baptist VR trachytopes | — | — | — | — | — | — | ✓ |
+## Model lineage
+
+| Feature | v01 | v02 | v03a–c | v03d | v04 | v04AE | Ensemble |
+|---------|:---:|:---:|:------:|:----:|:---:|:-----:|:--------:|
+| Water-level boundary offset | 0.0 m | +0.42 m | +0.42 m | +0.42 m | per node | per node | per node |
+| Blended wind |   | ✓ | ✓ | ✓ | AE + ERA5 + SiAM | AE + ERA5 | AE + ERA5 |
+| Hypersaline initial state |   |   | ✓ | ✓ | ✓ | ✓ | ✓, stratified offshore |
+| SWAN coupling |   |   | ✓ | ✓ | ✓ | ✓ | factor |
+| `ncFormat = 3` |   |   |   | ✓ | ✓ | ✓ | ✓ |
+| Trapani port mesh patch |   |   |   |   | ✓ | ✓ | ✓ |
+| ERA5 evaporation |   |   |   |   | ✓ | ✓ | ✓ |
+| Advection velocity at the boundary |   |   |   |   |   | ✓ | ✓ |
+| Seagrass canopy |   |   |   |   |   |   | factor |
+| Mobile bed |   |   |   |   | ✓ |   | factor |
 | MPI partitions | 4 | 4 | 4 | 4 | 8 | 8 | 8 |
-| Drifter LW skill (12 deploys) | — | — | — | — | 0.377 | **0.570** | — |
 
-## Key results
+The eight members of the ensemble are coded by wave coupling (`W`), canopy (`V`) and mobile bed (`M`), with a dash where the factor is off. Their model directories and tags are listed in [scripts/_ensemble.py](scripts/_ensemble.py), where `STAGNONE_ENSEMBLE=ic3d` selects the members run from the stratified start. Each vegetated member is a three-day segment restarted on 7 July from the bare member of the same cell.
 
-### Water-level validation (v04AE, post-spinup Jul 2–10 2025)
+## Results of the process ensemble
 
-| Station | RMSE_raw | Bias | **RMSE_anom** | **Corr** | std_mod / std_obs |
-|---|---|---|---|---|---|
-| BocaNord | 0.174 m | +0.171 m | **0.034 m** | **0.87** | 1.13 |
-| BocaSud | 0.024 m | +0.008 m | **0.023 m** | **0.92** | 1.09 |
-| AltaVilaEst | 0.133 m | +0.125 m | **0.043 m** | **0.83** | 1.29 |
-| Marettimo | 0.172 m | +0.167 m | **0.042 m** | **0.80** | 1.05 |
+### Lagrangian transport
 
-`RMSE² = bias² + RMSE_anom²` — 76–90 % of raw variance is bias (datum offset). Dynamic skill (RMSE_anom) matches or beats v03d. Tidal over-amplification (std_ratio ~1.95 in v03) brought to ~1.10 in v04.
+Liu–Weisberg skill and endpoint separation of the 35 drifters, scored over the interval each drifter was in the water (8 to 10 July 2025), are given below.
 
-<p align="center">
-  <img src="figures/v04_wl_validation.png" width="780" alt="v04 WL validation raw + anomaly at 4 stations"/><br/>
-  <em>Left: raw WL — model (orange) above obs (blue) by the bias offset, except BocaSud (bias +0.008 m). Right: mean-removed anomaly — excellent phase and amplitude match at all 4 stations.</em>
-</p>
+| Member | Waves | Canopy | Mobile bed | LW skill | Endpoint (m) | Path ratio | Heading error |
+|---|:---:|:---:|:---:|---:|---:|---:|---:|
+| `---` | | | | 0.619 | 478 | 0.80 | 11.2° |
+| `-V-` | | ✓ | | 0.739 | 327 | 0.88 | 8.5° |
+| `W--` | ✓ | | | 0.597 | 481 | 0.83 | 10.4° |
+| `WV-` | ✓ | ✓ | | 0.711 | 335 | 0.94 | 8.4° |
+| `--M` | | | ✓ | 0.614 | 479 | 0.80 | 11.4° |
+| `-VM` | | ✓ | ✓ | 0.739 | 330 | 0.88 | 8.5° |
+| `W-M` | ✓ | | ✓ | 0.708 | 304 | 0.89 | 7.9° |
+| `WVM` | ✓ | ✓ | ✓ | 0.718 | 307 | 0.88 | 8.0° |
 
-### Variable roughness (v04AE_vr)
-
-Baptist canopy drag (`alpha_Baptist`, `beta_Baptist`) applied via `.arl` trachytope file from the Maltese et al. (2025) seagrass classification (Aug 2023 epoch, WorldView/QuickBird/Pleiades, LGBM, 2 m GSD). Results:
-
-- **WL setup bias** at BocaNord and AltaVilaEst reduced by 11–13 cm (canopy-induced flow resistance reduces wind setup)
-- **Drifter skill** improved in seagrass-covered areas relative to v04AE baseline
-- Liu–Weisberg skill score: 0.570 (vs 0.377 for v04 without VR), EP 566 m (12 deploys, Jul 2025)
-- CRS must be WGS84 — UTM `.arl` silently assigns zero links (confirmed gotcha; documented in memory)
-
-### Particle tracking
+On the fixed bed the canopy raises skill by 0.120 and 0.114, both bootstrap intervals clear of zero, against −0.022 and −0.028 for wave coupling. With waves the uncalibrated mobile bed brings the bare member to the skill of the vegetated ones, through bathymetry reshaped by implausible erosion. The four fixed-bed members therefore carry the process attribution, and the mobile-bed members form a sensitivity arm.
 
 <p align="center">
-  <img src="figures/v04_wl_validation.png" width="780" alt="v04AE drifter validation"/><br/>
+  <img src="manuscript_v2/figures/lagrangian_results.png" width="780" alt="Lagrangian metrics by ensemble member"/><br/>
+  <em>Liu–Weisberg skill, path length ratio and heading error per drifter, fixed-bed members on the left and the mobile-bed arm on the right.</em>
 </p>
 
-Ensemble of 4 configurations (baseline / VR only / waves only / full v04AE_vr): LW skill differentiates configurations where WL RMSE cannot. Confirms that Lagrangian drifter validation is the more discriminating metric (RQ3).
+### Water level
 
-### Wave coupling confirmation
+Anomaly RMSE (m), 8 to 10 July 2025, for the four fixed-bed members, is given below.
 
-Time-varying significant wave height captures the 2025-07-08/09 swell event (Hs 0–1.5 m at 4 representative cells). `ncFormat=3` scales to 8 MPI without regression. Marettimo calibration cell at (12.0753, 37.9747, bl ≈ −3.5 m) — the literal nearest cell to the JRC gauge flat-lines (deep-water lee; avoid).
+| Station | `---` | `-V-` | `W--` | `WV-` |
+|---|---:|---:|---:|---:|
+| BocaNord | 0.039 | 0.038 | 0.027 | 0.031 |
+| BocaSud | 0.025 | 0.025 | 0.024 | 0.025 |
+| AltaVilaEst | 0.054 | 0.028 | 0.048 | 0.021 |
+
+The two gauges near the inlets differ by at most 4 mm between canopy treatments, and the gauge inside the vegetated basin separates them by 26 and 27 mm. Raw RMSE, bias, correlation and amplitude ratio of all eight members are in Table 2 of the manuscript. The relation RMSE² = bias² + RMSE_anom² separates the reference-level offset from the dynamic error, and the seasonal residual of the Marettimo anchor, about 0.07 m, bounds the accuracy of the reference level.
 
 <p align="center">
-  <img src="figures/v04_wave_coupling_check.png" width="760" alt="v04 wave coupling time series"/><br/>
-  <em>mesh2d_hwav at offshore-W, offshore-S, inlet-BocaNord, lagoon-centre. Calm days 1–7 (Hs 0.2–0.4 m), storm peak ~1.5 m on days 8–9.</em>
+  <img src="manuscript_v2/figures/water_level_stations.png" width="780" alt="Water level at the three lagoon stations"/><br/>
 </p>
 
-### Hypersaline dynamics
+### Sensitivity of the transport skill to numerical choices
 
-<p align="center">
-  <img src="figures/v03c_salinity_timeseries.png" width="760" alt="Salinity time series per station"/><br/>
-  <em>Without ERA5 evaporation the 42 psu IC erodes to ~37.7 psu within ~12 h. v04+ adds ERA5 evap + nudgeTimeUni=864000 s to sustain the hypersaline regime.</em>
-</p>
+| Test | Configuration | Result |
+|---|---|---|
+| Initial state | full ensemble repeated from a vertically uniform column (24 °C, 37.5) | the canopy effect rises from 0.12 to 0.19, the uniform start degrading only the bare member |
+| Vertical resolution | 10 and 20 layers, stratified start, time step limited by vertical fluxes | +0.0003 in LW skill |
+| Horizontal resolution | quadtree mesh family from 60 to 15 m, bare uncoupled member | LW skill 0.553 ± 0.004, the v04 mesh within the range |
+| Lagoon bathymetry | 2026 survey raster in place of the 2006 bathymetry, bare uncoupled member | +0.016 in LW skill |
+| Host and decomposition | same inputs on simit and on a workstation | difference traced to the Courant limit, not to the partitioning; comparisons are made within one host |
 
-~3.2 % of cells (1338/25k) develop sa1 > 50 ppt in v04AE_vr on the intertidal periphery — mitigated by `saliMax=80` + `maxVelocity` cap; root cause is `dS/dt = S·E/h` divergence as h → 0.
+Design and results are documented in Section S6 of the Supplementary Material and in [docs/mesh_convergence_experiment.md](docs/mesh_convergence_experiment.md).
 
-### HDF5 coupling bug (resolved)
+## Work in progress
 
-Five-test isolation matrix pinned the bug to SWAN's HDF5 re-open of `com.nc`. Only `ncFormat=3` (classic NetCDF) resolves it. Trade-off: 2 GB per-file limit — managed with `wrimap_*` reductions and longer `mapInterval`. See [docs/deltares_hdf5_coupling_report.md](docs/deltares_hdf5_coupling_report.md).
+1. **Paper 1.** Final figures of the Supplementary Material, including the bed-change and suspended-load maps of the mobile-bed arm, and submission to *ECSS*.
+2. **Mobile-bed plausibility.** Three-day cold starts from 1 July with bed updating from the end of the first day, varying the deposition threshold of the silt (`TcrSed`), the skin-friction formulation of Soulsby (2004) (`BsSkin`), the critical erosion stress and the erosion parameter, and the canopy in SWAN through Dalrymple dissipation. The target is a lagoon silt concentration of a few to about 20 mg/l, bed change at the millimetre scale and a closed sediment volume balance, after which a nine-day mobile-bed arm is rerun.
+3. **Paper 2.** Cover scenarios of 2003 and 2025 from the Maltese et al. (2025) maps, and the velocity-dependent resistance of RQ9.
+4. **Paper 3.** Forecast chain on the CMEMS analysis and forecast product and the Isola Grande channel scenario.
+5. **Paper 4.** Satellite-derived bathymetry from several PlanetScope scenes per year, where a single pair is dominated by radiometric offset, and the canal fine-sediment input.
 
-### v03 (HDF bug + TPXO double-counting) vs v04 dynamics
+## Publication plan
 
-<p align="center">
-  <img src="figures/v03_vs_v04_wl_compare.png" width="800" alt="v03 vs v04 WL comparison"/><br/>
-  <em>v03 (grey) over-amplifies tidal range ~2×; v04 (orange) anomaly matches obs (blue) near-perfectly.</em>
-</p>
+| Paper | Topic | RQs | Target journal | Status |
+|---|---|---|---|---|
+| P1 | Relative effects of seagrass canopy, wave coupling and bed mobility on transport, validated against tide gauges and drifters | RQ1–3 | *Estuarine, Coastal and Shelf Science* | Revised manuscript and Supplementary Material |
+| P2 | Hydrodynamic and environmental response to *P. oceanica* decline, with the velocity-dependent canopy resistance | RQ4, RQ9 | *ECSS* / *MEPS* | Cover maps and canopy parameters available; scenario runs pending |
+| P3 | Operational digital twin, CMEMS forecast chain and WetWise portal, with the Isola Grande channel scenario | RQ6, RQ8 | *EMS* / *OCM* | Portal published; channel mesh exists; no coupled run |
+| P4 | Wave-driven resuspension and canal fine-sediment input, with the sediment calibration constrained by satellite-derived bathymetry | RQ5, RQ7 | *Continental Shelf Research* / *Geomorphology* | Feasibility established; calibration sweep running |
 
-### WL offset anchor (Marettimo)
+## WetWise portal
 
-13-month JRC TAD 658 record (Jan 2025 – Jan 2026): δ = mean(obs) − mean(zos_CMEMS) = **+0.4489 m annual**; range +0.36 m (Feb) to +0.50 m (Jan/26). v04 uses this anchor + CMEMS MDT (`SEALEVEL_MED_PHY_MDT_L4_STATIC_008_066`) to spread δ across 49 PLI nodes (+0.455 to +0.501 m). See [docs/marettimo_offset_anchor_2025.md](docs/marettimo_offset_anchor_2025.md).
+The portal at <https://minio.dive.edito.eu/oidc-cmartinsjr/wetwise-portal/index.html> serves the full-physics member on a base grid over the whole domain and a detail grid over the lagoon, with station series and perspective views of vertical velocity sections. The fields are regridded on simit by [scripts/regrid_wetwise_source.py](scripts/regrid_wetwise_source.py) and packed for the browser by [scripts/build_wetwise_hydrodynamics_demo.py](scripts/build_wetwise_hydrodynamics_demo.py).
 
-### Satellite-derived bottom roughness
+## Notebook catalogue
 
-RF classification (PlanetScope 8-band median composite, Aug 2023, Maltese 2025 method): 4 classes (dense *P. oceanica*, sparse *C. nodosa*, bare sand, degraded), OOB accuracy 0.92. Applied as Baptist trachytopes in v04AE_vr. Long-term mapping (2003–2024, WorldView/QuickBird/Pleiades, LGBM): ~75 % decline in *P. oceanica* atolls and cordons (Maltese et al., 2025).
-
-### Sediment resuspension feasibility
-
-Three lines of evidence (SWAN u_orb = 0.186 m/s at BocaNord; offshore CMEMS swell; Sentinel-2 Oct 2025 resuspension plumes) justified D-Morphology with 2 fractions (sand d50 = 150 µm; silt d50 = 30 µm). TcrEro=0.1 produces unphysical Δbl = 2.4 m/9d; disabled in operational runs pending calibration against observed bathymetry. See [notebook 31](notebooks/31_analysis_resuspension_feasibility.ipynb).
-
-## Current roadmap
-
-1. **Paper 1 — §3 Data and Methods** (next): hydrodynamic model setup, wave coupling, forcing, Baptist VR, observational dataset and validation metrics
-2. **WL datum fine-tuning** — residual +5–6 cm bias at BN/AE after VR; adjust per-node offset by ~−0.10 m
-3. **v05 mesh** — resolve FM 2026.01 orthogonality issue (makeOrthoCenters or cell-deletion threshold)
-4. **D-Morph TcrEro calibration** — sweep 0.05–0.25 against multi-epoch SDB signal; re-enable in v05
-5. **Multi-epoch SDB** — ≥4 Planet scenes per year for reliable Δz detection in sandy unvegetated areas
-
-## Notebook catalog
-
-Notebooks in `notebooks/`, organised in thematic numeric blocks. See [`notebooks/README.md`](notebooks/README.md) for full index.
+Notebooks in `notebooks/` are grouped in numeric blocks. [notebooks/README.md](notebooks/README.md) gives the full index.
 
 | Block | Notebooks | Role |
 |-------|-----------|------|
-| `00–09` | `00_setup_domain_mesh`, `01_input_satellite_roughness`, `02_input_insitu_wl_wind`, `03_input_blended_wind`, `04_input_cmems_waves` | Setup + input forcing |
+| `00–09` | `00_setup_domain_mesh`, `01_input_satellite_roughness`, `02_input_insitu_wl_wind`, `03_input_blended_wind`, `04_input_cmems_waves` | Domain and input forcing |
 | `10–19` | `10_build_v01`, `11_build_v02`, `12_build_v03`, `13_build_v03_wave_coupling` | Model configuration per version |
-| `20–29` | `20_valid_v01_wl`, `21_valid_v03b`, `22_valid_v03c`, `23_valid_v03c_offshore`, `24_valid_v04AE_d10d12_wetwise` | Run validation + WetWise bundle generation |
-| `30–39` | `30_analysis_v01_diagnostics`, `31_analysis_resuspension_feasibility`, `32_analysis_particle_tracking`, `33_analysis_residence_time` | Science analyses |
-| `40–49` | `40_util_edito_postproc`, `41_util_edito_map_subset` | EDITO-side tooling |
-| `archive/` | `03b_roughness_alternatives`, `16_bocasud_investigation` | Experimental / one-off |
+| `20–29` | `20_valid_v01_wl`, `21_valid_v03b`, `22_valid_v03c`, `23_valid_v03c_offshore`, `24_demo_wetwise_tab.py` | Validation and the first portal bundle |
+| `30–39` | `30_analysis_v01_diagnostics`, `31_analysis_resuspension_feasibility`, `32_analysis_particle_tracking`, `33_analysis_residence_time` | Analyses |
+| `40–49` | `40_util_edito_postproc`, `41_util_edito_map_subset` | EDITO tooling |
 
-## EDITO deployment
+The ensemble post-processing (water level, drifter regridding and OpenDrift scoring, factorial contrasts, figures) lives in `scripts/` and reads the member list of [scripts/_ensemble.py](scripts/_ensemble.py).
 
-```bash
-# From laptop
-python scripts/edito_sync.py upload --model-dir model/dflowfm_v04AE
-# On EDITO Datalab UI: New process → delft3dfmrun-docker
-# Post-processing: notebook 40_util_edito_postproc (s3fs streaming)
-```
+## Execution
 
-Full guide: [docs/EDITO_WORKFLOW.md](docs/EDITO_WORKFLOW.md). Critical: every model needs `run_model.sh` at root (LF line endings).
+**simit.** Production runs are launched through `~/simit_tools/simit_pick_cores.sh`, which reserves cores per socket so that the MaltaDT and StagnoneDT workloads do not overlap. A coupled run takes 8 cores for FM and 8 OpenMP threads for SWAN. The partitioned output stays on the server, and the inputs are mirrored to the workstation after each batch ([docs/model_input_sync.md](docs/model_input_sync.md)). Outbound internet requires the GlobalProtect VPN.
 
-**simit-server (primary HPC):** Linux IntelMPI; 2.5× faster than Windows workstation. SSH key auth configured. GlobalProtect VPN required for outbound internet (`globalprotect connect --portal vpngp.unipa.it`). DIMR/SWAN OMP: `KMP_HW_SUBSET=16c,1t`.
+**EDITO Datalab.** The `delft3dfmrun-docker` process remains available as a fallback ([docs/EDITO_WORKFLOW.md](docs/EDITO_WORKFLOW.md)).
 
 ## Setup
 
@@ -207,79 +182,61 @@ conda activate dfm_tools_env
 python -m ipykernel install --user --name dfm_tools_env --display-name "dfm_tools (Python 3.12)"
 ```
 
+The environment carries dfm_tools 0.45.0 and HYDROLIB-core 1.0.0.
+
 ### Delft3D FM
 
-D-Flow FM Suite 2026.01 HMWQ (`dflowfm 1.2.184`), installed at `C:\Program Files\Deltares\Delft3D FM Suite 2026.01 HMWQ\`.
+D-Flow FM Suite 2026.01 HMWQ (`dflowfm 1.2.184`), installed at `C:\Program Files\Deltares\Delft3D FM Suite 2026.01 HMWQ\` on Windows and under `~/Scaricati/delft3dfm/lnx64/` on simit.
 
 ### Credentials
 
-- **CMEMS** — `copernicusmarine` prompts and caches login on first call
-- **ERA5 (CDS)** — `CDSAPI_URL` + `CDSAPI_KEY` in `.env`; use `pip-system-certs` on Windows for SSL
-- **CDSE / Planet / EDITO** — in `.env`
+- **CMEMS** through the `copernicusmarine` login cache
+- **ERA5 (CDS)** through `CDSAPI_URL` and `CDSAPI_KEY` in `.env`, with `pip-system-certs` on Windows for SSL
+- **CDSE, Planet and EDITO** in `.env`
 
-Copy `.env.example` → `.env`. Never commit `.env`.
+`.env.example` is the template, and `.env` is never committed.
 
 ## Project structure
 
 ```
 StagnoneDT/
-├── notebooks/             # Canonical pipelines (00-13 forcing+mesh+build+coupling)
-├── scripts/               # workflow building blocks (grep before writing helpers)
-├── docs/                  # progress reports, methodology, gotchas, EDITO workflow
+├── notebooks/             # input forcing, mesh, model build and coupling pipelines
+├── scripts/               # build, run, regrid, validation and figure scripts
+├── docs/                  # methodology, gotchas, reports, Paper 1 PDFs and review summaries
+├── manuscript/            # Paper 1, first LaTeX version
+├── manuscript_v2/         # Paper 1, revised LaTeX version and Supplementary Material
 ├── model/
-│   ├── dflowfm/           # v01
-│   ├── dflowfm_v02/       # v02
-│   ├── dflowfm_v03a–d/    # v03 series
-│   ├── dflowfm_v04/       # v04 (full-blend wind)
-│   ├── dflowfm_v04AE/     # v04AE — AE-only wind, primary validated
-│   ├── dflowfm_v04AE_vr/  # v04AE_vr — Baptist VR trachytopes
-│   └── dflowfm_v04AE_d10d12/ # continuation run Jul 10-12 (reference window)
+│   ├── dflowfm .. dflowfm_v03d/    # v01 to v03d
+│   ├── dflowfm_v04/, dflowfm_v04AE/ # v04 lineage
+│   ├── dflowfm_v04AE_*/            # ensemble members and sensitivity tests
+│   └── _veg_*/                     # vegetated segments restarted on 7 or 8 July
 ├── data/
-│   ├── raw/insitu/        # 4 stations WL/wind/atm/Twater + GPS drifters + Marettimo 13-month
-│   ├── raw/cmems/         # zos anchor + MDT static
-│   ├── raw/era5/          # ERA5 mer processed for FM
-│   ├── raw/bathymetry/    # EMODnet 2024 Trapani patch + GEBCO + TINITALY + Copernicus DEM
-│   └── processed/         # QC'd data, RF seagrass classification, SDB outputs
-├── outputs/wetwise_tab/   # WetWise portal demo data (Leaflet, 30-min, coarse/fine pyramid)
-├── oldModel/              # Reference models A & B + 2006 bathymetry (read-only)
-├── reference/             # Third-party materials; papers in reference/papers/ (gitignored)
-├── figures/               # Generated plots
+│   ├── raw/               # in-situ stations, drifters, Marettimo, CMEMS, ERA5, bathymetry
+│   └── processed/         # QC'd series, seagrass classification, drifter metrics
+├── outputs/wetwise_tab/   # portal payloads and section views
+├── oldModel/              # reference models A and B and the 2006 bathymetry (read-only)
+├── reference/             # third-party material; papers gitignored
+├── figures/               # generated figures
 ├── environment.yml
-├── .env.example
-└── README.md
+└── .env.example
 ```
 
-## Publication roadmap
-
-| Paper | Topic | RQs | Target journal | Status |
-|---|---|---|---|---|
-| **P1** | 3D coupled wave-hydrodynamic model — WL, drifter, wave validation (v04AE + VR ensemble) | RQ1–3 | *Estuarine, Coastal and Shelf Science* | §1+§2 drafted; §3 in progress |
-| **P2** | Hydrodynamic and environmental response to *P. oceanica* decline: scenario-based coupled modelling (2003 vs 2025 cover) quantifying changes in wave attenuation, near-bed exposure, residence time, and salinity gradients. Maltese 2025 provides the historical cover baseline; automated RF/Planet pipeline extends it to 2025. Includes velocity-dependent roughness comparison (Ciraolo 2006 vs Baptist, RQ9). | RQ4, RQ9 | *Estuarine, Coastal and Shelf Science* / *Marine Ecology Progress Series* | Cover maps ready; Ciraolo XYZ script ready; scenario runs pending |
-| **P3** | Operational DT + CMEMS forecast chain + WetWise portal; management scenario — Isola Grande channel reopening and its impact on residence time and environmental conditions | RQ6, RQ8 | *Environmental Modelling & Software* / *Ocean & Coastal Management* | WetWise prototype; channel mesh exists; no coupled run yet |
-| **P4** | Wave-driven sediment resuspension + Trapani canal fine-sediment inputs; D-Morph calibration via SDB morphological constraint | RQ7, RQ5 | *Continental Shelf Research* / *Geomorphology* | Feasibility confirmed; D-Morph uncalibrated; canal tracer not yet quantified |
-
-## Critical reference files (read-only)
-
-- `oldModel/Stagnone_py_lagoon3D.dsproj_data/Stagnone_dxy01_15m/input/Stagnone_dxy01_15m_net.nc` — primary mesh
-- `oldModel/Stagnone_py_lagoon3D.dsproj_data/Stagnone_dxy01_15m/input/Stagnone_dxy01_15m.pli` — 49-point offshore boundary
-- `oldModel/Stagnone_justLagoon/FlowFM_net.nc` — hand-drawn lagoon mesh
-- `oldModel/bat_stagnone_20m_2006.xyz` — 2006 bathymetry (189k points)
+Partitioned output (`DFM_OUTPUT_*/`) is never committed, at 16 to 38 GB per run.
 
 ## Documentation
 
-- [docs/fm_2026_gotchas.md](docs/fm_2026_gotchas.md) — five interlocking parser/config gotchas (ERA5 evap + D-Morph + SWAN)
-- [docs/marettimo_offset_anchor_2025.md](docs/marettimo_offset_anchor_2025.md) — 13-month Marettimo anchor δ methodology
-- [docs/wl_boundary_offset_justification.md](docs/wl_boundary_offset_justification.md) — multi-component WL offset decomposition
-- [docs/deltares_hdf5_coupling_report.md](docs/deltares_hdf5_coupling_report.md) — HDF5 coupling bug + `ncFormat=3` fix
-- [docs/deltares_modelbuilder_observation.md](docs/deltares_modelbuilder_observation.md) — TPXO double-counting in CMEMS+TPXO BC
-- [docs/EDITO_WORKFLOW.md](docs/EDITO_WORKFLOW.md) — EDITO Datalab operational guide
-- [docs/paper1_draft.md](docs/paper1_draft.md) — Paper 1 working draft
-- [docs/research_questions_status.md](docs/research_questions_status.md) — RQ status + publication roadmap
-
-Validation scripts:
-- [scripts/v04_health_check.py](scripts/v04_health_check.py) — wave coupling + volume + salinity + WL at 4 stations
-- [scripts/compare_v03_vs_v04_wl.py](scripts/compare_v03_vs_v04_wl.py) — v03 vs v04 WL comparison
-- [scripts/compute_marettimo_offset_anchor.py](scripts/compute_marettimo_offset_anchor.py) — annual δ anchor vs CMEMS zos
+- [docs/fm_2026_gotchas.md](docs/fm_2026_gotchas.md), parser and configuration issues of FM 2026.01 for evaporation, D-Morphology and SWAN
+- [docs/fm_veg_module_setup.md](docs/fm_veg_module_setup.md), the `[veg]` canopy module and its inputs
+- [docs/marettimo_offset_anchor_2025.md](docs/marettimo_offset_anchor_2025.md), the Marettimo anchor of the boundary offset
+- [docs/wl_boundary_offset_justification.md](docs/wl_boundary_offset_justification.md), components of the water-level offset
+- [docs/mesh_convergence_experiment.md](docs/mesh_convergence_experiment.md), design and cost of the mesh and layer tests
+- [docs/deltares_hdf5_coupling_report.md](docs/deltares_hdf5_coupling_report.md), the HDF5 re-open failure of the communication file and the `ncFormat = 3` remedy
+- [docs/deltares_modelbuilder_observation.md](docs/deltares_modelbuilder_observation.md), double counting of the tide in a CMEMS plus TPXO boundary
+- [docs/deltares_report_2026-09-01.md](docs/deltares_report_2026-09-01.md), issues reported to Deltares
+- [docs/sediment_calibration_references.md](docs/sediment_calibration_references.md), sources for the sediment parameters
+- [docs/paper1_review_summary_2026-10-27.md](docs/paper1_review_summary_2026-10-27.md), the internal review of Paper 1 and its implementation
+- [docs/research_questions_status.md](docs/research_questions_status.md), status of the research questions
+- [docs/EDITO_WORKFLOW.md](docs/EDITO_WORKFLOW.md), EDITO Datalab operation
 
 ## License
 
