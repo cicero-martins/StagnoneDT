@@ -1,6 +1,8 @@
 # Stagnone di Marsala Digital Twin
 
-This repository holds a three-dimensional coupled wave and hydrodynamic model of the Stagnone di Marsala, a shallow vegetated lagoon on the western coast of Sicily. The model is built with Delft3D Flexible Mesh coupled to SWAN. The work is a PhD project at the Università degli Studi di Palermo. Runs are executed on a Linux server of the university (simit, Intel MPI) and on Windows workstations.
+This repository holds a three-dimensional coupled wave and hydrodynamic model of the Stagnone di Marsala, a shallow vegetated lagoon on the western coast of Sicily. The model is built with Delft3D Flexible Mesh coupled to SWAN. The work is a PhD project at the Università degli Studi di Palermo, within the Interreg VI-A Italia–Malta WETWISE project. Runs are executed on a Linux server of the university (simit, Intel MPI) and on Windows workstations.
+
+**Stage of development.** A digital twin is the objective of the project, and the repository is not yet one. The model is a validated hindcast model, run in batch over chosen windows and evaluated against tide gauges and surface drifters. Its outputs are published in the [WetWise portal](https://minio.dive.edito.eu/oidc-cmartinsjr/wetwise-portal/index.html) as a viewer of past simulations. Scheduled forecast runs, automatic ingestion of observations, continuous comparison with them and data assimilation, which distinguish a digital twin from a model, are not in place.
 
 <p align="center">
   <img src="manuscript_v2/figures/study_area_stagnone.png" width="620" alt="Study area, model domain and lagoon"/><br/>
@@ -15,9 +17,8 @@ This repository holds a three-dimensional coupled wave and hydrodynamic model of
 | Seagrass canopy | Three-dimensional drag through the `[veg]` module of D-Flow FM, with parameters from published measurements and a PlanetScope classification of August 2023; no parameter fitted to the validation data |
 | Process ensemble | Complete 2 × 2 × 2 factorial in wave coupling, canopy and bed mobility over 1 to 10 July 2025, run from a stratified initial state |
 | Validation | Three lagoon tide gauges, the Marettimo gauge offshore, and 35 surface drifters in twelve deployments withheld from model decisions |
-| Paper 1 | Manuscript revised after internal review, with a Supplementary Material ([docs/paper1_revised_2026-10-27.pdf](docs/paper1_revised_2026-10-27.pdf), [docs/paper1_supplementary_2026-10-27.pdf](docs/paper1_supplementary_2026-10-27.pdf)); target journal *Estuarine, Coastal and Shelf Science* |
 | Mobile bed | D-Morphology with two fractions runs, but the present parameters give implausible suspended load and bed change under waves; a plausibility sweep of the deposition threshold and skin friction is running on simit |
-| WetWise portal | Published on EDITO, with surface fields, station series and vertical velocity sections |
+| WetWise portal | [Published on EDITO](https://minio.dive.edito.eu/oidc-cmartinsjr/wetwise-portal/index.html), with surface fields, station series and vertical velocity sections of the hindcast |
 | Infrastructure | Runs on simit through a shared core allocator; a 14.6 TB volume is mounted at `/storage` for long runs |
 
 ## Site
@@ -34,20 +35,6 @@ The Stagnone di Marsala is a shallow coastal lagoon on the western coast of Sici
 - Two inlets, Bocca Nord (about 400 m wide and 0.35 m deep, with a dredged channel) and Bocca Grande (about 2.9 km wide and 1.0 to 1.5 m deep)
 
 Wind drives the east-west circulation and tidal exchange the north-south component. The wind-driven surface drift over a near-bed return flow reported by De Marchis et al. (2012) requires a vertically resolved model despite the sub-metre depth.
-
-## Research questions
-
-| # | Research question | Paper | Target journal |
-|---|---|---|---|
-| RQ1 | What is the 3D wind-driven flow structure in a sub-metre-deep vegetated lagoon, and how does it differ from depth-averaged dynamics? | Paper 1 | *ECSS* |
-| RQ2 | Do wave–current coupling and spatially distributed seagrass canopy improve Lagrangian transport prediction, and what is the relative contribution of each? | Paper 1 | *ECSS* |
-| RQ3 | Is Lagrangian drifter validation more discriminating than water-level metrics for evaluating competing model configurations in a micro-tidal lagoon? | Paper 1 | *ECSS* |
-| RQ4 | How has the decline of *Posidonia oceanica* (2003–2025) altered wave attenuation, near-bed current exposure and water residence time, and what are the consequences of projected further cover loss? | Paper 2 | *ECSS* / *MEPS* |
-| RQ5 | Can satellite-derived bathymetry capture bathymetric change accompanying seagrass decline (2023–2025) and constrain the sediment calibration? | Paper 4 (supporting) | *Continental Shelf Research* |
-| RQ6 | Can the coupled model support short-range forecasts served through a web interface for lagoon management? | Paper 3 | *EMS* / *OCM* |
-| RQ7 | Are wave events capable of mobilising lagoon sediment, and how much do fine-sediment inputs from the Trapani canal system (airport and saltpan drainage) contribute to lagoon siltation? | Paper 4 | *Continental Shelf Research* / *Geomorphology* |
-| RQ8 | What would be the hydrodynamic and environmental impact of reopening the historic channel at Isola Grande, restoring exchange between the northern sub-basin and the open sea? | Paper 3 | *OCM* / *ECSS* |
-| RQ9 | Does a velocity-dependent *Posidonia oceanica* resistance following the flume law of Ciraolo et al. (2006), S_f ∝ U^0.44, improve hydrodynamic skill and alter the simulated response to cover change relative to a fixed canopy drag? | Paper 2 | *ECSS* / *MEPS* |
 
 ## Model configuration
 
@@ -113,7 +100,7 @@ Anomaly RMSE (m), 8 to 10 July 2025, for the four fixed-bed members, is given be
 | BocaSud | 0.025 | 0.025 | 0.024 | 0.025 |
 | AltaVilaEst | 0.054 | 0.028 | 0.048 | 0.021 |
 
-The two gauges near the inlets differ by at most 4 mm between canopy treatments, and the gauge inside the vegetated basin separates them by 26 and 27 mm. Raw RMSE, bias, correlation and amplitude ratio of all eight members are in Table 2 of the manuscript. The relation RMSE² = bias² + RMSE_anom² separates the reference-level offset from the dynamic error, and the seasonal residual of the Marettimo anchor, about 0.07 m, bounds the accuracy of the reference level.
+The two gauges near the inlets differ by at most 4 mm between canopy treatments, and the gauge inside the vegetated basin separates them by 26 and 27 mm. The relation RMSE² = bias² + RMSE_anom² separates the reference-level offset from the dynamic error, and the seasonal residual of the Marettimo anchor, about 0.07 m, bounds the accuracy of the reference level.
 
 <p align="center">
   <img src="manuscript_v2/figures/water_level_stations.png" width="780" alt="Water level at the three lagoon stations"/><br/>
@@ -129,24 +116,15 @@ The two gauges near the inlets differ by at most 4 mm between canopy treatments,
 | Lagoon bathymetry | 2026 survey raster in place of the 2006 bathymetry, bare uncoupled member | +0.016 in LW skill |
 | Host and decomposition | same inputs on simit and on a workstation | difference traced to the Courant limit, not to the partitioning; comparisons are made within one host |
 
-Design and results are documented in Section S6 of the Supplementary Material and in [docs/mesh_convergence_experiment.md](docs/mesh_convergence_experiment.md).
+The design and cost of the mesh and layer tests are documented in [docs/mesh_convergence_experiment.md](docs/mesh_convergence_experiment.md).
 
 ## Work in progress
 
-1. **Paper 1.** Final figures of the Supplementary Material, including the bed-change and suspended-load maps of the mobile-bed arm, and submission to *ECSS*.
+1. **Process ensemble.** Manuscript on the ensemble results, in internal review.
 2. **Mobile-bed plausibility.** Three-day cold starts from 1 July with bed updating from the end of the first day, varying the deposition threshold of the silt (`TcrSed`), the skin-friction formulation of Soulsby (2004) (`BsSkin`), the critical erosion stress and the erosion parameter, and the canopy in SWAN through Dalrymple dissipation. The target is a lagoon silt concentration of a few to about 20 mg/l, bed change at the millimetre scale and a closed sediment volume balance, after which a nine-day mobile-bed arm is rerun.
-3. **Paper 2.** Cover scenarios of 2003 and 2025 from the Maltese et al. (2025) maps, and the velocity-dependent resistance of RQ9.
-4. **Paper 3.** Forecast chain on the CMEMS analysis and forecast product and the Isola Grande channel scenario.
-5. **Paper 4.** Satellite-derived bathymetry from several PlanetScope scenes per year, where a single pair is dominated by radiometric offset, and the canal fine-sediment input.
-
-## Publication plan
-
-| Paper | Topic | RQs | Target journal | Status |
-|---|---|---|---|---|
-| P1 | Relative effects of seagrass canopy, wave coupling and bed mobility on transport, validated against tide gauges and drifters | RQ1–3 | *Estuarine, Coastal and Shelf Science* | Revised manuscript and Supplementary Material |
-| P2 | Hydrodynamic and environmental response to *P. oceanica* decline, with the velocity-dependent canopy resistance | RQ4, RQ9 | *ECSS* / *MEPS* | Cover maps and canopy parameters available; scenario runs pending |
-| P3 | Operational digital twin, CMEMS forecast chain and WetWise portal, with the Isola Grande channel scenario | RQ6, RQ8 | *EMS* / *OCM* | Portal published; channel mesh exists; no coupled run |
-| P4 | Wave-driven resuspension and canal fine-sediment input, with the sediment calibration constrained by satellite-derived bathymetry | RQ5, RQ7 | *Continental Shelf Research* / *Geomorphology* | Feasibility established; calibration sweep running |
+3. **Seagrass decline.** Cover scenarios of 2003 and 2025 from the Maltese et al. (2025) maps, and a velocity-dependent *P. oceanica* resistance following the flume law of Ciraolo and Ferreri (2006).
+4. **Towards operation.** A forecast chain on the CMEMS analysis and forecast product, which is the step from the present hindcast model towards a digital twin, and a scenario of reopening the historic channel at Isola Grande.
+5. **Sediment.** Satellite-derived bathymetry from several PlanetScope scenes per year, where a single pair is dominated by radiometric offset, and the fine-sediment input of the Trapani canal system.
 
 ## WetWise portal
 
@@ -202,9 +180,8 @@ D-Flow FM Suite 2026.01 HMWQ (`dflowfm 1.2.184`), installed at `C:\Program Files
 StagnoneDT/
 ├── notebooks/             # input forcing, mesh, model build and coupling pipelines
 ├── scripts/               # build, run, regrid, validation and figure scripts
-├── docs/                  # methodology, gotchas, reports, Paper 1 PDFs and review summaries
-├── manuscript/            # Paper 1, first LaTeX version
-├── manuscript_v2/         # Paper 1, revised LaTeX version and Supplementary Material
+├── docs/                  # methodology, gotchas and reports
+├── manuscript/, manuscript_v2/  # manuscript sources and figures
 ├── model/
 │   ├── dflowfm .. dflowfm_v03d/    # v01 to v03d
 │   ├── dflowfm_v04/, dflowfm_v04AE/ # v04 lineage
@@ -235,8 +212,6 @@ Partitioned output (`DFM_OUTPUT_*/`) is never committed, at 16 to 38 GB per run.
 - [docs/deltares_report_2026-09-01.md](docs/deltares_report_2026-09-01.md), observations on the vegetation and roughness stack for Deltares
 - [docs/deltares_byom_2026-11-04.md](docs/deltares_byom_2026-11-04.md), topics for the Bring Your Own Model session of the Delft3D User Days 2026
 - [docs/sediment_calibration_references.md](docs/sediment_calibration_references.md), sources for the sediment parameters
-- [docs/paper1_review_summary_2026-10-27.md](docs/paper1_review_summary_2026-10-27.md), the internal review of Paper 1 and its implementation
-- [docs/research_questions_status.md](docs/research_questions_status.md), status of the research questions
 - [docs/EDITO_WORKFLOW.md](docs/EDITO_WORKFLOW.md), EDITO Datalab operation
 
 ## License
