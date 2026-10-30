@@ -35,7 +35,7 @@ be corrected on any of it.
 
 ---
 
-# Part 1 — Vegetation and roughness
+# Part 1. Vegetation and roughness
 
 ## 1.1 Canopy momentum sink under trachytope formulas 154, 155 and 156
 
@@ -163,7 +163,7 @@ through this considerably.
 
 ---
 
-# Part 2 — Earlier reports, attached in full
+# Part 2. Earlier reports, attached in full
 
 ## 2.1 D-Waves online coupling, HDF error on the `com.nc` write
 

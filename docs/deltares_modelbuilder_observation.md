@@ -1,12 +1,12 @@
 # Observation on the modelbuilder boundary-condition workflow
 
-**Suggested subject:** D-Flow FM modelbuilder example — could the waterlevel BC section flag the constant + tide + CMEMS combination as user-choice?
+**Suggested subject:** D-Flow FM modelbuilder example: could the waterlevel BC section flag the constant + tide + CMEMS combination as user-choice?
 
 **From:** Cicero Martins Jr / Università degli Studi di Palermo (cicero.martinsjr@unipa.it)
 
 ---
 
-While reproducing the public modelbuilder example notebook (`modelbuilder_example.ipynb`, Section 4 — Generate boundary conditions) for the Stagnone di Marsala / western Sicily case, I noticed that three different convenience functions of `dfm_tools` each append a `[Boundary] quantity = waterlevelbnd` block, in turn, to the same `ExtModel` and the same `file_pli`:
+While reproducing the public modelbuilder example notebook (`modelbuilder_example.ipynb`, Section 4, Generate boundary conditions) for the Stagnone di Marsala / western Sicily case, I noticed that three different convenience functions of `dfm_tools` each append a `[Boundary] quantity = waterlevelbnd` block, in turn, to the same `ExtModel` and the same `file_pli`:
 
 | Cell | Function | Result in `ext_new` |
 |---|---|---|
@@ -24,7 +24,7 @@ A small addition to the modelbuilder notebook could prevent this in future user 
     - **(A)** `cmems_nc_to_bc(...)` alone for `waterlevelbnd` when the CMEMS product carries tide and surge, as the Mediterranean analysis and forecast product does, with `constant_to_bc` for an optional datum offset; or
     - **(B)** `interpolate_tide_to_bc(...)` for the astronomical tide plus a CMEMS *anomaly* (CMEMS minus its tidal component) for the non-tidal residual.
 2. **A docstring warning** in `cmems_nc_to_bc(..., list_quantities=['waterlevelbnd', ...])` noting that several CMEMS regional analysis and forecast products include tidal forcing while their multi-year reanalyses do not, and that combining the function's output with `interpolate_tide_to_bc` will double-count tide unless the CMEMS series is preprocessed to remove its tidal part.
-3. **A defensive check inside `cmems_nc_to_bc`** that emits a warning when an `ExtModel` already contains a `waterlevelbnd` block referencing the same `locationFile` — the user can still proceed but is alerted to the choice.
+3. **A defensive check inside `cmems_nc_to_bc`** that emits a warning when an `ExtModel` already contains a `waterlevelbnd` block referencing the same `locationFile`, so that the user can still proceed but is alerted to the choice.
 
 Either of the first two has a minor cost (a comment block) and would help users in the regional-model case where the CMEMS analysis and forecast product is the only practical source of mean sea level and storm surge but ships the tide along with them. We could of course also contribute a pull request with such a comment; the documentation itself is the higher-leverage place since it is the first thing a new user reads.
 

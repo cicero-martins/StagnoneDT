@@ -1,24 +1,34 @@
-# Deltares support — D-Flow FM + D-Waves DIMR online coupling: HDF error on com.nc write
+# D-Flow FM and D-Waves online coupling: HDF error when SWAN reopens `com.nc`
 
-**Suggested subject:** D-Flow FM + D-Waves DIMR online coupling: repeating "NetCDF: HDF error" on com.nc write (ncFormat=4) — time-varying waves not transmitted to FM
+**Suggested subject:** D-Flow FM + D-Waves online coupling, repeated "NetCDF: HDF error" on the `com.nc` write with `ncFormat = 4`, and the wave field held at its first value
 
 **From:** Cicero Martins Jr / Università degli Studi di Palermo (cicero.martinsjr@unipa.it)
 
 ---
 
+We came across this while coupling SWAN to our lagoon model, and we write it up
+in case it is useful. A simple workaround exists and we use it, so the request
+is modest. It may be a known behaviour, or something in our setup that we have
+misread.
+
 ## Environment
 
-- **Product**: Delft3D FM Suite 2026.01 HMWQ, DIMR binary:
-  `DIMR_EXE Version 2.00.057d2f7ceeafda462a1b4e598efa4ce4f0c97cc5, Oct 20 2025`
+- **Product:** Delft3D FM Suite 2026.01 HMWQ, with
+  `DIMR_EXE Version 2.00.057d2f7ceeafda462a1b4e598efa4ce4f0c97cc5, Oct 20 2025` and
   `D-Flow FM kernel: 1.2.184.057d2f7ceeafda462a1b4e598efa4ce4f0c97cc5 (all/release/2026.01)`
-- **OS**: Windows 11 (64-bit), NTFS local disk, 16 GB RAM
-- **Same symptom observed in parallel deployment**: EDITO Datalab `delft3dfm_run_docker` service, Linux container (Kubernetes pod). Identical error pattern, so the issue is not OS-specific.
-- **Coupling mode**: DIMR Online with FLOW (`<parallel>` with `<startGroup>` running `wave` component alongside `DFlowFM`).
-- **Model**: Stagnone di Marsala lagoon (Sicily, Italy). Unstructured FM mesh, 21k nodes, 4 MPI partitions. SWAN nested outer + inner grids (~400 m + ~100 m).
+- **OS:** Windows 11 (64-bit), NTFS local disk, 16 GB RAM. The same pattern
+  appeared on the EDITO Datalab `delft3dfm_run_docker` service, a Linux
+  container, so it does not seem to be specific to the operating system.
+- **Coupling mode:** DIMR online with flow, the `wave` component in a
+  `<startGroup>` within `<parallel>`, alongside `DFlowFM`.
+- **Model:** Stagnone di Marsala lagoon (Sicily, Italy). Unstructured FM mesh of
+  21k nodes on 4 MPI partitions, and SWAN on nested outer and inner grids of
+  about 400 m and 100 m.
 
-## Symptom
+## What we observed
 
-At every `wave.Update` after the very first, each MPI partition logs the following pattern (example for partition 0):
+At every `wave.Update` after the first, each MPI partition logs the following
+pattern (partition 0 shown).
 
 ```
 ERROR opening file. NetCDF file : "../DFM_OUTPUT_Stagnone_dxy01_15m/Stagnone_dxy01_15m_0000_com.nc".
@@ -33,29 +43,36 @@ ERROR: time_read(0.00000E+00) is not equal to curtime(0.15639E+08)
 ERROR closing file. ... NetCDF: Not a valid ID
 ```
 
-Over a 9-day simulation this produces thousands of lines of errors. **The simulation does not abort**; DIMR finishes with exit code 0. The observable consequence is that **SWAN successfully writes `hrms/tp/dir/...` into `com.nc` only during the first coupling iteration**, so D-Flow FM reads the same iter-1 wave field for the rest of the run:
+Over a nine-day simulation this produces thousands of error lines. The
+simulation does not abort and DIMR exits with code 0. As far as we can see,
+SWAN writes `hrms`, `tp`, `dir` and the other fields into `com.nc` only during
+the first coupling iteration, so D-Flow FM reads the same wave field for the
+rest of the run.
 
 ```
-station BocaNord — hwav time series, 13 samples:
-  2025-07-01 00:00  0.0000 m   (sim start, before iter 1)
-  2025-07-01 00:10  0.1860 m   <- iter 1 writes successfully
-  2025-07-01 00:20  0.1860 m   <- iter 2+ all fail, FM reads the stale iter-1 value
+station BocaNord, hwav time series, 13 samples:
+  2025-07-01 00:00  0.0000 m   (start, before iteration 1)
+  2025-07-01 00:10  0.1860 m   <- iteration 1 written
+  2025-07-01 00:20  0.1860 m   <- later iterations fail, FM reads the iteration-1 value
   2025-07-01 00:30  0.1860 m
   ...
   2025-07-01 02:00  0.1860 m
-  → total unique values: 2 (zero + iter-1 constant)
+  total unique values: 2 (zero and the iteration-1 constant)
 ```
 
-Offshore TPAR forcing is genuinely time-varying across the run (9 `.bnd` files, hourly CMEMS data, 0.3-2.0 m Hs range), so the waves should respond. They do not, because of the com.nc write failures.
+The offshore TPAR forcing varies across the run (nine `.bnd` files from hourly
+CMEMS data, Hs from 0.3 to 2.0 m), so the waves would be expected to respond.
 
 ## Reproducer
 
-Minimal local reproducer runs on a 2-hour sim window and reproduces the symptom reliably (~10 min wallclock on a 6-core laptop). All configuration files + an MDW / MDU pair that exhibit the issue are available to share on request. The key MDU + MDW settings that matter:
+A two-hour window reproduces the pattern reliably, in about 10 minutes on a
+six-core laptop. We are happy to share the configuration files and an MDW and
+MDU pair that show it. The settings that seem to matter are
 
 ```ini
 # MDU
 [output]
-ncFormat                = 4    # critical — see test matrix below
+ncFormat                = 4    # see the test matrix below
 ncNoForcedFlush         = 0
 
 # MDW
@@ -78,48 +95,84 @@ COMWriteInterval     = 600     # 10 min coupling
 </control>
 ```
 
-## Isolation — test matrix (2-hour sim, same MDU/MDW except the noted variable)
+## Test matrix
 
-| Test                    | `ncFormat` | MPI partitions | `HDF5_USE_FILE_LOCKING` | `AppendCOM` | MDW boundary def      | COMWriteInterval | HDF errors in log | `hwav` unique values |
-|-------------------------|:----------:|:--------------:|:-----------------------:|:-----------:|:---------------------:|:----------------:|:-----------------:|:--------------------:|
-| baseline                | 4          | 4              | ON                      | false       | xy-coordinates        | 600 s            | 1796              | 2                    |
-| **nc3 (classic)**       | **3**      | **4**          | **ON**                  | **false**   | xy-coordinates        | 600 s            | **0**             | **12-13 (fixed)**    |
-| nolock                  | 4          | 4              | FALSE                   | false       | xy-coordinates        | 600 s            | 429               | 2                    |
-| serial                  | 4          | 1              | ON                      | false       | xy-coordinates        | 600 s            | 429               | 2                    |
-| append                  | 4          | 4              | ON                      | true        | xy-coordinates        | 600 s            | 1672              | 2                    |
-| nc5 (silent→nc3)        | 5          | 4              | ON                      | false       | xy-coordinates        | 600 s            | 0                 | 12-13                |
-| **mn-coords**           | 4          | 4              | ON                      | false       | **grid-coordinates**  | 600 s            | **44**            | 2                    |
-| **coupling-interval**   | 4          | 4              | ON                      | false       | xy-coordinates        | **1200 s**       | **780**           | **2**                |
+Two-hour runs, with the same MDU and MDW except for the variable noted.
 
-**Observations:**
+| Test | `ncFormat` | MPI partitions | `HDF5_USE_FILE_LOCKING` | `AppendCOM` | MDW boundary definition | COMWriteInterval | HDF errors in log | `hwav` unique values |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| baseline | 4 | 4 | ON | false | xy-coordinates | 600 s | 1796 | 2 |
+| **nc3 (classic)** | **3** | 4 | ON | false | xy-coordinates | 600 s | **0** | **12–13** |
+| nolock | 4 | 4 | FALSE | false | xy-coordinates | 600 s | 429 | 2 |
+| serial | 4 | 1 | ON | false | xy-coordinates | 600 s | 429 | 2 |
+| append | 4 | 4 | ON | true | xy-coordinates | 600 s | 1672 | 2 |
+| nc5 (written as nc3) | 5 | 4 | ON | false | xy-coordinates | 600 s | 0 | 12–13 |
+| mn-coords | 4 | 4 | ON | false | grid-coordinates | 600 s | 44 | 2 |
+| coupling interval | 4 | 4 | ON | false | xy-coordinates | 1200 s | 780 | 2 |
 
-1. Only `ncFormat = 3` eliminates the errors completely and restores time-varying `hwav` at every station (12–13 unique values across the 13-step output window).
-2. Serial run (`nPart = 1`) and disabling HDF5 file locking each reduce the error count ~4×, but neither restores time-varying waves. **This rules out MPI concurrent-access as the root cause**; the issue reproduces in pure serial.
-3. `AppendCOM = true` (suggested by the D-Waves manual as an alternative data-write semantics) does not help — error count and `hwav` stay at baseline.
-4. FM accepts `ncFormat = 5` without error but silently writes NETCDF3_CLASSIC output (verified via `nc_inq_format`). So `ncFormat` only officially supports 3 or 4.
-5. **Switching the MDW boundary definitions from `xy-coordinates` to the manual-recommended `grid-coordinates` (M/N indices) drops the HDF error count by ~40× (1796 → 44) but still leaves `hwav` constant after iteration 1.** SWAN is still called every coupling step (12 wave.Update entries in the 2-hour log), but the com.nc reopen-for-write step fails just as it does with xy-coordinates — the failure is logged less verbosely. This isolates the bug further: it is not about how the boundaries are declared in the MDW; it is strictly about the HDF5 write-after-read access pattern when SWAN serialises its output back to a NetCDF-4 / HDF5 com.nc that D-Flow FM has open. (We will adopt grid-coordinates anyway as a manual-conformance / log-noise hygiene fix in v03d.)
-6. **Doubling the coupling interval from 600 s to 1200 s** (matching the 20-minute convention used by Choo et al. 2024 *Investigation of Coastal Effects of Current-Wave Coupling during a Typhoon Event using Delft3D-FM*) **does not restore time-varying waves**. Total error count drops from 1796 → 780 because there are simply fewer wave.Update cycles per run (6 vs 12), but the per-cycle failure pattern is unchanged — every cycle after iteration 1 still produces the same HDF + cascade-`Not a valid ID` block. **This rules out a timing/race-condition root cause**: spacing the FM-side flush and the SWAN-side reopen further apart in wall-clock time does not help. The bug is in the access pattern itself, not in concurrency.
+What the matrix suggests to us:
+
+1. Only `ncFormat = 3` removed the errors and restored a time-varying `hwav` at
+   every station (12 to 13 unique values over the 13 output steps).
+2. A serial run (`nPart = 1`) and disabling HDF5 file locking each reduced the
+   error count about fourfold, but neither restored time-varying waves. Since the
+   pattern persists in a serial run, concurrent MPI access seems an unlikely
+   cause.
+3. `AppendCOM = true`, which the D-Waves manual describes as an alternative
+   write mode, left the error count and `hwav` at the baseline.
+4. FM accepted `ncFormat = 5` without complaint and wrote `NETCDF3_CLASSIC`
+   output (checked with `nc_inq_format`), so we understand `ncFormat` to support
+   3 and 4.
+5. Declaring the MDW boundaries in `grid-coordinates` (M/N indices), as the
+   manual recommends, reduced the HDF errors about fortyfold (1796 to 44) but
+   left `hwav` constant after the first iteration. SWAN was still called at every
+   coupling step, so the boundary declaration does not seem to be the cause. We
+   have kept `grid-coordinates` anyway, following the manual.
+6. Doubling the coupling interval from 600 s to 1200 s, the 20-minute
+   convention of Choo et al. (2024), did not restore time-varying waves. The
+   error count fell from 1796 to 780 because there are fewer `wave.Update`
+   calls, but each call after the first showed the same failure. A timing or
+   race condition therefore seems unlikely to us, and our guess is that the
+   reopen of an HDF5 file is involved.
 
 ## Workaround in production use
 
-`ncFormat = 3` (classic NetCDF) eliminates the HDF errors and restores time-varying waves at all stations, and every coupled run of the project has used it since. The 2 GB ceiling of the classic format applies to the fixed-size part of a file and to each record of a variable, not to the file as a whole, and FM writes the output fields as record variables. The nine-day 3D runs on eight partitions with `mapInterval = 1800` produce `map.nc` files of 4.5 to 5.0 GB per partition in `NETCDF3_CLASSIC`, with all 433 frames readable. The workaround therefore carries no practical cost at the present mesh size, and the request below concerns the `ncFormat = 4` path itself.
+`ncFormat = 3` (classic NetCDF) removes the HDF errors and restores
+time-varying waves at all stations, and every coupled run of the project has
+used it since. We first expected the 2 GB ceiling of the classic format to limit
+run length, but it applies to the fixed-size part of a file and to each record
+of a variable rather than to the file as a whole, and FM writes the output
+fields as record variables. Our nine-day 3D runs on eight partitions with
+`mapInterval = 1800` produce `map.nc` files of 4.5 to 5.0 GB per partition in
+`NETCDF3_CLASSIC`, with all 433 frames readable. The workaround therefore costs
+us nothing at the present mesh size, and the questions below concern only the
+`ncFormat = 4` path.
 
-## Ask
+## Questions
 
-1. Is this a known issue with the 2026.01 release? (The same Delft3D FM version runs on both Windows and the EDITO Linux Docker image with identical symptoms.)
-2. Is there an undocumented MDU / MDW / `dimr_config.xml` option that controls how SWAN re-opens `com.nc` — or a separate file-format setting specifically for `com.nc` (as opposed to the global `ncFormat` that also dictates `map.nc`)?
-3. If the underlying issue is how D-Waves' C-level `put_var` calls interact with HDF5 after `nc_close`/`nc_open` cycles, is there a patched kernel build we can try?
-4. Attempted regression test with **Delft3D FM Suite 2025.01 HMWQ** (pointing the same `dimr_config.xml` to the 2025.01 kernels) was inconclusive: 2025.01 rejected the `initialFields.ini` entries that 2026.01 accepts (`initialsalinity`, `initialtracerlagoon_tracer`), so the run aborted before any wave iteration. If there is a compatibility note between the two releases for `[Initial]` block keywords, a confirmation that the HDF symptom is new in 2026.01 would help us narrow the scope.
+1. Is this a known behaviour of the 2026.01 release? The same version showed it
+   on Windows and in the EDITO Linux image.
+2. Is there an MDU, MDW or `dimr_config.xml` option that controls how SWAN
+   reopens `com.nc`, or a file-format setting for `com.nc` separate from the
+   global `ncFormat` that also sets `map.nc`?
+3. If the cause lies in how the D-Waves `put_var` calls meet HDF5 after
+   `nc_close` and `nc_open` cycles, is there a build we could test?
+4. We tried the same `dimr_config.xml` with the 2025.01 kernels, but that run
+   stopped before the first wave iteration, because 2025.01 did not accept the
+   `initialFields.ini` entries `initialsalinity` and
+   `initialtracerlagoon_tracer` that 2026.01 accepts. If you know whether the HDF
+   behaviour is new in 2026.01, that would help us narrow it down.
 
-Full logs, the reproducer model directory, and the test scripts used to generate the isolation matrix above are available on request.
+Full logs, the reproducer directory and the scripts behind the matrix are
+available on request.
 
 Thank you for your time.
 
 ---
 
-## Attachments suggested
+## Attachments available
 
-- `test_matrix.csv` — the 6 test configurations + per-test error counts + `hwav` variance
-- `baseline_run.log` (UTF-8, first 500 lines of `Stagnone_dxy01_15m.dia` or the DIMR console) showing the error signatures
-- `Stagnone_dxy01_15m.mdu` and `wave/stagnone.mdw` (anonymized if sensitive)
+- `test_matrix.csv`, the test configurations with per-test error counts and `hwav` variance
+- `baseline_run.log`, the first 500 lines of `Stagnone_dxy01_15m.dia` or of the DIMR console, with the error signatures
+- `Stagnone_dxy01_15m.mdu` and `wave/stagnone.mdw`
 - `dimr_config.xml`

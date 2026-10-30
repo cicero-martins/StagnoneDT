@@ -1,24 +1,35 @@
-# D-Flow FM 2026.01 — gotchas encountered building v04
+# D-Flow FM 2026.01: configuration points met while building the v04 model
 
-Operational notes from the v04 build (May 2026). Each item caused a build/run failure that took non-trivial debugging to isolate. Documented here so future iterations of this framework, and anyone adopting a similar setup, can short-circuit the same dead ends.
+These notes collect the configuration points that took us time to work out while
+building the v04 model in May 2026, in the hope that they save others the same
+search. Several were our own misreadings, and in each case the answer was in the
+manual once we knew where to look. We would be glad to hear of anything we have
+misunderstood.
 
-Verified against:
+The versions we used are
 
-- **D-Flow FM Suite 2026.01 HMWQ** — kernel `dflowfm 1.2.184`, dimr `2.00.05`
+- **D-Flow FM Suite 2026.01 HMWQ**, kernel `dflowfm 1.2.184`, DIMR `2.00.05`
 - **D-Flow FM User Manual 2026** (Deltares)
 - **D-Morphology User Manual 2026.02 rev 80910** (Deltares)
 - **dfm_tools 0.45.0** (modelbuilder pipeline)
 - **HYDROLIB-core 1.0.0**
 
-The five gotchas below were ALL needed to get v04 to integrate dynamics (non-zero volume, salinity preserved, evap mass flux applied). Without them, the model either FATAL'd at init or ran to completion silently producing all-NaN/zero output.
+The first five points were all needed before v04 ran with a wet domain, a
+preserved salinity field and the evaporation flux applied. Without them the
+model either stopped at initialisation or completed with empty output.
 
-## 1. `QUANTITY=evaporation` does not exist in old-ext
+## 1. Evaporation enters as `rainfall_rate`
 
-**Symptom:** FATAL at init: `** ERROR : Reading *.ext forcings file: getting unknown QUANTITY evaporation`
+**What we saw.** The run stopped at initialisation with
+`** ERROR : Reading *.ext forcings file: getting unknown QUANTITY evaporation`.
 
-**Cause:** Per Manual Table C.9 (p.427-429), FM unifies precipitation + evaporation as a single `QUANTITY=rainfall_rate`. The `evaporation` keyword is not recognised in either old-ext or new-ext (`[Meteo]`) format.
+**What we learned.** Manual Table C.9 (pp. 427–429) treats precipitation and
+evaporation as a single quantity, `rainfall_rate`, and we found no
+`evaporation` quantity in either the old or the new external-forcing format.
 
-**Fix:** Use `QUANTITY=rainfall_rate`. ERA5 `mer` (negative for evap) maps naturally — FM applies the value with sign convention positive=rain in, negative=evap out (continuity equation §3.3.1.2: `Q = ... + P − E`).
+**What works for us.** `QUANTITY=rainfall_rate`, with the ERA5 `mer` field,
+whose evaporation values are negative. FM applies the sign as positive for rain
+in and negative for evaporation out (continuity equation, §3.3.1.2).
 
 ```
 QUANTITY=rainfall_rate
@@ -29,65 +40,87 @@ METHOD=3
 OPERAND=O
 ```
 
-dfm_tools `modelbuilder.py:278` codifies this mapping (`'mer' → 'rainfall_rate'`); however dfmt's `preprocess_merge_meteofiles_era5()` writes to ext_old via a HYDROLIB-core API that broke in v0.45.0 (`AttributeError: ExtOldFileType`). For now we manually emit the block.
+`dfm_tools` encodes this mapping (`modelbuilder.py:278`, `'mer' → 'rainfall_rate'`).
+Its `preprocess_merge_meteofiles_era5()` writes the old-format file through a
+HYDROLIB-core call that is not available in HYDROLIB-core 1.0.0
+(`AttributeError: ExtOldFileType`), so for now we write the block by hand.
 
-## 2. `Rainfall=1` and `Evaporation=1` must BOTH be in `[External Forcing]`
+## 2. Both `Rainfall = 1` and `Evaporation = 1` in `[External Forcing]`
 
-**Symptom:** false positive — model loads `rainfall_rate` without error, runs without abort, but hipersalinidade dissipates as if no evap forcing was present (negative values silently dropped).
+**What we saw.** The model loaded `rainfall_rate` and ran without error, but the
+hypersaline lagoon freshened as if no evaporation were applied.
 
-**Cause:** Manual §A `[external forcing]` keyword block (p.398-400) has two independent mass-balance switches:
+**What we learned.** The `[external forcing]` keywords (Manual §A, pp. 398–400)
+include two mass-balance switches, both defaulting to 0.
 
 ```
 Rainfall    = 0/1   ; include rainfall (positive part of rainfall_rate)
-Evaporation = 0/1   ; include evap in mass balance (negative part)
+Evaporation = 0/1   ; include evaporation in the mass balance (negative part)
 ```
 
-Both default to 0. `Evaporation=1` does NOT enable a separate quantity — it authorises the mass coupling when `rainfall_rate` is negative. If absent, the parser accepts the file but the negative branch is ignored.
+Our understanding is that `Evaporation = 1` does not introduce a separate
+quantity but lets the negative part of `rainfall_rate` enter the mass balance.
 
-**Fix:** add `Rainfall=1` + `Evaporation=1` to the `[External Forcing]` MDU block. Recommend also setting `wrimap_rain=1` and `wrimap_evaporation=1` to validate the forcing post-run.
+**What works for us.** Both switches set to 1, with `wrimap_rain = 1` and
+`wrimap_evaporation = 1` to check the forcing after the run.
 
-## 3. Old-ext comment marker is `*`, not `#`
+## 3. Comments in the old-format `.ext` start with `*`
 
-**Symptom:** FATAL: `Unsupported quantity name 'rainfall_rate in mm/day.'` — with the literal text `in mm/day.` appearing as if it were part of the QUANTITY value.
+**What we saw.** The run stopped with
+`Unsupported quantity name 'rainfall_rate in mm/day.'`, the words `in mm/day.`
+apparently taken as part of the quantity.
 
-**Cause:** old-ext canonical comment marker is `*` (asterisk). Lines starting with `#` are NOT recognised as comments and are read as data. If a `#` comment line contains the literal substring `QUANTITY=`, the parser captures everything from that token to the end of line as the actual QUANTITY value, contaminating the legitimate `QUANTITY=` line below.
+**What we learned.** In the old format the comment marker is `*`. Our comment
+lines started with `#`, and one of them contained the phrase
+"`QUANTITY=rainfall_rate in mm/day`". The parser appears to have read that line
+as data, so the end of the phrase was attached to the quantity value.
 
-In our case the `#` comment block introducing the rainfall_rate forcing contained the explanatory phrase "FM unifies precip + evap as `QUANTITY=rainfall_rate in mm/day`." — the trailing "in mm/day." segment was glued onto the QUANTITY value.
-
-**Fix:** use `*` for comments, AND never write `QUANTITY=` literally inside any comment text (even with `*` marker — robustness).
+**What works for us.** `*` for comments, and no literal `QUANTITY=` inside a
+comment.
 
 ```
-* v04: ERA5 evap forcing for hipersalinidade fix
-* ERA5 mer mm/day, negative=evap. FM uses rainfall_rate.
+* v04: ERA5 evaporation forcing
+* ERA5 mer in mm/day, negative for evaporation.
 QUANTITY=rainfall_rate
 ...
 ```
 
-This explained why our previous attempts to "fix" the quantity name by patching the NetCDF metadata had no effect: the bad string was coming from the **comment text in the .ext file**, not from any NC attribute.
+This also explained why our earlier attempts to fix the quantity name through
+the NetCDF metadata had no effect, since the string came from the comment text.
 
-## 4. ERA5 `mer` NetCDF needs CF metadata patch (cosmetic but harmless)
+## 4. CF metadata of the ERA5 `mer` file
 
-**Symptom:** prior to identifying gotcha #3, we suspected the NC metadata was the issue and patched `standard_name`, `long_name`, and `units`. Per agent review of FM's `ec_provider.F90` source on the OSS SVN trunk, this patching is **not required** — FM uses `VARNAME=mer` (from the ext file) to bind the variable, not its CF attributes.
-
-**Recommended patch anyway** (improves CF compliance, harmless to FM):
+While chasing point 3 we patched `standard_name`, `long_name` and `units` of the
+ERA5 file. Reading `ec_provider.F90`, our understanding is that FM binds the
+variable through `VARNAME` and does not need these attributes. We keep the patch
+for CF conformance.
 
 ```python
 ds["mer"].attrs["standard_name"] = "rainfall_rate"
 ds["mer"].attrs["long_name"]     = "rainfall_rate"
-ds["mer"].attrs["units"]         = "mm day-1"   # CF/UDUNITS canonical (was 'mm/day')
+ds["mer"].attrs["units"]         = "mm day-1"   # CF/UDUNITS form of 'mm/day'
 ```
 
-The `units='mm/day'` written by dfmt `xarray_helpers.py:358` (literal string after `* 86400`) is not CF/UDUNITS canonical and is technically a latent bug, even though FM tolerates it.
+`dfm_tools` writes `units = 'mm/day'` (`xarray_helpers.py:358`), which FM
+accepts; the CF and UDUNITS form would be `'mm day-1'`.
 
-## 5. `bedLevType=1` requires `mesh2d_face_z` in the netfile
+## 5. `bedLevType = 1` reads `mesh2d_face_z` from the net file
 
-**Symptom:** model partitions and runs without FATAL, but `my model volume = 0.0E+00 m³` in every partition `.dia` file, against `my model area` reporting correct values. Output map.nc fills with NaN/zero. Run wall-time dominated by SWAN (FM has no work to do — all cells dry).
+**What we saw.** The model partitioned and ran without error, but every
+partition `.dia` reported `my model volume = 0.0E+00 m³` against a correct
+`my model area`, and the map output was empty. Almost all the wall time went to
+SWAN.
 
-**Cause:** D-Morphology (`Sedimentmodelnr=4`) requires `bedLevType=1` (cell-center bathymetry). FM 2026.01 dropped `bathymetryFile` as an MDU keyword (rejected at parse: `keyword [geometry] bathymetryfile is obsolete`). With neither `bathymetryFile` nor `mesh2d_face_z` in the netfile, FM silently falls back to `bedLevUni=5.0 m` for every cell. With `WaterLevIni=0`, all cells emerge → volume 0.
+**What we learned.** D-Morphology (`Sedimentmodelnr = 4`) asks for
+`bedLevType = 1`, cell-centre bed levels. In FM 2026.01 `bathymetryFile` is no
+longer an MDU keyword (`keyword [geometry] bathymetryfile is obsolete`). With
+neither that file nor `mesh2d_face_z` in the net file, FM used
+`bedLevUni = 5.0 m` for every cell, and with `WaterLevIni = 0` the whole domain
+was dry. `mesh2d_node_z` alone serves `bedLevType = 3` to 6, which compute face
+levels at run time, while `bedLevType = 1` reads `mesh2d_face_z` directly.
 
-`mesh2d_node_z` (per-vertex) alone is **not** sufficient for `bedLevType=1` — it's used by `bedLevType=3..6` which compute face z at runtime, but `bedLevType=1` reads pre-computed cell-center values from `mesh2d_face_z` directly.
-
-**Fix:** add `mesh2d_face_z` to the netfile with the UGRID attributes that FM 2026 expects (verified against the official Deltares D-Morphology tutorial netfile `straight_coast_net.nc`):
+**What works for us.** Adding `mesh2d_face_z` to the net file with the
+attributes of the D-Morphology tutorial net file `straight_coast_net.nc`.
 
 ```
 double mesh2d_face_z(mesh2d_nFaces) ;
@@ -100,42 +133,48 @@ double mesh2d_face_z(mesh2d_nFaces) ;
     mesh2d_face_z:units         = "m" ;
 ```
 
-Values can be computed as the mean of surrounding nodes' z values (functionally equivalent to bedLevType=3 runtime computation, but stored explicitly). Drop `bathymetryFile` from the MDU. See `scripts/add_face_z_to_netfile.py`.
+We take the mean of the surrounding node levels and drop `bathymetryFile` from
+the MDU (`scripts/add_face_z_to_netfile.py`). A face left at `_FillValue` falls
+back to `bedLevUni`, so we check that no fill values remain.
 
-**Critical risk:** any cell with `_FillValue` in `mesh2d_face_z` triggers the `bedLevUni` fallback FOR THAT CELL. After running the fix, verify `(arr != -999).sum() == arr.size` on the variable.
+## A related point on `nudgeTimeUni`
 
-## Companion: `nudgeTimeUni` defeats hipersalinidade IC if too short
+This one is an interaction rather than a parser point. With the default
+`nudgeTimeUni = 3600` s and a `nudge_salinity_temperature` field from the CMEMS
+regional model, which does not resolve the hypersaline lagoon, the interior was
+pulled towards the regional 37.5 within about 12 hours, erasing the initial 42.
+A relaxation time of 864000 s (10 days), longer than the lagoon residence time,
+keeps the nudging as a slow constraint offshore and leaves the interior free.
 
-Not a parser bug, but an easy-to-miss interaction. The default `nudgeTimeUni=3600 s` (1 hour relaxation timescale) combined with a `nudge_salinity_temperature` field built from CMEMS regional (which doesn't resolve the lagoon's hypersaline core) pulls model state ~63% toward the 37.5 ppt regional value every hour, dominating tide+evap and erasing the 42 ppt initial condition within ~12 h.
+## Checklist we now use when adding ERA5 mass-flux forcing
 
-**Fix:** set `nudgeTimeUni = 864000` (10 days), longer than the lagoon residence time, so the nudge becomes a slow guard rail offshore without overwriting interior dynamics. Alternative: remove the `nudge_salinity_temperature` block entirely from ext_old.
+1. [ ] `QUANTITY=rainfall_rate` in the external-forcing block
+2. [ ] `Rainfall = 1` and `Evaporation = 1` in `[External Forcing]`
+3. [ ] Old-format comments start with `*`, with no `QUANTITY=` inside them
+4. [ ] `wrimap_rain = 1` and `wrimap_evaporation = 1` for checking
+5. [ ] With D-Morphology, `mesh2d_face_z` in the net file with the attributes above, no fill values, and no `bathymetryFile`
+6. [ ] `nudgeTimeUni` longer than the residence time, or no nudging
+7. [ ] After initialisation, a non-zero `my model volume` in the partition `.dia` files (of order 10¹¹ m³ for our domain of about 1800 km²)
+8. [ ] After 12 h, interior salinity still distinct from the boundary value
 
-## Diagnostic checklist when adding ERA5 mass-flux forcing in FM 2026
+## 6. The trachytope `.arl` file is matched by coordinates
 
-1. [ ] `QUANTITY=rainfall_rate` (not evaporation) in the ext block
-2. [ ] `[External Forcing]` MDU has both `Rainfall=1` and `Evaporation=1`
-3. [ ] All ext_old comments use `*` (never `#`); no `QUANTITY=` substrings inside comments
-4. [ ] Output flags `wrimap_rain=1` and `wrimap_evaporation=1` for validation
-5. [ ] If `Sedimentmodelnr=4` (D-Morph): netfile has `mesh2d_face_z` with the seven UGRID attributes above; no fill values; `bathymetryFile` keyword removed
-6. [ ] `nudgeTimeUni > residence_time` (or remove nudge entirely)
-7. [ ] After init: `my model volume` in partition `.dia` files is non-zero (~10¹¹ m³ scale for our ~1800 km² domain)
-8. [ ] After 12h sim-time: interior salinity has not collapsed to boundary value (compare to `wrimap_salinity` slice in map.nc)
+**What we saw.** The run stopped at initialisation with
 
-## 6. Trachytope `.arl` is coordinate-based, NOT link-ID-based
-
-**Symptom:** Run aborts at init with:
 ```
 ** ERROR  : Read error from file: stagnone_trachytopes_v3.arl, Record: 9
 ** FATAL  : flow_trachyinit:: Error reading trachytope dimensions (dimtrt)
 ```
-(Record number varies depending on which line FM trips on.)
 
-**Cause:** The `.arl` format (FM Manual §C.7.1) uses **spatial coordinates**, not link IDs. FM reads `xu yu zu TrachytopeNr Fraction` per row. Any other format (link-ID, count header, wrong column order) will produce this FATAL at init. There is NO header/count line.
+with the record number depending on the line.
 
-**Correct format per FM Manual C.7.1** (WGS84 coords for our mesh):
+**What we learned.** The `.arl` format (Manual §C.7.1) gives one record per line
+as `xu yu zu TrachytopeNr Fraction`, located by coordinates rather than by link
+number, and without a header or count line. Our first file used link numbers.
+
 ```
 # comment lines start with # or *
-# COORDS: WGS84 lon/lat -- must match mesh CRS
+# coordinates in the CRS of the mesh (WGS84 lon/lat here)
 # xu  yu  zu  TrachytopeNr  Fraction
 12.400000  37.804768  0  2  1.0000
 12.420000  37.803781  0  2  0.7517
@@ -143,21 +182,32 @@ Not a parser bug, but an easy-to-miss interaction. The default `nudgeTimeUni=360
 ...
 ```
 
-Multiple trachytope classes for the same link = consecutive lines with identical `xu,yu,zu`. FM sums fractions; remaining `(1 − sum)` takes the MDU `unifFrictCoef` background roughness.
+Several classes on one link are consecutive lines with the same `xu, yu, zu`.
+FM sums their fractions, and the remainder takes the background roughness
+`unifFrictCoef`.
 
-**TTD formula numbers (FM 2026, §C.7.2.5) — NOT the same as older FM versions:**
-- Formula `53` = Manning n [s/m^1/3] (one parameter)
-- Formula `153` = Baptist 1 [h_v m, mD 1/m, C_D -, C_b m^0.5/s] (four parameters)
-- Formula `1` = flood-protected area fraction — NOT a roughness formula; using it as Manning silently does nothing useful
+The trachytope formula numbers of FM 2026 (§C.7.2.5) differ from those of
+earlier versions. Formula 53 is Manning n (one parameter), formula 153 is
+Baptist 1 with h_v, mD, C_D and C_b (four parameters), and formula 1 is a
+flood-protected area fraction rather than a roughness.
 
-**Coordinate system — critical silent-failure gotcha (2026-06-10):** The xu/yu in the `.arl` **must be in the same CRS as the mesh**. FM matches ARL entries to flow links by spatial proximity in the mesh CRS. If the mesh is WGS84 (edge_x ~12.4) but the ARL uses UTM33N (~271000), **no links are ever matched and the model runs to completion without FATAL or WARNING, but trachytopes have zero effect** — velocities and WL fields are identical to the no-VR baseline.
+Two further points cost us time, both because the run completes normally.
 
-Diagnostic: compare time-averaged velocity stats (VR vs no-VR baseline) — if identical to 4+ decimal places, suspect CRS mismatch. Check `ds['mesh2d_edge_x'].values.max()`: if ~13 it is WGS84; if ~280000 it is UTM.
+- **Coordinate system.** The coordinates must be in the CRS of the mesh. With a
+  WGS84 mesh and a UTM `.arl`, no record matched and the run gave results
+  identical to a run without trachytopes. We now compare time-averaged velocity
+  statistics against a no-trachytope baseline, and agreement to four decimal
+  places points to a mismatch.
+- **Coordinate precision.** FM matched records to links within about 1 cm in
+  our tests. With six decimal places of longitude and latitude, about 11 cm at
+  this latitude, around 94 % of our records did not match, and nine decimals
+  restored full coverage.
 
-**Build script:** `scripts/build_trachytope_arl.py` — reads WGS84 edge coords, reprojects to UTM33N *only* for TIF raster sampling (20m circular kernel), then writes ARL in **WGS84** (`edge_x`/`edge_y`, not `edge_x_utm`/`edge_y_utm`). The UTM transform must NOT leak into the ARL output coordinates.
+`scripts/build_trachytope_arl.py` samples the classification raster in UTM
+and writes the `.arl` in the WGS84 coordinates of the mesh edges.
 
-## Latent dfm_tools issues worth reporting upstream
+## Small `dfm_tools` items
 
-- `xarray_helpers.py:358`: writes `units = 'mm/day'` literally; should be `'mm day-1'` (CF/UDUNITS).
-- `modelbuilder.py:340`: `hcdfm.ExtOldFileType` does not exist in HYDROLIB-core 1.0.0, breaking `preprocess_merge_meteofiles_era5()` after the .nc is written.
-- The mer/mtpr `standard_name='unknown'` from cfgrib should be patched in `preprocess_ERA5()` for CF compliance.
+- `xarray_helpers.py:358` writes `units = 'mm/day'`; `'mm day-1'` would be the CF and UDUNITS form.
+- `modelbuilder.py:340` refers to `hcdfm.ExtOldFileType`, which is not in HYDROLIB-core 1.0.0, so `preprocess_merge_meteofiles_era5()` stops after writing the NetCDF.
+- `preprocess_ERA5()` leaves the cfgrib `standard_name = 'unknown'` on `mer` and `mtpr`.
