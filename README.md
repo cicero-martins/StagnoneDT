@@ -53,7 +53,7 @@ Wind drives the east-west circulation and tidal exchange the north-south compone
 
 - **D-Flow FM** (Delft3D FM Suite 2026.01, kernel 1.2.184). The unstructured mesh has 21,188 nodes and 25,212 faces over 11.96–12.56° E and 37.70–38.06° N, grading from about 880 m offshore to about 60 m in the lagoon, so that about six cells span the northern inlet. The vertical has 10 sigma layers of uniform thickness. Turbulence uses the k–ε closure and density the UNESCO equation of state with active salinity and temperature. The bare-substrate roughness is a uniform Manning coefficient of 0.023 s m^-1/3. The adaptive time step runs under a Courant limit of 0.7, capped at 30 s with wave coupling and 15 s without, on eight MPI partitions.
 - **SWAN** through Delft3D-WAVE, on an outer grid of about 800 m over the whole domain and an inner grid of about 90 × 110 m over the lagoon and its inlets. DIMR exchanges fields every 3600 s, and `ncFormat = 3` keeps the communication file readable by SWAN.
-- **Boundary forcing** from the CMEMS Mediterranean physical reanalysis (water level, salinity, temperature and a depth-resolved advection velocity). The CMEMS sea surface height is an anomaly about the NEMO rest state, so a per-node offset of +0.449 m, anchored on 384 days of the Marettimo gauge (JRC TAD 658) and spread along the boundary by the CMEMS mean dynamic topography, is added ([docs/marettimo_offset_anchor_2025.md](docs/marettimo_offset_anchor_2025.md)).
+- **Boundary forcing** from CMEMS Mediterranean products, water level from the analysis and forecast product at 15 min, which carries the tide, and salinity, temperature and a depth-resolved advection velocity from the daily multi-year reanalysis. The CMEMS sea surface height is an anomaly about the NEMO rest state, so a per-node offset of +0.449 m, anchored on 384 days of the Marettimo gauge (JRC TAD 658) and spread along the boundary by the CMEMS mean dynamic topography, is added ([docs/marettimo_offset_anchor_2025.md](docs/marettimo_offset_anchor_2025.md)).
 - **Atmospheric forcing** from ERA5 (wind, pressure, Charnock coefficient, evaporation as negative rainfall), with the wind blended with the AltaVilaEst station. Interior salinity and temperature are nudged to CMEMS with a relaxation time of 8.64 × 10^5 s.
 - **Initial state** from the CMEMS depth profiles at the start time outside the lagoon and a hypersaline value of 42 inside it.
 - **Seagrass canopy** as a drag per sigma layer over the height the plants occupy, following the quadratic form of Nepf (2012). *P. oceanica* values are from Ciraolo and Ferreri (2006) with the canopy height of 0.40 m from Prinos et al. (2010), and *C. nodosa* values are from Morris et al. (2008). Fractional cover from a random-forest classification of PlanetScope imagery (August 2023, 3 m), following the depth-invariant approach of Maltese et al. (2025), scales the stem density.
@@ -232,7 +232,8 @@ Partitioned output (`DFM_OUTPUT_*/`) is never committed, at 16 to 38 GB per run.
 - [docs/mesh_convergence_experiment.md](docs/mesh_convergence_experiment.md), design and cost of the mesh and layer tests
 - [docs/deltares_hdf5_coupling_report.md](docs/deltares_hdf5_coupling_report.md), the HDF5 re-open failure of the communication file and the `ncFormat = 3` remedy
 - [docs/deltares_modelbuilder_observation.md](docs/deltares_modelbuilder_observation.md), double counting of the tide in a CMEMS plus TPXO boundary
-- [docs/deltares_report_2026-09-01.md](docs/deltares_report_2026-09-01.md), issues reported to Deltares
+- [docs/deltares_report_2026-09-01.md](docs/deltares_report_2026-09-01.md), observations on the vegetation and roughness stack for Deltares
+- [docs/deltares_byom_2026-11-04.md](docs/deltares_byom_2026-11-04.md), topics for the Bring Your Own Model session of the Delft3D User Days 2026
 - [docs/sediment_calibration_references.md](docs/sediment_calibration_references.md), sources for the sediment parameters
 - [docs/paper1_review_summary_2026-10-27.md](docs/paper1_review_summary_2026-10-27.md), the internal review of Paper 1 and its implementation
 - [docs/research_questions_status.md](docs/research_questions_status.md), status of the research questions
@@ -240,4 +241,4 @@ Partitioned output (`DFM_OUTPUT_*/`) is never committed, at 16 to 38 GB per run.
 
 ## License
 
-Private repository. No license specified.
+Public repository. No license specified.

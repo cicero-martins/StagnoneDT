@@ -71,7 +71,7 @@ Antes de propor função/helper novo, especialmente algo que envolva mesh, forci
 - `cmems_zos_reference_frame` — `zos` is anomaly around NEMO rest-state, not EGM/WGS84. Tide is in zos for forecast 006-013, NOT for reanalysis 006-004 or GLO myint 001-030.
 - `cmems_med_v04_implications` — MED-MFC EAS8 setup (NEMO 4.2 + WW3 acoplado at 1/24°)
 - `dimr_time_vs_startdatetime` — D-Waves MDW SimMode must be `stationary` in DIMR Online with FLOW; time-varying comes from re-evaluated TPAR
-- `hdf5_coupling_resolution` — `ncFormat=3` resolves SWAN HDF re-open of `com.nc`; trade-off: 2 GB per-file limit
+- `hdf5_coupling_resolution` — `ncFormat=3` resolves SWAN HDF re-open of `com.nc`; the classic 2 GB ceiling is per record, and 9-day map.nc files of 5 GB per partition read normally
 - `notebook_unicode_writing` — prefer ASCII in `.ipynb`; Unicode only via `Write` with explicit utf-8 (Write tool sometimes double-encodes)
 
 ## Areas not to modify casually
