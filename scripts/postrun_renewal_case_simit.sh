@@ -1,10 +1,11 @@
 #!/bin/bash
 # Readings of the renewal case after FM has finished, on simit.
 #   merge   waqmerge joins the D-WAQ files of the eight partitions
-#   waq     build_renewal_waq.py writes the input and delwaq runs in the background
+#   waq     build_renewal_waq.py writes the input and delwaq runs in the background;
+#           an integration option as second argument runs in waq_renewal_s<scheme>
 #   fm      the online lagoon_tracer, the throughflow and the currents for OpenDrift
 # Outputs under $CASE/waq_renewal and $OUT, the currents file under $OUT/<tag>.
-# Usage, on simit:  bash postrun_renewal_case_simit.sh merge | waq | fm
+# Usage, on simit:  bash postrun_renewal_case_simit.sh merge | waq [24.70] | fm
 set -euo pipefail
 CASE=/storage/ciceromartinsjr/StagnoneDT/renewal/veg_ic3d_0701_0710
 TAG=veg_ic3d_0701_0710
@@ -26,9 +27,11 @@ case "$1" in
     ;;
   waq)
     cd "$SCRIPTS"
+    SCHEME=${2:-15.70}
+    RUN=waq_renewal; [[ "$SCHEME" == 15.70 ]] || RUN=waq_renewal_s${SCHEME%%.*}
     "$PY" build_renewal_waq.py "$CASE/DFM_DELWAQ_Stagnone_dxy01_15m/Stagnone_dxy01_15m.hyd" \
-        "$CASE" "$CASE/waq_renewal"
-    cd "$CASE/waq_renewal"
+        "$CASE" "$CASE/$RUN" --scheme "$SCHEME"
+    cd "$CASE/$RUN"
     nohup "$BIN/run_delwaq.sh" renewal.inp > run.log 2>&1 &
     echo "delwaq launched, pid $!"
     disown

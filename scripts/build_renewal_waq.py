@@ -15,8 +15,10 @@ Each basin tracer gives the remaining fraction of the basin and, inside the
 other basins, the exchange between them, which the single online tracer cannot
 separate.
 
-Horizontal transport uses scheme 15, implicit upwind, which carries no Courant
-limit on the cells of 15 m, and the vertical dispersion is the eddy
+Horizontal transport uses scheme 15 by default, implicit upwind, which carries
+no Courant limit on the cells of 15 m but is of first order. Scheme 24, flux
+corrected with a locally varying implicitness, is of higher order at the same
+freedom from the Courant limit. The vertical dispersion is the eddy
 diffusivity of FM through the process VertDisp.
 
 Usage:
@@ -72,6 +74,8 @@ def main(argv=None) -> int:
     ap.add_argument("--stop", default="2025/07/10-00:00:00")
     ap.add_argument("--step", default="0000500", help="ddhhmmss")
     ap.add_argument("--output-step", default="0010000", help="ddhhmmss")
+    ap.add_argument("--scheme", default="15.70",
+                    help="integration option; 24.70 is the local-theta flux-corrected scheme")
     args = ap.parse_args(argv)
 
     hyd = read_hyd(args.hyd)
@@ -98,6 +102,11 @@ def main(argv=None) -> int:
     bnd_data = ("ITEM\n'sea'\nCONCENTRATIONS\n" + " ".join(f"'{s}'" for s in SUBSTANCES)
                 + "\nDATA\n0.0 0.0 0.0 1.0\n") if nbnd else ""
     subs = "\n".join(f"{i:4d}  '{s}'" for i, s in enumerate(SUBSTANCES, 1))
+    # The z-layer declaration only for z-layer hydrodynamics. The sigma layers of
+    # FM carry no z-layer keys in the .hyd, and with or without the declaration
+    # the tracers of this case differ by less than 0.01.
+    zmodel = (f"MULTIGRID\n  ZMODEL NOLAY {nlay}\nEND_MULTIGRID\n"
+              if any(k.startswith("z-layers") for k in hyd) else "")
     out = f"{args.start} {args.stop} {args.output_step}"
 
     inp = f"""1000 132 ';'    ; width of input and output, comment
@@ -120,7 +129,7 @@ def main(argv=None) -> int:
 ;
 ; second block of model input (timers)
  86400 'ddhhmmss' 'ddhhmmss' ; system clock in sec, aux in days
- 15.70    ; integration option
+ {args.scheme}    ; integration option
  {args.start}  ; start time
  {args.stop}  ; stop time
  0        ; constant timestep
@@ -139,10 +148,7 @@ def main(argv=None) -> int:
 ; third block of model input (grid layout)
 UGRID {f['waqgeom-file']}
  {nseg}  ; number of segments
-MULTIGRID
-  ZMODEL NOLAY {nlay}
-END_MULTIGRID
- 2    ; grid layout not used
+{zmodel} 2    ; grid layout not used
 ;
 INCLUDE {f['attributes-file']}  ; attributes file
 ;
