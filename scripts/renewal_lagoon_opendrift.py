@@ -98,7 +98,7 @@ def run(path: Path, kz: str, out: Path) -> Path:
     path_out = out / f"particles_kz{label(kz)}.nc"
     o.run(end_time=stop - timedelta(seconds=TIME_STEP), time_step=TIME_STEP,
           time_step_output=3600, outfile=str(path_out), export_variables=["lon", "lat", "z"])
-    np.savez(out / "seeds.npz", w=w, basin=basin, lon=lon, lat=lat, z=z)
+    np.savez(out / f"seeds_kz{label(kz)}.npz", w=w, basin=basin, lon=lon, lat=lat, z=z)
     return path_out
 
 
@@ -147,7 +147,7 @@ def main(argv=None) -> int:
     for kz in args.kz:
         p = out / f"particles_kz{label(kz)}.nc" if args.analyse_only else run(args.currents, kz, out)
         times, where = positions(p, args.currents)
-        r, fate = tables(times, where, np.load(out / "seeds.npz"))
+        r, fate = tables(times, where, np.load(out / f"seeds_kz{label(kz)}.npz"))
         r.to_csv(out / f"remaining_kz{label(kz)}.csv")
         results[label(kz)] = {"summary": {k: summary(r[k]) for k in r}, "fate": fate}
         print(json.dumps(results[label(kz)], indent=1))

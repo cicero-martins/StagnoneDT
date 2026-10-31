@@ -57,8 +57,8 @@ def read_partitions(src: Path):
             c = ds.mesh2d_lagoon_tracer.values[:, own, :]
             cm = np.nan_to_num(np.nanmean(np.where(c < -900, np.nan, c), axis=-1))
             parts["cx"].append(cx[own]); parts["cy"].append(cy[own]); parts["ba"].append(ba)
-            parts["vol"].append(h * ba)
-            parts["mass"].append(cm * h * ba)
+            parts["vol"].append(np.nan_to_num(h * ba))
+            parts["mass"].append(np.nan_to_num(cm * h * ba))
             parts["cmax"].append(np.nanmax(np.where(c < -900, np.nan, c), axis=(1, 2)))
         print(f"  {Path(f).name}: {own.sum()} own faces")
     out = {k: np.concatenate(v, axis=0 if k in ("cx", "cy", "ba") else 1)
