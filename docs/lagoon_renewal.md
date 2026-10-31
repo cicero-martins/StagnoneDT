@@ -8,9 +8,9 @@ The residence time of the water of the lagoon enters RQ4 of [research_questions_
 
 The vegetated, fixed-bed member without wave coupling was run from a cold start with stratified initial salinity and temperature on 1 July 2025 to the end of the forcing on 10 July, writing the hydrodynamics for D-WAQ every 30 minutes and the vertical eddy viscosity to the map output (Section 2). The lagoon of 21.9 km² and 22.6 hm³ is divided by latitude into a southern, a central and a northern basin (Section 3).
 
-The water of the lagoon does not reach the e-folding fraction within the nine days in any of the readings. The fraction of the initial lagoon water still inside the lagoon on 10 July is 0.69 by the online tracer, 0.66 by D-WAQ and 0.79 by the particles, and an exponential fitted after the first day gives e-folding times of 26 to 32 days by the two Eulerian readings and 57 days by the particles (Section 6). The northern basin renews in about a week, the central basin passes its water southward, and the southern basin exports to the sea through the southern mouth. The exchange is organised as a slow north-to-south throughflow of 5 to 6 m³/s under the canopy, set by a sea-level difference of about 3 cm between the two mouths along the coast (Section 5). Without the canopy the same difference drives 42 to 85 m³/s and flushes the lagoon in about four days. The salinity measured in July by Mancuso et al. (2023), highest in the northern basin, does not support a renewal that starts in the north, and the realism of the coastal sea-level difference remains the first open matter (Section 10).
+The water of the lagoon does not reach the e-folding fraction within the nine days in any of the readings. The fraction of the initial lagoon water still inside the lagoon on 10 July is 0.69 by the online tracer, 0.66 by D-WAQ and 0.79 by the particles, and an exponential fitted after the first day gives e-folding times of 26 to 32 days by the two Eulerian readings and 57 days by the particles (Section 7). The northern basin renews in about a week, the central basin passes its water southward, and the southern basin exports to the sea through the southern mouth. The exchange is organised as a slow north-to-south throughflow of 5 to 6 m³/s under the canopy, set by a sea-level difference of about 3 cm between the two mouths along the coast (Section 5). Without the canopy the same difference drives 42 to 85 m³/s and flushes the lagoon in about four days. The salinity measured in July by Mancuso et al. (2023), highest in the northern basin, does not support a renewal that starts in the north, and the realism of the coastal sea-level difference remains the first open matter (Section 11).
 
-The two Eulerian readings agree within 0.1 on the lagoon water held by each basin. The particles retain more water in the southern basin, where the volume they represent is not conserved (Section 8).
+The two Eulerian readings agree within 0.1 on the lagoon water held by each basin. The particles retain more water in the southern basin, where the volume they represent is not conserved (Section 9).
 
 ## 1. Measures of renewal
 
@@ -31,15 +31,22 @@ The online tracer of FM marks the whole lagoon with one substance and cannot sep
 | Member | vegetated, fixed bed, no wave coupling (`-V-` in the eight-member factorial of wave coupling, vegetation and mobile bed), from `model/_veg_hv040_3d_ic3d`; canopy in the `[veg]` module with a canopy height of 0.40 m |
 | Initial condition | cold start on 1 July 2025 00:00 UTC with the stratified salinity and temperature of `dflowfm_v04AE_nowaves_ic3d` |
 | Window | 1 to 10 July 2025, the end of the boundary and meteorological forcing |
+| Mesh | 25 210 faces, refined to 15 m inside the lagoon and at its mouths and coarsening offshore to the islands of the Egadi archipelago |
 | Vertical | 10 uniform sigma layers |
+| Open boundary | one polyline along the southern (37.70 N), western (11.96 E) and northern (38.06 N) edges; water level as the sum of the CMEMS sea level and a per-node offset anchored at the Marettimo gauge ([marettimo_offset_anchor_2025.md](marettimo_offset_anchor_2025.md)), CMEMS current, salinity and temperature, and the lagoon tracer at 0 |
+| Surface | wind of ERA5 blended with the record of the AltaVilaEst station on the eastern flank of the central basin, ERA5 pressure, Charnock coefficient and evaporation less rainfall |
 | Changes against the member | no restart file, `maxVelocity` 25 m/s as in the cold-start members, `waqInterval` 1800 s, `wrimap_turbulence` 1 |
 | Run | 8 MPI ranks on socket 1 of simit-server, map output every 30 minutes |
 
 The lagoon tracer of FM starts at 1 inside the lagoon, as given by `lagoon_tracer_init.xyz`, and at 0 elsewhere.
 
+![Domain of the model, mesh of the lagoon with its three basins, and stem density of the canopy](../figures/renewal_case.png)
+
+*Bed depth of the domain clipped at 60 m, with the open boundary in red and the box of the currents given to the particles dashed (a). Mesh of the lagoon, its faces shaded by basin, the two latitudes that divide the basins dashed, and the volume of each basin on 1 July (b). Stem density of the canopy in the `[veg]` module, with the same divisions (c). The faces are those of the mesh merged by `waqmerge`, on which D-WAQ computes.*
+
 ## 3. Lagoon and basins
 
-A face of the mesh belongs to the lagoon when the nearest sample of `lagoon_tracer_init.xyz` lies within 150 m and carries the value 1. The distance of 150 m reproduces the face volumes of the lagoon on the 50 m grid of the particles, where 50 m left out part of the southern basin. The basins are separated at 37.848 N and 37.875 N, which places the southern mouth in the southern basin, the island of Mozia in the central basin and the northern mouth in the northern basin (`figures/renewal_setup.png`, panel a).
+A face of the mesh belongs to the lagoon when the nearest sample of `lagoon_tracer_init.xyz` lies within 150 m and carries the value 1. The distance of 150 m reproduces the face volumes of the lagoon on the 50 m grid of the particles, where 50 m left out part of the southern basin. The basins are separated at 37.848 N and 37.875 N, which places the southern mouth in the southern basin, the island of Mozia in the central basin and the northern mouth in the northern basin (`figures/renewal_case.png`, panel b). The southern basin includes the faces of the southern mouth and of the shallows west of it to 12.425 E, which the initial field of the online tracer counts as lagoon. The division at 37.848 N lies at the narrowing of the lagoon between the central and southern basins, about 1.4 km wide, and the division at 37.875 N lies just north of Mozia, where the lagoon is about 3 km wide, so that the boundary between the central and northern basins is a convention of this study and not a constriction of the water body.
 
 | Basin | Volume on 1 July (hm³) | Faces of the mesh |
 |---|---|---|
@@ -91,9 +98,27 @@ The net discharge across the faces that separate the sea from the southern and n
 | No waves, canopy, segment from 7 July (`_veg_hv040_3d_ic3d`) | 5.9 | 23 |
 | No waves, canopy, renewal case | 5.1 | 10 |
 
-In every member the water enters by the northern mouth and leaves by the southern one (`figures/renewal_setup.png`, panel b). The coastal sea level averaged over the window stands about 3.3 cm higher next to the northern mouth than next to the southern mouth in the bare and canopy members without waves, and 7.9 cm higher with waves, a difference that originates north of 37.91 N along the coast. The same difference drives a throughflow fifteen times smaller under the canopy than over the bare bed, so the magnitude of the throughflow is set by the resistance inside the lagoon. At 85 m³/s the volume of the lagoon passes through it in about three days, which is not compatible with the hypersaline summer water of the lagoon, whereas at 5 m³/s it would take some 50 days. Mancuso et al. (2023) measured in July a salinity of 51.45 psu in the northern basin, 41.56 psu in the central basin and 38.40 psu next to the southern mouth, a gradient that places the most confined water in the north and so questions the direction of the throughflow, since the model renews the northern basin first with sea water entering by the northern mouth. The same authors give an exchange of about 22 m³/s through the southern mouth. The outflow at the southern mouth of the canopy members exceeds the inflow at the northern one by 5 to 17 m³/s while the volume of the lagoon stays within 1 per cent, which places a part of the exchange across faces outside the two sections summed here.
+![Basins on the grid of the particles and net inflow at the northern mouth in four members](../figures/renewal_setup.png)
 
-## 6. Remaining fraction and time scales
+*Bed depth of the box of the currents given to the particles, with the outline of each basin on its grid of 0.0005° (a), and the net inflow from the sea into the northern basin averaged over six hours in the four members of the table (b). The two canopy runs share a hue, dotted for the segment that starts on 7 July.*
+
+In every member the water enters by the northern mouth and leaves by the southern one. The coastal sea level averaged over the window stands about 3.3 cm higher next to the northern mouth than next to the southern mouth in the bare and canopy members without waves, and 7.9 cm higher with waves, a difference that originates north of 37.91 N along the coast. The same difference drives a throughflow fifteen times smaller under the canopy than over the bare bed, so the magnitude of the throughflow is set by the resistance inside the lagoon. At 85 m³/s the volume of the lagoon passes through it in about three days, which is not compatible with the hypersaline summer water of the lagoon, whereas at 5 m³/s it would take some 50 days. Mancuso et al. (2023) measured in July a salinity of 51.45 psu in the northern basin, 41.56 psu in the central basin and 38.40 psu next to the southern mouth, a gradient that places the most confined water in the north and so questions the direction of the throughflow, since the model renews the northern basin first with sea water entering by the northern mouth. The same authors give an exchange of about 22 m³/s through the southern mouth. The outflow at the southern mouth of the canopy members exceeds the inflow at the northern one by 5 to 17 m³/s while the volume of the lagoon stays within 1 per cent, which places a part of the exchange across faces outside the two sections summed here.
+
+## 6. Course of the renewal over the window
+
+![Lagoon water by the online tracer, water of each basin by D-WAQ and particles by basin of release, every two hours](../figures/renewal_readings.gif)
+
+*The three readings every two hours from 1 July 00:00 to 9 July 22:00 UTC. Left, the fraction of initial lagoon water in the column by the online tracer of FM, white for sea water. Centre, the water of each basin in the column by D-WAQ with scheme 24, the hue of a face mixing the colours of the three basins in proportion to their tracers and fading to white with the share of sea water. Right, the particles under the diffusivity of the model at all depths, coloured by basin of release. The arrow gives the direction toward which the wind over the lagoon blows, and the lower panel the remaining fraction of the lagoon by the three readings with the instant of the frame.*
+
+In all three readings the water of the northern basin is replaced first, from its mouth, and by 5 July reaches into the central basin, whose water has in turn moved into the southern basin. The southern basin loses its water to the sea through the southern mouth and the shallows west of it, and a plume of lagoon water runs south along the coast to the open boundary. In D-WAQ the waters of the three basins mix across the divisions, while the particles keep sharper fronts between them.
+
+![Particles under the three vertical diffusivities, every two hours, coloured by basin of release](../figures/renewal_particles.gif)
+
+*Positions of the particles every two hours from 1 July 00:00 to 10 July 00:00 UTC under Kz = 10⁻⁴ m²/s (left), the diffusivity of the model (centre) and 10⁻² m²/s (right), at all depths, coloured by basin of release. The lower panel gives the remaining fraction of the own water of each basin, dotted for 10⁻⁴ m²/s, solid for the model and dashed for 10⁻² m²/s.*
+
+Under the two weaker diffusivities the particles spread through the lagoon in nearly the same pattern. Under 10⁻² m²/s the particles of the central and northern basins move south within three days and gather along the eastern shore of the southern basin, the convergence that Section 9 relates to the volume they carry.
+
+## 7. Remaining fraction and time scales
 
 | Reading | Region | r on 10 July | τ (d) | θ truncated (d) | τ_fit (d) | t₉₅ (d) |
 |---|---|---|---|---|---|---|
@@ -108,11 +133,15 @@ In every member the water enters by the northern mouth and leaves by the souther
 | D-WAQ, scheme 24 | northern | 0.23 | 7.4 | 5.0 | 6.7 | 20 |
 | Particles, model diffusivity | northern | 0.12 | 5.4 | 4.6 | 5.2 | 16 |
 
-The fractions of the particles under the two constant diffusivities bracket those under the model diffusivity (`figures/renewal_remaining.png`, shaded bands). At 10⁻⁴ m²/s the central and northern basins keep 0.37 and 0.10, and at 10⁻² m²/s they keep 0.05 and 0.00, since a well-mixed column exposes the bottom water to the surface current that carries the throughflow.
+![Wind over the lagoon and remaining fraction of the lagoon and of each basin by the three readings](../figures/renewal_remaining.png)
 
-The decay is not steady. The central basin loses water in tidal oscillations superposed on a trend, and the lagoon as a whole loses most of its water on 4 to 5 July and on 9 July, under northerly to north-westerly wind of 7 to 9 m/s (`figures/renewal_remaining.png`, panel a). The extrapolated times therefore depend on the wind of the window, by a factor that one case of nine days cannot measure.
+*Wind at 10 m over the centre of the lagoon, with arrows toward which it blows every six hours (a). Remaining fraction of the lagoon by the online tracer of FM, by D-WAQ with scheme 24 and by the particles under the diffusivity of the model, the shaded band spanning the particles under 10⁻⁴ and 10⁻² m²/s (b). Remaining fraction of the own water of each basin by D-WAQ and by the particles (c to e). The dotted line marks 1/e.*
 
-## 7. Fate of the water of each basin
+The fractions of the particles under the two constant diffusivities bracket those under the model diffusivity. At 10⁻⁴ m²/s the central and northern basins keep 0.37 and 0.10, and at 10⁻² m²/s they keep 0.05 and 0.00, since a well-mixed column exposes the bottom water to the surface current that carries the throughflow.
+
+The central basin loses water in tidal oscillations superposed on a trend, and the lagoon as a whole loses most of its water on 4 to 5 July and on 9 July, under northerly to north-westerly wind of 7 to 9 m/s, with little change in between. The extrapolated times therefore depend on the wind of the window, by a factor that one case of nine days cannot measure.
+
+## 8. Fate of the water of each basin
 
 | Basin of release | Reading | In the southern basin | In the central basin | In the northern basin | In the sea |
 |---|---|---|---|---|---|
@@ -125,9 +154,19 @@ The decay is not steady. The central basin loses water in tidal oscillations sup
 
 The sea column of D-WAQ includes the water that left the domain through its open boundary. Both readings place the water of each basin in the next basin to the south, with the northern water filling the central basin and the central water the southern basin, and only the southern basin exchanges directly with the sea. Of the southern water that reaches the sea in D-WAQ, 0.34 of the basin volume leaves the domain through the southern open boundary at 37.70 N, carried by the coastal current, and 0.27 remains in the sea of the domain. The online tracer of FM shows the same export, its domain total falling to 0.84 of the initial lagoon mass by 10 July.
 
-The particles released next to the southern limit of the northern and central basins leave their basin first, within a fraction of the window, while those of the north-western lobe of the northern basin and of the interior of the central and southern basins remain in it for most of the window (`figures/renewal_local_residence.png`). In the maps of lagoon water the replacement advances from the northern mouth into the northern basin and from the southern mouth along the west side of the southern basin (`figures/renewal_maps.png`).
+The particles released next to the southern limit of the northern and central basins leave their basin first, within a fraction of the window, while those of the north-western lobe of the northern basin and of the interior of the central and southern basins remain in it for most of the window.
 
-## 8. Agreement between the readings
+![Share of the window spent in the basin of release, by seeded column, under the three diffusivities](../figures/renewal_local_residence.png)
+
+*Share of the nine days that the particles of each seeded column spend inside their basin of release, averaged over the three particles of the column with their volumes as weights, under 10⁻⁴ m²/s (left), the diffusivity of the model (centre) and 10⁻² m²/s (right).*
+
+In the maps of lagoon water the replacement advances from the northern mouth into the northern basin and from the southern mouth along the west side of the southern basin.
+
+![Lagoon water by the online tracer and by D-WAQ, and particles by basin of release, on days 3, 6 and 8](../figures/renewal_maps.png)
+
+*Fraction of initial lagoon water in the column by the online tracer of FM (top) and by the sum of the three basin tracers of D-WAQ with scheme 24 (middle), and the particles under the diffusivity of the model coloured by basin of release (bottom), on 4, 7 and 9 July at 00:00 UTC, days 3, 6 and 8 of the window.*
+
+## 9. Agreement between the readings
 
 The content of initial lagoon water in each basin on 10 July is available from all three readings, from the fate matrices weighted by the basin volumes in the case of the particles and of D-WAQ.
 
@@ -144,7 +183,7 @@ The two Eulerian readings agree within 0.08 in every basin. The online tracer of
 
 The particles agree with the Eulerian readings in the central and northern basins and depart from them in the southern basin, where their content of lagoon water reaches 1.46 under the strong diffusivity. A content above 1 means that the particles concentrate in the southern basin beyond the volume they were given at release, so the volume they carry is not conserved there. The velocity interpolated onto the fixed depths of the particle grid is not divergence free in a basin of 0.5 to 1.5 m with sigma layers of 5 to 15 cm, and the particles gather where the interpolated field converges. The particles also leave the southern mouth on the ebb and return on the flood without mixing, which the Eulerian tracers do not permit. The particle reading is therefore used for the pathways between basins and for the local residence, where it agrees with D-WAQ, and the Eulerian readings for the remaining fraction of the southern basin and of the lagoon.
 
-## 9. Configuration of D-WAQ on the hydrodynamics of FM 2026.01
+## 10. Configuration of D-WAQ on the hydrodynamics of FM 2026.01
 
 | Item | Setting or behaviour |
 |---|---|
@@ -155,7 +194,7 @@ The particles agree with the Eulerian readings in the central and northern basin
 | Map output | NetCDF on the UGRID geometry of `<model>_waqgeom.nc`, time named `nTimesDlwq`; the record at the last instant of the hydrodynamics is written with flows that no longer match the volumes and is left out |
 | Volumes | `.vol` holds, for each record, a 4-byte integer time in seconds from the reference time followed by one 4-byte real per segment |
 
-## 10. Matters open
+## 11. Matters open
 
 1. The coastal sea-level difference of about 3 cm between the two mouths drives the throughflow in every member, and its origin north of 37.91 N along the coast has not been traced to the boundary forcing, to the offshore dynamics or to the wind. The salinity of the model in the northern basin over the window, set against the gradient measured by Mancuso et al. (2023), is the direct test of the north-to-south throughflow.
 2. The faces through which the outflow at the southern mouth exceeds the inflow at the northern mouth have not been located.

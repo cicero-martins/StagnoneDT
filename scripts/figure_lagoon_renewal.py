@@ -1,5 +1,12 @@
 """Figures of the renewal of the lagoon, after figure_harbour_renewal.py of MaltaDT.
 
+    renewal_case.png       domain of the model with its open boundary, the mesh
+                           of the lagoon divided into the three basins, and the
+                           stem density of the canopy
+    renewal_readings.gif   lagoon water by the online tracer, the water of each
+                           basin by D-WAQ and the particles by basin of release,
+                           every two hours, with the remaining fraction
+    renewal_particles.gif  the particles under the three vertical diffusivities
     renewal_setup.png      depth of the box with the three basins, and the net
                            inflow at the northern mouth in four members
     renewal_remaining.png  wind over the lagoon, and the remaining fraction of the
@@ -13,8 +20,12 @@ Reads outputs/renewal/<tag>/ as written by renewal_tracer_member.py,
 renewal_waq_member.py, renewal_lagoon_opendrift.py and
 diagnose_lagoon_throughflow.py.
 
+The case figure and the animations also read frames.npz of
+extract_renewal_frames.py, the merged mesh of waqmerge and the stem density and
+open boundary of the case, copied into the same directory.
+
 Usage:
-    python figure_lagoon_renewal.py [--tag veg_ic3d_0701_0710]
+    python figure_lagoon_renewal.py [--tag veg_ic3d_0701_0710] [--no-gif]
 """
 
 from __future__ import annotations
@@ -28,9 +39,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import xarray as xr
-from matplotlib.colors import ListedColormap
+import matplotlib.dates as mdates
+from matplotlib.collections import PolyCollection
+from matplotlib.colors import ListedColormap, to_rgb
 
-from renewal_common import BASINS
+from plot_drifter_trajectories_paper1 import parse_ldb, split_long_segments
+from renewal_common import BASIN_LAT, BASINS
 
 ROOT = Path(__file__).resolve().parents[1]
 FIG = ROOT / "figures"
@@ -39,6 +53,10 @@ WIND = ROOT / "model" / "dflowfm_v04AE_nowaves"
 WAQ = "waq_s24"
 COLOR = {"southern": "#2a78d6", "central": "#eb6834", "northern": "#1baf7a"}
 INK, MUTED, GRID = "#1f1f1e", "#6b6a64", "#e4e3dd"
+LAND = "#ece9e0"
+BOX = (12.38, 12.50, 37.79, 37.93)                    # box of the currents of the particles
+KZ_LABEL = {"1e-04": "Kz 10$^{-4}$ m$^2$/s", "model": "Kz of the model",
+            "1e-02": "Kz 10$^{-2}$ m$^2$/s"}
 ASPECT = 1 / np.cos(np.radians(37.86))
 MEMBERS = {"v04AE_nodm": "waves, bare bed", "dflowfm_v04AE_nowaves_ic3d": "no waves, bare bed",
            "_veg_hv040_3d_ic3d": "no waves, canopy (segment from 7 July)",
@@ -179,16 +197,254 @@ def local_residence(d: Path, out: Path):
     fig.savefig(out / "renewal_local_residence.png", dpi=150, bbox_inches="tight"); plt.close(fig)
 
 
+def coast():
+    run = ROOT / "model" / "_veg_hv040_3d"
+    return split_long_segments(parse_ldb(run / "Stagnone_dxy01_15m.ldb") + parse_ldb(run / "sicily2.ldb"))
+
+
+def read_pli(path: Path) -> np.ndarray:
+    rows = [ln.split()[:2] for ln in path.read_text().splitlines()[2:] if ln.strip()]
+    return np.array(rows, dtype=float)
+
+
+def polygons(nx, ny, fn) -> list:
+    return [np.c_[nx[r[r >= 0]], ny[r[r >= 0]]] for r in fn]
+
+
+def draw_coast(ax, lines, lw=0.5):
+    for p in lines:
+        ax.plot(p[:, 0], p[:, 1], color=MUTED, lw=lw, zorder=4)
+
+
+def basin_cuts(ax, x0=12.405, x1=12.495):
+    for lat in BASIN_LAT:
+        ax.plot([x0, x1], [lat, lat], color=INK, lw=0.7, ls="--", zorder=5)
+
+
+def case(d: Path, out: Path):
+    g = xr.open_dataset(d / "Stagnone_dxy01_15m_waqgeom.nc")
+    nx, ny, nz = g.mesh2d_node_x.values, g.mesh2d_node_y.values, g.mesh2d_node_z.values
+    fn = g.mesh2d_face_nodes.values
+    fn = np.where(np.isfinite(fn), fn - int(g.mesh2d_face_nodes.attrs["start_index"]), -1).astype(int)
+    depth = np.array([-nz[r[r >= 0]].mean() for r in fn])
+    f = np.load(d / "frames.npz")
+    lines = coast()
+    bnd = read_pli(d / "Stagnone_dxy01_15m.pli")
+
+    fig = plt.figure(figsize=(11, 6.2))
+    gs = fig.add_gridspec(1, 3, width_ratios=[1.35, 1, 1], wspace=0.28)
+    ax = [fig.add_subplot(gs[0, i]) for i in range(3)]
+
+    # (a) the whole domain, bed depth clipped at 60 m
+    pc = PolyCollection(polygons(nx, ny, fn), array=np.clip(depth, 0, 60), cmap="Blues",
+                        edgecolors="none", zorder=1)
+    pc.set_clim(0, 60)
+    ax[0].add_collection(pc)
+    draw_coast(ax[0], lines, 0.4)
+    ax[0].plot(bnd[:, 0], bnd[:, 1], color="#e34948", lw=2.2, zorder=6, label="open boundary")
+    ax[0].plot([BOX[0], BOX[1], BOX[1], BOX[0], BOX[0]], [BOX[2], BOX[2], BOX[3], BOX[3], BOX[2]],
+               color=INK, lw=1, ls="--", zorder=6, label="box of the particles")
+    ax[0].set_xlim(11.94, 12.57); ax[0].set_ylim(37.69, 38.075)
+    ax[0].set_aspect(ASPECT); ax[0].grid(False); ax[0].set_facecolor(LAND)
+    ax[0].tick_params(labelsize=7)
+    ax[0].legend(loc="lower left", fontsize=7, frameon=True, facecolor="white", edgecolor="none")
+    fig.colorbar(pc, ax=ax[0], shrink=0.55, pad=0.02, label="bed depth (m), clipped at 60")
+    ax[0].set_title("(a) domain, 25 210 faces", loc="left")
+    for name, (lon, lat) in {"Marsala": (12.48, 37.775), "Trapani": (12.48, 38.035),
+                             "Marettimo": (12.01, 37.935), "Favignana": (12.26, 37.905),
+                             "lagoon": (12.505, 37.86)}.items():
+        ax[0].text(lon, lat, name, fontsize=7, color=INK, zorder=7,
+                   bbox=dict(facecolor="white", alpha=0.7, edgecolor="none", pad=1))
+
+    # (b) the mesh of the lagoon, faces coloured by basin
+    pb = polygons(nx, ny, f["face_nodes"])
+    rgb = np.array([[1, 1, 1]] + [to_rgb(COLOR[n]) for n in BASINS.values()])
+    face = rgb[f["basin"]]
+    face[f["basin"] > 0] = 0.45 * face[f["basin"] > 0] + 0.55
+    ax[1].add_collection(PolyCollection(pb, facecolors=face, edgecolors=MUTED, linewidths=0.08, zorder=1))
+    draw_coast(ax[1], lines)
+    basin_cuts(ax[1])
+    for k, name in BASINS.items():
+        sel = f["basin"] == k
+        vol = {1: 11.9, 2: 6.36, 3: 4.36}[k]
+        ax[1].text(f["x"][sel].mean() + 0.012, f["y"][sel].mean(), f"{name}\n{vol} hm$^3$",
+                   fontsize=7, color=INK, zorder=7)
+    for txt, xy, xyt in (("northern mouth", (12.446, 37.898), (12.405, 37.915)),
+                         ("southern mouth", (12.440, 37.828), (12.402, 37.812)),
+                         ("Mozia", (12.468, 37.867), (12.478, 37.857))):
+        ax[1].annotate(txt, xy, xyt, fontsize=7, color=INK, zorder=7,
+                       arrowprops=dict(arrowstyle="-", color=INK, lw=0.6))
+    ax[1].text(12.405, 37.851, "37.848 N", fontsize=6.5, color=MUTED)
+    ax[1].text(12.405, 37.878, "37.875 N", fontsize=6.5, color=MUTED)
+    map_axes(ax[1]); ax[1].set_facecolor(LAND)
+    ax[1].set_title("(b) mesh of the lagoon and its basins", loc="left")
+
+    # (c) the canopy, stem density of the [veg] module
+    z = np.loadtxt(d / "veg_stemdensity.xyz")
+    z = z[z[:, 2] > 0]
+    m = ax[2].scatter(z[:, 0], z[:, 1], c=z[:, 2], s=1.2, cmap="Greens", vmin=0, vmax=3000,
+                      marker="s", lw=0, zorder=2)
+    ax[2].add_collection(PolyCollection(pb, facecolors="none", edgecolors=GRID, linewidths=0.08, zorder=1))
+    draw_coast(ax[2], lines)
+    basin_cuts(ax[2])
+    map_axes(ax[2]); ax[2].set_yticklabels([])
+    fig.colorbar(m, ax=ax[2], shrink=0.55, pad=0.02, label="stem density (stems/m$^2$)")
+    ax[2].set_title("(c) seagrass canopy", loc="left")
+    fig.savefig(out / "renewal_case.png", dpi=150, bbox_inches="tight"); plt.close(fig)
+
+
+def gif_frames(fig, update, n, path, duration=120):
+    from PIL import Image
+    frames = []
+    for i in range(n):
+        update(i)
+        fig.canvas.draw()
+        img = Image.frombuffer("RGBA", fig.canvas.get_width_height(), fig.canvas.buffer_rgba())
+        frames.append(img.convert("RGB").quantize(colors=128, method=Image.Quantize.FASTOCTREE))
+    frames[0].save(path, save_all=True, append_images=frames[1:], duration=duration, loop=0, optimize=True)
+    plt.close(fig)
+    print(f"wrote {path} ({path.stat().st_size / 1e6:.1f} MB, {n} frames)")
+
+
+def particles_at(p, t):
+    k = int(np.argmin(np.abs(p["time"] - t)))
+    return p["lon"][:, k], p["lat"][:, k]
+
+
+def load_particles(d: Path, kz: str) -> dict:
+    with xr.open_dataset(d / f"particles_kz{kz}.nc") as p:
+        return {"time": pd.to_datetime(p.time.values).values, "lon": p.lon.values, "lat": p.lat.values,
+                "basin": np.load(d / f"seeds_kz{kz}.npz")["basin"]}
+
+
+def readings_gif(d: Path, out: Path):
+    f = np.load(d / "frames.npz")
+    t = pd.to_datetime(f["times"])
+    inside = (f["x"] > 12.395) & (f["x"] < 12.505) & (f["y"] > 37.795) & (f["y"] < 37.93)
+    pb = polygons(f["node_x"], f["node_y"], f["face_nodes"][inside])
+    fm, waq = f["fm"][:, inside], f["waq"][:, :, inside]
+    rgb = np.array([to_rgb(COLOR[n]) for n in BASINS.values()])
+    p = load_particles(d, "model")
+    pc = np.array([COLOR[BASINS[b]] for b in p["basin"]])
+    r_fm = pd.read_csv(d / "tracer_remaining.csv", index_col=0, parse_dates=True)["lagoon"]
+    r_wq = pd.read_csv(d / f"{WAQ}_remaining.csv", index_col=0, parse_dates=True)["lagoon"]
+    r_od = pd.read_csv(d / "remaining_kzmodel.csv", index_col=0, parse_dates=True)["lagoon"]
+    w = wind(pd.DatetimeIndex([t[0], t[-1]]))
+    lines = coast()
+
+    fig = plt.figure(figsize=(10.5, 7.4), dpi=90)
+    gs = fig.add_gridspec(2, 3, height_ratios=[4.3, 1], hspace=0.2, wspace=0.05,
+                          left=0.06, right=0.99, top=0.92, bottom=0.07)
+    ax = [fig.add_subplot(gs[0, j]) for j in range(3)]
+    a_fm = PolyCollection(pb, array=fm[0], cmap="Blues", edgecolors="face", linewidths=0.1, zorder=1)
+    a_fm.set_clim(0, 1)
+    a_wq = PolyCollection(pb, facecolors=np.ones((len(pb), 3)), edgecolors="face", linewidths=0.1, zorder=1)
+    ax[0].add_collection(a_fm); ax[1].add_collection(a_wq)
+    x0, y0 = particles_at(p, t[0].to_datetime64())
+    a_od = ax[2].scatter(x0, y0, s=0.5, c=pc, lw=0, zorder=2)
+    titles = ["online tracer of FM,\nlagoon water in the column", "D-WAQ, scheme 24,\nwater of each basin in the column",
+              "particles, Kz of the model,\nby basin of release"]
+    for j, a in enumerate(ax):
+        map_axes(a); a.set_facecolor(LAND)
+        draw_coast(a, lines); basin_cuts(a)
+        a.set_title(titles[j], loc="left", fontsize=8.5)
+        if j:
+            a.set_yticklabels([])
+    for n, c in zip(BASINS.values(), rgb):
+        ax[2].scatter([], [], s=20, color=c, label=n)
+    ax[2].legend(loc="lower right", fontsize=7, frameon=True, facecolor="white", edgecolor="none")
+    wtext = ax[0].text(12.405, 37.902, "", fontsize=7, color=INK, zorder=8)
+    arrow = [None]
+    bx = fig.add_subplot(gs[1, :])
+    bx.plot(r_fm.index, r_fm, color=INK, lw=1.4, label="online tracer of FM")
+    bx.plot(r_wq.index, r_wq, color=INK, lw=1.4, ls="-.", label="D-WAQ, scheme 24")
+    bx.plot(r_od.index, r_od, color=INK, lw=1.4, ls="--", label="particles, Kz of the model")
+    bx.axhline(np.exp(-1), color=MUTED, lw=0.6, ls=":")
+    now = bx.axvline(t[0], color="#e34948", lw=1)
+    bx.set_ylim(0, 1.02); bx.set_xlim(t[0], t[-1]); bx.set_ylabel("r(t), lagoon", fontsize=8)
+    bx.xaxis.set_major_formatter(mdates.DateFormatter("%d %b")); bx.tick_params(labelsize=7)
+    bx.legend(loc="lower left", fontsize=7, ncol=3)
+    sup = fig.suptitle("", x=0.06, ha="left", fontsize=10)
+
+    def update(i):
+        a_fm.set_array(fm[i])
+        c = np.nan_to_num(waq[:, i]).clip(0, 1)
+        lag = c.sum(0).clip(0, 1)
+        mix = (c.T @ rgb) / np.maximum(c.sum(0), 1e-9)[:, None]
+        a_wq.set_facecolor((mix * lag[:, None] + (1 - lag[:, None])).clip(0, 1))
+        xx, yy = particles_at(p, t[i].to_datetime64())
+        a_od.set_offsets(np.c_[xx, yy])
+        if arrow[0] is not None:
+            arrow[0].remove()
+        u, v = w.reindex([t[i]], method="nearest").iloc[0][["u", "v"]]
+        arrow[0] = ax[0].annotate("", xy=(12.418 + 0.0012 * u * ASPECT, 37.915 + 0.0012 * v),
+                                  xytext=(12.418, 37.915), zorder=8,
+                                  arrowprops=dict(arrowstyle="-|>", color=INK, lw=1.3))
+        wtext.set_text(f"wind {np.hypot(u, v):.0f} m/s")
+        now.set_xdata([t[i], t[i]])
+        sup.set_text(f"Renewal of the lagoon from 1 July 2025 00:00 UTC, {t[i]:%d %b %H:%M} UTC")
+
+    gif_frames(fig, update, t.size, out / "renewal_readings.gif")
+
+
+def particles_gif(d: Path, out: Path, every_hours: int = 2):
+    runs = {k: load_particles(d, k) for k in KZ_LABEL}
+    rem = {k: pd.read_csv(d / f"remaining_kz{k}.csv", index_col=0, parse_dates=True) for k in KZ_LABEL}
+    t = pd.date_range(pd.Timestamp(runs["model"]["time"][0]), pd.Timestamp(runs["model"]["time"][-1]),
+                      freq=f"{every_hours}h")
+    lines = coast()
+    fig = plt.figure(figsize=(10.5, 7.4), dpi=90)
+    gs = fig.add_gridspec(2, 3, height_ratios=[4.3, 1], hspace=0.2, wspace=0.05,
+                          left=0.06, right=0.99, top=0.92, bottom=0.07)
+    ax = [fig.add_subplot(gs[0, j]) for j in range(3)]
+    sc = {}
+    for j, (a, k) in enumerate(zip(ax, KZ_LABEL)):
+        r = runs[k]
+        x0, y0 = particles_at(r, t[0].to_datetime64())
+        sc[k] = a.scatter(x0, y0, s=0.5, c=[COLOR[BASINS[b]] for b in r["basin"]], lw=0, zorder=2)
+        map_axes(a); a.set_facecolor(LAND); draw_coast(a, lines); basin_cuts(a)
+        a.set_title(KZ_LABEL[k], loc="left", fontsize=9)
+        if j:
+            a.set_yticklabels([])
+    for n in BASINS.values():
+        ax[2].scatter([], [], s=20, color=COLOR[n], label=n)
+    ax[2].legend(loc="lower right", fontsize=7, frameon=True, facecolor="white", edgecolor="none")
+    bx = fig.add_subplot(gs[1, :])
+    for n in BASINS.values():
+        for k, ls in zip(KZ_LABEL, (":", "-", "--")):
+            bx.plot(rem[k].index, rem[k][n], color=COLOR[n], ls=ls, lw=1.1,
+                    label=f"{n}, {KZ_LABEL[k]}" if n == "southern" else None)
+    bx.axhline(np.exp(-1), color=MUTED, lw=0.6, ls=":")
+    now = bx.axvline(t[0], color=INK, lw=0.8)
+    bx.set_ylim(0, 1.02); bx.set_xlim(t[0], t[-1]); bx.set_ylabel("r(t), own water", fontsize=8)
+    bx.xaxis.set_major_formatter(mdates.DateFormatter("%d %b")); bx.tick_params(labelsize=7)
+    bx.legend(loc="lower left", fontsize=6.5, ncol=3)
+    sup = fig.suptitle("", x=0.06, ha="left", fontsize=10)
+
+    def update(i):
+        for k in KZ_LABEL:
+            sc[k].set_offsets(np.c_[particles_at(runs[k], t[i].to_datetime64())])
+        now.set_xdata([t[i], t[i]])
+        sup.set_text(f"Particles released 1 July 2025 00:00 UTC, {t[i]:%d %b %H:%M} UTC")
+
+    gif_frames(fig, update, t.size, out / "renewal_particles.gif")
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--tag", default="veg_ic3d_0701_0710")
+    ap.add_argument("--no-gif", action="store_true")
     args = ap.parse_args(argv)
     d = ROOT / "outputs" / "renewal" / args.tag
     FIG.mkdir(exist_ok=True)
+    case(d, FIG)
     setup(d, FIG)
     remaining(d, FIG)
     maps(d, FIG)
     local_residence(d, FIG)
+    if not args.no_gif:
+        readings_gif(d, FIG)
+        particles_gif(d, FIG)
     return 0
 
 
