@@ -8,7 +8,7 @@ The residence time of the water of the lagoon enters RQ4 of [research_questions_
 
 The vegetated, fixed-bed member without wave coupling was run from a cold start with stratified initial salinity and temperature on 1 July 2025 to the end of the forcing on 10 July, writing the hydrodynamics for D-WAQ every 30 minutes and the vertical eddy viscosity to the map output (Section 2). The lagoon of 21.9 km² and 22.6 hm³ is divided by latitude into a southern, a central and a northern basin (Section 3).
 
-The water of the lagoon does not reach the e-folding fraction within the nine days in any of the readings. The fraction of the initial lagoon water still inside the lagoon on 10 July is 0.69 by the online tracer, 0.66 by D-WAQ and 0.79 by the particles, and an exponential fitted after the first day gives e-folding times of 26 to 32 days by the two Eulerian readings and 57 days by the particles (Section 7). The northern basin renews in about a week, the central basin passes its water southward, and the southern basin exports to the sea through the southern mouth. The exchange is organised as a slow north-to-south throughflow of 5 to 6 m³/s under the canopy, set by a sea-level difference of about 3 cm between the two mouths along the coast (Section 5). Without the canopy the same difference drives 42 to 85 m³/s and flushes the lagoon in about four days. The salinity measured in July by Mancuso et al. (2023), highest in the northern basin, does not support a renewal that starts in the north, and the realism of the coastal sea-level difference remains the first open matter (Section 11).
+The water of the lagoon does not reach the e-folding fraction within the nine days in any of the readings. The fraction of the initial lagoon water still inside the lagoon on 10 July is 0.69 by the online tracer, 0.66 by D-WAQ and 0.79 by the particles, and an exponential fitted after the first day gives e-folding times of 26 to 32 days by the two Eulerian readings and 57 days by the particles (Section 7). The northern basin renews in about a week, the central basin passes its water southward, and the southern basin exports to the sea through the southern mouth. The exchange is organised as a slow north-to-south throughflow of 5 to 6 m³/s under the canopy, set by a sea-level difference of about 3 cm between the two mouths along the coast (Section 5). Without the canopy the same difference drives 42 to 85 m³/s and flushes the lagoon in about four days. The salinity measured in July by Mancuso et al. (2023), highest in the northern basin, does not support a renewal that starts in the north, and the realism of the coastal sea-level difference remains the first open matter (Section 11). The flushing time of 6 days and the renewal time extended by the exponential give a mixing efficiency of 0.20 to 0.27 in the sense of Umgiesser et al. (2014), within the range of Venice, Cabras and Marano-Grado (Section 7).
 
 The two Eulerian readings agree within 0.1 on the lagoon water held by each basin. The particles retain more water in the southern basin, where the volume they represent is not conserved (Section 9).
 
@@ -141,6 +141,30 @@ The fractions of the particles under the two constant diffusivities bracket thos
 
 The central basin loses water in tidal oscillations superposed on a trend, and the lagoon as a whole loses most of its water on 4 to 5 July and on 9 July, under northerly to north-westerly wind of 7 to 9 m/s, with little change in between. The extrapolated times therefore depend on the wind of the window, by a factor that one case of nine days cannot measure.
 
+Umgiesser et al. (2014) compared ten Mediterranean lagoons, Venice among them, with the finite-element model SHYFEM through two time scales and their ratio. The water flushing time WFT = V/Q, with Q the mean outflow from the lagoon to the sea, is the e-folding time of a basin that mixes the inflowing water at once with its own. The water renewal time WRT is the time integral of the tracer mass divided by its initial value, the θ of Section 1, on runs long enough for the tracer to leave. The mixing efficiency ME = WFT/WRT equals 1 for a fully mixed basin and falls toward 0 as the ebb carries back the sea water of the preceding flood. For the Stagnone, Q is the mean over the half-hourly records after the first day of the discharge at the two mouths taken when it is directed to the sea, and V is the 22.6 hm³ of Section 3. WRT is given truncated at the end W of the window, a lower bound, and extended by the fitted exponential as θ_W + r(W) τ_fit.
+
+| Member and reading | Q (m³/s) | Volume exchanged daily | WFT (d) | WRT (d), truncated / extended | ME |
+|---|---|---|---|---|---|
+| Canopy, renewal case, FM online tracer | 43.8 | 0.17 | 6.0 | 7.7 / 30 | ≤ 0.78 / 0.20 |
+| Canopy, renewal case, D-WAQ scheme 24 | 43.8 | 0.17 | 6.0 | 7.5 / 25 | ≤ 0.80 / 0.24 |
+| Canopy, renewal case, D-WAQ scheme 15 | 43.8 | 0.17 | 6.0 | 7.2 / 22 | ≤ 0.83 / 0.27 |
+| Waves, bare bed (`v04AE_nodm`), FM online tracer | 109 | 0.42 | 2.4 | 1.9, complete | 1.26 |
+
+| Lagoon (Umgiesser et al., 2014) | WFT (d) | WRT (d) | ME |
+|---|---|---|---|
+| Marano-Grado | 0.9 | 3.0 | 0.30 |
+| Venice | 1.5 | 10.4 | 0.15 |
+| Taranto | 11.1 | 16.2 | 0.68 |
+| Ganzirri | 10.8 | 71.0 | 0.15 |
+| Faro | 28.3 | 86.0 | 0.33 |
+| Cabras | 30.1 | 122.5 | 0.25 |
+| Nador | 35.3 | 52.8 | 0.67 |
+| Lesina | 87.1 | 181.0 | 0.52 |
+| Varano | 133.4 | 248.2 | 0.54 |
+| Mar Menor | 196.2 | 384.0 | 0.51 |
+
+Under the canopy the lagoon sends 0.17 of its volume to the sea each day, and with the extended renewal time its efficiency of 0.20 to 0.27 lies with Venice, Ganzirri, Cabras and Marano-Grado, where most of the ebb water entered on the preceding flood. The truncated renewal time bounds the efficiency only from above, at about 0.8, and the extended value rests on the exponential extrapolation. The outflow at the two mouths exceeds the inflow by 5 m³/s (Section 5), so the flushing time carries an uncertainty of about 12 per cent. Over the bare bed the tracer leaves within the window, the renewal time is measured, and the efficiency of 1.26 exceeds the bound of a stirred basin. Water carried along a path without return leaves in the order of its distance to the exit, with a mean residence time of half the flushing time and an efficiency up to 2, and the 85 m³/s of throughflow of the bare member make up most of its outflow. Where a lagoon carries a net throughflow the ratio therefore reflects the share of the throughflow in the outflow as well as the mixing, whereas under the canopy the throughflow of 5 to 10 m³/s is a small part of the tidal outflow and the efficiency stays in the range of the tidal lagoons. The values of Umgiesser et al. (2014) come from two to twelve releases spread over a year and run to completion, against one release of nine days here.
+
 ## 8. Fate of the water of each basin
 
 | Basin of release | Reading | In the southern basin | In the central basin | In the northern basin | In the sea |
@@ -210,3 +234,5 @@ Dagestad, K.-F., Röhrs, J., Breivik, Ø. and Ådlandsvik, B. (2018). OpenDrift 
 Mancuso, F.P. et al. (2023). Life on the edge: adaptations of *Posidonia oceanica* to hypersaline conditions in a Mediterranean lagoon system. *Environmental and Experimental Botany* 210, 105320.
 
 Takeoka, H. (1984). Fundamental concepts of exchange and transport time scales in a coastal sea. *Continental Shelf Research* 3, 311–326.
+
+Umgiesser, G., Ferrarin, C., Cucco, A., De Pascalis, F., Bellafiore, D., Ghezzo, M. and Bajo, M. (2014). Comparative hydrodynamics of 10 Mediterranean lagoons by means of numerical modeling. *Journal of Geophysical Research: Oceans* 119, 2212–2226.
