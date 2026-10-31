@@ -46,14 +46,18 @@ def main(argv=None) -> int:
     ap.add_argument("case", type=Path)
     ap.add_argument("tag")
     ap.add_argument("--out", type=Path, default=ROOT / "outputs" / "renewal")
+    ap.add_argument("--run", default="waq_renewal", help="D-WAQ run directory inside the case")
+    ap.add_argument("--suffix", default="", help="appended to the names of the outputs")
     args = ap.parse_args(argv)
     out = args.out / args.tag
     out.mkdir(parents=True, exist_ok=True)
     hyd = args.case / "DFM_DELWAQ_Stagnone_dxy01_15m"
 
-    with xr.open_dataset(args.case / "waq_renewal" / "renewal_map.nc") as ds:
-        times = pd.to_datetime(ds.time.values)
-        c = np.stack([ds[f"mesh2d_cTR{k}"].values for k in (1, 2, 3, 4)])   # (tracer, time, layer, face)
+    with xr.open_dataset(args.case / args.run / "renewal_map.nc") as ds:
+        # the record at the last instant of the hydrodynamics is left out, since
+        # delwaq writes it with flows that no longer match the volumes
+        times = pd.to_datetime(ds.nTimesDlwq.values)[:-1]
+        c = np.stack([ds[f"mesh2d_cTR{k}"].values[:-1] for k in (1, 2, 3, 4)])   # (tracer, time, layer, face)
     with xr.open_dataset(hyd / "Stagnone_dxy01_15m_waqgeom.nc") as g:
         x, y = g.mesh2d_face_x.values, g.mesh2d_face_y.values
     c = np.where(np.abs(c) > 1e9, np.nan, c)
@@ -71,23 +75,23 @@ def main(argv=None) -> int:
     for k, name in BASINS.items():
         cols[name] = by_region[k][k - 1] / m0[k]
     total = np.nansum(c, axis=0)
-    wet = v > 1e-3
+    wet = v > 1.0                                                          # m3, dry segments carry no water
     cols["sum_departure_max"] = np.array([np.nanmax(np.abs(total[i][wet[i]] - 1)) for i in range(nt)])
     r = pd.DataFrame(cols, index=times)
-    r.to_csv(out / "waq_remaining.csv")
+    r.to_csv(out / f"waq{args.suffix}_remaining.csv")
 
     fate = {BASINS[k]: {REGIONS[j]: float(by_region[j][k - 1, -1] / m0[k]) for j in REGIONS}
             for k in BASINS}
     res = {"summary": {k: summary(r[k]) for k in ["lagoon", *BASINS.values()]}, "fate": fate,
            "initial_volume_hm3": {BASINS[k]: float(m0[k] / 1e6) for k in BASINS},
            "sum_departure_max": float(np.nanmax(cols["sum_departure_max"]))}
-    (out / "waq_summary.json").write_text(json.dumps(res, indent=1))
+    (out / f"waq{args.suffix}_summary.json").write_text(json.dumps(res, indent=1))
     print(json.dumps(res, indent=1))
 
     daily = np.flatnonzero((times - times[0]) % pd.Timedelta("1D") == pd.Timedelta(0))
     vm = v[daily].sum(1)
     conc = np.stack([(mass[k, daily].sum(1) / np.where(vm > 0, vm, np.nan)) for k in range(ntr)])
-    np.savez_compressed(out / "waq_daily.npz", cx=x, cy=y, basin=b,
+    np.savez_compressed(out / f"waq{args.suffix}_daily.npz", cx=x, cy=y, basin=b,
                         times=times[daily].values.astype("datetime64[s]").astype(str),
                         conc=conc.astype(np.float32))
     return 0
