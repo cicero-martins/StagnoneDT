@@ -391,6 +391,9 @@ VelocityMagnitudeClasses          = 0.0                        # Class map's lis
 Vegetationmodelnr         = 1
 Cdveg                     = 0.8
 StemheightConvention      = upward_from_bed
+# Uchistem, Expchistem, Uchileaf, Expchileaf, Cdleaf and Arealeaf are read only
+# by the depth-averaged vegetation routine (setbaptist.f90) and are inert with
+# kmx > 0. A run without Uchistem and Expchistem is bit-identical (dflowfm 1.2.184).
 Uchistem                  = 0.10
 Expchistem                = -1.56
 Uchileaf                  = 0.10
