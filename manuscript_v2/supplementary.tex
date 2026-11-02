@@ -378,6 +378,39 @@ silt was taken in the top sigma layer at the map record nearest to each
 overpass, and its percentiles were weighted by face area, as the 10~m pixels
 weight the lagoon by area.
 
+Table~\ref{tab:s_arm} gives the wave-coupled mobile-bed members of the main
+text under the three sets of silt parameters, with their skill, the anomaly
+RMSE at the interior gauge and the silt at the two overpasses inside the
+drifter window.
+
+\begin{table}[H]
+  \centering
+  \caption{Wave-coupled mobile-bed members under the three sets of silt
+  parameters. Silt in the top layer at the Sentinel-2 overpasses of 7 and
+  8~July 2025 (10:00~UTC), median and 95th percentile over the lagoon weighted
+  by area, in mg~l$^{-1}$, against total suspended matter retrieved over the
+  same mask. RMSE$_{\mathrm{anom}}$ is the anomaly RMSE of water level at
+  AltaVilaEst over 8 to 10~July. The canopy column gives the models that carry
+  it.}
+  \label{tab:s_arm}
+  \small
+  \begin{tabular}{lllrrcc}
+    \toprule
+    Member & Silt set & Canopy & LW skill & RMSE$_{\mathrm{anom}}$ (m) & 7~July & 8~July \\
+    \midrule
+    \texttt{W{-}M} & original   & none        & 0.708 & 0.040 & 350 / 8318 & 126 / 13169 \\
+                   & deposition & none        & 0.686 & 0.039 & 48 / 365   & 8.9 / 501 \\
+                   & erosion    & none        & 0.688 & 0.046 & 4.2 / 54   & 0.1 / 68 \\
+    \texttt{WVM}   & original   & flow        & 0.718 & 0.024 & 315 / 13717 & 89 / 19464 \\
+                   & erosion    & flow        & 0.716 & 0.025 & 3.4 / 58   & 0.1 / 88 \\
+                   & deposition & flow, waves & 0.741 & 0.034 & 2.0 / 124  & 0.0 / 52 \\
+                   & erosion    & flow, waves & 0.739 & 0.030 & 0.0 / 12   & 0.0 / 5.1 \\
+    \midrule
+    Sentinel-2     &            &             &       &       & 5.7 / 16   & 3.0 / 12 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.66\textwidth]{s2_tsm_maps}
