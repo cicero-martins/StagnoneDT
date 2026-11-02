@@ -4,10 +4,12 @@ Reads the maps written by s2_suspended_matter_lagoon.py, the statistics in
 data/processed/s2_tsm_july2025.csv and the surface silt of the model members
 in data/processed/arm_surface_silt_s2.csv (surface_silt_at_s2_overpasses_simit.py).
 
-Usage:  python figure_s2_suspended_matter.py
+Usage:  python figure_s2_suspended_matter.py [--paper]
 Writes: figures/s2_tsm_scenes_rgb.png, s2_tsm_processing.png, s2_tsm_maps.png,
-        s2_tsm_model_comparison.png
+        s2_tsm_model_comparison.png; with --paper also
+        manuscript_v2/figures/s2_tsm_model_comparison.pdf with the manuscript labels
 """
+import sys
 from pathlib import Path
 
 import matplotlib.dates as mdates
@@ -116,16 +118,22 @@ fig.colorbar(im, ax=axs, shrink=0.4, label='T (mg/l)')
 fig.savefig(FIG / 's2_tsm_maps.png', dpi=200)
 plt.close(fig)
 
-# 4. satellite against the surface silt of the members
-names = {'dflowfm_v04AE_dens_ic3d': ('bare, original parameters', '#999999', '--'),
-         '_arm_wm_dep': ('bare, dep', '#E69F00', '-'),
-         '_arm_wm_e2p3': ('bare, e2p3', '#56B4E9', '-'),
-         '_veg_waves_dm_ic3d': ('canopy, original parameters', '#000000', '--'),
-         '_arm_vwm_swandep': ('canopy in FM and SWAN, dep', '#D55E00', '-'),
-         '_arm_vwm_e2p3': ('canopy in FM, e2p3', '#0072B2', '-'),
-         '_arm_vwm_e2p3_swan': ('canopy in FM and SWAN, e2p3', '#009E73', '-')}
+# 4. satellite against the surface silt of the members; with --paper the labels
+# use the names of the silt sets in the manuscript and the figure goes to
+# manuscript_v2/figures as well
+PAPER = '--paper' in sys.argv
+SETS = (('original', 'deposition set', 'erosion set') if PAPER else
+        ('original parameters', 'dep', 'e2p3'))
+FLOW, BOTH = ('canopy in the flow', 'canopy in flow and waves') if PAPER else ('canopy in FM', 'canopy in FM and SWAN')
+names = {'dflowfm_v04AE_dens_ic3d': (f'bare, {SETS[0]}', '#999999', '--'),
+         '_arm_wm_dep': (f'bare, {SETS[1]}', '#E69F00', '-'),
+         '_arm_wm_e2p3': (f'bare, {SETS[2]}', '#56B4E9', '-'),
+         '_veg_waves_dm_ic3d': (f'{FLOW}, {SETS[0]}', '#000000', '--'),
+         '_arm_vwm_swandep': (f'{BOTH}, {SETS[1]}', '#D55E00', '-'),
+         '_arm_vwm_e2p3': (f'{FLOW}, {SETS[2]}', '#0072B2', '-'),
+         '_arm_vwm_e2p3_swan': (f'{BOTH}, {SETS[2]}', '#009E73', '-')}
 FLOOR = 0.1
-fig, axs = plt.subplots(1, 2, figsize=(9.6, 3.6), constrained_layout=True, sharey=True)
+fig, axs = plt.subplots(1, 2, figsize=(7.0, 4.6) if PAPER else (9.6, 3.6), constrained_layout=True, sharey=True)
 for ax, q in zip(axs, ('p50', 'p95')):
     for mem, (lab, col, ls) in names.items():
         d = MODEL[MODEL['member'] == mem].sort_values('overpass')
@@ -136,12 +144,21 @@ for ax, q in zip(axs, ('p50', 'p95')):
         ax.errorbar(d['datetime'], d[f'tsm_{q}'], fmt=mk, color='#cc79a7', mfc='white', mew=1.5, ms=7,
                     label=f'Sentinel-2, {orb}', zorder=5)
     ax.axvspan(pd.Timestamp('2025-07-07'), pd.Timestamp('2025-07-10'), color='#000000', alpha=0.06, lw=0)
-    ax.set_yscale('log'); ax.set_ylim(FLOOR * 0.8, 2e4)
+    ax.set_yscale('log'); ax.set_ylim(FLOOR * 0.8, 5e4)
     ax.set_title(f'{q} over the lagoon (mg/l)')
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m'))
     ax.grid(axis='y', color='#dddddd', lw=0.5)
 axs[0].set_ylabel('suspended matter, surface (mg/l)')
-axs[1].legend(loc='upper left', bbox_to_anchor=(1.02, 1), frameon=False)
-fig.savefig(FIG / 's2_tsm_model_comparison.png', dpi=200)
+if PAPER:
+    fig.legend(*axs[1].get_legend_handles_labels(), loc='outside lower center', ncol=3, frameon=False,
+               fontsize=7)
+else:
+    axs[1].legend(loc='upper left', bbox_to_anchor=(1.02, 1), frameon=False)
+if PAPER:
+    for ax, lab in zip(axs, 'ab'):
+        ax.set_title(f'({lab}) ' + ax.get_title())
+    fig.savefig(ROOT / 'manuscript_v2' / 'figures' / 's2_tsm_model_comparison.pdf')
+else:
+    fig.savefig(FIG / 's2_tsm_model_comparison.png', dpi=200)
 plt.close(fig)
 print('figures written')
