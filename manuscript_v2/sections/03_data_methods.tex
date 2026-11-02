@@ -45,14 +45,22 @@ stationary mode, which holds because wave energy crosses the 2.5~km basin in
 about fifteen minutes. The spectral discretisation, the source terms and the
 ground for each setting are given in Section~S2 and Table~S1.
 
+Where the canopy also entered the wave model, it did so through the vegetation
+dissipation of \citet{Dalrymple1984} as implemented in SWAN by
+\citet{Suzuki2012}, with the stem density, height, diameter and drag coefficient
+of the flow model averaged onto the inner grid, so that no parameter was added
+(Section~S2).
+
 \subsection{Boundary and atmospheric forcing}
 \label{sec:methods_forcing}
 
-Open-sea boundaries were forced with the CMEMS Mediterranean Sea physical
-reanalysis. Water level, salinity, and temperature were prescribed along the
-offshore boundary, together with a depth-resolved advection velocity, which was
-necessary for stability in the deep offshore cells, where a water-level-only
-boundary admitted spurious accelerations. Since the CMEMS sea surface height is
+Open-sea boundaries were forced with the CMEMS Mediterranean Sea products.
+Water level was taken from the analysis and forecast system, whose sea surface
+height carries the tide, and salinity, temperature and a depth-resolved
+advection velocity from the physical reanalysis, all prescribed along the
+offshore boundary. The advection velocity was necessary for stability in the
+deep offshore cells, where a water-level-only boundary admitted spurious
+accelerations. Since the CMEMS sea surface height is
 an anomaly about the model rest state rather than a geodetic level, a per-node
 offset of $+0.449$~m, anchored on the Marettimo tide gauge over 384 days and
 distributed along the boundary by the CMEMS mean dynamic topography, was added
@@ -183,6 +191,13 @@ the separation between modelled and observed positions at the end of each
 deployment. \citet{Revelard2021} discuss the sensitivity of this class of
 metric to the normalisation choice in coastal applications.
 
+Suspended sediment was checked against total suspended matter retrieved from
+nine Sentinel-2 scenes between 28~June and 13~July 2025 by the algorithm of
+\citet{Nechad2010} at 665~nm, an upper bound on the mineral concentration since
+it includes organic particles and the bright bottom of a sub-metre basin. Silt
+in the top model layer was compared at the overpasses over the same lagoon mask
+(Section~S5).
+
 \subsection{Numerical experiments}
 \label{sec:methods_experiments}
 
@@ -214,6 +229,18 @@ confined to depths above 15 to 20~m, where waves can plausibly move it
 segments of the wave-coupled mobile-bed member without canopy, restarted on
 7~July from its state on that date, one with the bed updated as in the member
 and one with the bed held at that state.
+
+The wave-coupled fixed-bed vegetated member was repeated with the canopy also
+in the wave model, from the same restart, and is coded
+\texttt{WV{-}}$^{\mathrm{s}}$. The mobile-bed arm was repeated under two sets
+of silt parameters chosen by three-day runs against a target of 1 to
+20~mg~l$^{-1}$ of silt in the lagoon, with no reference to the drifters or the
+gauges (Section~S5). The deposition set raises the critical shear stress for
+sedimentation from 0.1 to 1000~N~m$^{-2}$, and the erosion set adds a critical
+shear stress for erosion of 0.2 in place of 0.1~N~m$^{-2}$ and an erosion
+parameter of $3\times10^{-5}$ in place of $10^{-4}$~kg~m$^{-2}$~s$^{-1}$. Their
+vegetated wave-coupled members carry the canopy in the wave model, and the
+erosion set was also run with the canopy in the flow alone.
 
 The whole ensemble was also repeated from a vertically uniform column, at
 24~$^\circ$C and 37.5 outside the lagoon and with the same hypersaline value

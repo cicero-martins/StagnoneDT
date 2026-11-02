@@ -30,7 +30,11 @@ Modelled-to-observed standard deviation ratios move the same way, from 1.18 and
 reproduce the values of their fixed-bed counterparts to within 3~mm, with one
 exception, the bare wave-coupled member at AltaVilaEst, whose anomaly RMSE is
 8~mm lower than on the fixed bed and remains 16~mm above that of its vegetated
-counterpart.
+counterpart. With the canopy also in the wave model, \texttt{WV{-}}$^{\mathrm{s}}$
+gives an anomaly RMSE of 0.026~m and a correlation of 0.94 at AltaVilaEst, so
+the canopy signature
+at the interior gauge holds, while at BocaNord its anomaly RMSE of 0.038~m
+returns to the value of the uncoupled members.
 
 The record itself shows where that error sits (Figure~\ref{fig:wl}a), with the
 bare configurations overshooting the range of the observed anomaly and running
@@ -110,7 +114,9 @@ two vegetated members score 0.711 and 0.739 and the two bare ones 0.597 and
 0.619, and the two pairs do not overlap. The two components of the trajectory
 error move together and both improve with the canopy, path length ratio rising
 from 0.80 and 0.83 without a canopy to 0.88 and 0.94 with one, and mean heading
-error falling from 11.2 and 10.4$^\circ$ to 8.5 and 8.4$^\circ$.
+error falling from 11.2 and 10.4$^\circ$ to 8.5 and 8.4$^\circ$. With the
+canopy also in the wave model the wave-coupled vegetated member scores 0.734,
+within 0.005 of the uncoupled one.
 
 \begin{table}[H]
   \centering
@@ -119,8 +125,9 @@ error falling from 11.2 and 10.4$^\circ$ to 8.5 and 8.4$^\circ$.
   is simulated over observed path length. Heading error is the mean angular
   difference between simulated and observed step directions and is computed on
   eleven deployments, deployment 4 having too few positions to form the three
-  step bearings it requires. The lower block is the mobile-bed arm
-  (Section~\ref{sec:res_sensitivity}).}
+  step bearings it requires. \texttt{WV{-}}$^{\mathrm{s}}$ carries the canopy
+  in the wave model as well. The lower block is the mobile-bed arm under the
+  original sediment parameters (Section~\ref{sec:res_sensitivity}).}
   \label{tab:lagrangian}
   \begin{tabular}{lccrrrr}
     \toprule
@@ -130,6 +137,7 @@ error falling from 11.2 and 10.4$^\circ$ to 8.5 and 8.4$^\circ$.
     \texttt{{-}V{-}}   & no  & yes & \textbf{0.739} & \textbf{327} & 0.88 & 8.5$^\circ$ \\
     \texttt{W{-}{-}}   & yes & no  & 0.597 & 481 & 0.83 & 10.4$^\circ$ \\
     \texttt{WV{-}}     & yes & yes & 0.711 & 335 & \textbf{0.94} & \textbf{8.4}$^\circ$ \\
+    \texttt{WV{-}}$^{\mathrm{s}}$ & yes & yes & 0.734 & 337 & 0.89 & \textbf{8.4}$^\circ$ \\
     \midrule
     \multicolumn{7}{l}{\textit{Mobile bed}} \\
     \texttt{{-}{-}M}   & no  & no  & 0.614 & 479 & 0.80 & 11.4$^\circ$ \\
@@ -190,6 +198,16 @@ wave treatment.
 $-0.003$) without a canopy and by 0.028 (CI $-0.040$ to $-0.017$) with one,
 with 21 and 25 of the 35 drifters worse. The effect is a fifth of that of the
 canopy, and the interaction term of the two factors is $-0.006$.
+
+The second of these contrasts depends on the wave model. With the canopy also
+dissipating wave energy, \texttt{WV{-}}$^{\mathrm{s}}$ scores 0.023 above
+\texttt{WV{-}} (CI $+0.014$ to $+0.032$), with 26 of the 35 drifters better.
+Taking it as the wave-coupled vegetated cell, the wave contrast under the
+canopy falls to $-0.005$ (CI $-0.011$
+to $-0.001$), the canopy contrast with waves rises to $+0.137$ (CI $+0.081$ to
+$+0.190$) and the interaction becomes $+0.017$ (CI $-0.001$ to $+0.037$). Most
+of the wave penalty under the canopy therefore came from a wave field computed
+over a bare bed.
 
 The canopy contrast holds deployment by deployment (Figure~\ref{fig:attribution}b),
 with the same sign under both wave treatments in ten of the twelve deployments.
@@ -278,8 +296,10 @@ Section~\ref{sec:res_drifters}.
 
 The wave field does not follow the flow, mean orbital velocity at the bed
 changing by 0.2 to 0.9\% over the four classes when the canopy is introduced on
-the fixed bed (Figure~\ref{fig:classes}c), since the canopy does not reach the
-wave computation (Section~\ref{sec:disc_limits}).
+the fixed bed (Figure~\ref{fig:classes}c), since in these members the canopy
+does not reach the wave computation. When it does, significant wave height over
+the vegetated points falls to a median of 0.36 of the bare-bed value
+(Section~S2).
 
 \begin{figure}[H]
   \centering
@@ -305,8 +325,8 @@ Averaged over the lagoon from 7 to 10 July, suspended sediment reaches
 of the lagoon loses 4.0 and 3.1~million~\si{\metre\cubed} over the nine days.
 By 10 July the bare wave-coupled member has lowered the lagoon bed by 12~cm on
 average and changed it by more than 5~cm over 74\% of its area, whereas without
-waves the change exceeds 5~cm over 0.3\% of the area. The canopy does not
-shield the bed from this erosion, because it does not reach the wave model.
+waves the change exceeds 5~cm over 0.3\% of the area. The canopy in the flow
+alone does not shield the bed from this erosion.
 
 The same bare member nevertheless scores 0.708 (Table~\ref{tab:lagrangian}),
 close to the vegetated members, so that in the cell combining waves and a
@@ -316,11 +336,77 @@ the wave and bed-mobility contrasts of the bare arm reach $+0.094$ and $+0.111$
 the source of that skill. With the bed updated the segment scores 0.710 and
 with the bed held at its 7~July state 0.707, a difference of $-0.003 \pm
 0.004$, while the held bed scores $0.110 \pm 0.039$ above the fixed-bed member
-\texttt{W{-}{-}}, with 29 of 35 drifters better. The gain therefore comes from
-the bathymetry reshaped over the first six days and not from sediment transport
-in the drifter window. At AltaVilaEst the member keeps an anomaly RMSE of
-0.040~m and a correlation of 0.86, against 0.024~m and 0.94 for its vegetated
-counterpart.
+\texttt{W{-}{-}}, with 29 of 35 drifters better. The gain therefore does not
+come from sediment transport in the drifter window. The held segment keeps the
+sediment module active with the bed frozen, so it places the gain in the state
+the member had reached by 7~July without separating the reshaped bathymetry
+from the presence of the module itself. At AltaVilaEst the member keeps an
+anomaly RMSE of 0.040~m and a correlation of 0.86, against 0.024~m and 0.94 for
+its vegetated counterpart.
+
+The two other sets of silt parameters hold the bed change at millimetres, the
+bare wave-coupled member changing the lagoon bed over 2 to 10~July by a median
+of 0.8~mm and a 95th percentile of 28~mm under the erosion set, and the
+uncoupled members reproduce their fixed-bed counterparts exactly. The bare
+wave-coupled member nevertheless scores 0.688 under the erosion set and 0.686
+under the deposition set, 0.091 (CI $+0.041$ to $+0.140$) and 0.089 above
+\texttt{W{-}{-}} (Table~\ref{tab:arm}), so the gain persists where the
+bathymetry hardly moves. With the canopy the bed contrast is $+0.005$ to
+$+0.007$, and under the erosion set the canopy contrast in the wave-coupled
+mobile-bed cell rises from $+0.011$ to $+0.028$ (CI $+0.002$ to $+0.056$) with
+the canopy in the flow alone and to $+0.051$ (CI $+0.025$ to $+0.078$) with it
+also in the wave model. At AltaVilaEst the bare members keep an anomaly RMSE
+of 0.039 and 0.046~m, against 0.025 to 0.034~m for the vegetated ones.
+
+Over the lagoon the Sentinel-2 median stays between 1.9 and 5.7~mg~l$^{-1}$
+and the 95th percentile between 9 and 18~mg~l$^{-1}$, the scenes of 7 to
+10~July exceeding the earlier ones of the same orbit by at most
+2~mg~l$^{-1}$. From 5~July the members with the original parameters exceed the
+observed median by a factor of 30 to 70 and the 95th percentile by a factor of
+500 to 1600 (Figure~\ref{fig:s2}). The erosion set brings the modelled median
+to the observed range or below and leaves the 95th percentile three to eight
+times above it, which only the canopy in the wave model brings within the
+observation, to 12 and 5~mg~l$^{-1}$ on 7 and 8~July.
+
+\begin{table}[H]
+  \centering
+  \caption{Wave-coupled mobile-bed members under the three sets of silt
+  parameters. Silt in the top layer at the Sentinel-2 overpasses of 7 and
+  8~July 2025 (10:00~UTC), median and 95th percentile over the lagoon weighted
+  by area, in mg~l$^{-1}$, against total suspended matter retrieved over the
+  same mask. RMSE$_{\mathrm{anom}}$ is the anomaly RMSE of water level at
+  AltaVilaEst over 8 to 10~July. The canopy column gives the models that carry
+  it.}
+  \label{tab:arm}
+  \small
+  \begin{tabular}{lllrrcc}
+    \toprule
+    Member & Silt set & Canopy & LW skill & RMSE$_{\mathrm{anom}}$ (m) & 7~July & 8~July \\
+    \midrule
+    \texttt{W{-}M} & original   & none        & 0.708 & 0.040 & 350 / 8318 & 126 / 13169 \\
+                   & deposition & none        & 0.686 & 0.039 & 48 / 365   & 8.9 / 501 \\
+                   & erosion    & none        & 0.688 & 0.046 & 4.2 / 54   & 0.1 / 68 \\
+    \texttt{WVM}   & original   & flow        & 0.718 & 0.024 & 315 / 13717 & 89 / 19464 \\
+                   & erosion    & flow        & 0.716 & 0.025 & 3.4 / 58   & 0.1 / 88 \\
+                   & deposition & flow, waves & 0.741 & 0.034 & 2.0 / 124  & 0.0 / 52 \\
+                   & erosion    & flow, waves & 0.739 & 0.030 & 0.0 / 12   & 0.0 / 5.1 \\
+    \midrule
+    Sentinel-2     &            &             &       &       & 5.7 / 16   & 3.0 / 12 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{s2_tsm_model_comparison}
+  \caption{Suspended matter over the lagoon, Sentinel-2 against silt in the top
+  layer of the wave-coupled mobile-bed members at the overpasses. (a) Median and
+  (b) 95th percentile, weighted by area over the same lagoon mask, on a
+  logarithmic scale, with model values below 0.1~mg~l$^{-1}$ drawn at 0.1. The
+  vegetated members are segments from 7~July, and the shaded band marks the
+  drifter window.}
+  \label{fig:s2}
+\end{figure}
 
 Started from a vertically uniform column instead of the stratified state, the
 bare members score 0.080 to 0.145 lower and the vegetated members 0.005 to

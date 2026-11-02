@@ -163,6 +163,24 @@ well within the hourly exchange. Offshore the crossing time is longer, but the
 sea state there is prescribed from the boundary spectra rather than generated
 inside the domain.
 
+In the members that carry the canopy in the wave model, the stem density of the
+flow model was averaged over each point of the inner grid within half a grid
+step, which gives 3929 vegetated points with a mean density of 1370 and a
+maximum of 3000 stems~m$^{-2}$. Height and diameter enter SWAN as scalars, the
+density-weighted means of the flow-model fields, 0.34~m and 8.6~mm, since the
+two species differ in both, and the drag coefficient
+is the 0.8 of the flow model. Dissipation follows \citet{Dalrymple1984} in the
+implementation of \citet{Suzuki2012}. Three adjustments of the wave input were
+needed in this release. The vegetation keys of a domain block take effect only
+when that block also switches vegetation on, the option of passing the flow
+vegetation fields leaves height and diameter undefined in the SWAN input, and
+the vegetation command written for SWAN omits the selector of the dissipation
+formulation, which the SWAN of the same package requires, so a script inserts
+it before each wave computation. In a three-day run from 1~July, significant
+wave height over the vegetated points of the inner grid fell to a median of
+0.36 of its value without the canopy in the wave model, and the unvegetated
+points were unchanged.
+
 \section{Boundary offset, initial condition and atmospheric forcing}
 \label{sec:s_forcing}
 
@@ -269,7 +287,7 @@ by rock. The roughness link file must be written in the same geographic
 coordinate system as the mesh, because a projected file is accepted without
 error while assigning no links at all.
 
-\section{Mobile-bed settings}
+\section{Mobile-bed settings and suspended sediment}
 \label{sec:s_sediment}
 
 Suspended sediment does not contribute to the density field in the four
@@ -292,6 +310,83 @@ the sand fraction mobilises. Without this restriction the bed erodes over the
 whole domain, including water hundreds of metres deep where the process has no
 physical meaning. The restriction bounds erosion and not deposition, so
 material mobilised in shallow water still settles offshore.
+
+The original silt parameters are a critical shear stress of 0.1~N~m$^{-2}$ for
+both erosion and sedimentation and an erosion parameter of
+$10^{-4}$~kg~m$^{-2}$~s$^{-1}$. The alternative sets were chosen by three-day
+cold starts from 1~July with the bed held through the first day, scored over 2
+to 4~July on the lagoon cells shallower than 3~m against a target of 1 to
+20~mg~l$^{-1}$ of silt with events up to about 50~mg~l$^{-1}$, bed change at
+the millimetre scale and a closed sediment volume (Table~\ref{tab:s_sweep}).
+The skin-friction option of the sediment module reduces the stress entering the erosion
+term so far that no silt is resuspended, and continuous deposition alone leaves
+a mean of 50~mg~l$^{-1}$. Raising the critical stress for erosion to
+0.2~N~m$^{-2}$ and lowering the erosion parameter to
+$3\times10^{-5}$~kg~m$^{-2}$~s$^{-1}$ brings the bare member within the target,
+which is a tuned result. The canopy in the flow alone does not reduce
+resuspension, while the canopy also in the wave model reduces it by a factor of
+three under continuous deposition and closes the sediment volume without any
+change to the erosion parameters. Over 7 to 10~July, a window of bed stress
+about five times higher, only the erosion set with the canopy also in the wave
+model meets the target, with a mean of 8 and a 95th percentile of
+50~mg~l$^{-1}$, and the comparison with the satellite retrieval below is made
+at the overpasses.
+
+\begin{table}[H]
+  \centering
+  \caption{Sweep of silt parameters, three-day cold starts with waves, silt in
+  the lagoon over 2 to 4~July and change of sediment volume over the same
+  interval. Deposition denotes a critical shear stress for sedimentation of
+  1000~N~m$^{-2}$.}
+  \label{tab:s_sweep}
+  \small
+  \begin{tabular}{llrrr}
+    \toprule
+    Canopy & Silt parameters & Mean (mg~l$^{-1}$) & 95th pct. (mg~l$^{-1}$) & $\Delta V$ ($10^3$~m$^3$) \\
+    \midrule
+    none        & original                                   & 1707 & 9984 & $+245$ \\
+    none        & deposition                                 & 50   & 272  & $+83$ \\
+    none        & deposition, $\tau_{ce} = 0.2$              & 22   & 127  & $+53$ \\
+    none        & deposition, $\tau_{ce} = 0.2$, $M = 3\times10^{-5}$ & 7 & 39 & $+25$ \\
+    none        & deposition, $\tau_{ce} = 0.3$, $M = 10^{-5}$ & 1  & 8    & $+6.1$ \\
+    none        & skin friction                              & 1    & 0    & $+3.5$ \\
+    flow        & original                                   & 2420 & 16005 & $+178$ \\
+    flow        & deposition                                 & 54   & 295  & $+61$ \\
+    flow, waves & deposition                                 & 17   & 101  & $+1.2$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Total suspended matter was retrieved from the Sentinel-2 L2A scenes of tile
+33STB with less than 8\% cloud over the tile between 28~June and 13~July 2025,
+nine scenes from two relative orbits passing at 10:00 and 10:10~UTC. The
+bottom-of-atmosphere reflectance of band B04 (665~nm) less that of band B11
+(1610~nm), $\rho_w$, removes sun glint, which is strong in the later orbit, and
+residual haze. The algorithm of \citet{Nechad2010},
+\begin{equation}
+  T = \frac{A\,\rho_w}{1 - \rho_w / C}, \qquad A = 355.85~\mathrm{g\,m^{-3}},
+  \quad C = 0.1728,
+\end{equation}
+was applied for $\rho_w < 0.8\,C$, about 246~mg~l$^{-1}$, which excludes 0.3\%
+of the lagoon pixels. Pixels classed by Sen2Cor as cloud, cloud shadow, cirrus,
+saturated, vegetation or bare soil were left out, values of $\rho_w$ between
+$-0.01$ and 0 were taken as zero, and the lagoon mask is the one applied to the
+model faces. Statistics over the pixels valid in each scene and over those
+valid in every scene of the same orbit differ by at most 0.1~mg~l$^{-1}$ in the
+median and 2~mg~l$^{-1}$ in the 95th percentile (Fig.~\ref{fig:s_s2}). Modelled
+silt was taken in the top sigma layer at the map record nearest to each
+overpass, and its percentiles were weighted by face area, as the 10~m pixels
+weight the lagoon by area.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.66\textwidth]{s2_tsm_maps}
+  \caption{Total suspended matter over the lagoon in the nine Sentinel-2
+  scenes, over the pixels valid in each scene, on the mean of the visible bands
+  in grey, with the median over those pixels in the title of each panel.
+  Distances in km from the south-west corner of the window.}
+  \label{fig:s_s2}
+\end{figure}
 
 \section{Sensitivity to the discretisation and the host}
 \label{sec:s_numerics}
