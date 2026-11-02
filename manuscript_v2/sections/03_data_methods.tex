@@ -88,7 +88,15 @@ layer over the vertical extent the plants occupy. A cell whose canopy fills two
 fifths of the water column carries drag in the layers within that fraction and
 none above it. Drag per unit volume follows the standard quadratic form
 \citep{Nepf2012}, with a drag coefficient $C_D$, a stem diameter $D$, an areal
-stem density $m$ and a canopy height $h_v$.
+stem density $m$ and a canopy height $h_v$. The drag coefficient is constant,
+and the canopy responds to the flow through the mechanical bending model of the
+solver, in which the moment of the drag force about the leaf base is balanced
+against the moment of the buoyancy force, the latter set by the difference
+between the density of sea water and the leaf density of Table~\ref{tab:veg}.
+The bending angle $\varphi$ reduces the vertical extent of the drag to
+$h_v \cos\varphi$, so the dependence of the canopy resistance on velocity
+enters through the geometry of the canopy rather than through the drag
+coefficient.
 
 The alternative available in this solver is the trachytope framework, in which
 vegetation enters as a composite bed roughness following \citet{Baptist2007}.
