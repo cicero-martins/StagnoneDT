@@ -29,6 +29,13 @@ OUT_DIR = ROOT / 'outputs' / 'wetwise_tab' / 'demo_hydrodynamics'
 DATA_DIR = OUT_DIR / 'data'
 VEL_DIR = DATA_DIR / 'vel'
 CACHE = {'coarse': OUT_DIR / 'demo_coarse.nc', 'fine': OUT_DIR / 'demo_fine.nc'}
+# The turbidity layer is a scenario of its own, on a shorter window and from
+# another run, so it keeps its own cache and its own provenance line.
+TRACER_CACHE = {'coarse': OUT_DIR / 'demo_tracer_coarse.nc',
+                'fine': OUT_DIR / 'demo_tracer_fine.nc'}
+TRACER_LABEL = '_veg_hv040_3d_tracer'
+TRACER_DESC = ('canopy member started 1 July from stratified profiles, '
+               'instantaneous unit patch at Birgi and at the Trapani saltpans')
 LDB = ROOT / 'data' / 'processed' / 'sicily_v05_manualEdited.ldb'
 INSITU = ROOT / 'data' / 'processed' / 'insitu_2025-26'
 HTML = OUT_DIR / 'index.html'
@@ -86,7 +93,8 @@ def build_cmaps():
     }
 
 
-DEFAULT_CMAP = {'wl': 'viridis', 'hwav': 'balance', 'vel': 'wetwise-amber'}
+DEFAULT_CMAP = {'wl': 'viridis', 'hwav': 'balance', 'vel': 'wetwise-amber',
+                'turbidity': 'amp'}
 
 
 # -- land boundary ----------------------------------------------------------
@@ -314,11 +322,35 @@ def station_model(dsf, dsc):
     return out
 
 
+def pad_tracer(tracer, host):
+    """The tracer run is shorter than the portal axis, so the tail is empty.
+
+    Frames are matched by position, both caches starting at the same instant
+    on the same half-hour grid, which is asserted rather than assumed.
+    """
+    assert tracer['time'].values[0] == host['time'].values[0]
+    assert tracer['time'].values[1] == host['time'].values[1]
+    a = tracer['turbidity'].values
+    out = np.full((host.sizes['time'],) + a.shape[1:], np.nan, np.float32)
+    out[:a.shape[0]] = a
+    return xr.DataArray(out, dims=['time', 'lat', 'lon'])
+
+
 def build():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     VEL_DIR.mkdir(parents=True, exist_ok=True)
 
-    ds = {g: fill_coast(xr.open_dataset(p).load()) for g, p in CACHE.items()}
+    ds = {}
+    n_tracer = 0
+    for g, path in CACHE.items():
+        d = xr.open_dataset(path).load()
+        tp = TRACER_CACHE[g]
+        if tp.exists():
+            t = xr.open_dataset(tp).load()
+            d = d.assign(turbidity=pad_tracer(t, d))
+            n_tracer = int(t.sizes['time'])
+            t.close()
+        ds[g] = fill_coast(d)
     times = pd.to_datetime(ds['coarse']['time'].values)
     n_t = len(times)
     n_days = int(np.ceil(n_t / FRAMES_PER_DAY))
@@ -334,6 +366,9 @@ def build():
         'u16_nan': U16_NAN,
         'i16_nan': I16_NAN,
         'zoom_fine': ZOOM_FINE,
+        'turbidity_src': TRACER_LABEL if n_tracer else None,
+        'turbidity_desc': TRACER_DESC if n_tracer else None,
+        'turbidity_n_t': n_tracer,
         'cmaps': build_cmaps(),
         'default_cmap': DEFAULT_CMAP,
         'grids': {},
@@ -346,6 +381,7 @@ def build():
 
         s1 = d['mesh2d_s1'].values
         hw = d['mesh2d_hwav'].values if 'mesh2d_hwav' in d else None
+        tb = d['turbidity'].values if 'turbidity' in d else None
         spd = np.hypot(d['mesh2d_ucx'].values, d['mesh2d_ucy'].values)
 
         if g == 'fine':
@@ -357,10 +393,16 @@ def build():
                   f'({int(si.sum())}x{int(sj.sum())} of {lons.size}x{lats.size})')
         else:
             cut = lambda a: a
-        s1_s, hw_s, spd_s = cut(s1), cut(hw), cut(spd)
+        s1_s, hw_s, spd_s, tb_s = cut(s1), cut(hw), cut(spd), cut(tb)
 
         def pct(a, q):
             a = a[np.isfinite(a)]
+            return float(np.percentile(a, q)) if a.size else 1.0
+
+        def pct_above(a, floor, q):
+            if a is None:
+                return 1.0
+            a = a[np.isfinite(a) & (a > floor)]
             return float(np.percentile(a, q)) if a.size else 1.0
 
         # Per-view defaults: the lagoon runs an order of magnitude slower than
@@ -372,10 +414,15 @@ def build():
             'dx': float(lons[1] - lons[0]), 'dy': float(lats[1] - lats[0]),
             'wl': write_scalar(d, 'mesh2d_s1', g),
             'hwav': write_scalar(d, 'mesh2d_hwav', g) if hw is not None else None,
+            'turbidity': write_scalar(d, 'turbidity', g) if tb is not None else None,
             'range': {
                 'wl': round(max(pct(np.abs(s1_s), 98), 0.05), 3),
                 'hwav': round(max(pct(hw_s, 98), 0.05), 3) if hw is not None else 1.0,
                 'vel': round(max(pct(spd_s, 95), 0.02), 3),
+                # the tracer is zero over most of the domain at any instant,
+                # so the range comes from the part of it that is coloured
+                'turbidity': round(max(pct_above(tb_s, 0.002, 98), 0.02), 3)
+                               if tb is not None else 1.0,
             },
             # Representative current for this view.  Particle motion is scaled
             # against this rather than against the p95 ceiling: the lagoon's
@@ -385,6 +432,7 @@ def build():
             'frames': {
                 'wl': frame_stats(s1, cut),
                 'hwav': frame_stats(hw, cut) if hw is not None else None,
+                'turbidity': frame_stats(tb, cut) if tb is not None else None,
             },
             # Slider ceiling: the raw maximum is a rare spike, and anchoring
             # the travel to it leaves the useful band squeezed into the first
@@ -396,6 +444,7 @@ def build():
                                   4 * max(pct(hw_s, 98), 0.05)), 3) if hw is not None else 2.0,
                 'vel': round(min(pct(spd_s, 100) * 1.05,
                                  4 * max(pct(spd_s, 95), 0.02)), 3),
+                'turbidity': 1.0,
             },
         }
         write_velocity(d, g, n_days)
@@ -973,6 +1022,8 @@ async function loadAll(){
   G.coarse.wl=await loadScalar('coarse','wl');
   setLoad(34,'Wave height...');
   G.coarse.hwav=await loadScalar('coarse','hwav');
+  setLoad(46,'Turbidity...');
+  G.coarse.turbidity=await loadScalar('coarse','turbidity');
 
   setLoad(58,'Land boundary...');
   let land=null;
@@ -992,6 +1043,7 @@ async function loadFine(){
   try{
     G.fine.wl=await loadScalar('fine','wl');
     G.fine.hwav=await loadScalar('fine','hwav');
+    G.fine.turbidity=await loadScalar('fine','turbidity');
     if(activeGrid==='fine'&&LAYERS)
       Object.values(LAYERS).forEach(l=>l.render&&l.render(currentT));
   }catch(e){console.warn('fine',e);}
@@ -1091,11 +1143,13 @@ function initMap(land){
   LAYERS={
     wl:  new FieldLayer('wl',  META.default_cmap.wl,  false),
     hwav:new FieldLayer('hwav',META.default_cmap.hwav,true),
+    turbidity:new FieldLayer('turbidity',META.default_cmap.turbidity,true),
     vel: new VelLayer(),
   };
   LAYERS.wl.vmax=META.grids.coarse.range.wl;
   LAYERS.wl.vmin=-LAYERS.wl.vmax;
   LAYERS.hwav.vmax=META.grids.coarse.range.hwav;
+  LAYERS.turbidity.vmax=META.grids.coarse.range.turbidity;
   LAYERS.vel.vmax=META.grids.coarse.range.vel;
 
   LAYERS.wl.show();
@@ -1133,15 +1187,19 @@ function initMap(land){
   document.getElementById('foot-note').textContent=
     'Fields regridded from the FM mesh with an exact point-in-face mask, so the '
     +'island holes (including Isola della Scuola) and the offshore coverage are '
-    +'the mesh’s own. Colour ranges follow the view and can be overridden below each layer.';
+    +'the mesh’s own. Colour ranges follow the view and can be overridden below each layer.'
+    +(META.turbidity_src?' The turbidity tracer is a separate scenario, run on '
+      +META.turbidity_src+' ('+META.turbidity_desc+'), and it covers the first '
+      +(META.turbidity_n_t/48).toFixed(0)+' days of the window only.':'');
 }
 
 /* ---- panel ------------------------------------------------------------- */
-const eyeOn={wl:true,vel:true,hwav:false};
+const eyeOn={wl:true,vel:true,hwav:false,turbidity:false};
 const DEFS=[
   {key:'wl',  label:'Water Level',      unit:'m',   sym:true},
   {key:'vel', label:'Surface Velocity', unit:'m/s', sym:false},
   {key:'hwav',label:'Wave Height',      unit:'m',   sym:false},
+  {key:'turbidity',label:'Turbidity Tracer',unit:'',sym:false},
 ];
 
 function buildPanel(){

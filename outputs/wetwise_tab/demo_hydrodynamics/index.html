@@ -529,6 +529,8 @@ async function loadAll(){
   G.coarse.wl=await loadScalar('coarse','wl');
   setLoad(34,'Wave height...');
   G.coarse.hwav=await loadScalar('coarse','hwav');
+  setLoad(46,'Turbidity...');
+  G.coarse.turbidity=await loadScalar('coarse','turbidity');
 
   setLoad(58,'Land boundary...');
   let land=null;
@@ -548,6 +550,7 @@ async function loadFine(){
   try{
     G.fine.wl=await loadScalar('fine','wl');
     G.fine.hwav=await loadScalar('fine','hwav');
+    G.fine.turbidity=await loadScalar('fine','turbidity');
     if(activeGrid==='fine'&&LAYERS)
       Object.values(LAYERS).forEach(l=>l.render&&l.render(currentT));
   }catch(e){console.warn('fine',e);}
@@ -647,11 +650,13 @@ function initMap(land){
   LAYERS={
     wl:  new FieldLayer('wl',  META.default_cmap.wl,  false),
     hwav:new FieldLayer('hwav',META.default_cmap.hwav,true),
+    turbidity:new FieldLayer('turbidity',META.default_cmap.turbidity,true),
     vel: new VelLayer(),
   };
   LAYERS.wl.vmax=META.grids.coarse.range.wl;
   LAYERS.wl.vmin=-LAYERS.wl.vmax;
   LAYERS.hwav.vmax=META.grids.coarse.range.hwav;
+  LAYERS.turbidity.vmax=META.grids.coarse.range.turbidity;
   LAYERS.vel.vmax=META.grids.coarse.range.vel;
 
   LAYERS.wl.show();
@@ -689,15 +694,19 @@ function initMap(land){
   document.getElementById('foot-note').textContent=
     'Fields regridded from the FM mesh with an exact point-in-face mask, so the '
     +'island holes (including Isola della Scuola) and the offshore coverage are '
-    +'the mesh’s own. Colour ranges follow the view and can be overridden below each layer.';
+    +'the mesh’s own. Colour ranges follow the view and can be overridden below each layer.'
+    +(META.turbidity_src?' The turbidity tracer is a separate scenario, run on '
+      +META.turbidity_src+' ('+META.turbidity_desc+'), and it covers the first '
+      +(META.turbidity_n_t/48).toFixed(0)+' days of the window only.':'');
 }
 
 /* ---- panel ------------------------------------------------------------- */
-const eyeOn={wl:true,vel:true,hwav:false};
+const eyeOn={wl:true,vel:true,hwav:false,turbidity:false};
 const DEFS=[
   {key:'wl',  label:'Water Level',      unit:'m',   sym:true},
   {key:'vel', label:'Surface Velocity', unit:'m/s', sym:false},
   {key:'hwav',label:'Wave Height',      unit:'m',   sym:false},
+  {key:'turbidity',label:'Turbidity Tracer',unit:'',sym:false},
 ];
 
 function buildPanel(){
