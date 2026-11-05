@@ -33,10 +33,11 @@ from matplotlib.colors import Normalize
 
 # ─── Paths ────────────────────────────────────────────────────────────────────
 FORECAST_DIR = Path.home() / 'StagnoneDT' / 'runs' / 'forecast'
-RUN_NAME = sys.argv[1] if len(sys.argv) > 1 else 'd2025-07-20_n2'
-RUN_DIR  = FORECAST_DIR / RUN_NAME
-OUT_DIR  = Path.home() / 'StagnoneDT' / 'chain_videos'
-OUT_DIR.mkdir(parents=True, exist_ok=True)
+DEFAULT_RUN  = 'd2025-07-20_n2'
+OUT_DIR      = Path.home() / 'StagnoneDT' / 'chain_videos'
+# The run name and the output directory are resolved inside main(), so that
+# load_partitioned, clean and make_tri can be imported from a script that works
+# on another run and writes somewhere else.
 
 # Stagnone zoom bbox
 LAGOON_LON = (12.427,  12.4888)
@@ -218,11 +219,14 @@ def make_video(lon, lat, times, data, cfg, out_path,
 
 # ─── Main ─────────────────────────────────────────────────────────────────────
 def main():
-    print(f'Run dir : {RUN_DIR}')
+    run_name = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_RUN
+    run_dir  = FORECAST_DIR / run_name
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    print(f'Run dir : {run_dir}')
     print(f'Output  : {OUT_DIR}')
 
     print('\nLoading partitioned map.nc...')
-    d = load_partitioned(RUN_DIR)
+    d = load_partitioned(run_dir)
     lon, lat, times = d['lon'], d['lat'], d['times']
     print(f'  Faces: {len(lon)},  Timesteps: {len(times)}')
     print(f'  Time: {str(times[0])[:16]} -> {str(times[-1])[:16]}')
