@@ -320,6 +320,13 @@ model/*/turbid_saltpans.pli
 model/*/turbid_airport.pli
 
 
+# Material de trabalho dos Delft3D User Days. O convite, a proposta, o deck e o
+# script do ano anterior, o plano do ano corrente e os arquivos de fala e de
+# slides em preparacao. Fica fora do repositorio por decisao de 2026-10-27,
+# porque o conteudo ainda nao foi acordado com o Deltares nem com os
+# coautores.
+docs/dsd2026/
+
 # Vistas em perspectiva das secoes verticais (sections.nc e paginas html),
 # regeneraveis por scripts/extract_velocity_sections.py e pelos dois builders.
 outputs/wetwise_tab/sections_*/
