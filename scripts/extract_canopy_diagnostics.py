@@ -14,11 +14,12 @@ returns three small CSVs.
       lowers it by an order of magnitude where an equivalent bed roughness
       raises it, so both halves need a number.
 
-  (C) The reconfiguration response, from the controlled pair that differs only
-      in Rhoveg. _veg_bend0 holds the canopy rigid and _veg_RHO900 lets it
-      bend, everything else identical. Section 5.6 states the velocity ratio
-      rises with speed, which is what makes the bending dynamic rather than a
-      fixed shortening.
+  (C) The reconfiguration response, from a pair that differs only in Rhoveg.
+      Section 5.6 states the velocity ratio rises with speed, which is what
+      makes the bending dynamic rather than a fixed shortening.
+
+  (D) What Rhoveg = 0 does, from _veg_bend0 (rigid, on the ensemble's stem
+      fields) against a bending member and the bare one.
 
 All three are restricted to the lagoon interior and to the window the one-day
 probes share, so the members are compared over identical times and cells.
@@ -57,13 +58,11 @@ CIR_A, CIR_B, CIR_C = 3.55e-4, 0.44, 1.56
 BARE = 'dflowfm_v04AE_nowaves'
 VEG = '_veg_hv040_3d'
 TRT = 'dflowfm_v04AE_nowaves_vr_arlfix'    # the meadow as bed roughness
-# The bending pair is two runs that BOTH bend and differ only in stiffness.
-# _veg_bend0 sets Rhoveg = 0, and that does not mean "rigid canopy", it turns
-# the vegetation off: measured against _veg_RHO900 it is 3 to 4 times faster,
-# which is the canopy effect and not a reconfiguration effect. Comparing 900
-# against 1020 kg/m3 keeps the canopy in both and varies only how far it bends.
+# The bending pair differs only in leaf density. _veg_RHO900 and _veg_RHO1020
+# carry the leaf-length stem fields (h_v up to 1.0 m), not the h_v = 0.40 m
+# canopy of the ensemble, which _veg_bend0 shares with _veg_hv040_3d.
 BEND_SOFT, BEND_STIFF = '_veg_RHO900', '_veg_RHO1020'
-# Rhoveg = 0, read by part D; the comment above is under test there
+# Rhoveg = 0 holds the canopy rigid at full height (part D)
 RIGID = '_veg_bend0'
 
 SUFFIX = '_ic3d' if os.environ.get('STAGNONE_ENSEMBLE') == 'ic3d' else ''

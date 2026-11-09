@@ -50,11 +50,13 @@ Rhoveg                    = 900
 Three points about this block took us some time to work out, and may save
 others the same.
 
-**`Rhoveg = 0` appears to switch the vegetation off rather than make the canopy
-rigid.** Against an otherwise identical run at 900, the zero case ran 3 to 4
-times faster over the meadow, which is the size of the whole canopy effect
-rather than of a reconfiguration effect. To vary the stiffness we therefore
-varied `Rhoveg` between two non-zero values.
+**`Rhoveg = 0` holds the canopy rigid at full height.** A positive value only
+enables the bending iteration of `setveg.f90`. With zero, over the meadow and on
+the same stem fields, `mesh2d_rnveg` is unchanged, the depth-averaged speed is
+0.37 of the bare run and the mean bed shear stress falls from 0.037 to
+0.0029 Pa, so the canopy is present and resisting. Comparisons of `Rhoveg`
+values are only meaningful between runs that share the three `veg_*.xyz`
+files, which is worth checking by checksum when cases are cloned.
 
 **The Järvelä and Västilä keys seem to act only in depth-averaged runs.**
 `Uchistem`, `Expchistem`, `Uchileaf`, `Expchileaf`, `Cdleaf` and `Arealeaf`
