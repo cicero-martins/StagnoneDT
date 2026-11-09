@@ -30,8 +30,9 @@ probes share, so the members are compared over identical times and cells.
                python ~/StagnoneDT/scripts/extract_canopy_diagnostics.py"
 
 STAGNONE_ENSEMBLE=ic3d, as in _ensemble.py, reads the members run from the
-stratified initial condition (_ic3d_probes_simit.sh for the trachytope member
-and the bending pair) and writes the CSVs with the suffix _ic3d.
+stratified initial condition (_ic3d_probes_simit.sh for the trachytope member,
+_rhoveg_probes_simit.sh for the three leaf densities on the ensemble's canopy)
+and writes the CSVs with the suffix _ic3d.
 """
 import glob
 import os
@@ -67,8 +68,11 @@ RIGID = '_veg_bend0'
 
 SUFFIX = '_ic3d' if os.environ.get('STAGNONE_ENSEMBLE') == 'ic3d' else ''
 if SUFFIX:
-    BARE, VEG, TRT, BEND_SOFT, BEND_STIFF = (
-        m + SUFFIX for m in (BARE, VEG, TRT, BEND_SOFT, BEND_STIFF))
+    BARE, VEG, TRT = (m + SUFFIX for m in (BARE, VEG, TRT))
+    # one-day clones of _veg_hv040_3d_ic3d from its state of 8 July, differing
+    # only in Rhoveg (scripts/_rhoveg_probes_simit.sh)
+    BEND_SOFT, BEND_STIFF, RIGID = (
+        f'_veg_hv040_ic3d_rho{r}' for r in (900, 1020, 0))
 
 
 def parts(d):
@@ -246,7 +250,7 @@ def part_D():
     holds the canopy rigid at full height, rnveg matches and bend0 is SLOWER than
     the bending member, with bed stress well below the bare one.
     """
-    rigid = RIGID + SUFFIX
+    rigid = RIGID
     if not parts(rigid):
         sys.stderr.write(f'D: no map files under {rigid}, skipped\n')
         return None
