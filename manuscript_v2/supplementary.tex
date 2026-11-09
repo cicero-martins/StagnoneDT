@@ -262,8 +262,15 @@ the drag occupies, which for a plant whose leaves lie over is shorter than the
 leaf. The flume measurements of \citet{CiraoloFerreri2006} give deflected
 canopy thickness between 0.2 and 0.6 of the water depth, and the large-scale
 experiments of \citet{Prinos2010} adopt submergence ratios of 0.323, 0.423 and
-0.500, so 0.40~m was taken for a basin of mean depth 0.95~m. The drag
-coefficient is the rigid-cylinder value.
+0.500, so 0.40~m was taken for a basin of mean depth 0.95~m. The bending model
+of the solver shortens the canopy further below this height, at a leaf density
+of 900~kg~m$^{-3}$. Holding the canopy rigid at 0.40~m in the fixed-bed
+vegetated member without waves lowers the depth-averaged speed over the meadow
+by about 8\% and leaves the drifter skill unchanged at 0.739, with the anomaly
+RMSE of water level within 0.1~mm at the two inlet gauges and 2.4~mm higher at
+AltaVilaEst, so the deflection the solver adds to the one already contained in
+the height does not alter the skill of the member. The drag coefficient is
+the rigid-cylinder value.
 
 The \emph{C.\ nodosa} values come from a flume study of that species collected
 in a sheltered tidal lagoon \citep{Morris2008}, which measured leaf width of
