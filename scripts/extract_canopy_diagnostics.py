@@ -63,6 +63,8 @@ TRT = 'dflowfm_v04AE_nowaves_vr_arlfix'    # the meadow as bed roughness
 # which is the canopy effect and not a reconfiguration effect. Comparing 900
 # against 1020 kg/m3 keeps the canopy in both and varies only how far it bends.
 BEND_SOFT, BEND_STIFF = '_veg_RHO900', '_veg_RHO1020'
+# Rhoveg = 0, read by part D; the comment above is under test there
+RIGID = '_veg_bend0'
 
 SUFFIX = '_ic3d' if os.environ.get('STAGNONE_ENSEMBLE') == 'ic3d' else ''
 if SUFFIX:
@@ -237,8 +239,101 @@ def part_C():
     return g
 
 
+def part_D():
+    """What Rhoveg = 0 does, from _veg_bend0 against _veg_RHO900 and the bare member.
+
+    The two readings predict opposite signs. If Rhoveg = 0 switches the canopy
+    off, the bend0 member carries no rnveg and flows like the bare member. If it
+    holds the canopy rigid at full height, rnveg matches and bend0 is SLOWER than
+    the bending member, with bed stress well below the bare one.
+    """
+    rigid = RIGID + SUFFIX
+    if not parts(rigid):
+        sys.stderr.write(f'D: no map files under {rigid}, skipped\n')
+        return None
+    # meadow from the bending member, applied to all three
+    mask = {}
+    for f in parts(BEND_SOFT):
+        ds = xr.open_dataset(f)
+        idx = np.where(interior(ds))[0]
+        rn = ds['mesh2d_rnveg'].isel(mesh2d_nFaces=idx).values
+        rn = rn[0] if rn.ndim == 2 else rn
+        mask[f.split('_')[-2]] = (idx, rn > 0)
+        ds.close()
+
+    def by_part(d):
+        return {f.split('_')[-2]: f for f in parts(d)}
+
+    rig, soft, bare = by_part(rigid), by_part(BEND_SOFT), by_part(BARE)
+    fields, speeds, taus = [], [], {'rigid': [], 'bending': [], 'bare': []}
+    for key, (idx, meadow) in mask.items():
+        if meadow.sum() == 0 or key not in rig or key not in soft:
+            continue
+        dr, ds_ = xr.open_dataset(rig[key]), xr.open_dataset(soft[key])
+        db = xr.open_dataset(bare[key]) if key in bare else None
+        for name, ds in (('rigid', dr), ('bending', ds_)):
+            row = {'member': name, 'part': key}
+            for v in ('mesh2d_rnveg', 'mesh2d_stemheight', 'mesh2d_diaveg'):
+                if v in ds.variables:
+                    a = ds[v].isel(mesh2d_nFaces=idx).values
+                    a = a[0] if a.ndim == 2 else a
+                    row[v + '_mean'] = float(a[meadow].mean())
+                    row[v + '_frac_pos'] = float((a[meadow] > 0).mean())
+            fields.append(row)
+
+        ur, us = depth_avg_speed(dr, idx), depth_avg_speed(ds_, idx)
+        ub = depth_avg_speed(db, idx) if db is not None else None
+        nt = min(ur.shape[0], us.shape[0], ub.shape[0] if ub is not None else 10**9)
+        sel = np.tile(meadow, (nt, 1)) & (us[:nt] > 0.005)
+        speeds.append(pd.DataFrame({
+            'rigid': ur[:nt][sel], 'bending': us[:nt][sel],
+            'bare': ub[:nt][sel] if ub is not None else np.nan}))
+
+        for name, ds in (('rigid', dr), ('bending', ds_), ('bare', db)):
+            if ds is None or 'mesh2d_taus' not in ds.variables:
+                continue
+            t = ds['mesh2d_taus'].sel(time=slice(T0, T1)).isel(
+                mesh2d_nFaces=idx).values[:, meadow]
+            taus[name].append(t[np.isfinite(t)])
+        for ds in (dr, ds_, db):
+            if ds is not None:
+                ds.close()
+
+    f = pd.DataFrame(fields).groupby('member').mean(numeric_only=True)
+    f.to_csv(OUT + f'canopy_D_rhoveg0_fields{SUFFIX}.csv')
+    sys.stderr.write('D, canopy fields over the meadow:\n' + f.to_string() + '\n')
+
+    d = pd.concat(speeds, ignore_index=True)
+    d['bending_over_rigid'] = d.bending / d.rigid
+    d['rigid_over_bare'] = d.rigid / d.bare
+    # quintiles of the rigid field, the same construction as part C
+    d['bin'] = pd.qcut(d.rigid, 5, labels=['q1', 'q2', 'q3', 'q4', 'q5'])
+    g = d.groupby('bin', observed=True).agg(
+        n=('rigid', 'size'), rigid_speed=('rigid', 'mean'),
+        bending_over_rigid=('bending_over_rigid', 'median'),
+        rigid_over_bare=('rigid_over_bare', 'median')).reset_index()
+    t = {k: float(np.concatenate(v).mean()) if v else np.nan
+         for k, v in taus.items()}
+    g = pd.concat([g, pd.DataFrame([{
+        'bin': 'all', 'n': len(d), 'rigid_speed': d.rigid.mean(),
+        'bending_over_rigid': d.bending_over_rigid.median(),
+        'rigid_over_bare': d.rigid_over_bare.median()}])], ignore_index=True)
+    for k, v in t.items():
+        g['taus_' + k + '_Pa'] = v
+    g.to_csv(OUT + f'canopy_D_rhoveg0_response{SUFFIX}.csv', index=False)
+    sys.stderr.write('D, speed ratios and bed stress:\n' + g.to_string(index=False) + '\n')
+
+    rn = f['mesh2d_rnveg_frac_pos'] if 'mesh2d_rnveg_frac_pos' in f else None
+    off = (rn is not None and rn.get('rigid', 0) < 0.01) or \
+        abs(d.rigid_over_bare.median() - 1.0) < 0.05
+    sys.stderr.write('D: Rhoveg = 0 reads as '
+                     + ('canopy OFF\n' if off else 'RIGID canopy\n'))
+    return g
+
+
 if __name__ == '__main__':
-    part_A()
-    part_B()
-    part_C()
+    # python extract_canopy_diagnostics.py [A B C D], all four by default
+    todo = sys.argv[1:] or ['A', 'B', 'C', 'D']
+    for p in todo:
+        {'A': part_A, 'B': part_B, 'C': part_C, 'D': part_D}[p.upper()]()
     sys.stderr.write('done\n')
