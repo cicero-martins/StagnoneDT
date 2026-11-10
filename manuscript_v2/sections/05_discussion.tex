@@ -52,8 +52,7 @@ drifters and ranked the fixed-bed configurations the same way. For a basin of
 this type the useful question is therefore less whether to validate on water
 level than where to place the instrument intended to discriminate, and the
 interior of the vegetated compartment is a considerably more informative
-position for that purpose than the inlet. Section~\ref{sec:disc_synergy} shows
-that the interior gauge also discriminates where the drifters do not.
+position for that purpose than the inlet.
 
 \subsection{Bare-bed skill under a mobile bed}
 \label{sec:disc_synergy}
@@ -70,19 +69,16 @@ member to 0.708, within 0.03 of the vegetated members, and removes the canopy
 contrast in that cell.
 
 The member reaches that skill with a suspended load that the Sentinel-2
-retrieval places some three orders of magnitude too high, and the segments
-restarted on 7~July show that sediment transport in the drifter window does not
-carry it (Section~\ref{sec:res_sensitivity}). The rerun under plausible silt
-parameters keeps 0.091 of its 0.111 gain, and a segment with the sediment
-module switched off on the bed of 7~July keeps all of it, so the gain is
-carried by the bathymetry the member reaches by that date. Inside the lagoon
-that bed departs from the fixed one by fractions of a millimetre, and the
-change concentrates at the northern inlet, where up to 0.62~m of deposition
-shoals the channel, so the skill of the bare members is sensitive to an inlet
-geometry that the mobile bed alters with no observation to constrain it. The flow
-that carries it differs from the canopy flow, the surface-to-bed speed ratio of
-that member remaining at 2.17 against 5.13 with the canopy, so the agreement in
-skill is reached through a different flow. A model without a canopy can therefore reach the
+retrieval places some three orders of magnitude too high, and keeps 0.091 of
+its 0.111 gain under plausible silt parameters. The segments restarted on
+7~July place that gain in the bed the member reaches by that date rather than in
+sediment transport or in the sediment module (Section~\ref{sec:res_sensitivity}),
+and that bed departs from the fixed one inside the lagoon by fractions of a
+millimetre while up to 0.62~m of deposition shoals the northern inlet, so the
+skill of the bare members is sensitive to an inlet geometry that the mobile bed
+alters with no observation to constrain it. The flow differs from the canopy
+flow, the surface-to-bed speed ratio of that member remaining at 2.17 against
+5.13 with the canopy. A model without a canopy can therefore reach the
 drifter skill of a model with one through a mechanism that does not represent
 the basin, and the drifters alone do not separate the two. The interior gauge
 does, keeping the bare members apart from their vegetated counterparts under
@@ -102,8 +98,8 @@ basin alone, since canopy drag is commonly left out of lagoon and estuary models
 or folded into a bed roughness coefficient, and an ensemble built that way can
 still return a well-defined and statistically clean interaction between the
 processes it does carry. Here that interaction appears first in an
-implausible morphodynamic state and survives a plausible one without an
-identified physical cause, and nothing internal to the bare half of the design
+implausible morphodynamic state and survives a plausible one through an inlet
+bed that nothing observed constrains, and nothing internal to the bare half of the design
 distinguishes it from a physical result. What distinguished them was varying
 the canopy as a factor in its own right, checking the sediment state against a
 plausible budget and a satellite retrieval, and scoring the result against two
@@ -115,8 +111,7 @@ observation types that no model decision had used.
 \textbf{Wave dissipation by the canopy.} In the eight members of the factorial
 the canopy does not reach the wave model, because the coupling passes a bed
 roughness field to the spectral model while the canopy enters the momentum
-equation of the flow, so mean orbital velocity at the bed changes by under 1\%
-when the canopy is introduced. Seagrass meadows do attenuate waves, in this
+equation of the flow. Seagrass meadows do attenuate waves, in this
 species and at this scale \citep{Infantes2012, Prinos2010}, and shallow
 restricted Mediterranean lagoons carry wave fields that respond to bed
 conditions \citep{Morote2025}. The member that carries the canopy also in the
@@ -130,26 +125,22 @@ Sections~\ref{sec:res_3d} and~\ref{sec:res_classes} were not repeated for it.
 \textbf{Canopy reconfiguration.} Three one-day runs restarted from the same
 stratified state of 8 July, identical but for the leaf density, set the bending
 response of the canopy. With leaves of 900~kg~m$^{-3}$ the depth-averaged speed
-over the meadow is 8\% higher than under a rigid canopy of the same height in
-the four faster quintiles of the speed record and 13\% higher in the slowest. Leaves of 1020~kg~m$^{-3}$ bend
-further, and the speed of the 900~kg~m$^{-3}$ run relative to theirs is 0.868
-in the slowest quintile, 0.847 in the fastest and 0.802 in the fastest 5\%, so
-a 13\% change in a value taken from a published table rather than measured in
-this meadow moves the velocity field by 13 to 20\%. The ratio departs from
-unity already at the lowest speeds because the water over the meadow is close
-to 1028~kg~m$^{-3}$, which leaves the denser leaf about a sixteenth of the
-buoyancy of the lighter one and lets it lie over with little load, and the
-dependence on the flow is confined to the fastest 5\%. The bending is
-mechanical, whereas the flume measurements of
-\citet{CiraoloFerreri2006} describe reconfiguration empirically through a
-friction factor, a formulation available in the model only in its
-depth-averaged solver, so the agreement between the two was not tested.
+over the meadow is 8 to 13\% higher than under a rigid canopy of the same
+height, the larger value in the slowest quintile of the speed record. Leaves of
+1020~kg~m$^{-3}$ bend further and leave the 900~kg~m$^{-3}$ run 13 to 20\%
+slower, so a 13\% change in a value taken from a published table rather than
+measured in this meadow moves the velocity field by as much or more. The
+difference appears already at the lowest speeds because the water over the
+meadow is close to 1028~kg~m$^{-3}$, which leaves the denser leaf about a
+sixteenth of the buoyancy of the lighter one. The bending is mechanical,
+whereas the flume measurements of \citet{CiraoloFerreri2006} describe
+reconfiguration through a friction factor, available in the model only in its
+depth-averaged solver, so the two were not compared.
 
 \textbf{Bed mobility.} No repeated bathymetric survey or in-situ turbidity
-record constrains the silt parameters. Under the original parameters the
-wave-coupled arm leaves any plausible state of the basin, with suspended
-sediment near 9~\si{\gram\per\litre} and the lagoon bed lowered by 12~cm on
-average in nine days (Section~\ref{sec:res_sensitivity}). Two sets that hold the
+record constrains the silt parameters, and under the original ones the
+wave-coupled arm leaves any plausible state of the basin
+(Section~\ref{sec:res_sensitivity}). Two sets that hold the
 bed change at millimetres bring the suspended load towards the Sentinel-2
 retrieval, the 95th percentile entering the observed range only with the canopy
 also in the wave model. Those sets were chosen against a plausibility target
@@ -161,9 +152,8 @@ as a sensitivity test and out of the attribution.
 
 \textbf{Window and restart segments.} The record covers two days of water level
 and thirty-four hours of drifter observations within one summer season, and the
-vegetated configurations are three-day restart segments. A segment run without
-any other change reproduces its continuous member in water level and drifter
-skill (Section~\ref{sec:res_wl}), but seasonal behaviour, storm conditions and
+vegetated configurations are three-day restart segments. Seasonal behaviour,
+storm conditions and
 the interaction of a canopy with a mobile bed over longer periods are outside
 what this design addresses.
 

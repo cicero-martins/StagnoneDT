@@ -164,12 +164,10 @@ the area it occupies (Figure~\ref{fig:seagrass}, Section~S4).
 \subsection{Observational data and validation metrics}
 \label{sec:methods_validation}
 
-Water level was recorded at ten-minute resolution at three stations, BocaNord
-at the northern inlet, BocaSud near the southern inlet, and AltaVilaEst on the
-eastern flank of the central basin. Offshore performance was assessed at the
-Marettimo tide gauge.
-
-Water-level skill was quantified with the raw root-mean-square error, the
+Water level was recorded at ten-minute resolution at the three stations of
+Section~\ref{sec:study_area}, and offshore performance was assessed at the
+Marettimo tide gauge. Water-level skill was quantified with the raw
+root-mean-square error, the
 bias, and the anomaly root-mean-square error computed after removing the
 respective means, together with the linear correlation and the ratio of
 modelled to observed standard deviation. The three error measures are related
@@ -212,8 +210,7 @@ in the top model layer was compared at the overpasses over the same lagoon mask
 Eight simulations were run over the same nine-day window, from the same initial
 condition and with identical boundary and atmospheric forcing, so that the
 differences between them isolate individual model components. All eight share
-the mesh, and all wrote station output every 600~s and gridded output every
-1800~s, so the comparison is not affected by differences in output sampling.
+the mesh, station output every 600~s and gridded output every 1800~s.
 
 Members are identified by a three-slot code whose slots mark wave coupling,
 seagrass canopy and mobile bed in that order, carrying \texttt{W}, \texttt{V}
@@ -233,15 +230,12 @@ two members of a pair share the first six days and differ by the canopy over
 the window in which they are scored. In the mobile-bed members suspended
 sediment does not contribute to the density field, and erodible sediment is
 confined to depths above 15 to 20~m, where waves can plausibly move it
-(Section~S5). The effect of the mobile bed on transport was traced with two
-segments of the wave-coupled mobile-bed member without canopy, restarted on
-7~July from its state on that date, one with the bed updated as in the member
-and one with the bed held at that state. A third segment, of the same member
-under the erosion set of silt parameters, ran with the sediment module switched
-off on the bed that member had reached by 7~July, written into the cell bed
-levels of the grid since the solver reads no bed from a restart file without
-the module, so that it differs from \texttt{W{-}{-}} only in that bed and in
-the hydrodynamic state of the restart.
+(Section~S5). The effect of the mobile bed on transport was traced with
+segments of the wave-coupled mobile-bed member without canopy restarted on
+7~July, one with the bed updated, one with the bed held at its state on that
+date and one, under the erosion set of silt parameters, with the sediment
+module switched off and that bed written into the cell bed levels of the grid,
+since the solver reads no bed from a restart file without the module.
 
 The wave-coupled fixed-bed vegetated member was repeated with the canopy also
 in the wave model, from the same restart, and is coded
