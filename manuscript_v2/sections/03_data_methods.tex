@@ -236,7 +236,12 @@ confined to depths above 15 to 20~m, where waves can plausibly move it
 (Section~S5). The effect of the mobile bed on transport was traced with two
 segments of the wave-coupled mobile-bed member without canopy, restarted on
 7~July from its state on that date, one with the bed updated as in the member
-and one with the bed held at that state.
+and one with the bed held at that state. A third segment, of the same member
+under the erosion set of silt parameters, ran with the sediment module switched
+off on the bed that member had reached by 7~July, written into the cell bed
+levels of the grid since the solver reads no bed from a restart file without
+the module, so that it differs from \texttt{W{-}{-}} only in that bed and in
+the hydrodynamic state of the restart.
 
 The wave-coupled fixed-bed vegetated member was repeated with the canopy also
 in the wave model, from the same restart, and is coded
