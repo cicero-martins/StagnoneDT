@@ -143,8 +143,11 @@ This one is an interaction rather than a parser point. With the default
 `nudgeTimeUni = 3600` s and a `nudge_salinity_temperature` field from the CMEMS
 regional model, which does not resolve the hypersaline lagoon, the interior was
 pulled towards the regional 37.5 within about 12 hours, erasing the initial 42.
-A relaxation time of 864000 s (10 days), longer than the lagoon residence time,
-keeps the nudging as a slow constraint offshore and leaves the interior free.
+A relaxation time of 864000 s (10 days) keeps the initial field through the first
+day, but the lagoon renews over weeks to months ([lagoon_renewal.md](lagoon_renewal.md),
+Section 7), so over a window of nine days the relaxation still removes 0.6 of the
+excess salinity of the lagoon and prevents any hypersaline build-up. Runs longer
+than a few days need the relaxation confined to the sea outside the lagoon.
 
 ## Checklist we now use when adding ERA5 mass-flux forcing
 
@@ -153,7 +156,7 @@ keeps the nudging as a slow constraint offshore and leaves the interior free.
 3. [ ] Old-format comments start with `*`, with no `QUANTITY=` inside them
 4. [ ] `wrimap_rain = 1` and `wrimap_evaporation = 1` for checking
 5. [ ] With D-Morphology, `mesh2d_face_z` in the net file with the attributes above, no fill values, and no `bathymetryFile`
-6. [ ] `nudgeTimeUni` longer than the residence time, or no nudging
+6. [ ] No relaxation of salinity and temperature inside the lagoon
 7. [ ] After initialisation, a non-zero `my model volume` in the partition `.dia` files (of order 10¹¹ m³ for our domain of about 1800 km²)
 8. [ ] After 12 h, interior salinity still distinct from the boundary value
 
