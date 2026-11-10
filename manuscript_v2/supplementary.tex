@@ -70,11 +70,25 @@ preconditioned conjugate-gradient method. Bed levels were specified at cell
 centres from the bathymetry file.
 
 Turbulence closure used the $k$--$\varepsilon$ model with background vertical
-eddy viscosity and diffusivity of $10^{-4}$~\si{\metre\squared\per\second} and
-uniform horizontal values of 0.1~\si{\metre\squared\per\second}. Density was
-computed from the UNESCO equation of state, with salinity and temperature both
-transported as active constituents so that the summer hypersaline gradient
-contributes baroclinically to the momentum balance.
+eddy viscosity and diffusivity of $10^{-4}$~\si{\metre\squared\per\second}.
+Horizontal viscosity and diffusivity took a background value of
+0.1~\si{\metre\squared\per\second}, to which a Smagorinsky term with a
+coefficient of 0.2 was added in the viscosity. Density was computed from the
+UNESCO equation of state, with salinity and temperature both transported as
+active constituents so that the summer hypersaline gradient contributes
+baroclinically to the momentum balance. Heat exchange at the surface followed
+the excess temperature model of the solver, with Stanton and Dalton numbers of
+0.0013 and a Secchi depth of 2~m.
+
+Cells were taken as dry below a water depth of 0.01~m in the members not
+coupled to the wave model and of $10^{-4}$~m in the coupled ones. The higher
+threshold was introduced when the first uncoupled run aborted on an
+accelerating intertidal cell, and it was kept for all uncoupled members so
+that they share their numerics. The wave contrasts of the factorial therefore
+also carry this difference in the drying threshold, whose separate effect on
+skill was not measured. The threshold acts only where the depth falls below
+1~cm, on the intertidal flats, whereas the drifters crossed the submerged
+interior.
 
 External forcing was updated every 300~s, shorter than the interval of every
 forcing record used, so the update does not set the time resolution of the

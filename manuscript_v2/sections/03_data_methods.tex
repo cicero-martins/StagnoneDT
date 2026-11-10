@@ -179,9 +179,10 @@ transients it generates leave the basin.
 
 Lagrangian skill was assessed against GPS-tracked surface drifters released in
 the lagoon interior during the simulation window. Simulated trajectories were
-obtained by advecting particles with OpenDrift \citep{Dagestad2018} through the
-modelled surface current field, at an advection step of 300~s and with
-positions written every 600~s. Scoring was restricted, for each drifter, to
+obtained by advecting one particle per drifter with OpenDrift
+\citep{Dagestad2018} through the modelled surface current field, with a
+fourth-order Runge--Kutta scheme and no horizontal diffusion, at an advection
+step of 300~s and with positions written every 600~s. Scoring was restricted, for each drifter, to
 the interval between its first and last observation, since the advection
 continues to the end of the forcing while the deployments last between 0.4 and
 7.2~h. A wind drift factor of 0.02 was applied to every member, since a sweep
