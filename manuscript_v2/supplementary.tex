@@ -75,8 +75,9 @@ Horizontal viscosity and diffusivity took a background value of
 0.1~\si{\metre\squared\per\second}, to which a Smagorinsky term with a
 coefficient of 0.2 was added in the viscosity. Density was computed from the
 UNESCO equation of state, with salinity and temperature both transported as
-active constituents so that the summer hypersaline gradient contributes
-baroclinically to the momentum balance. Heat exchange at the surface followed
+active constituents, so that the density difference between the hypersaline
+lagoon and the sea enters the momentum balance, subject to the relaxation of
+Section~\ref{sec:s_forcing}. Heat exchange at the surface followed
 the excess temperature model of the solver, with Stanton and Dalton numbers of
 0.0013 and a Secchi depth of 2~m.
 
@@ -237,6 +238,19 @@ through a minimum of 37.33 at about 22~m.
   of the uniform start.}
   \label{fig:s_ic}
 \end{figure}
+
+Salinity and temperature were relaxed toward the CMEMS global analysis fields
+of the start date with a uniform time scale of 10 days. The relaxation acts
+over the whole domain, the lagoon included, where those fields carry a
+salinity near 37.7, and over the window it lowers the mean salinity of the
+lagoon from the initial 42 to 39.4. A run of the vegetated configuration
+without wave coupling, from the stratified start, in which the relaxation was
+removed inside the lagoon and reduced to negligible strength outside it, ended
+the window with a mean lagoon salinity of 41.2. The root-mean-square
+difference of its surface current over the lagoon from that of the reference
+run was 0.003~m~s$^{-1}$, 8\% of the root-mean-square surface speed of
+0.04~m~s$^{-1}$, so the relaxation leaves the circulation evaluated in the
+main text nearly unchanged over the window.
 
 The wind field was blended with the record of the AltaVilaEst station alone.
 Configurations that additionally blended a second in-situ station produced a
