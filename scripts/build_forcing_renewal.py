@@ -1,31 +1,37 @@
-"""FM-ready forcing of the summer renewal run, 8 June to 15 September 2025.
+"""FM-ready forcing of the seasonal renewal runs.
 
-Inputs from download_forcing_summer2025.py (7 June to 17 September), output to
-data/processed/forcing_summer2025/. Each step follows the script that built
-the same file for the nine days of 1 to 10 July:
+Two seasons, each window carrying one day of margin at each end of the run:
+  summer  run 8 June to 15 September 2025, forcing 7 June to 17 September;
+  winter  run 8 November 2025 to 15 January 2026, forcing 7 November to
+          17 January.
+Inputs from download_forcing_renewal.py, output to
+data/processed/forcing_<season><year>/. Each step follows the script that built
+the same file for the nine days of 1 to 10 July 2025:
 
-  era5      era5_{mer,msl,chnk,u10n,v10n}_20250607to20250917_ERA5.nc, with mer
-            in mm/day and evaporation negative, as the file of 1 to 10 July;
-  wind      wind_blendedAE_{u10n,v10n}_20250607to20250917.nc, the AE-only blend
-            of prepare_v04AE_jul13jul20_ae_blend.py (AE anemometer within 3 km of
+  era5      era5_{mer,msl,chnk,u10n,v10n}_<tag>_ERA5.nc, with mer in mm/day and
+            evaporation negative, as the file of 1 to 10 July;
+  wind      wind_blendedAE_{u10n,v10n}_<tag>.nc, the AE-only blend of
+            prepare_v04AE_jul13jul20_ae_blend.py (AE anemometer within 3 km of
             the lagoon centre, ERA5 beyond 8 km, linear taper between);
   bc        waterlevelbnd, salinitybnd and temperaturebnd from CMEMS through
             dfm_tools, as build_cmems_bc_v04AE_jul13jul20.py, and
             uxuyadvectionvelocitybnd in t3d form, as
             build_uxuy_bc_v04AE_d10d12_extended.py;
-  nudge     nudge_salinity_temperature_2025-06-07_00-00-00.nc, the daily CMEMS
+  nudge     nudge_salinity_temperature_<first day>_00-00-00.nc, the daily CMEMS
             Mediterranean salinity and temperature over the whole window, the
             target of the relaxation at sea;
   ic        ic3d_{temperature,salinity}_profile.pli, the mean CMEMS profiles over
-            the sea points on 8 June 00:00, applied over the whole domain, the
-            lagoon included, which therefore starts at the salinity of the sea;
+            the sea points at the start of the run, applied over the whole
+            domain, the lagoon included, which therefore starts at the salinity
+            of the sea;
   laterals  the two turbid discharges and their tracer at zero over the window.
 
-The per-node offset of the water level is constant and is copied from the
-model directory with the remaining static files.
+The tag is the forcing window, 20250607to20250917 in summer and
+20251107to20260117 in winter. The per-node offset of the water level is
+constant and is copied from the model directory with the remaining static files.
 
 Usage:
-    python build_forcing_summer2025.py [era5 wind bc nudge ic laterals]
+    python build_forcing_renewal.py summer|winter [era5 wind bc nudge ic laterals]
 """
 from __future__ import annotations
 
@@ -37,19 +43,33 @@ import pandas as pd
 import xarray as xr
 
 ROOT = Path(__file__).resolve().parent.parent
-RAW_CMEMS = ROOT / 'data/raw/cmems_summer2025'
 RAW_ERA5 = ROOT / 'data/raw/era5_v04AE_d10d12'
-OUT = ROOT / 'data/processed/forcing_summer2025'
 PLI = ROOT / 'model/dflowfm_v04AE/Stagnone_dxy01_15m.pli'
-LAGOON = ROOT / 'model/dflowfm_v04AE_nowaves/lagoon_tracer_init.xyz'
 AE_CSV = ROOT / 'data/processed/insitu_2025-26/AE_wind_UTC.csv'
-
-D0, D1 = '2025-06-07', '2025-09-17'
-TAG = '20250607to20250917'
-T_START = pd.Timestamp('2025-06-08 00:00')
-REFDATE = pd.Timestamp('2025-01-01 00:00')
-MONTHS = ('2025-06', '2025-07', '2025-08', '2025-09')
+REFDATE = pd.Timestamp('2025-01-01 00:00')   # refDate of the MDU, both seasons
 Z_MAX = 800.0
+
+# forcing window (first and last day) and start of the run, per season
+SEASONS = {
+    'summer': dict(d0='2025-06-07', d1='2025-09-17', start='2025-06-08'),
+    'winter': dict(d0='2025-11-07', d1='2026-01-17', start='2025-11-08'),
+}
+
+
+def raw_cmems_dir(season):
+    return ROOT / 'data/raw' / f'cmems_{season}{SEASONS[season]["d0"][:4]}'
+
+
+def configure(season):
+    """Set the window, the tag, the ERA5 months and the directories of one season."""
+    global SEASON, D0, D1, TAG, T_START, MONTHS, RAW_CMEMS, OUT
+    s = SEASONS[season]
+    SEASON, D0, D1 = season, s['d0'], s['d1']
+    TAG = f'{D0.replace("-", "")}to{D1.replace("-", "")}'
+    T_START = pd.Timestamp(s['start'])
+    MONTHS = tuple(pd.period_range(D0, D1, freq='M').strftime('%Y-%m'))
+    RAW_CMEMS = raw_cmems_dir(season)
+    OUT = ROOT / 'data/processed' / f'forcing_{season}{D0[:4]}'
 
 
 def era5():
@@ -131,7 +151,7 @@ def wind():
             attrs={'Conventions': 'CF-1.8',
                    'source': f'ERA5 and the AE anemometer, AE weight 1 within {r_in} km of the lagoon '
                              f'centre, 0 beyond {r_out} km',
-                   'history': 'scripts/build_forcing_summer2025.py'})
+                   'history': f'scripts/build_forcing_renewal.py {SEASON}'})
         out = OUT / f'wind_blendedAE_{name}_{TAG}.nc'
         ds.to_netcdf(out, encoding={name: {'zlib': True, 'complevel': 4, '_FillValue': np.float32(np.nan)}})
         print(f'{out.name}: {out.stat().st_size / 1e6:.0f} MB', flush=True)
@@ -199,11 +219,11 @@ def nudge():
     ds = xr.Dataset({'so': so.astype('float32'), 'thetao': th.astype('float32')},
                     attrs={'Conventions': 'CF-1.8',
                            'source': 'CMEMS MEDSEA_MULTIYEAR_PHY_006_004, daily means',
-                           'history': 'scripts/build_forcing_summer2025.py'})
+                           'history': f'scripts/build_forcing_renewal.py {SEASON}'})
     ds['so'].attrs = {'standard_name': 'sea_water_salinity', 'long_name': 'Salinity', 'units': 'ppt'}
     ds['thetao'].attrs = {'standard_name': 'sea_water_potential_temperature',
                           'long_name': 'Sea water potential temperature', 'units': 'degree_Celsius'}
-    out = OUT / 'nudge_salinity_temperature_2025-06-07_00-00-00.nc'
+    out = OUT / f'nudge_salinity_temperature_{D0}_00-00-00.nc'
     enc = {v: {'zlib': True, 'complevel': 4, '_FillValue': np.float32(-32767.0)} for v in ('so', 'thetao')}
     ds.to_netcdf(out, encoding=enc)
     print(f'{out.name}: {dict(ds.sizes)}, {out.stat().st_size / 1e6:.1f} MB', flush=True)
@@ -246,8 +266,11 @@ def laterals():
 
 
 if __name__ == '__main__':
+    if len(sys.argv) < 2 or sys.argv[1] not in SEASONS:
+        sys.exit(f'usage: build_forcing_renewal.py {"|".join(SEASONS)} [steps]')
+    configure(sys.argv[1])
     OUT.mkdir(parents=True, exist_ok=True)
     steps = {'era5': era5, 'wind': wind, 'bc': bc, 'nudge': nudge, 'ic': ic, 'laterals': laterals}
-    for s in sys.argv[1:] or list(steps):
+    for s in sys.argv[2:] or list(steps):
         print(f'=== {s}', flush=True)
         steps[s]()

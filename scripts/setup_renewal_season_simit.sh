@@ -1,26 +1,35 @@
 #!/bin/bash
-# Summer renewal run, present cover, without waves, on simit.
+# Seasonal renewal runs, present cover, without waves, on simit.
 #   The case of setup_renewal_nudgesea_simit.sh, with the relaxation of salinity
-#   and temperature confined to the sea, from a cold start on 8 June 2025 to
-#   15 September 2025, 99 days. Changes against that case:
-#     forcing over 7 June to 17 September from build_forcing_summer2025.py,
+#   and temperature confined to the sea, from a cold start:
+#     summer  8 June to 15 September 2025, 99 days;
+#     winter  8 November 2025 to 15 January 2026, 68 days.
+#   Changes against that case:
+#     forcing over the window of the season from build_forcing_renewal.py,
 #       copied beforehand into $CASE/forcing (ERA5, AE wind blend, CMEMS
 #       boundaries, daily CMEMS relaxation target, turbid laterals at zero);
-#     initial salinity and temperature from the mean CMEMS profiles of 8 June
-#       over the whole domain, the lagoon included, which starts at the
+#     initial salinity and temperature from the mean CMEMS profiles at the
+#       start over the whole domain, the lagoon included, which starts at the
 #       salinity of the sea (the 42 psu lagoon samples are removed);
 #     waqInterval 1800 s, the hydrodynamics for the D-WAQ releases.
-#   The online lagoon_tracer marks the lagoon water of 8 June.
-# Usage, on simit:  bash setup_renewal_summer_simit.sh setup | launch
+#   The online lagoon_tracer marks the lagoon water at the start.
+# Usage, on simit:  bash setup_renewal_season_simit.sh summer|winter setup|launch
 set -euo pipefail
+case "${1:-}" in
+  summer) CASE_NAME=veg_summer_0608_0915; NEW=20250607to20250917; D0=2025-06-07
+          T0=2025-06-08; T1=2025-09-15 ;;
+  winter) CASE_NAME=veg_winter_1108_0115; NEW=20251107to20260117; D0=2025-11-07
+          T0=2025-11-08; T1=2026-01-15 ;;
+  *) echo "usage: $0 summer|winter setup|launch"; exit 1 ;;
+esac
 SRC=/storage/ciceromartinsjr/StagnoneDT/renewal/veg_ic3d_nudgesea_0701_0710
-CASE=/storage/ciceromartinsjr/StagnoneDT/renewal/veg_summer_0608_0915
+CASE=/storage/ciceromartinsjr/StagnoneDT/renewal/$CASE_NAME
 PICK=$HOME/simit_tools/simit_pick_cores.sh
 BIN=$HOME/Scaricati/delft3dfm/lnx64/bin
 OLD=20250701to20250710
-NEW=20250607to20250917
+TSTOP=$(( $(date -ud "$T1" +%s) - $(date -ud "$T0" +%s) ))
 
-case "$1" in
+case "${2:-}" in
   setup)
     mountpoint -q /storage || { echo "/storage not mounted"; exit 4; }
     [[ -d "$CASE/forcing" ]] || { echo "copy the forcing into $CASE/forcing first"; exit 3; }
@@ -31,7 +40,7 @@ case "$1" in
         ! -name 'turbid_*.bc' -exec cp -p {} "$CASE/" \;)
     cp -p "$CASE"/forcing/* "$CASE/"
     sed -i -e "s/$OLD/$NEW/g" \
-           -e 's/nudge_salinity_temperature_2025-07-01_00-00-00\.nc/nudge_salinity_temperature_2025-06-07_00-00-00.nc/' \
+           -e "s/nudge_salinity_temperature_2025-07-01_00-00-00\.nc/nudge_salinity_temperature_${D0}_00-00-00.nc/" \
            "$CASE"/Stagnone_dxy01_15m_new.ext "$CASE"/Stagnone_dxy01_15m_old.ext
     # the lagoon starts from the profiles: drop the [Initial] block of the 42 psu samples
     # blocks start at a line opening with '['; blank lines may hold spaces, so no paragraph mode
@@ -42,9 +51,9 @@ case "$1" in
     n_new=$(grep -c '^\[' "$CASE/initialFields.ini" || true)
     [[ $n_new == $((n_src - 1)) ]] || { echo "initialFields.ini: $n_new blocks from $n_src, expected one less"; exit 3; }
     sed -i -E \
-        -e 's/^(startDateTime *= *)[0-9]+/\120250608000000/' \
-        -e 's/^(stopDateTime *= *)[0-9]+/\120250915000000/' \
-        -e 's/^(tStop *= *)[0-9.]+/\18553600.0/' \
+        -e "s/^(startDateTime *= *)[0-9]+/\1${T0//-/}000000/" \
+        -e "s/^(stopDateTime *= *)[0-9]+/\1${T1//-/}000000/" \
+        -e "s/^(tStop *= *)[0-9.]+/\1${TSTOP}.0/" \
         -e 's/^(waqInterval *= *)[0-9.]+/\11800.0/' "$CASE/Stagnone_dxy01_15m.mdu"
     # every file the two .ext and the initial fields name must exist and cover the window
     missing=$(cd "$CASE" && { grep -hiE '^\s*(forcingFile|locationFile|discharge|FILENAME)\s*=' *_new.ext *_old.ext \
@@ -53,7 +62,7 @@ case "$1" in
     [[ -z "$missing" ]] || { echo "missing: $missing"; exit 3; }
     grep -n "$OLD\|2025-07-01" "$CASE"/*.ext && { echo "old window still referenced"; exit 3; }
     if grep -q 'ic3d_lagoon' "$CASE/initialFields.ini"; then echo "lagoon samples still in initialFields.ini"; exit 3; fi
-    grep -H -E '^(startDateTime|stopDateTime|tStop|waqInterval|mapInterval|rstInterval|maxVelocity) ' "$CASE/Stagnone_dxy01_15m.mdu"
+    grep -H -E '^(refDate|startDateTime|stopDateTime|tStop|waqInterval|mapInterval|rstInterval|maxVelocity) ' "$CASE/Stagnone_dxy01_15m.mdu"
     grep -E '^\s*(\[|quantity|dataFile\s*=)' "$CASE/initialFields.ini"
     ;;
   launch)
@@ -74,4 +83,5 @@ case "$1" in
     echo "launched $CASE, pid $!"
     disown
     ;;
+  *) echo "usage: $0 summer|winter setup|launch"; exit 1 ;;
 esac
