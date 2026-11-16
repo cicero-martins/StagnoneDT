@@ -4,8 +4,8 @@ Inputs from download_forcing_summer2025.py (7 June to 17 September), output to
 data/processed/forcing_summer2025/. Each step follows the script that built
 the same file for the nine days of 1 to 10 July:
 
-  era5      era5_{mer,msl,chnk,u10n,v10n}_20250607to20250917_ERA5.nc, as
-            preprocess_era5_v04AE_jul13jul20.py (mer to mm/day, upward positive);
+  era5      era5_{mer,msl,chnk,u10n,v10n}_20250607to20250917_ERA5.nc, with mer
+            in mm/day and evaporation negative, as the file of 1 to 10 July;
   wind      wind_blendedAE_{u10n,v10n}_20250607to20250917.nc, the AE-only blend
             of prepare_v04AE_jul13jul20_ae_blend.py (AE anemometer within 3 km of
             the lagoon centre, ERA5 beyond 8 km, linear taper between);
@@ -77,7 +77,9 @@ def era5():
         ds = ds.sel(time=slice(D0, D1 + 'T00:00'))
         ds = ds.sel(time=~ds.get_index('time').duplicated())
         if var == 'mer':
-            ds['mer'] = -ds['mer'] * 86400.0 / 1000.0   # ERA5 mer is downward, kg m-2 s-1
+            # avg_ie in kg m-2 s-1, positive downward, to mm/day with evaporation negative,
+            # the conversion of dfm_tools behind the validated file of 1 to 10 July
+            ds['mer'] = ds['mer'] * 86400.0
         ds[var].attrs = attrs[var]
         ds.attrs = {k: v for k, v in ds.attrs.items() if not k.startswith('GRIB_')}
         step = np.unique(np.diff(ds.time.values).astype('timedelta64[m]'))
