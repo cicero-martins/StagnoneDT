@@ -22,8 +22,8 @@ BIN=$HOME/Scaricati/delft3dfm/lnx64/bin
 MDU=Stagnone_dxy01_15m.mdu
 mountpoint -q /storage || { echo "/storage not mounted"; exit 4; }
 
-setup() {   # $1 case directory, $2 number of partitions
-    local D=$1 N=$2
+setup() {   # $1 case directory, $2 number of partitions, $3 further partitioner options
+    local D=$1 N=$2 OPT=${3:-}
     [[ -e "$D" ]] && return 0
     mkdir -p "$D/wave" "$D/diag"
     # global files only: partitioned grids, MDUs, caches and restarts belong to the 8-way split
@@ -41,7 +41,7 @@ setup() {   # $1 case directory, $2 number of partitions
     (
         source /opt/intel/oneapi/setvars.sh > /dev/null 2>&1
         export PATH=$BIN:$PATH
-        cd "$D" && run_dflowfm.sh --partition:ndomains=$N:icgsolver=6 $MDU
+        cd "$D" && run_dflowfm.sh --partition:ndomains=$N:icgsolver=6$OPT $MDU
     ) > "$D/diag/partition.log" 2>&1
     local bad
     bad=$(grep -LE '^stopDateTime += *20250702000000' "$D"/Stagnone_dxy01_15m*.mdu
@@ -52,9 +52,9 @@ setup() {   # $1 case directory, $2 number of partitions
         || { echo "partitioning into $N failed, see $D/diag/partition.log"; exit 3; }
 }
 
-run() {   # $1 case, $2 partitions and cores, $3 SWAN threads
+run() {   # $1 case, $2 partitions and cores, $3 SWAN threads, $4 further partitioner options
     local D=$ROOT/$1 N=$2 T=$3 CPUS t0 t1
-    setup "$D" "$N"
+    setup "$D" "$N" "${4:-}"
     until CPUS=$(bash "$PICK" "$N" 1 $$); do sleep 120; done
     echo "$(date -Is) $1 on $CPUS, $N partitions, SWAN threads $T"
     t0=$(date +%s)
@@ -78,8 +78,13 @@ run() {   # $1 case, $2 partitions and cores, $3 SWAN threads
 
 mkdir -p "$ROOT"
 [[ -s "$ROOT/summary.txt" ]] || echo "case partitions swan_threads finished wall_s fm_s wave_s threads_reported cpus" > "$ROOT/summary.txt"
-run P8 8 8
-run P16 16 16
-run P24 24 16
+if [[ $# -ge 3 ]]; then
+    # a single case: name, partitions, SWAN threads, further partitioner options
+    run "$1" "$2" "$3" "${4:-}"
+else
+    run P8 8 8
+    run P16 16 16
+    run P24 24 16
+fi
 echo "$(date -Is) all done"
 cat "$ROOT/summary.txt"
