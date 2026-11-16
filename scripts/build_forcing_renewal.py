@@ -9,7 +9,8 @@ data/processed/forcing_<season><year>/. Each step follows the script that built
 the same file for the nine days of 1 to 10 July 2025:
 
   era5      era5_{mer,msl,chnk,u10n,v10n}_<tag>_ERA5.nc, with mer in mm/day and
-            evaporation negative, as the file of 1 to 10 July;
+            evaporation negative, as the file of 1 to 10 July; in winter the
+            mer file carries evaporation plus precipitation (mtpr);
   wind      wind_blendedAE_{u10n,v10n}_<tag>.nc, the AE-only blend of
             prepare_v04AE_jul13jul20_ae_blend.py (AE anemometer within 3 km of
             the lagoon centre, ERA5 beyond 8 km, linear taper between);
@@ -49,10 +50,14 @@ AE_CSV = ROOT / 'data/processed/insitu_2025-26/AE_wind_UTC.csv'
 REFDATE = pd.Timestamp('2025-01-01 00:00')   # refDate of the MDU, both seasons
 Z_MAX = 800.0
 
-# forcing window (first and last day) and start of the run, per season
+# forcing window (first and last day), start of the run, and whether the ERA5
+# precipitation (mtpr) is added to the evaporation (mer) in the rainfall_rate file,
+# per season. Over the run windows ERA5 at the lagoon centre gives 24 mm of
+# precipitation against 155 mm of evaporation in summer, and 212 mm against
+# 149 mm in winter.
 SEASONS = {
-    'summer': dict(d0='2025-06-07', d1='2025-09-17', start='2025-06-08'),
-    'winter': dict(d0='2025-11-07', d1='2026-01-17', start='2025-11-08'),
+    'summer': dict(d0='2025-06-07', d1='2025-09-17', start='2025-06-08', precip=False),
+    'winter': dict(d0='2025-11-07', d1='2026-01-17', start='2025-11-08', precip=True),
 }
 
 
@@ -62,9 +67,9 @@ def raw_cmems_dir(season):
 
 def configure(season):
     """Set the window, the tag, the ERA5 months and the directories of one season."""
-    global SEASON, D0, D1, TAG, T_START, MONTHS, RAW_CMEMS, OUT
+    global SEASON, D0, D1, TAG, T_START, MONTHS, RAW_CMEMS, OUT, PRECIP
     s = SEASONS[season]
-    SEASON, D0, D1 = season, s['d0'], s['d1']
+    SEASON, D0, D1, PRECIP = season, s['d0'], s['d1'], s['precip']
     TAG = f'{D0.replace("-", "")}to{D1.replace("-", "")}'
     T_START = pd.Timestamp(s['start'])
     MONTHS = tuple(pd.period_range(D0, D1, freq='M').strftime('%Y-%m'))
@@ -83,7 +88,7 @@ def era5():
         'v10n': dict(standard_name='unknown', long_name='10 metre v-component of neutral wind',
                      units='m s**-1'),
     }
-    for var in attrs:
+    def load(var):
         parts = []
         for m in MONTHS:
             ds = xr.open_dataset(RAW_ERA5 / f'era5_{var}_{m}.nc')
@@ -95,11 +100,22 @@ def era5():
             parts.append(ds.drop_vars([c for c in ('expver', 'number') if c in ds.coords]))
         ds = xr.concat(parts, 'time').sortby('time')
         ds = ds.sel(time=slice(D0, D1 + 'T00:00'))
-        ds = ds.sel(time=~ds.get_index('time').duplicated())
+        return ds.sel(time=~ds.get_index('time').duplicated())
+
+    for var in attrs:
+        ds = load(var)
         if var == 'mer':
             # avg_ie in kg m-2 s-1, positive downward, to mm/day with evaporation negative,
             # the conversion of dfm_tools behind the validated file of 1 to 10 July
             ds['mer'] = ds['mer'] * 86400.0
+            if PRECIP:
+                # avg_tprate in kg m-2 s-1, positive downward, added on the same time axis
+                p = load('mtpr')['mtpr'].reindex(time=ds.time) * 86400.0
+                if int(p.isnull().sum()):
+                    sys.exit('mtpr does not cover the times of mer')
+                ds['mer'] = ds['mer'] + p
+                attrs['mer'] = dict(attrs['mer'], comment='ERA5 mer plus mtpr, net freshwater flux')
+            print(f'mer at the lagoon centre, mean {float(ds["mer"].sel(longitude=12.46, latitude=37.87, method="nearest").mean()):.2f} mm/day', flush=True)
         ds[var].attrs = attrs[var]
         ds.attrs = {k: v for k, v in ds.attrs.items() if not k.startswith('GRIB_')}
         step = np.unique(np.diff(ds.time.values).astype('timedelta64[m]'))

@@ -9,7 +9,7 @@ data/raw/cmems_<season><year>/:
   zos     analysis-forecast at 15 min, which carries the tide;
   uo, vo, so, thetao  daily means of the multiyear reanalysis, or of its interim
           extension (myint) for the days the reanalysis does not yet cover.
-ERA5 single levels (mer, msl, chnk, u10n, v10n), monthly files through
+ERA5 single levels (mer, mtpr, msl, chnk, u10n, v10n), monthly files through
 dfm_tools into data/raw/era5_v04AE_d10d12/, where the July files already lie.
 
 Usage:
@@ -100,7 +100,7 @@ def cmems(season):
 def era5(season):
     import dfm_tools as dfmt
     RAW_ERA5.mkdir(parents=True, exist_ok=True)
-    for var in ('mer', 'msl', 'chnk', 'u10n', 'v10n'):
+    for var in ('mer', 'mtpr', 'msl', 'chnk', 'u10n', 'v10n'):
         dfmt.download_ERA5(varkey=var, longitude_min=11.85, longitude_max=12.65,
                            latitude_min=37.65, latitude_max=38.10,
                            date_min=SEASONS[season]['d0'], date_max=SEASONS[season]['d1'],
