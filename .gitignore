@@ -58,6 +58,11 @@ data/raw/cmems_*_download*.log
 # ERA5 raw monthly chunks per re-download window (regenerable via scripts/download_era5_*.py)
 data/raw/era5_v04*/
 
+# Forcing of the summer renewal run, raw and FM-ready (regenerable via
+# scripts/download_forcing_summer2025.py and scripts/build_forcing_summer2025.py)
+data/raw/cmems_summer2025/
+data/processed/forcing_summer2025/
+
 # Local smoke / partition logs (regenerable from the corresponding model dirs)
 /smoke_*.log
 /partition_*.log
