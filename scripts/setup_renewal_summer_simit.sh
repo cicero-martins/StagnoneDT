@@ -34,8 +34,13 @@ case "$1" in
            -e 's/nudge_salinity_temperature_2025-07-01_00-00-00\.nc/nudge_salinity_temperature_2025-06-07_00-00-00.nc/' \
            "$CASE"/Stagnone_dxy01_15m_new.ext "$CASE"/Stagnone_dxy01_15m_old.ext
     # the lagoon starts from the profiles: drop the [Initial] block of the 42 psu samples
-    awk 'BEGIN{RS=""; ORS="\n\n"} !/dataFile *= *ic3d_lagoon_/' "$CASE/initialFields.ini" > "$CASE/initialFields.tmp"
+    # blocks start at a line opening with '['; blank lines may hold spaces, so no paragraph mode
+    awk 'function flush() { if (b != "" && b !~ /dataFile *= *ic3d_lagoon_/) printf "%s", b; b = "" }
+         /^\[/ { flush() } { b = b $0 "\n" } END { flush() }' "$CASE/initialFields.ini" > "$CASE/initialFields.tmp"
     mv "$CASE/initialFields.tmp" "$CASE/initialFields.ini"
+    n_src=$(grep -c '^\[' "$SRC/initialFields.ini" || true)
+    n_new=$(grep -c '^\[' "$CASE/initialFields.ini" || true)
+    [[ $n_new == $((n_src - 1)) ]] || { echo "initialFields.ini: $n_new blocks from $n_src, expected one less"; exit 3; }
     sed -i -E \
         -e 's/^(startDateTime *= *)[0-9]+/\120250608000000/' \
         -e 's/^(stopDateTime *= *)[0-9]+/\120250915000000/' \
@@ -43,13 +48,13 @@ case "$1" in
         -e 's/^(waqInterval *= *)[0-9.]+/\11800.0/' "$CASE/Stagnone_dxy01_15m.mdu"
     # every file the two .ext and the initial fields name must exist and cover the window
     missing=$(cd "$CASE" && { grep -hiE '^\s*(forcingFile|locationFile|discharge|FILENAME)\s*=' *_new.ext *_old.ext \
-        | sed -E 's/^[^=]*=\s*//; s/\s.*$//'; grep -hE '^\s*dataFile' initialFields.ini | awk '{print $3}'; } \
-        | sort -u | while read -r f; do [[ -f "$f" ]] || echo "$f"; done)
+        | sed -E 's/^[^=]*=\s*//; s/\s.*$//'; grep -hE '^\s*dataFile\s*=' initialFields.ini | awk '{print $3}'; } \
+        | tr -d '\r' | sort -u | while read -r f; do [[ -f "$f" ]] || echo "$f"; done)
     [[ -z "$missing" ]] || { echo "missing: $missing"; exit 3; }
     grep -n "$OLD\|2025-07-01" "$CASE"/*.ext && { echo "old window still referenced"; exit 3; }
     if grep -q 'ic3d_lagoon' "$CASE/initialFields.ini"; then echo "lagoon samples still in initialFields.ini"; exit 3; fi
     grep -H -E '^(startDateTime|stopDateTime|tStop|waqInterval|mapInterval|rstInterval|maxVelocity) ' "$CASE/Stagnone_dxy01_15m.mdu"
-    grep -E '^\s*(quantity|dataFile)' "$CASE/initialFields.ini" | paste - - | awk '{print $3, $6}'
+    grep -E '^\s*(\[|quantity|dataFile\s*=)' "$CASE/initialFields.ini"
     ;;
   launch)
     mountpoint -q /storage || { echo "/storage not mounted"; exit 4; }
