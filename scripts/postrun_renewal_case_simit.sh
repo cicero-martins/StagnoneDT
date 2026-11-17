@@ -76,9 +76,12 @@ case "$1" in
     disown
     ;;
   fm)
+    # the currents cover the window of the case, read from the MDU
+    win() { sed -nE "s/^$1 *= *([0-9]{4})([0-9]{2})([0-9]{2}).*/\1-\2-\3T00:00/p" "$CASE/Stagnone_dxy01_15m.mdu"; }
     cd "$SCRIPTS"
     "$PY" renewal_tracer_member.py "$CASE" "$TAG" --out "$OUT"
     "$PY" diagnose_lagoon_throughflow.py "$CASE" "$TAG" --out "$OUT"
-    "$PY" extract_lagoon_currents_3d.py "$CASE" --out "$OUT/$TAG/currents_3d.nc"
+    "$PY" extract_lagoon_currents_3d.py "$CASE" --out "$OUT/$TAG/currents_3d.nc" \
+        --start "$(win startDateTime)" --stop "$(win stopDateTime)"
     ;;
 esac
