@@ -18,6 +18,9 @@ Writes
         release of renewal_lagoon_opendrift.py every 12 hours, by basin of release,
         with the wind and the remaining fraction of each basin by the particles
         and by D-WAQ
+    figures/renewal_<season>_waq.gif  with --gif, the water of each basin in the
+        column by D-WAQ for the same release, from the frames written every
+        12 hours by renewal_waq_member.py --frame-hours 12
 
 Usage:
     python figure_lagoon_renewal_seasonal.py summer|winter [--gif]
@@ -206,9 +209,88 @@ def particles_gif(season: str, every_hours: int = 12) -> None:
     gif_frames(fig, update, t.size, FIG / f"renewal_{season}_particles.gif", duration=150)
 
 
+def waq_gif(season: str, every_hours: int = 12) -> None:
+    """Water of each basin in the column by D-WAQ for the first release of the season.
+
+    A face takes the colour of the basin whose tracer dominates the column, faded to
+    white with the share of sea water, from the column means
+    written by renewal_waq_member.py --frame-hours.
+    """
+    from matplotlib.collections import PolyCollection
+    from matplotlib.colors import to_rgb
+    from figure_lagoon_renewal import (ASPECT, COLOR, LAND, basin_cuts, coast, draw_coast,
+                                       gif_frames, map_axes, polygons)
+    case, forcing, span = CASES[season]
+    d = ROOT / "outputs" / "renewal" / case
+    files = sorted(d.glob(f"waq_*_frames{every_hours}h.npz"))
+    if not files:
+        print(f"no frames in {d}")
+        return
+    sfx = files[0].stem.split("_")[1]
+    f = np.load(files[0])
+    with xr.open_dataset(d / "Stagnone_dxy01_15m_waqgeom.nc") as g:
+        fn = g.mesh2d_face_nodes.values
+        fn = np.where(np.isfinite(fn), fn, 0).astype(int) - int(g.mesh2d_face_nodes.attrs.get("start_index", 0))
+        fn[~np.isfinite(g.mesh2d_face_nodes.values)] = -1
+        nx, ny = g.mesh2d_node_x.values, g.mesh2d_node_y.values
+        if not np.allclose(g.mesh2d_face_x.values, f["cx"]):
+            raise SystemExit("faces of the geometry differ from those of the frames")
+    t = pd.to_datetime(f["times"])
+    inside = (f["cx"] > 12.395) & (f["cx"] < 12.505) & (f["cy"] > 37.795) & (f["cy"] < 37.93)
+    pb = polygons(nx, ny, fn[inside])
+    conc = f["conc"][:3, :, inside]                                   # basin tracers (tracer, time, face)
+    rgb = np.array([to_rgb(COLOR[n]) for n in BASINS.values()])
+    r_wq = pd.read_csv(d / f"waq_{sfx}_remaining.csv", index_col=0, parse_dates=True)
+    w = wind(forcing, span)
+    lines = coast()
+
+    fig = plt.figure(figsize=(6.4, 7.6), dpi=90)
+    gs = fig.add_gridspec(2, 1, height_ratios=[4.2, 1.3], hspace=0.22,
+                          left=0.12, right=0.97, top=0.93, bottom=0.07)
+    ax = fig.add_subplot(gs[0])
+    pc = PolyCollection(pb, facecolors=np.ones((len(pb), 3)), edgecolors="face", linewidths=0.1, zorder=1)
+    ax.add_collection(pc)
+    map_axes(ax); ax.set_facecolor(LAND); draw_coast(ax, lines); basin_cuts(ax)
+    for n in BASINS.values():
+        ax.scatter([], [], s=30, marker="s", color=COLOR[n], label=n)
+    ax.scatter([], [], s=30, marker="s", color="white", edgecolors=MUTED, linewidths=0.5, label="sea water")
+    ax.legend(loc="lower right", fontsize=7, frameon=True, facecolor="white", edgecolor="none",
+              title="water in the column", title_fontsize=7)
+    wtext = ax.text(12.405, 37.902, "", fontsize=7, color=INK, zorder=8)
+    arrow = [None]
+    bx = fig.add_subplot(gs[1])
+    for n in BASINS.values():
+        bx.plot(r_wq.index, r_wq[n], color=COLOR[n], lw=1.1, label=n)
+    bx.plot(r_wq.index, r_wq["lagoon"], color=INK, lw=1.3, label="lagoon")
+    bx.axhline(np.exp(-1), color=MUTED, lw=0.6, ls=":")
+    now = bx.axvline(t[0], color=INK, lw=0.8)
+    bx.set_ylim(0, 1.02); bx.set_xlim(t[0], r_wq.index[-1]); bx.set_ylabel("r(t), D-WAQ", fontsize=8)
+    bx.xaxis.set_major_formatter(mdates.DateFormatter("%d %b")); bx.tick_params(labelsize=7)
+    bx.legend(loc="upper right", fontsize=7, ncol=4)
+    sup = fig.suptitle("", x=0.12, ha="left", fontsize=9.5)
+
+    def update(i):
+        c = np.nan_to_num(conc[:, i]).clip(0, 1)
+        lag = c.sum(0).clip(0, 1)
+        top = rgb[np.argmax(c, axis=0)]           # basin whose water dominates the column
+        pc.set_facecolor((top * lag[:, None] + (1 - lag[:, None])).clip(0, 1))
+        if arrow[0] is not None:
+            arrow[0].remove()
+        u, v = w.reindex([t[i]], method="nearest").iloc[0][["u", "v"]]
+        arrow[0] = ax.annotate("", xy=(12.418 + 0.0012 * u * ASPECT, 37.915 + 0.0012 * v),
+                               xytext=(12.418, 37.915), zorder=8,
+                               arrowprops=dict(arrowstyle="-|>", color=INK, lw=1.3))
+        wtext.set_text(f"wind {np.hypot(u, v):.0f} m/s")
+        now.set_xdata([t[i], t[i]])
+        sup.set_text(f"D-WAQ release of {t[0]:%d %B %Y}, scheme 24, {t[i]:%d %b %H:%M} UTC")
+
+    gif_frames(fig, update, t.size, FIG / f"renewal_{season}_waq.gif", duration=150)
+
+
 if __name__ == "__main__":
     s = sys.argv[1] if len(sys.argv) > 1 else "summer"
     main(s)
     if "--gif" in sys.argv:
         particles_gif(s)
+        waq_gif(s)
     raise SystemExit(0)
