@@ -168,7 +168,13 @@ def main(argv=None) -> int:
     ds.attrs.update(source=str(args.src.resolve()), layer_distribution="uniform sigma",
                     vertical="linear in sigma between layer centres")
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    ds.to_netcdf(args.out, encoding={v: {"zlib": True, "complevel": 4} for v in ds.data_vars})
+    # one time per chunk, since OpenDrift reads the fields one time at a time and a chunk
+    # spanning hundreds of times is decompressed whole for each of them
+    enc = {v: {"zlib": True, "complevel": 4} for v in ds.data_vars}
+    for v in names.values():
+        if v[0] in enc:
+            enc[v[0]]["chunksizes"] = (1, DEPTHS.size, glat.size, glon.size)
+    ds.to_netcdf(args.out, encoding=enc)
     print(f"wrote {args.out} ({args.out.stat().st_size / 1e6:.1f} MB)")
     return 0
 
