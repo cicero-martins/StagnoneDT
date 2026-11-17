@@ -20,8 +20,13 @@ diffusivities as environment variables and accepts
 drift:horizontal_diffusivity without applying it, so both are set as
 environment constants, and a constant overrides the field of the file.
 
+The particles are released at the first time of the currents file, or at
+--start for the repeated releases of the seasonal runs, whose outputs carry
+the release date in their names through --suffix.
+
 Usage:
     python renewal_lagoon_opendrift.py <currents file> <tag> [--kz 1e-4 1e-2 model]
+        [--start 2025-06-15T00:00 --suffix _20250615]
 """
 
 from __future__ import annotations
@@ -70,13 +75,13 @@ def seeds(currents: xr.Dataset):
     return [np.concatenate(a) for a in (lon, lat, z, w, basin)]
 
 
-def run(path: Path, kz: str, out: Path) -> Path:
+def run(path: Path, kz: str, out: Path, start=None, suffix: str = "") -> Path:
     from opendrift.models.oceandrift import OceanDrift
     from opendrift.readers import reader_netCDF_CF_generic
 
     currents = xr.open_dataset(path)
     lon, lat, z, w, basin = seeds(currents)
-    start = pd.Timestamp(currents.time.values[0]).to_pydatetime()
+    start = pd.Timestamp(start or currents.time.values[0]).to_pydatetime()
     stop = pd.Timestamp(currents.time.values[-1]).to_pydatetime()
     o = OceanDrift(loglevel=50)   # the shallow lagoon sends hundreds of seafloor warnings a step
     o.add_reader(reader_netCDF_CF_generic.Reader(str(path)))
@@ -95,10 +100,10 @@ def run(path: Path, kz: str, out: Path) -> Path:
     for key, value in config.items():
         o.set_config(key, value)
     o.seed_elements(lon=lon, lat=lat, z=z, time=start, wind_drift_factor=0.0)
-    path_out = out / f"particles_kz{label(kz)}.nc"
+    path_out = out / f"particles_kz{label(kz)}{suffix}.nc"
     o.run(end_time=stop - timedelta(seconds=TIME_STEP), time_step=TIME_STEP,
           time_step_output=3600, outfile=str(path_out), export_variables=["lon", "lat", "z"])
-    np.savez(out / f"seeds_kz{label(kz)}.npz", w=w, basin=basin, lon=lon, lat=lat, z=z)
+    np.savez(out / f"seeds_kz{label(kz)}{suffix}.npz", w=w, basin=basin, lon=lon, lat=lat, z=z)
     return path_out
 
 
@@ -140,18 +145,23 @@ def main(argv=None) -> int:
     ap.add_argument("--analyse-only", action="store_true",
                     help="summarise particle files already written")
     ap.add_argument("--out", type=Path, default=ROOT / "outputs" / "renewal")
+    ap.add_argument("--start", default=None, help="release time, the first time of the file if absent")
+    ap.add_argument("--suffix", default="", help="appended to the names of the outputs")
     args = ap.parse_args(argv)
     out = args.out / args.tag
     out.mkdir(parents=True, exist_ok=True)
+    sfx = args.suffix
     results = {}
     for kz in args.kz:
-        p = out / f"particles_kz{label(kz)}.nc" if args.analyse_only else run(args.currents, kz, out)
+        k = label(kz)
+        p = (out / f"particles_kz{k}{sfx}.nc" if args.analyse_only
+             else run(args.currents, kz, out, args.start, sfx))
         times, where = positions(p, args.currents)
-        r, fate = tables(times, where, np.load(out / f"seeds_kz{label(kz)}.npz"))
-        r.to_csv(out / f"remaining_kz{label(kz)}.csv")
-        results[label(kz)] = {"summary": {k: summary(r[k]) for k in r}, "fate": fate}
-        print(json.dumps(results[label(kz)], indent=1))
-    (out / "particles_summary.json").write_text(json.dumps(results, indent=1))
+        r, fate = tables(times, where, np.load(out / f"seeds_kz{k}{sfx}.npz"))
+        r.to_csv(out / f"remaining_kz{k}{sfx}.csv")
+        results[k] = {"summary": {c: summary(r[c]) for c in r}, "fate": fate}
+        print(json.dumps(results[k], indent=1))
+    (out / f"particles_summary{sfx}.json").write_text(json.dumps(results, indent=1))
     return 0
 
 
