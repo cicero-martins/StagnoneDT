@@ -48,6 +48,7 @@ def main(argv=None) -> int:
     ap.add_argument("--out", type=Path, default=ROOT / "outputs" / "renewal")
     ap.add_argument("--run", default="waq_renewal", help="D-WAQ run directory inside the case")
     ap.add_argument("--suffix", default="", help="appended to the names of the outputs")
+    ap.add_argument("--frame-hours", type=int, default=24, help="interval of the column-mean maps")
     args = ap.parse_args(argv)
     out = args.out / args.tag
     out.mkdir(parents=True, exist_ok=True)
@@ -88,10 +89,13 @@ def main(argv=None) -> int:
     (out / f"waq{args.suffix}_summary.json").write_text(json.dumps(res, indent=1))
     print(json.dumps(res, indent=1))
 
-    daily = np.flatnonzero((times - times[0]) % pd.Timedelta("1D") == pd.Timedelta(0))
+    # column means of the tracers for the maps, daily or every --frame-hours
+    step = pd.Timedelta(hours=args.frame_hours)
+    daily = np.flatnonzero((times - times[0]) % step == pd.Timedelta(0))
     vm = v[daily].sum(1)
     conc = np.stack([(mass[k, daily].sum(1) / np.where(vm > 0, vm, np.nan)) for k in range(ntr)])
-    np.savez_compressed(out / f"waq{args.suffix}_daily.npz", cx=x, cy=y, basin=b,
+    name = "daily" if args.frame_hours == 24 else f"frames{args.frame_hours}h"
+    np.savez_compressed(out / f"waq{args.suffix}_{name}.npz", cx=x, cy=y, basin=b,
                         times=times[daily].values.astype("datetime64[s]").astype(str),
                         conc=conc.astype(np.float32))
     return 0
