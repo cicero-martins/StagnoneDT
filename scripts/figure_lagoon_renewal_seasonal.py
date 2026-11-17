@@ -14,9 +14,13 @@ Writes
         dates, and the remaining fraction of the lagoon and of each basin
         against the days since release
     outputs/renewal/<case>/releases_summary.csv  time scales and wind by release
+    figures/renewal_<season>_particles.gif  with --gif, the particles of the first
+        release of renewal_lagoon_opendrift.py every 12 hours, by basin of release,
+        with the wind and the remaining fraction of each basin by the particles
+        and by D-WAQ
 
 Usage:
-    python figure_lagoon_renewal_seasonal.py summer|winter
+    python figure_lagoon_renewal_seasonal.py summer|winter [--gif]
 """
 
 from __future__ import annotations
@@ -79,6 +83,17 @@ def main(season: str) -> int:
             day = (r.index - r.index[0]) / pd.Timedelta(days=1)
             row[f"{k}_r30"] = float(np.interp(30, day, r[k].values)) if day[-1] >= 30 else np.nan
         row["sum_departure_max"] = float(r["sum_departure_max"].max())
+        # the particles of renewal_lagoon_opendrift.py, when run for the release
+        f_od = d / f"remaining_kzmodel_{t0:%Y%m%d}.csv"
+        if f_od.exists():
+            od = pd.read_csv(f_od, index_col=0, parse_dates=True)
+            day = (od.index - od.index[0]) / pd.Timedelta(days=1)
+            for k in ["lagoon", *BASINS.values()]:
+                s = summary(od[k])
+                row[f"od_{k}_r30"] = float(np.interp(30, day, od[k].values)) if day[-1] >= 30 else np.nan
+                row[f"od_{k}_tau_days"] = s["tau_days"]
+                row[f"od_{k}_theta_extended_days"] = (s["theta_truncated_days"] + s["r_end"] * s["tau_fit_days"]
+                                                      if s["tau_fit_days"] else np.nan)
         rows.append(row)
     tab = pd.DataFrame(rows).set_index("release")
     tab.to_csv(d / "releases_summary.csv", float_format="%.3f")
@@ -129,5 +144,71 @@ def main(season: str) -> int:
     return 0
 
 
+def particles_gif(season: str, every_hours: int = 12) -> None:
+    """Particles of the first release of the season, by basin of release, with the wind
+    and the remaining fraction of each basin by the particles and by D-WAQ."""
+    from figure_lagoon_renewal import (ASPECT, COLOR, LAND, basin_cuts, coast, draw_coast,
+                                       gif_frames, map_axes, particles_at)
+    case, forcing, span = CASES[season]
+    d = ROOT / "outputs" / "renewal" / case
+    files = sorted(d.glob("particles_kzmodel_*.nc"))
+    if not files:
+        print(f"no particles in {d}")
+        return
+    sfx = files[0].stem.replace("particles_kzmodel", "")
+    with xr.open_dataset(files[0]) as p:
+        run = {"time": pd.to_datetime(p.time.values).values, "lon": p.lon.values, "lat": p.lat.values,
+               "basin": np.load(d / f"seeds_kzmodel{sfx}.npz")["basin"]}
+    r_od = pd.read_csv(d / f"remaining_kzmodel{sfx}.csv", index_col=0, parse_dates=True)
+    r_wq = pd.read_csv(d / f"waq{sfx}_remaining.csv", index_col=0, parse_dates=True)
+    w = wind(forcing, span)
+    t = pd.date_range(pd.Timestamp(run["time"][0]), pd.Timestamp(run["time"][-1]), freq=f"{every_hours}h")
+    lines = coast()
+
+    fig = plt.figure(figsize=(6.4, 7.6), dpi=90)
+    gs = fig.add_gridspec(2, 1, height_ratios=[4.2, 1.3], hspace=0.22,
+                          left=0.12, right=0.97, top=0.93, bottom=0.07)
+    ax = fig.add_subplot(gs[0])
+    x0, y0 = particles_at(run, t[0].to_datetime64())
+    sc = ax.scatter(x0, y0, s=0.6, c=[COLOR[BASINS[b]] for b in run["basin"]], lw=0, zorder=2)
+    map_axes(ax); ax.set_facecolor(LAND); draw_coast(ax, lines); basin_cuts(ax)
+    for n in BASINS.values():
+        ax.scatter([], [], s=20, color=COLOR[n], label=n)
+    ax.legend(loc="lower right", fontsize=7, frameon=True, facecolor="white", edgecolor="none",
+              title="basin of release", title_fontsize=7)
+    wtext = ax.text(12.405, 37.902, "", fontsize=7, color=INK, zorder=8)
+    arrow = [None]
+    bx = fig.add_subplot(gs[1])
+    for n in BASINS.values():
+        bx.plot(r_od.index, r_od[n], color=COLOR[n], lw=1.1)
+        bx.plot(r_wq.index, r_wq[n], color=COLOR[n], lw=0.9, ls="--")
+    bx.plot([], [], color=INK, lw=1.1, label="particles"); bx.plot([], [], color=INK, lw=0.9, ls="--", label="D-WAQ")
+    bx.axhline(np.exp(-1), color=MUTED, lw=0.6, ls=":")
+    now = bx.axvline(t[0], color=INK, lw=0.8)
+    bx.set_ylim(0, 1.02); bx.set_xlim(t[0], t[-1]); bx.set_ylabel("r(t), own water", fontsize=8)
+    bx.xaxis.set_major_formatter(mdates.DateFormatter("%d %b")); bx.tick_params(labelsize=7)
+    bx.legend(loc="upper right", fontsize=7, ncol=2)
+    sup = fig.suptitle("", x=0.12, ha="left", fontsize=9.5)
+    t0 = pd.Timestamp(run["time"][0])
+
+    def update(i):
+        sc.set_offsets(np.c_[particles_at(run, t[i].to_datetime64())])
+        if arrow[0] is not None:
+            arrow[0].remove()
+        u, v = w.reindex([t[i]], method="nearest").iloc[0][["u", "v"]]
+        arrow[0] = ax.annotate("", xy=(12.418 + 0.0012 * u * ASPECT, 37.915 + 0.0012 * v),
+                               xytext=(12.418, 37.915), zorder=8,
+                               arrowprops=dict(arrowstyle="-|>", color=INK, lw=1.3))
+        wtext.set_text(f"wind {np.hypot(u, v):.0f} m/s")
+        now.set_xdata([t[i], t[i]])
+        sup.set_text(f"Particles released {t0:%d %B %Y}, Kz of the model, {t[i]:%d %b %H:%M} UTC")
+
+    gif_frames(fig, update, t.size, FIG / f"renewal_{season}_particles.gif", duration=150)
+
+
 if __name__ == "__main__":
-    raise SystemExit(main(sys.argv[1] if len(sys.argv) > 1 else "summer"))
+    s = sys.argv[1] if len(sys.argv) > 1 else "summer"
+    main(s)
+    if "--gif" in sys.argv:
+        particles_gif(s)
+    raise SystemExit(0)
