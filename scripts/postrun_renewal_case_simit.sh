@@ -5,10 +5,13 @@
 #           an integration option as second argument runs in waq_renewal_s<scheme>
 #   fm      the online lagoon_tracer, the throughflow and the currents for OpenDrift
 # Outputs under $CASE/waq_renewal and $OUT, the currents file under $OUT/<tag>.
-# Usage, on simit:  bash postrun_renewal_case_simit.sh merge | waq [24.70] | fm
+# The case is veg_ic3d_0701_0710 unless RENEWAL_CASE names another directory under
+# renewal/, as veg_summer_0608_0915 or veg_winter_1108_0115.
+# Usage, on simit:  [RENEWAL_CASE=<case>] bash postrun_renewal_case_simit.sh merge | waq [24.70] | fm
 set -euo pipefail
-CASE=/storage/ciceromartinsjr/StagnoneDT/renewal/veg_ic3d_0701_0710
-TAG=veg_ic3d_0701_0710
+TAG=${RENEWAL_CASE:-veg_ic3d_0701_0710}
+CASE=/storage/ciceromartinsjr/StagnoneDT/renewal/$TAG
+[[ -d "$CASE" ]] || { echo "no case $CASE"; exit 3; }
 OUT=/storage/ciceromartinsjr/StagnoneDT/renewal/outputs
 PY=$HOME/miniconda3/envs/stagnone_extract/bin/python
 BIN=$HOME/Scaricati/delft3dfm/lnx64/bin
