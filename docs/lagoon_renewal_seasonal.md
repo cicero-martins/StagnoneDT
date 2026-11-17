@@ -119,6 +119,16 @@ Each release is a separate D-WAQ run from the release date at 00:00 UTC to the e
 
 *Winter, as in the summer figure.*
 
+![Water of each basin in the column by D-WAQ for the summer release of 15 June, every 12 hours](../figures/renewal_summer_waq.gif)
+
+*Water of each basin in the column by D-WAQ with scheme 24 for the release of 15 June 2025, every 12 hours to 15 September (top). A face takes the colour of the basin whose tracer dominates the column, faded to white with the share of sea water, and the arrow gives the direction toward which the wind over the lagoon blows. Remaining fraction of the lagoon and of the own water of each basin, with the instant of the frame (bottom).*
+
+![Water of each basin in the column by D-WAQ for the winter release of 15 November, every 12 hours](../figures/renewal_winter_waq.gif)
+
+*Release of 15 November 2025, every 12 hours to 15 January 2026, as in the summer animation.*
+
+In the animations the water of the northern basin fills the central basin within three to four weeks, while the water of the central basin moves into the southern basin and the sea water entering through the southern mouth replaces the southern water first along the western side of the basin. The northern basin is refilled from the northern mouth, its colour fading toward white from the mouth eastward.
+
 The lagoon reaches 1/e after 31 to 44 days in every release whose window is long enough, and the extended renewal time stays within 34 to 45 days across both seasons. The decay is fastest in the first two weeks, when the water near the mouths leaves, and slower afterwards, so an exponential fitted to the first days underestimates the later time scales, and the e-folding times of the fits over two to three months, 38 to 51 days, exceed the measured τ.
 
 The southern basin, which exchanges directly with the sea through the southern mouth, renews in about two weeks in both seasons. The central basin keeps its water longest, with extended renewal times of 27 to 29 days in summer outside the event of late July, since the water that leaves it is replaced by the water of the northern basin. The northern basin loses its own water in about three weeks, with r oscillating at the tidal period around a falling trend.
