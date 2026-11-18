@@ -201,7 +201,7 @@ The particles released at the same seeded columns in every release give, for eac
 
 ![Days of the first 30 after release spent inside the lagoon and inside the basin of release, by seeded column, in summer and in winter](../figures/renewal_seasonal_retention.png)
 
-*Days of the first 30 after release that the particles of each seeded column spend inside the lagoon (a, b) and inside their basin of release (c, d), averaged over the seven summer releases (a, c) and the four winter releases (b, d), under the eddy diffusivity of the model. The dashed lines divide the basins.*
+*Days of the first 30 after release that the particles of each seeded column spend inside the lagoon (a, b) and inside their basin of release (c, d), averaged over the seven summer releases (a, c) and the four winter releases (b, d), under the eddy diffusivity of the model, in classes of 5 days. The dashed lines divide the basins.*
 
 | Basin of release | Inside the lagoon, summer (d) | Inside the lagoon, winter (d) | Inside the basin, summer (d) | Inside the basin, winter (d) |
 |---|---|---|---|---|

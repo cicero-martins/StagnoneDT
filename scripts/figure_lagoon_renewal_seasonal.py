@@ -330,22 +330,26 @@ def retention(season: str, days: float = RETENTION_DAYS) -> pd.DataFrame:
 
 def retention_map(days: float = RETENTION_DAYS) -> None:
     """Map of the mean retention by seeded column in summer and in winter."""
-    from matplotlib.colors import ListedColormap
-    from figure_lagoon_renewal import COLOR, LAND, basin_cuts, coast, draw_coast, map_axes
+    from matplotlib.colors import BoundaryNorm
+    from figure_lagoon_renewal import LAND, basin_cuts, coast, draw_coast, map_axes
     lines = coast()
-    cmap = ListedColormap(plt.get_cmap("Blues")(np.linspace(0.12, 1, 12)))
+    # classes of 5 days, yellow for water renewed within days to purple for water held
+    # through the window, the palette of the local residence of the Valletta harbours
+    bounds = np.arange(0, days + 0.1, 5)
+    cmap = plt.get_cmap("viridis_r", bounds.size - 1)
+    norm = BoundaryNorm(bounds, cmap.N)
     res = {s: retention(s, days) for s in CASES}
     fig, ax = plt.subplots(2, 2, figsize=(7.2, 8.6), constrained_layout=True)
     for i, (key, what) in enumerate([("lagoon", "inside the lagoon"), ("own", "inside the basin of release")]):
         for j, s in enumerate(CASES):
             a = ax[i, j]; m = res[s]
-            sc = a.scatter(m.x, m.y, c=m[key], s=7, marker="s", lw=0, cmap=cmap, vmin=0, vmax=days, zorder=2)
+            sc = a.scatter(m.x, m.y, c=m[key], s=7, marker="s", lw=0, cmap=cmap, norm=norm, zorder=2)
             map_axes(a); a.set_facecolor(LAND); draw_coast(a, lines); basin_cuts(a)
             n = len(list((ROOT / "outputs" / "renewal" / CASES[s][0]).glob("particles_kzmodel_*.nc")))
             a.set_title(f"({'abcd'[2 * i + j]}) {s}, {n} releases,\n days {what}", loc="left", fontsize=8)
             if j:
                 a.tick_params(labelleft=False)
-        fig.colorbar(sc, ax=ax[i, :], shrink=0.8, label=f"days of the first {days:.0f} after release")
+        fig.colorbar(sc, ax=ax[i, :], shrink=0.8, ticks=bounds, label=f"days of the first {days:.0f} after release")
     out = FIG / "renewal_seasonal_retention.png"
     fig.savefig(out, dpi=200)
     print(out)
