@@ -44,6 +44,7 @@ FIG = ROOT / "figures"
 CASES = {"summer": ("veg_summer_0608_0915", "forcing_summer2025", "20250607to20250917"),
          "winter": ("veg_winter_1108_0115", "forcing_winter2025", "20251107to20260117")}
 WIND_DAYS = 14
+RETENTION_DAYS = 30.0   # window common to every release
 INK, MUTED, GRID = "#1f1f1e", "#6b6a64", "#e4e3dd"
 
 plt.rcParams.update({"font.size": 8, "axes.edgecolor": MUTED, "axes.labelcolor": INK,
@@ -287,8 +288,76 @@ def waq_gif(season: str, every_hours: int = 12) -> None:
     gif_frames(fig, update, t.size, FIG / f"renewal_{season}_waq.gif", duration=150)
 
 
+def retention(season: str, days: float = RETENTION_DAYS) -> pd.DataFrame:
+    """Days of the first `days` after release that the particles of each seeded column
+    spend inside the lagoon and inside their basin of release, averaged over the
+    particles of the column with their volumes as weights and over the releases.
+
+    The basin of a position is read on the grid of the currents (basin_grid.npz,
+    saved from currents_3d.nc), and a particle that has left the box counts as
+    outside.
+    """
+    case = CASES[season][0]
+    d = ROOT / "outputs" / "renewal" / case
+    g = np.load(d / "basin_grid.npz")
+    glon, glat, b = g["lon"], g["lat"], g["basin"]
+    cols = []
+    for f in sorted(d.glob("particles_kzmodel_*.nc")):
+        sfx = f.stem.replace("particles_kzmodel", "")
+        s = np.load(d / f"seeds_kzmodel{sfx}.npz")
+        with xr.open_dataset(f) as p:
+            t = pd.to_datetime(p.time.values)
+            n = int(np.searchsorted(t, t[0] + pd.Timedelta(days=days)))
+            lon, lat = p.lon.values[:, :n], p.lat.values[:, :n]
+        dt = (t[1] - t[0]) / pd.Timedelta(days=1)
+        i = np.rint((lon - glon[0]) / (glon[1] - glon[0]))
+        j = np.rint((lat - glat[0]) / (glat[1] - glat[0]))
+        ok = np.isfinite(i) & np.isfinite(j) & (i >= 0) & (i < glon.size) & (j >= 0) & (j < glat.size)
+        where = np.full(lon.shape, -1, np.int8)
+        where[ok] = b[j[ok].astype(int), i[ok].astype(int)]
+        c = pd.DataFrame({"x": s["lon"], "y": s["lat"], "basin": s["basin"], "w": s["w"],
+                          "lagoon": (where > 0).sum(1) * dt, "own": (where == s["basin"][:, None]).sum(1) * dt})
+        c = c.groupby(["x", "y", "basin"]).apply(
+            lambda q: pd.Series({k: np.average(q[k], weights=q.w) for k in ("lagoon", "own")}),
+            include_groups=False).reset_index()
+        c["release"] = sfx[1:]
+        cols.append(c)
+    allc = pd.concat(cols)
+    mean = allc.groupby(["x", "y", "basin"])[["lagoon", "own"]].mean().reset_index()
+    mean.to_csv(d / "retention_columns.csv", index=False, float_format="%.3f")
+    return mean
+
+
+def retention_map(days: float = RETENTION_DAYS) -> None:
+    """Map of the mean retention by seeded column in summer and in winter."""
+    from matplotlib.colors import ListedColormap
+    from figure_lagoon_renewal import COLOR, LAND, basin_cuts, coast, draw_coast, map_axes
+    lines = coast()
+    cmap = ListedColormap(plt.get_cmap("Blues")(np.linspace(0.12, 1, 12)))
+    res = {s: retention(s, days) for s in CASES}
+    fig, ax = plt.subplots(2, 2, figsize=(7.2, 8.6), constrained_layout=True)
+    for i, (key, what) in enumerate([("lagoon", "inside the lagoon"), ("own", "inside the basin of release")]):
+        for j, s in enumerate(CASES):
+            a = ax[i, j]; m = res[s]
+            sc = a.scatter(m.x, m.y, c=m[key], s=7, marker="s", lw=0, cmap=cmap, vmin=0, vmax=days, zorder=2)
+            map_axes(a); a.set_facecolor(LAND); draw_coast(a, lines); basin_cuts(a)
+            n = len(list((ROOT / "outputs" / "renewal" / CASES[s][0]).glob("particles_kzmodel_*.nc")))
+            a.set_title(f"({'abcd'[2 * i + j]}) {s}, {n} releases,\n days {what}", loc="left", fontsize=8)
+            if j:
+                a.tick_params(labelleft=False)
+        fig.colorbar(sc, ax=ax[i, :], shrink=0.8, label=f"days of the first {days:.0f} after release")
+    out = FIG / "renewal_seasonal_retention.png"
+    fig.savefig(out, dpi=200)
+    print(out)
+    for s, m in res.items():
+        print(s, m.groupby("basin")[["lagoon", "own"]].describe(percentiles=[0.1, 0.5, 0.9]).round(1).T)
+
+
 if __name__ == "__main__":
     s = sys.argv[1] if len(sys.argv) > 1 else "summer"
+    if s == "retention":
+        retention_map()
+        raise SystemExit(0)
     main(s)
     if "--gif" in sys.argv:
         particles_gif(s)
