@@ -32,7 +32,7 @@ from matplotlib.lines import Line2D
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import TAG, SUFFIX, FIGSUB  # noqa: E402
+from _ensemble import TAG, SUFFIX, FIGSUB, CODE  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
@@ -51,12 +51,19 @@ LAND_EDGE = '#c9c7c1'
 # From the stratified start the mobile bed enters only as a sensitivity test,
 # so the pair shown is the wave-coupled fixed-bed one.
 if SUFFIX:
-    MEMBERS = [(TAG['nodm'], 'Bare (W--)', '#eb6834'),
-               (TAG['nodm_veg'], 'Canopy (WV-)', '#4a3aa7')]
+    MEMBERS = [(TAG['nodm'], f"Bare ({CODE['nodm']})", '#eb6834'),
+               (TAG['nodm_veg'], f"Canopy ({CODE['nodm_veg']})", '#4a3aa7')]
 else:
     MEMBERS = [('v04AE', 'Bare (W-M)', '#eb6834'),
                ('v04AE_veg_waves_dm', 'Canopy (WVM)', '#4a3aa7')]
 PAD_FRAC = 0.16
+# The locator panel: the central lagoon, where every release lies.
+LOCATOR = dict(lon=(12.428, 12.497), lat=(37.838, 37.912))
+# Label offsets in points. Releases 1, 5 and 6 lie within 150 m of one another,
+# as do 3 and 10, so the labels are placed by hand rather than by a rule.
+LABEL_AT = {1: (4, -10), 2: (9, -3), 3: (9, -4), 4: (-9, 0), 5: (-9, -4),
+            6: (-9, 4), 7: (0, 9), 8: (-9, 0), 9: (-9, 0), 10: (-9, 5),
+            11: (9, 0), 12: (0, 9)}
 
 
 def parse_ldb(path):
@@ -130,6 +137,38 @@ def clip_track(sim, dep, did, t0, t1):
     return s[s.time >= start]
 
 
+def locator(ax, obs, land, coast):
+    """Every observed track in grey and every release numbered."""
+    for p in land:
+        ax.fill(p[:, 0], p[:, 1], color=LAND, ec='none', zorder=1)
+    for p in coast:
+        ax.plot(p[:, 0], p[:, 1], '-', color=LAND_EDGE, lw=0.6, zorder=2)
+    for _, g in obs.groupby(['deploy', 'source']):
+        g = g.sort_values('time')
+        ax.plot(g.lon, g.lat, '-', color='#a9a6a0', lw=0.9, zorder=3)
+    rel = obs.sort_values('time').groupby('deploy')[['lon', 'lat']].first()
+    cy = rel.lat.mean()
+    asp = 1.0 / np.cos(np.radians(cy))
+    for dep, row in rel.iterrows():
+        ax.plot(row.lon, row.lat, 'o', ms=5.5, mfc='white', mec=INK, mew=1.4, zorder=6)
+        ax.annotate(str(int(dep)), (row.lon, row.lat), xytext=LABEL_AT.get(int(dep), (9, 0)),
+                    textcoords='offset points', fontsize=8.5, color=INK, ha='center',
+                    va='center', zorder=7)
+    ax.set_xlim(*LOCATOR['lon']); ax.set_ylim(*LOCATOR['lat'])
+    ax.set_aspect(asp)
+    # 1 km scale bar, bottom left
+    km = 1000.0 / hav(12.45, cy, 12.46, cy) * 0.01
+    x0, y0 = LOCATOR['lon'][0] + 0.004, LOCATOR['lat'][0] + 0.004
+    ax.plot([x0, x0 + km], [y0, y0], '-', color=INK, lw=2.0, zorder=9, solid_capstyle='butt')
+    ax.text(x0 + km / 2, y0 + 0.0008, '1 km', fontsize=8, ha='center', va='bottom', color=INK)
+    ax.set_title('Releases', loc='left', fontsize=9.5, color=INK, pad=4)
+    ax.set_xticks([]); ax.set_yticks([])
+    ax.set_facecolor(SURFACE)
+    ax.set_rasterization_zorder(3)
+    for s_ in ax.spines.values():
+        s_.set_color(GRID)
+
+
 def main():
     mpl.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 9})
 
@@ -143,8 +182,15 @@ def main():
     land += parse_ldb(MODEL / 'sicily2.ldb')
     coast = split_long_segments(land)
 
-    fig, axes = plt.subplots(3, 4, figsize=(11.6, 8.8), dpi=300)
+    # The co-author could not place deployments 3 and 4 from their own panels,
+    # whose extents are a few hundred metres. A locator panel on the left
+    # numbers every release on the lagoon, and each panel keeps its number.
+    fig = plt.figure(figsize=(14.6, 8.8), dpi=300)
     fig.patch.set_facecolor(SURFACE)
+    gs = fig.add_gridspec(3, 5, width_ratios=[1.55, 1, 1, 1, 1])
+    axes = np.array([[fig.add_subplot(gs[r, c + 1]) for c in range(4)]
+                     for r in range(3)])
+    locator(fig.add_subplot(gs[:, 0]), obs, land, coast)
 
     for ax, dep in zip(axes.ravel(), deploys):
         did = pick_drifter(full, dep)
