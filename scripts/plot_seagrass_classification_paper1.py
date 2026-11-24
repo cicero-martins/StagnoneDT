@@ -142,7 +142,7 @@ def main():
 
     titles = ['(a) PlanetScope, Aug 2023',
               '(b) Random-forest classification',
-              '(c) Trachytope class per link']
+              '(c) Bed cover class per flow link']
     for i, (ax, t) in enumerate(zip(axes, titles)):
         ax.set_xlim(BBOX[0], BBOX[2])
         ax.set_ylim(BBOX[1], BBOX[3])

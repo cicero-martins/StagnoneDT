@@ -96,7 +96,7 @@ def fig_s1():
     s = spacing(fx, fy)
     whole = dict(lon=(fx.min() - 0.01, fx.max() + 0.01), lat=(fy.min() - 0.01, fy.max() + 0.01))
     panels = ((whole, '(a) Whole domain', 0.1), (LAGOON, '(b) Lagoon and inlets', 0.1),
-              (BOCCA_NORD, '(c) Bocca Nord', 0.5))
+              (BOCCA_NORD, '(c) North Mouth', 0.5))
     ratios = [aspect(e) for e, _, _ in panels]
     fig = plt.figure(figsize=(16.5, 5.6))
     gs = fig.add_gridspec(1, 4, width_ratios=ratios + [0.05], wspace=0.3)
@@ -143,6 +143,18 @@ def outline(x, y):
     return xs, ys
 
 
+def scale_bar(ax, km, frac=0.06):
+    """A bar of `km` kilometres in the lower right corner of a lon-lat axis."""
+    (x0, x1), (y0, y1) = ax.get_xlim(), ax.get_ylim()
+    lat = y0 + frac * (y1 - y0)
+    dlon = km / (111.32 * np.cos(np.radians(lat)))
+    xe = x1 - frac * (x1 - x0)
+    ax.plot([xe - dlon, xe], [lat, lat], '-', color=INK, lw=2.4, solid_capstyle='butt', zorder=10)
+    ax.text(xe - dlon / 2, lat + 0.012 * (y1 - y0), f'{km:g} km', ha='center', va='bottom',
+            fontsize=9, color=INK, zorder=10,
+            bbox=dict(fc='white', ec='none', alpha=0.8, pad=1.0))
+
+
 def fig_s2():
     polys, fx, fy = faces(NET)
     fig, axes = plt.subplots(1, 2, figsize=(12.8, 5.6), gridspec_kw={'width_ratios': [1.6, 1]})
@@ -168,6 +180,7 @@ def fig_s2():
         style(ax, grid=False)
         geo(ax)
         ax.set_title(title, loc='left', fontsize=11, color=INK)
+        scale_bar(ax, 10 if k == 0 else 1)
     axes[0].legend(loc='lower left', fontsize=9, frameon=True, framealpha=0.95)
     save(fig, 'figS2')
 
@@ -286,6 +299,11 @@ def fig_s4():
     for ax, z, v, uni, lab, title in ((axes[0], zt, t, 24.0, 'Temperature ($^\\circ$C)', '(a) Temperature'),
                                       (axes[1], zs, s, 37.5, 'Salinity', '(b) Salinity')):
         ax.plot(v, z, color=INK, lw=2, marker='o', ms=4, label='Stratified start (CMEMS profile)')
+        top = int(np.argmax(z))
+        ax.plot(v[top], z[top], 'o', ms=11, mfc=CANOPY, mec='white', mew=1.5, zorder=5,
+                label='Surface value adopted')
+        ax.annotate(f'{v[top]:.1f}', (v[top], z[top]), xytext=(10, -14),
+                    textcoords='offset points', fontsize=10, color=CANOPY, fontweight='bold')
         ax.axvline(uni, color=BARE, lw=2, ls='--', label='Uniform start')
         ax.set_xlabel(lab, color=MUTED)
         ax.set_title(title, loc='left', fontsize=11, color=INK)
@@ -307,7 +325,7 @@ def fig_s6():
     for k, (lev, lab) in enumerate((('L60', '60 m'), ('L30', '30 m'), ('L15', '15 m'))):
         polys, fx, fy = faces(QT / f'stagnone_qt_{lev}' / f'stagnone_qt_{lev}_net.nc')
         for row, ext, lw, title in ((0, LAGOON, 0.15, f'({"abc"[k]}) {lab} in the lagoon, {len(polys):,} faces'),
-                                    (1, BOCCA_NORD, 0.4, f'({"def"[k]}) {lab}, Bocca Nord')):
+                                    (1, BOCCA_NORD, 0.4, f'({"def"[k]}) {lab}, North Mouth')):
             ax = fig.add_subplot(gs[row, k])
             ax.add_collection(PolyCollection(polys, facecolor='#f3f2ef', edgecolor='#5d5a55', lw=lw, rasterized=True))
             ax.set_xlim(*ext['lon']); ax.set_ylim(*ext['lat'])
@@ -326,6 +344,9 @@ def fig_s6():
 
     def panel(ax, rows, ref, title):
         for i, (lab, tag) in enumerate(rows):
+            if tag == ref:      # the reference itself, at zero by construction
+                ax.plot(i, 0, 'o', ms=8, mfc=SURFACE, mec=INK, mew=1.6, zorder=4)
+                continue
             m, se = paired(tag, ref)
             ax.errorbar(i, m, yerr=se, fmt='o', color=INK, ms=8, capsize=4, lw=1.6, mec=SURFACE, mew=1.2)
         ax.axhline(0, color=INK, lw=1.0)
@@ -337,7 +358,8 @@ def fig_s6():
         style(ax)
 
     ax = fig.add_subplot(gs[2, 0:2])
-    panel(ax, [('30 m', 'v04AE_nowaves_qtL30_cfl05'), ('15 m', 'v04AE_nowaves_qtL15_cfl05'),
+    panel(ax, [('15 m', 'v04AE_nowaves_qtL15_cfl05'), ('30 m', 'v04AE_nowaves_qtL30_cfl05'),
+               ('60 m (reference)', 'v04AE_nowaves_qtL60_cfl05'),
                ('present mesh', 'v04AE_nowaves_bed26_cfl05')], 'v04AE_nowaves_qtL60_cfl05',
           '(g) Horizontal resolution, uniform start, against the 60 m mesh')
     ax.set_ylabel('Paired change in Liu--Weisberg skill', color=MUTED)
