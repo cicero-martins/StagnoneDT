@@ -26,7 +26,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import KEYS, TAG, FACTORS, SUFFIX, FIGSUB, scored
+from _ensemble import KEYS, TAG, FACTORS, SUFFIX, FIGSUB, CODE, CODE_KEY, scored
 
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
@@ -36,9 +36,6 @@ FIG.mkdir(parents=True, exist_ok=True)
 SURFACE, INK, MUTED, GRID = '#ffffff', '#1b1b1b', '#6b6b6b', '#e8e7e4'
 C_BARE, C_VEG = '#eb6834', '#4a3aa7'
 
-CODE = {'nowaves': '---', 'nowaves_veg': '-V-', 'nodm': 'W--',
-        'nodm_veg': 'WV-', 'nowaves_dm': '--M', 'nowaves_vegdm': '-VM',
-        'bl': 'W-M', 'veg': 'WVM'}
 
 
 def style(ax):
@@ -101,8 +98,7 @@ def main():
     axes[2].set_title('(c) Direction held', loc='left', fontsize=11, color=INK,
                       pad=8)
 
-    fig.text(0.055, 0.035, 'W wave coupling    V seagrass canopy    '
-             'M mobile bed        orange, bare        purple, canopy',
+    fig.text(0.055, 0.035, CODE_KEY + '        orange, bare        purple, canopy',
              fontsize=9, color=MUTED, ha='left')
 
     for ext in ('png', 'pdf'):
