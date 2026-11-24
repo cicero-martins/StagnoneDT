@@ -36,7 +36,7 @@ identified geographically: F003 is the elongated western barrier (Isola
 Grande), F002 sits north of Mozia (Santa Maria) and the small LandBoundary01
 block sits south of it (Scuola). Worth a second pair of eyes before submission.
 
-Output: manuscript/figures/study_area_stagnone.{png,pdf}
+Output: figures/study_area_stagnone.{png,pdf}, copied into the manuscript folder by hand
 """
 import json
 from pathlib import Path
@@ -55,7 +55,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MODEL = ROOT / 'model' / 'dflowfm_v04AE_vr'
 PROC = ROOT / 'data' / 'processed'
 GEO = PROC / 'geo' / 'mediterranean_context.geojson'
-OUT = ROOT / 'manuscript' / 'figures'
+OUT = ROOT / 'figures'
 OUT.mkdir(parents=True, exist_ok=True)
 
 # --- palette -----------------------------------------------------------------
@@ -95,9 +95,9 @@ BBOX = dict(lon=(12.418, 12.492), lat=(37.810, 37.914))
 ASPECT = 1.0 / np.cos(np.radians(37.87))
 
 STATIONS_WL = {          # from Stagnone_dxy01_15m_obs.xyn
-    'BN': (12.457240, 37.905274),
+    'NM': (12.457240, 37.905274),
     'AE': (12.451652, 37.891785),
-    'BS': (12.449667, 37.842221),
+    'SM': (12.449667, 37.842221),
 }
 STATION_MET = {'Mulino': (12.482, 37.868)}   # scripts/diagnose_d7_station_blame.py
 MARETTIMO = (12.0753, 37.9747)               # offshore validation location
@@ -116,8 +116,8 @@ ISLANDS = {
     'Scuola': ((12.4520, 37.8600), (12.4567, 37.8628)),
 }
 INLETS = {
-    'Bocca Nord': ((12.4655, 37.9010), (12.4570, 37.9045)),
-    'Bocca Sud': ((12.4300, 37.8390), (12.4455, 37.8400)),
+    'North Mouth': ((12.4655, 37.9010), (12.4570, 37.9045)),
+    'South Mouth': ((12.4300, 37.8390), (12.4455, 37.8400)),
 }
 
 
@@ -350,9 +350,9 @@ def main():
     ax_l.scatter(releases['lon0'], releases['lat0'], marker='D', s=22,
                  facecolor=C_DRIFT, edgecolor='white', linewidths=0.6, zorder=5)
 
-    WL_OFF = {'BN': (-0.0050, 0.0012, 'right'),
+    WL_OFF = {'NM': (-0.0050, 0.0012, 'right'),
               'AE': (-0.0048, 0.0014, 'right'),
-              'BS': (0.0048, 0.0012, 'left')}
+              'SM': (0.0048, 0.0012, 'left')}
     for name, (sx, sy) in STATIONS_WL.items():
         dx, dy, ha = WL_OFF[name]
         ax_l.scatter(sx, sy, marker='o', s=90, facecolor=C_WL, edgecolor='white',
