@@ -31,7 +31,7 @@ from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import KEYS, FACTORS, SUFFIX, FIGSUB
+from _ensemble import KEYS, FACTORS, SUFFIX, FIGSUB, CODE
 from validate_wl_ensemble import load_member, STATIONS, PROC
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -45,9 +45,10 @@ W0, W1 = pd.Timestamp('2025-07-08'), pd.Timestamp('2025-07-10')
 BARE = [k for k in KEYS if FACTORS[k]['roughness'] != 'vegetated']
 VEG = [k for k in KEYS if FACTORS[k]['roughness'] == 'vegetated']
 SHOW = 'AltaVilaEst'
-CODE = {'nowaves': '---', 'nowaves_veg': '-V-', 'nodm': 'W--',
-        'nodm_veg': 'WV-', 'nowaves_dm': '--M', 'nowaves_vegdm': '-VM',
-        'bl': 'W-M', 'veg': 'WVM'}
+# Station names as the manuscript gives them; the files keep the field names.
+NAME = {'BocaSud': 'South Mouth', 'BocaNord': 'North Mouth',
+        'AltaVilaEst': 'AltaVilaEst'}
+WORD = {2: 'two', 4: 'four', 8: 'eight'}
 
 
 def style(ax):
@@ -102,7 +103,7 @@ def main():
         Line2D([], [], color=C_BARE, lw=2.2, label='Bare'),
         Line2D([], [], color=C_VEG, lw=2.2, label='Canopy'),
         Patch(facecolor=MUTED, alpha=0.32,
-              label='range over the four configurations')],
+              label=f'range over the {WORD[len(BARE)]} configurations')],
         fontsize=9, frameon=False, loc='upper center',
         bbox_to_anchor=(0.5, -0.16), ncol=4, columnspacing=1.6)
     style(ax)
@@ -120,14 +121,23 @@ def main():
             b = ob.values[ok] - ob.values[ok].mean()
             r = float(np.sqrt(np.mean((a - b) ** 2))) * 1000
             col = C_VEG if FACTORS[k]['roughness'] == 'vegetated' else C_BARE
-            ax.plot(r, i, 'o', ms=8, mfc=col, mec='white', mew=1.3, zorder=4)
+            w = FACTORS[k]['waves']
+            ax.plot(r, i + (0.09 if w else -0.09), 's' if w else 'o', ms=8,
+                    mfc=col, mec='white', mew=1.3, zorder=4)
     ax.set_yticks(range(len(sts)))
-    ax.set_yticklabels(sts, fontsize=9.5)
+    ax.set_yticklabels([NAME[s] for s in sts], fontsize=9.5)
     ax.set_ylim(-0.6, len(sts) - 0.4)
     ax.set_xlim(0, 55)
     ax.set_xlabel('Anomaly RMSE (mm)', fontsize=10, color=MUTED)
-    ax.set_title('(b) Anomaly RMSE, all eight configurations', loc='left',
+    ax.set_title(f'(b) Anomaly RMSE, all {WORD[len(KEYS)]} configurations', loc='left',
                  fontsize=11, color=INK, pad=8)
+    ax.legend(handles=[
+        Line2D([], [], ls='none', marker='o', ms=7, mfc=MUTED, mec='white',
+               label='no wave coupling'),
+        Line2D([], [], ls='none', marker='s', ms=7, mfc=MUTED, mec='white',
+               label='wave coupling')],
+        fontsize=9, frameon=False, loc='upper center',
+        bbox_to_anchor=(0.5, -0.16), ncol=2, columnspacing=1.6)
     style(ax)
 
     for ext in ('png', 'pdf'):
