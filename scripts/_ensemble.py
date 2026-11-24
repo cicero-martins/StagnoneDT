@@ -145,11 +145,32 @@ IC3D = {
 if ENSEMBLE == 'ic3d':
     MEMBERS = [(m[0], *IC3D[m[0]], *m[3:]) for m in MEMBERS]
 
+# STAGNONE_BED=fixed keeps the four fixed-bed members only, the 2x2 in waves
+# and canopy that the Paper 1 revision of November 2026 reports once the
+# mobile-bed arm left the manuscript. SUFFIX still names the derived files,
+# which hold every member, so the filter acts on what is drawn and FIGSUB
+# sends those figures to a folder of their own instead of over the 2x2x2 ones.
+BED = os.environ.get('STAGNONE_BED', 'all')
+assert BED in ('all', 'fixed'), BED
+if BED == 'fixed':
+    MEMBERS = [m for m in MEMBERS if m[5] == 'fixed']
+FIGSUB = SUFFIX.lstrip('_') + ('_fixed' if BED == 'fixed' else '')
+
 KEYS = [m[0] for m in MEMBERS]
 TAG = {m[0]: m[1] for m in MEMBERS}
 MODELDIR = {m[0]: m[2] for m in MEMBERS}
 LABEL = {m[0]: m[6] for m in MEMBERS}
 FACTORS = {m[0]: dict(waves=m[3], roughness=m[4], bed=m[5]) for m in MEMBERS}
+
+# The member code of the manuscript: one slot per factor, the letter where the
+# factor is active and a dash where it is not. The bed slot is dropped when
+# the bed is fixed throughout, as in the two-factor design.
+CODE = {k: (('W' if f['waves'] else '-')
+            + ('V' if f['roughness'] == 'vegetated' else '-')
+            + ('' if BED == 'fixed' else ('M' if f['bed'] == 'mobile' else '-')))
+        for k, f in FACTORS.items()}
+CODE_KEY = ('W wave coupling    V seagrass canopy'
+            + ('' if BED == 'fixed' else '    M mobile bed'))
 
 # Every single-factor contrast the closed factorial supports: four per factor,
 # one for each combination of the two factors held fixed. Written as
@@ -170,6 +191,7 @@ CONTRASTS = [
     ('Bed mobility | waves, bare',     'bl',            'nodm'),
     ('Bed mobility | waves, canopy',   'veg',           'nodm_veg'),
 ]
+CONTRASTS = [c for c in CONTRASTS if c[1] in TAG and c[2] in TAG]
 
 
 def cell(waves, roughness, bed):

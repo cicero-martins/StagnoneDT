@@ -37,11 +37,11 @@ from matplotlib.lines import Line2D
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import KEYS, LABEL, FACTORS, SUFFIX
+from _ensemble import KEYS, LABEL, FACTORS, SUFFIX, FIGSUB, CODE, CODE_KEY
 
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
-FIG = ROOT / 'figures' / SUFFIX.lstrip('_')
+FIG = ROOT / 'figures' / FIGSUB
 FIG.mkdir(parents=True, exist_ok=True)
 
 SURFACE = '#ffffff'
@@ -66,20 +66,14 @@ STYLE = {                       # member -> (colour, linestyle, label)
     'veg':           (C_VEG,  '-.', 'waves, canopy, mobile'),
 }
 ORDER = list(KEYS)
-
-# The same three-slot code the manuscript tables use, so panel (b) and panel (a)
-# name the members identically and neither carries internal keys.
-CODE = {}
-for _k in KEYS:
-    _f = FACTORS[_k]
-    CODE[_k] = (('W' if _f['waves'] else '-')
-                + ('V' if _f['roughness'] == 'vegetated' else '-')
-                + ('M' if _f['bed'] == 'mobile' else '-'))
+# CODE, from _ensemble, is the member code the manuscript tables use, so panel
+# (b) and panel (a) name the members identically.
 
 
 def main():
     mpl.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 9})
     df = pd.read_csv(PROC / f'layer_profile_lagoon{SUFFIX}.csv')
+    df = df[df['member'].isin(KEYS)]
     nf = df.groupby('member')['n_faces'].first()
     nfaces = int(nf.min())
     if nf.nunique() > 1:
@@ -124,7 +118,7 @@ def main():
               loc='upper center', bbox_to_anchor=(0.5, -0.13), ncol=4,
               handlelength=2.6, columnspacing=1.4,
               prop={'family': 'DejaVu Sans Mono', 'size': 8},
-              title='W wave coupling    V seagrass canopy    M mobile bed', title_fontsize=7.5)
+              title=CODE_KEY, title_fontsize=7.5)
 
     ax2 = axes[1]
     ys = np.arange(len(ORDER))[::-1]
@@ -134,7 +128,7 @@ def main():
                  zorder=3, solid_capstyle='round')
         ax2.plot([shear[k]], [y], 'o', ms=8, mfc=colour, mec='white', mew=1.2,
                  zorder=4)
-        ax2.text(shear[k] + 0.10, y, f'{shear[k]:.1f}x', fontsize=8,
+        ax2.text(shear[k] + 0.10, y, f'{shear[k]:.1f}', fontsize=8,
                  color=INK, va='center', ha='left')
     ax2.axvline(1, color=INK, lw=1.0, zorder=2)
     ax2.set_yticks(ys)

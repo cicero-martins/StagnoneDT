@@ -32,12 +32,12 @@ from matplotlib.lines import Line2D
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import TAG, SUFFIX  # noqa: E402
+from _ensemble import TAG, SUFFIX, FIGSUB  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
 MODEL = ROOT / 'model' / 'dflowfm_v04AE'
-FIG = ROOT / 'figures' / SUFFIX.lstrip('_')
+FIG = ROOT / 'figures' / FIGSUB
 FIG.mkdir(parents=True, exist_ok=True)
 
 SURFACE = '#ffffff'

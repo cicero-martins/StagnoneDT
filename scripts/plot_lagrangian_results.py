@@ -26,11 +26,11 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _ensemble import KEYS, TAG, FACTORS, SUFFIX, scored
+from _ensemble import KEYS, TAG, FACTORS, SUFFIX, FIGSUB, scored
 
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
-FIG = ROOT / 'figures' / SUFFIX.lstrip('_')
+FIG = ROOT / 'figures' / FIGSUB
 FIG.mkdir(parents=True, exist_ok=True)
 
 SURFACE, INK, MUTED, GRID = '#ffffff', '#1b1b1b', '#6b6b6b', '#e8e7e4'

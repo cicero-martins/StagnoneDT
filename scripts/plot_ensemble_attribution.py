@@ -35,13 +35,13 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _ensemble import (MEMBERS as ENS, KEYS, TAG, LABEL, CONTRASTS,
-                       MODELDIR, SUFFIX, scored)
+                       MODELDIR, SUFFIX, FIGSUB, scored)
 from matplotlib.lines import Line2D
 from scipy.stats import wilcoxon
 
 ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / 'data' / 'processed'
-FIG = ROOT / 'figures' / SUFFIX.lstrip('_')
+FIG = ROOT / 'figures' / FIGSUB
 FIG.mkdir(parents=True, exist_ok=True)
 
 SURFACE = '#ffffff'
