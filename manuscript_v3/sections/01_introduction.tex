@@ -1,0 +1,77 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Coastal lagoons are among the most productive coastal environments on Earth,
+concentrating fisheries and biodiversity along roughly 13\% of the global
+shoreline \citep{Carrasco2016, Kjerfve1994}. The shallow, semi-enclosed
+geometry that sustains this productivity also makes them acutely sensitive to
+the atmospheric and tidal forcing that drives water exchange and renewal. In
+the Mediterranean, where tidal amplitudes rarely exceed 0.3~m, the balance
+among tide, wind stress and seiches varies from one lagoon to another, but wind
+consistently emerges as a significant driver of horizontal exchange, and
+through it of the residence times and salinity gradients that condition benthic
+habitat \citep{Niedda2007, Umgiesser2014}. In many of these lagoons that
+habitat is seagrass, principally \emph{Posidonia oceanica} (L.) Delile and
+\emph{Cymodocea nodosa} (Ucria) Ascherson, and the relation runs in both
+directions, since the canopies that depend on the circulation also act on it,
+attenuating incident wave energy \citep{Infantes2012} and extracting momentum
+from the mean flow through a drag that modifies near-bed turbulence and the
+vertical velocity structure \citep{Nepf2012}. These meadows are declining,
+global seagrass extent having fallen in all seven bioregions, by 19.1\% of the
+surveyed area since 1880 \citep{Waycott2009, Dunic2021}, with the fastest
+recent losses where meadows are exposed to coastal development and degraded
+water quality \citep{Turschwell2021}. How circulation sets residence times,
+dispersal and habitat connectivity in vegetated lagoons is therefore a question
+for management as much as for science, and it concerns transport pathways, a
+quantity that water level, the usual validation target of lagoon models, does
+not measure directly.
+
+The \emph{Stagnone di Marsala}, on the north-western coast of Sicily, is a
+lagoon of this kind. Its mean depth is about 0.95~m, and its floor is largely
+covered by meadows of \emph{P.\ oceanica} and \emph{C.\ nodosa}
+(Section~\ref{sec:study_area}). Satellite monitoring over 2003--2024 has
+documented a 75\% reduction in the extent of the \emph{P.\ oceanica} atoll and
+cordon formations \citep{Maltese2025}, so the vegetated state a model of this
+system must represent is itself changing.
+
+Numerical studies of the Stagnone have each been built around the question they
+addressed. \citet{LaLoggia2004} and \citet{DiMarca2009} used depth-averaged
+models to characterise tidal flushing, residence times and turbidity, for which
+the basin-scale water budget is the relevant quantity, and
+\citet{Ciraolo2009a} showed through particle tracking how strongly simulated
+trajectories depend on the velocity field they are advected through.
+\citet{DeMarchis2012} resolved the vertical and showed that wind drives a
+recirculation with a near-bed return flow even at sub-metre depths, with the
+meadow represented through Nikuradse roughness heights assigned by seagrass
+class and the model validated against velocity and water level at several
+stations. \citet{Ingrassia2024} calibrated a depth-averaged model against water
+level for a range of vegetation scenarios, a setting in which a uniform
+equivalent roughness is the appropriate representation of the canopy. Building
+on these studies, three aspects of the problem remain open for this basin. The
+first is the representation of the canopy as a drag resolved over the vertical
+extent of the plants, a formulation that acts on the shape of the velocity
+profile as well as on its magnitude \citep{Nepf2012} and that is now available
+in three-dimensional solvers. The second is the effect of waves, which in
+comparably shallow Mediterranean lagoons alter bed stress and mobilise sediment
+\citep{Carniello2011, Morote2025}, together with that of a bed evolving under
+their combined action with the currents. The third is the assessment of
+transport itself, the models having been evaluated mainly on water level and on
+currents at fixed stations. Whether a model that reproduces water level also
+reproduces transport, and which of the processes it carries are responsible
+when it does, therefore remains to be established for this basin, and the
+question extends to shallow vegetated lagoons in general, where Lagrangian
+observations are known to constrain a model differently from water level
+\citep{Liu2011, Revelard2021}.
+
+The study takes up these three aspects by separating, in a three-dimensional model of
+the Stagnone, the contributions of the canopy, of wave coupling and of bed
+mobility, and by scoring every combination of the three against both water
+level and observed drifter trajectories (Section~\ref{sec:data_methods}). It
+pursues three objectives. The first is to rank the three processes by their
+effect on Lagrangian transport skill. The second is to establish whether water
+level, the quantity against which shallow lagoon models are conventionally
+validated, can identify that ranking. The third is to measure how far the
+apparent effect of each process depends on how the other two are represented.
+The second and third are not specific to this basin, concerning what a class of
+validation data can certify and how a factorial behaves when a dominant factor
+is left out of it.
