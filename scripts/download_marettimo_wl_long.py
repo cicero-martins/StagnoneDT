@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+import time
 from pathlib import Path
 from urllib.parse import quote_plus
 import urllib.request
@@ -45,17 +46,21 @@ def build_url(t_min: str, t_max: str) -> str:
             f'&nRec={N_REC}&mode=CSV')
 
 
-def fetch(url: str, timeout: int = 120) -> str:
+def fetch(url: str, timeout: int = 120, tries: int = 4) -> str:
+    """GET with retries; the server drops connections under a long sequence of
+    requests, which surfaces as RemoteDisconnected rather than an HTTP error."""
     req = urllib.request.Request(url, headers={'User-Agent': 'StagnoneDT/1.0'})
-    try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            return resp.read().decode('utf-8', errors='replace')
-    except urllib.error.HTTPError as e:
-        print(f'  HTTP {e.code} from {url}: {e.reason}', file=sys.stderr)
-        return ''
-    except urllib.error.URLError as e:
-        print(f'  URLError {url}: {e.reason}', file=sys.stderr)
-        return ''
+    for k in range(tries):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return resp.read().decode('utf-8', errors='replace')
+        except urllib.error.HTTPError as e:
+            print(f'  HTTP {e.code} from {url}: {e.reason}', file=sys.stderr)
+            return ''
+        except (urllib.error.URLError, ConnectionError, TimeoutError, OSError) as e:
+            print(f'  attempt {k + 1}/{tries} failed: {e}', file=sys.stderr)
+            time.sleep(10 * (k + 1))
+    return ''
 
 
 def parse_chunk_csv(text: str) -> pd.DataFrame:
@@ -92,23 +97,46 @@ def month_windows(t_min: str, t_max: str) -> list[tuple[str, str, str]]:
     return windows
 
 
+def day_windows(t_min: str, t_max: str, days: int) -> list[tuple[str, str, str]]:
+    """Windows of `days` days, half-open, labelled by their first day.
+
+    Before 2025 the gauge reports every 15 s, so a month holds about 175,000
+    records and a monthly request is cut at the API cap of 20,000; three days
+    hold about 17,000.
+    """
+    edges = pd.date_range(t_min, t_max, freq=f'{days}D').append(pd.DatetimeIndex([t_max]))
+    edges = edges.unique()
+    return [(a.strftime('%Y-%m-%d'), a.strftime('%Y-%m-%d %H:%M:%S'),
+             b.strftime('%Y-%m-%d %H:%M:%S')) for a, b in zip(edges[:-1], edges[1:])]
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument('--t-min', default=DEFAULT_T_MIN)
     ap.add_argument('--t-max', default=DEFAULT_T_MAX)
+    ap.add_argument('--chunk-days', type=int, default=0,
+                    help='request windows of this many days instead of months')
+    ap.add_argument('--out', default=None,
+                    help='combined 10-min CSV, default the 2025-2026 file')
+    ap.add_argument('--raw-dir', default=None,
+                    help='folder for the cached raw chunks, default the 2025-2026 one')
     args = ap.parse_args()
+    out_csv = Path(args.out) if args.out else COMBINED_OUT
+    raw_dir = Path(args.raw_dir) if args.raw_dir else RAW_DIR
 
-    RAW_DIR.mkdir(parents=True, exist_ok=True)
+    raw_dir.mkdir(parents=True, exist_ok=True)
 
     print(f'Marettimo WL long-period download')
     print(f'  Window: {args.t_min} to {args.t_max}')
-    print(f'  Output dir: {RAW_DIR.relative_to(PROJECT_ROOT)}')
+    print(f'  Output dir: {raw_dir}')
     print()
 
     all_dfs = []
-    for label, ws, we in month_windows(args.t_min, args.t_max):
+    windows = (day_windows(args.t_min, args.t_max, args.chunk_days) if args.chunk_days
+               else month_windows(args.t_min, args.t_max))
+    for label, ws, we in windows:
         url = build_url(ws, we)
-        out_path = RAW_DIR / f'marettimo_wl_{label}.csv'
+        out_path = raw_dir / f'marettimo_wl_{label}.csv'
         print(f'  [{label}] {ws} -> {we}')
 
         if out_path.exists():
@@ -140,15 +168,15 @@ def main() -> int:
 
     out = resampled.reset_index()
     out.columns = ['Time(UTC)', 'wl_m']
-    COMBINED_OUT.parent.mkdir(parents=True, exist_ok=True)
-    out.to_csv(COMBINED_OUT, index=False, date_format='%Y-%m-%d %H:%M:%S')
+    out_csv.parent.mkdir(parents=True, exist_ok=True)
+    out.to_csv(out_csv, index=False, date_format='%Y-%m-%d %H:%M:%S')
 
     print()
     print(f'Combined 10-min series: {len(out)} rows')
     print(f'  range: {out["Time(UTC)"].iloc[0]} -> {out["Time(UTC)"].iloc[-1]}')
     print(f'  mean:  {out["wl_m"].mean():+.4f} m')
     print(f'  std:   {out["wl_m"].std():.4f} m')
-    print(f'  saved: {COMBINED_OUT.relative_to(PROJECT_ROOT)}')
+    print(f'  saved: {out_csv}')
     return 0
 
 
