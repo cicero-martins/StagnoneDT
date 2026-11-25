@@ -4,12 +4,12 @@
 Coastal lagoons occupy roughly 13\% of the global shoreline and concentrate
 fisheries and biodiversity \citep{Carrasco2016, Kjerfve1994}, and their
 shallow, semi-enclosed geometry makes water exchange and renewal sensitive to
-atmospheric and tidal forcing. In the Mediterranean, where tidal amplitudes
-rarely exceed 0.3~m, the balance among tide, wind stress and seiches varies
-from one lagoon to another, but wind consistently drives horizontal exchange,
-and through it the residence times and salinity gradients that condition
-benthic habitat \citep{Niedda2007, Umgiesser2014}. In many of these lagoons
-that habitat is seagrass, principally \emph{Posidonia oceanica} (L.) Delile and
+atmospheric and tidal forcing. Mediterranean lagoons are microtidal, and the
+balance among tide, wind stress and seiches varies from one lagoon to another
+\citep{Niedda2007}, wind adding to the exchange with the sea, and through it
+to the renewal time, where a lagoon has more than one inlet
+\citep{Umgiesser2014}. The floor of many of these lagoons is seagrass,
+principally \emph{Posidonia oceanica} (L.) Delile and
 \emph{Cymodocea nodosa} (Ucria) Ascherson, whose canopies attenuate incident
 wave energy \citep{Infantes2012} and extract momentum from the mean flow
 through a drag that modifies near-bed turbulence and the vertical velocity
@@ -21,19 +21,22 @@ sets residence times, dispersal and habitat connectivity in vegetated lagoons
 is therefore a question of transport pathways, a quantity that water level,
 the usual validation target of lagoon models, does not measure directly.
 
-Numerical studies of the \emph{Stagnone di Marsala}, a seagrass lagoon on the
+Studies of the \emph{Stagnone di Marsala}, a seagrass lagoon on the
 north-western coast of Sicily (Section~\ref{sec:study_area}), have each been
-built around the question they addressed. \citet{LaLoggia2004} and
-\citet{DiMarca2009} characterised tidal flushing, residence times and
-turbidity, for which the basin-scale water budget is the relevant quantity,
-and \citet{Ciraolo2009a} showed through particle tracking how strongly
-simulated trajectories depend on the velocity field through which they are
-advected. \citet{DeMarchis2012} resolved the vertical and found that wind
-drives a recirculation with a near-bed return flow even at sub-metre depths,
-the meadow entering through Nikuradse roughness heights assigned by seagrass
-class, and \citet{Ingrassia2024} calibrated a depth-averaged model against
-water level for a range of vegetation scenarios, a setting in which a uniform
-equivalent roughness is the appropriate representation of the canopy.
+built around the question they addressed. \citet{LaLoggia2004} related the
+production of \emph{P.\ oceanica} to water exchange computed with a
+depth-averaged model, for which the basin-scale water budget is the relevant
+quantity, and \citet{DiMarca2009} measured the share of resuspension over the meadow and
+of lateral advection in the turbidity of the water column. \citet{DeMarchis2012} resolved the vertical and
+found that wind drives a recirculation with a near-bed return flow even at
+sub-metre depths, the meadow entering through Nikuradse roughness heights
+assigned by seagrass class, and \citet{Ingrassia2024} calibrated a
+depth-averaged model against water level and velocity with a uniform
+Gauckler--Strickler coefficient, a setting in which an equivalent roughness is
+the appropriate representation of the canopy. At the scale of the plants,
+particle tracking through the flow measured over an artificial
+\emph{P.\ oceanica} canopy has shown that gaps in a meadow can trap suspended
+particles \citep{Ciraolo2009a}.
 
 None of these models represented the canopy as a drag resolved over the height
 of the plants, a formulation now available in three-dimensional solvers that
@@ -44,8 +47,8 @@ not coupled to the circulation, and evaluation rested mainly on water level
 and on currents at fixed stations. Whether a model that reproduces water level
 also reproduces transport, and which of its processes are responsible when it
 does, therefore remains open for this basin and for shallow vegetated lagoons
-in general, where Lagrangian observations are known to constrain a model
-differently from water level \citep{Liu2011, Revelard2021}.
+in general, where drifter trajectories offer a measure of transport with
+skill metrics of its own \citep{Liu2011, Revelard2021}.
 
 This study separates, in a three-dimensional model of the Stagnone, the
 contributions of the canopy and of wave coupling, and scores every combination
