@@ -156,36 +156,67 @@ def scale_bar(ax, km, frac=0.06):
 
 
 def fig_s2():
+    """SWAN grids. Drawing every inner line over the lagoon made a solid patch
+    and cut the grid at the lagoon window, so (b) shows the whole inner grid at
+    every fifth line and (c) every line at the North Mouth, over the flow mesh,
+    where the resolution of the two models can be compared cell by cell."""
     polys, fx, fy = faces(NET)
-    fig, axes = plt.subplots(1, 2, figsize=(12.8, 5.6), gridspec_kw={'width_ratios': [1.6, 1]})
-    grids = [('Outer grid, 69 x 54 at about 800 m', SWAN / 'swan_grid_outer.grd', MUTED, (4, 1)),
-             ('Inner grid, 121 x 221 at about 90 by 110 m', SWAN / 'swan_grid.grd', CANOPY, (10, 1))]
-    for k, (ax, ext, title) in enumerate(((axes[0], None, '(a) Whole domain'),
-                                          (axes[1], LAGOON, '(b) Lagoon and inlets, every inner grid line'))):
-        ax.add_collection(PolyCollection(polys, facecolor='#d9d7d2', edgecolor='#bdbab3', lw=0.15, rasterized=True))
-        for lab, path, col, steps in grids:
-            step = steps[k]
-            x, y = read_grd(path)
-            x = np.where(x == 0, np.nan, x); y = np.where(y == 0, np.nan, y)
-            for j in range(0, x.shape[0], step):
-                ax.plot(x[j], y[j], color=col, lw=0.4, alpha=0.6)
-            for i in range(0, x.shape[1], step):
-                ax.plot(x[:, i], y[:, i], color=col, lw=0.4, alpha=0.6)
-            ox, oy = outline(x, y)
-            ax.plot(ox, oy, color=col, lw=2, label=lab)
-        if ext:
-            ax.set_xlim(*ext['lon']); ax.set_ylim(*ext['lat'])
+    xo, yo = read_grd(SWAN / 'swan_grid_outer.grd')
+    xi, yi = read_grd(SWAN / 'swan_grid.grd')
+    xo = np.where(xo == 0, np.nan, xo); yo = np.where(yo == 0, np.nan, yo)
+    xi = np.where(xi == 0, np.nan, xi); yi = np.where(yi == 0, np.nan, yi)
+    whole = dict(lon=(fx.min() - 0.03, fx.max() + 0.03), lat=(fy.min() - 0.03, fy.max() + 0.03))
+    pad = 0.006
+    inner = dict(lon=(np.nanmin(xi) - pad, np.nanmax(xi) + pad), lat=(np.nanmin(yi) - pad, np.nanmax(yi) + pad))
+    mouth = BOCCA_NORD
+
+    def lines(ax, x, y, step, col, lw, alpha):
+        for j in range(0, x.shape[0], step):
+            ax.plot(x[j], y[j], color=col, lw=lw, alpha=alpha)
+        for i in range(0, x.shape[1], step):
+            ax.plot(x[:, i], y[:, i], color=col, lw=lw, alpha=alpha)
+
+    panels = [(whole, '(a) Whole domain'),
+              (inner, '(b) Inner grid, every fifth line'),
+              (mouth, '(c) North Mouth, every inner line over the flow mesh')]
+    fig = plt.figure(figsize=(15.5, 6.4))
+    gs = fig.add_gridspec(1, 3, width_ratios=[aspect(e) for e, _ in panels], wspace=0.28)
+    for k, (ext, title) in enumerate(panels):
+        ax = fig.add_subplot(gs[0, k])
+        edge = '#8f8c86' if k == 2 else 'none'
+        ax.add_collection(PolyCollection(polys, facecolor='#dfeaf3', edgecolor=edge, lw=0.5 if k == 2 else 0,
+                                         rasterized=True, label='Flow mesh faces' if k == 2 else None))
+        if k == 0:
+            lines(ax, xo, yo, 4, MUTED, 0.4, 0.6)
+            ax.plot(*outline(xo, yo), color=MUTED, lw=2, label='Outer grid, 69 x 54 at about 800 m')
+            lines(ax, xi, yi, 10, CANOPY, 0.4, 0.6)
         else:
-            ax.set_xlim(fx.min() - 0.03, fx.max() + 0.03); ax.set_ylim(fy.min() - 0.03, fy.max() + 0.03)
+            lines(ax, xi, yi, 5 if k == 1 else 1, CANOPY, 0.6 if k == 1 else 1.1, 0.75)
+        ax.plot(*outline(xi, yi), color=CANOPY, lw=2, label='Inner grid, 121 x 221 at about 90 by 110 m')
+        if k < 2:
+            zoom_box(ax, panels[k + 1][0], color='#c0392b')
+        ax.set_xlim(*ext['lon']); ax.set_ylim(*ext['lat'])
         style(ax, grid=False)
         geo(ax)
+        if k:
+            ax.set_ylabel('')
         ax.set_title(title, loc='left', fontsize=11, color=INK)
-        scale_bar(ax, 10 if k == 0 else 1)
-    axes[0].legend(loc='lower left', fontsize=9, frameon=True, framealpha=0.95)
+        scale_bar(ax, (10, 2, 0.5)[k])
+        if k == 0:
+            ax.legend(loc='lower left', fontsize=9, frameon=True, framealpha=0.95)
+        if k == 2:
+            from matplotlib.patches import Patch
+            from matplotlib.lines import Line2D
+            ax.legend(handles=[Patch(fc='#dfeaf3', ec='#8f8c86', label='Flow mesh, water faces'),
+                               Line2D([], [], color=CANOPY, lw=1.1, label='SWAN inner grid')],
+                      loc='upper right', fontsize=9, frameon=True, framealpha=0.95)
     save(fig, 'figS2')
 
 
 def fig_s3():
+    """The 384 days of the anchor. The longer record of 2023-2026, with its
+    fault and changes of level, is in plot_marettimo_gauge_record.py and
+    docs/marettimo_gauge_record_2023_2026.md rather than in the supplement."""
     obs = pd.read_csv(ROOT / 'data' / 'raw' / 'insitu' / 'marettimo_wl_2025_2026_10min.csv')
     obs = obs.set_index(pd.to_datetime(obs['Time(UTC)']))['wl_m'].sort_index()
     ds = xr.open_dataset(ROOT / 'data' / 'raw' / 'cmems' / 'zos_marettimo_anchor' /
@@ -193,8 +224,7 @@ def fig_s3():
     if 'longitude' in ds.coords:
         ds = ds.rename({'longitude': 'lon', 'latitude': 'lat'})
     zos = ds['zos'].sel(lon=12.0766, lat=37.9662, method='nearest').to_pandas()
-    zos.index = pd.DatetimeIndex(zos.index)
-    zos.index = zos.index.normalize()
+    zos.index = pd.DatetimeIndex(zos.index).normalize()
     obs_d = obs.resample('1D').mean()
     obs_d.index = pd.DatetimeIndex(obs_d.index).normalize()
     # exact daily alignment, as in compute_marettimo_offset_anchor.py
@@ -203,47 +233,18 @@ def fig_s3():
     monthly = delta.resample('1ME').mean()
     anchor = float(delta.mean())
     print(f'S3: {len(delta)} days, anchor {anchor:+.3f} m, monthly {monthly.min():+.3f} to {monthly.max():+.3f}')
-
-    # (b) the longer record, gauge minus the MED reanalysis shifted onto the
-    # level of the analysis-forecast product (analyse_marettimo_anchor_long.py),
-    # from after the sensor fault of August and September 2023. Days departing
-    # from a 15-day running median by more than 0.3 m are spikes of the raw
-    # 15 s stream and are left out.
-    long = pd.read_csv(PROC / 'marettimo_anchor_long_daily.csv', index_col=0, parse_dates=True)
-    lg = long['d_my'].loc['2023-10-15':].dropna()
-    lg = lg[(lg - lg.rolling(15, center=True, min_periods=5).median()).abs() <= 0.3]
-    lm = lg.resample('1ME').mean()
-    from plot_marettimo_gauge_record import segments
-    levels, _ = segments(lg)
-    print('S3b levels:', [(str(a.date()), str(b.date()), round(m, 3)) for a, b, m in levels])
-
-    fig, axes = plt.subplots(2, 1, figsize=(11, 7.6), gridspec_kw=dict(hspace=0.42))
-    for ax, d, m, title in ((axes[0], delta, monthly,
-                             '(a) Gauge minus analysis-forecast, the 384 days of the anchor'),
-                            (axes[1], lg, lm,
-                             '(b) Gauge minus reanalysis on the same level, October 2023 to January 2026')):
-        ax.plot(d.index, d.values, color='#9b9893', lw=0.9, label='Daily difference')
-        ax.plot(m.index - pd.Timedelta(days=15), m.values, 'o-', color=INK, ms=6, lw=1.8,
-                mec=SURFACE, mew=1.1, label='Monthly mean', zorder=4)
-        ax.axhline(anchor, color=CANOPY, lw=2, ls='--', label=f'Anchor, {anchor:+.3f} m')
-        ax.axhspan(anchor - 0.07, anchor + 0.07, color=CANOPY, alpha=0.08, lw=0)
-        ax.axvspan(pd.Timestamp('2025-07-01'), pd.Timestamp('2025-07-10'), color='#efece6', zorder=0)
-        ax.set_ylabel('Gauge minus CMEMS (m)', color=MUTED)
-        ax.set_title(title, loc='left', fontsize=11, color=INK)
-        style(ax)
-    for k, (a, b, m) in enumerate(levels):
-        axes[1].plot([a, b], [m, m], color=BARE, lw=2.4, solid_capstyle='butt', zorder=5,
-                     label='Piecewise-constant fit' if k == 0 else None)
-        axes[1].text(a + (b - a) / 2, m + 0.025, f'{m:+.3f}', color=BARE, ha='center', fontsize=8.5,
-                     zorder=6, bbox=dict(fc='white', ec='none', alpha=0.7, pad=0.5))
-    axes[1].axvspan(pd.Timestamp('2025-01-01'), pd.Timestamp('2026-01-20'), color=CANOPY, alpha=0.05,
-                    zorder=0)
-    for ax in axes:
-        ax.text(pd.Timestamp('2025-07-05'), ax.get_ylim()[1], 'simulated\nwindow', ha='center',
-                va='top', fontsize=8.5, color=MUTED)
-    axes[0].legend(fontsize=9, frameon=False, loc='lower center', bbox_to_anchor=(0.5, 1.07), ncol=3)
-    axes[1].legend(handles=[h for h in axes[1].get_lines() if h.get_label() == 'Piecewise-constant fit'],
-                   fontsize=9, frameon=False, loc='lower right')
+    fig, ax = plt.subplots(figsize=(11, 4.2))
+    ax.plot(delta.index, delta.values, color='#9b9893', lw=0.9, label='Daily difference')
+    ax.plot(monthly.index - pd.Timedelta(days=15), monthly.values, 'o-', color=INK, ms=7, lw=2,
+            mec=SURFACE, mew=1.2, label='Monthly mean', zorder=4)
+    ax.axhline(anchor, color=CANOPY, lw=2, ls='--', label=f'Anchor, {anchor:+.3f} m')
+    ax.axhspan(anchor - 0.07, anchor + 0.07, color=CANOPY, alpha=0.08, lw=0)
+    ax.axvspan(pd.Timestamp('2025-07-01'), pd.Timestamp('2025-07-10'), color='#efece6', zorder=0)
+    ax.text(pd.Timestamp('2025-07-05'), ax.get_ylim()[1], 'simulated\nwindow', ha='center', va='top',
+            fontsize=8.5, color=MUTED)
+    ax.set_ylabel('Gauge minus CMEMS sea surface height (m)', color=MUTED)
+    style(ax)
+    ax.legend(fontsize=9, frameon=False, loc='lower center', bbox_to_anchor=(0.5, 1.0), ncol=3)
     save(fig, 'figS3')
 
 
