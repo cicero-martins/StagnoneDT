@@ -134,41 +134,12 @@ numbers and close on one quantified statement.
 
 ## Citations checked against their sources
 
-Every citing sentence was read against the source PDF, and every DOI against
-Crossref ([`paper1_citation_map.md`](paper1_citation_map.md)). Two DOIs
-resolved to other papers (Carrasco et al. 2016 and Ciraolo et al. 2006) and
-are corrected, as is the first name of Ingrassia et al. (2024). In the text,
-the lagoon area is about 20 km² (La Loggia et al. 2004), the 2200 ha of Ciraolo
-and De Marchis (2009) being the natural reserve; the tide is given as an
-excursion of 0.30 m; Santa Maria lies in the north and the atolls in the
-northern sub-basin; wind adds to exchange in lagoons with more than one inlet
-(Umgiesser et al. 2014); and Liu and Weisberg (2011) and Révelard et al. (2021)
-are no longer cited for the claim that water level constrains transport
-weakly, which they do not make. The parameters of *P. oceanica* are described
-as coming from flume experiments with artificial plants.
-
-Further corrections from the same reading:
-
-- Infantes et al. (2012) measured wave attenuation over meadows at 6.5 to
-  16.5 m depth, and the text now gives that depth instead of implying the
-  scale of the lagoon.
-- Turschwell et al. (2021) associate the most rapid seagrass declines with
-  destructive demersal fishing and degraded water quality, as the
-  Introduction now states.
-- Carniello et al. (2011) and Morote et al. (2025) show that wind waves set
-  the bed stress over the flats and resuspend sediment during storms, the
-  earlier wording, that waves govern sediment dynamics, going beyond them.
-- In Section S1 the partition size is set against the thresholds of Mogé
-  et al. (2019) as published, more than 25 000 cells per partition counted
-  over the layers, which the eight partitions meet with about 30 000, and
-  the 20 000 unknowns below which the linear solver stops scaling.
-- In Section 5.1 the absence of a layer of reduced flow under an equivalent
-  roughness is stated as an inference from the logarithmic profile over a
-  rough bed (Nepf 2012), in place of a bound on the surface-to-bed ratio
-  that the source does not give.
-- The trachytope formulation was checked against the D-Flow FM user manual,
-  which implements equation 74 of Baptist et al. (2007) as trachytope
-  formula 153 and cites the thesis of Baptist (2005) for it.
+Every citing sentence was read against its source and every DOI checked
+against Crossref. Two DOIs that resolved to other papers and one author name
+are corrected, Kjerfve (1994) is replaced by Newton et al. (2018), and where a
+sentence went beyond its source it now states only what the source shows. The
+sentence-by-sentence verification is in
+[`paper1_citation_map.md`](paper1_citation_map.md).
 
 ## Figure S3 and the Marettimo anchor
 
