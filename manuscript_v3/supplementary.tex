@@ -7,6 +7,7 @@
 \usepackage{lmodern}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
+\usepackage{array}
 \usepackage{graphicx}
 \graphicspath{{figures/}}
 \usepackage{float}
@@ -125,6 +126,41 @@ the two representations of the inlets and is interpolated onto a finer flow
 mesh (Fig.~\ref{fig:s_swan}). Table~\ref{tab:swan} lists the
 settings and their grounds.
 
+\begin{table}[H]
+  \centering
+  \caption{SWAN settings and the ground for each.}
+  \label{tab:swan}
+  \footnotesize
+  \renewcommand{\arraystretch}{1.0}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{0.38\textwidth}>{\raggedright\arraybackslash}p{0.57\textwidth}}
+    \toprule
+    Setting & Ground \\
+    \midrule
+    24 directions over the full circle (15$^\circ$) & Standard directional resolution \\
+    \addlinespace[2pt]
+    24 frequencies, logarithmic, 0.05--1.0~Hz & Periods of 1 to 20~s bracket the swell entering through the inlets and the short waves of the basin, whose fetch-limited peak period over the 2.5~km cross-basin fetch is of the order of 2~s \\
+    \addlinespace[2pt]
+    Third generation, Komen whitecapping, quadruplets, refraction, frequency shifting & Standard set for a wind-sea dominated application \\
+    \addlinespace[2pt]
+    Triad interactions off & They redistribute energy within the spectrum in very shallow water, and the quantity exchanged with the flow solver is the depth-integrated dissipation rather than the spectral shape \\
+    \addlinespace[2pt]
+    Wave setup off & The free surface is computed by the flow solver, which already receives the wave forcing, so setup in the wave model would apply that contribution twice \\
+    \addlinespace[2pt]
+    Depth-induced breaking, \citet{BattjesJanssen1978}, $\alpha = 1.0$, $\gamma = 0.73$ & $\gamma$ is the mean value of \citet{BattjesStive1985} over laboratory and field data \\
+    \addlinespace[2pt]
+    JONSWAP bottom friction, 0.067~\si{\metre\squared\per\cubic\second} & Value for wind sea rather than the lower value appropriate to swell \citep{BouwsKomen1983} \\
+    \addlinespace[2pt]
+    Minimum depth 0.05~m & Excludes the thin films on the intertidal flats, where the spectral formulation carries no meaning \\
+    \addlinespace[2pt]
+    Stationary mode, convergence at 2\% of $H_s$ and $T_m$ at 98\% of wet points, at most 15 iterations & See text \\
+    \addlinespace[2pt]
+    Exchange every 3600~s through DIMR & See text \\
+    \addlinespace[2pt]
+    Communication files in classic NetCDF (\texttt{ncFormat = 3}) & Required for the wave module to re-open the communication file reliably across the coupled run \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{figS2}
@@ -137,30 +173,6 @@ settings and their grounds.
   the extent of the next panel.}
   \label{fig:s_swan}
 \end{figure}
-
-\begin{table}[H]
-  \centering
-  \caption{SWAN settings and the ground for each.}
-  \label{tab:swan}
-  \small
-  \begin{tabular}{p{0.30\textwidth}p{0.62\textwidth}}
-    \toprule
-    Setting & Ground \\
-    \midrule
-    24 directions over the full circle (15$^\circ$) & Standard directional resolution \\
-    24 frequencies, logarithmic, 0.05--1.0~Hz & Periods of 1 to 20~s bracket the swell entering through the inlets and the short waves of the basin, whose fetch-limited peak period over the 2.5~km cross-basin fetch is of the order of 2~s \\
-    Third generation, Komen whitecapping, quadruplets, refraction, frequency shifting & Standard set for a wind-sea dominated application \\
-    Triad interactions off & They redistribute energy within the spectrum in very shallow water, and the quantity exchanged with the flow solver is the depth-integrated dissipation rather than the spectral shape \\
-    Wave setup off & The free surface is computed by the flow solver, which already receives the wave forcing, so setup in the wave model would apply that contribution twice \\
-    Depth-induced breaking, \citet{BattjesJanssen1978}, $\alpha = 1.0$, $\gamma = 0.73$ & $\gamma$ is the mean value of \citet{BattjesStive1985} over laboratory and field data \\
-    JONSWAP bottom friction, 0.067~\si{\metre\squared\per\cubic\second} & Value for wind sea rather than the lower value appropriate to swell \citep{BouwsKomen1983} \\
-    Minimum depth 0.05~m & Excludes the thin films on the intertidal flats, where the spectral formulation carries no meaning \\
-    Stationary mode, convergence at 2\% of $H_s$ and $T_m$ at 98\% of wet points, at most 15 iterations & See text \\
-    Exchange every 3600~s through DIMR & See text \\
-    Communication files in classic NetCDF (\texttt{ncFormat = 3}) & Required for the wave module to re-open the communication file reliably across the coupled run \\
-    \bottomrule
-  \end{tabular}
-\end{table}
 
 The exchange interval was set by the time scales the coupling has to resolve,
 the 12.4~h tide and the diurnal sea breeze, and by cost, the wave model
@@ -229,9 +241,9 @@ stated above.
   \centering
   \includegraphics[width=\textwidth]{figS3}
   \caption{Difference between the water level at the Marettimo gauge and the
-  CMEMS sea surface height interpolated to the gauge, as daily means over the
-  384 aligned days, with the monthly means and the mean of $+0.449$~m taken as
-  the anchor of the boundary offset. The horizontal band spans 0.07~m either
+  CMEMS sea surface height interpolated to the gauge, as daily and monthly
+  means from March 2025, with the anchor of the boundary offset, $+0.449$~m,
+  the mean over the 384 aligned days from January 2025. The horizontal band spans 0.07~m either
   side of the anchor, and the vertical band marks the simulated window.}
   \label{fig:s_offset}
 \end{figure}

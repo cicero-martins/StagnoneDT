@@ -148,7 +148,9 @@ from April 2025 to January 2026, the period that contains the simulation. The
 change of February 2025 precedes the lagoon records and remains without an
 independent check.
 
-In the manuscript, Figure S3 keeps the 384 days of the anchor, and Section S3
+In the manuscript, Figure S3 shows the difference from March 2025, January
+and February being left out of the plot as requested, while the anchor line
+remains the mean over all 384 days, and Section S3
 states that the record before 2025 was not used because of the fault of 2023
 and the changes of level that follow interventions on the instrument, gives
 the comparison with the lagoon gauges, and bounds the anchor by the values

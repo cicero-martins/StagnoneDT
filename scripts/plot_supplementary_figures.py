@@ -233,9 +233,13 @@ def fig_s3():
     monthly = delta.resample('1ME').mean()
     anchor = float(delta.mean())
     print(f'S3: {len(delta)} days, anchor {anchor:+.3f} m, monthly {monthly.min():+.3f} to {monthly.max():+.3f}')
+    # the anchor is the mean over all 384 days; the figure is drawn from March
+    # 2025, January and February being left out of the plot only
+    shown = delta.loc['2025-03-01':]
+    shown_m = monthly.loc['2025-03-01':]
     fig, ax = plt.subplots(figsize=(11, 4.2))
-    ax.plot(delta.index, delta.values, color='#9b9893', lw=0.9, label='Daily difference')
-    ax.plot(monthly.index - pd.Timedelta(days=15), monthly.values, 'o-', color=INK, ms=7, lw=2,
+    ax.plot(shown.index, shown.values, color='#9b9893', lw=0.9, label='Daily difference')
+    ax.plot(shown_m.index - pd.Timedelta(days=15), shown_m.values, 'o-', color=INK, ms=7, lw=2,
             mec=SURFACE, mew=1.2, label='Monthly mean', zorder=4)
     ax.axhline(anchor, color=CANOPY, lw=2, ls='--', label=f'Anchor, {anchor:+.3f} m')
     ax.axhspan(anchor - 0.07, anchor + 0.07, color=CANOPY, alpha=0.08, lw=0)
@@ -331,14 +335,14 @@ def fig_s4():
         ax.plot(v, z, color=INK, lw=2, marker='o', ms=4, label='Stratified start (CMEMS profile)')
         top = int(np.argmax(z))
         ax.plot(v[top], z[top], 'o', ms=11, mfc=CANOPY, mec='white', mew=1.5, zorder=5,
-                label='Surface value adopted')
+                label='Surface value adopted', clip_on=False)
         ax.annotate(f'{v[top]:.1f}', (v[top], z[top]), xytext=(10, -14),
                     textcoords='offset points', fontsize=10, color=CANOPY, fontweight='bold')
         ax.axvline(uni, color=BARE, lw=2, ls='--', label='Uniform start')
         ax.set_xlabel(lab, color=MUTED)
         ax.set_title(title, loc='left', fontsize=11, color=INK)
         style(ax)
-    axes[0].set_ylim(-700, 5)
+    axes[0].set_ylim(-700, 25)
     axes[0].set_ylabel('Elevation (m)', color=MUTED)
     axes[0].legend(fontsize=9, frameon=False, loc='lower right')
     save(fig, 'figS4')
