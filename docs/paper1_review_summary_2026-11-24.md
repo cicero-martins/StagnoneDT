@@ -17,22 +17,28 @@ and the title names those two factors.
 
 | Part | 12 November | 24 November |
 |---|---|---|
-| Body, sections 1 to 6 (words) | 7978 | 4920 |
+| Body, sections 1 to 6 (words) | 7978 | 5017 |
 | Abstract (words) | 250 | 245 |
-| Figures in the body | 9 | 7 |
-| Tables in the body | 3 | 3 |
+| Figures in the body | 9 | 6 |
+| Tables in the body | 3 | 5 |
 | Supplementary sections | 8 | 7 |
 
 The body count excludes floats, mathematics and comments.
 
 | Section | 12 November | 24 November |
 |---|---|---|
-| 1 Introduction | 761 | 500 |
-| 2 Study area | 592 | 380 |
-| 3 Data and methods | 2115 | 1568 |
-| 4 Results | 2270 | 1124 |
-| 5 Discussion | 1725 | 1033 |
-| 6 Conclusions | 515 | 334 |
+| 1 Introduction | 761 | 743 |
+| 2 Study area | 592 | 595 |
+| 3 Data and methods | 2115 | 1210 |
+| 4 Results | 2270 | 991 |
+| 5 Discussion | 1725 | 1190 |
+| 6 Conclusions | 515 | 288 |
+
+The Introduction and Study Area keep the text of 12 November, with the bed
+mobility removed from the aspects, the design and the objectives. Data and
+Methods leaves to the Supplementary Material the details it already gives in
+full, the body figures float instead of being held in place, and Results begin
+at the top of page 11 of the review-format PDF.
 
 Removed with the mobile bed are the silt parameter sets, the restart segments
 that traced the mobile-bed gain, the Sentinel-2 comparison (body Figure 9,
@@ -64,24 +70,24 @@ included the mobile-bed members. The canopy contrasts under that start remain
 | Figure S4, surface values | Coloured marker at the adopted surface values, 25.8 °C and 37.5, with the value written beside it |
 | Figure 2c, "trachytope" | Panel and caption read "bed cover class per flow link" |
 | Section 3.6, member code | "whose slots mark wave coupling (W) and seagrass canopy (V), carrying the letter where the factor is active and a dash where it is not", followed by an example: W- is the member forced by water level, wind, atmospheric pressure and evaporation, with wave coupling active and without a canopy. The code has two slots since the bed slot left with the mobile bed |
-| Figure 5, deployments 3 and 4 | A panel on the left numbers the release of each of the twelve deployments over the observed tracks of all 35 drifters. All deployments are kept, since deployment 4 is discussed in the text and in Section S6 |
-| Figure 6 and Section 4.3 | Rebuilt, see below |
+| Figure 5, deployments 3 and 4 | Five deployments, 1, 2, 5, 9 and 11, with a first panel numbering their releases and a wider extent on deployment 1. The tracks of all five members in all twelve deployments are a new figure in Section S6 |
+| Figure 6 and Section 4.3 | Folded into Section 4.2, see below |
 | Figure 7b, "x" on the multipliers | Removed, the axis label giving the ratio |
 | Figure S7g, mesh order | 15 m, 30 m, 60 m (the reference, at zero) and the present mesh |
 
-## Section 4.3 and Figure 6
+## Process attribution, formerly Section 4.3 and Figure 6
 
 The previous figure gave twelve contrasts of the three-factor design as a column
-of intervals, without showing which members were contrasted. The new figure
-has three panels:
-
-- (a) an interaction plot of the mean skill of the four members, canopy on the
-  horizontal axis and one line per wave treatment, so that the rise from bare
-  bed to canopy is the canopy effect, the gap between lines is the wave effect
-  and parallel lines mean no interaction, with the canopy-in-SWAN member beside
-  the wave-coupled canopy member;
-- (b) the seven single-factor contrasts with their bootstrap intervals;
-- (c) the canopy contrast by deployment, with the number of drifters in each.
+of intervals, without showing which members were contrasted. In a two-factor
+design the mean of each contrast is the difference between two member means of
+Table 3, so a separate section and figure repeated that table. What the
+contrasts add is their uncertainty. Pairing by drifter removes the difficulty a
+drifter presents to every member, which spreads skill from 0.34 to 0.96, and
+the wave effect of about −0.02 clears zero only in the paired form, the
+intervals of the member means overlapping. The contrasts are therefore Table 4
+of Section 4.2, named in member codes (`-V` minus `--`, `WV` minus `W-`, and so
+on), and the canopy contrast by deployment is a figure in Section S6. The
+sensitivity tests of the former Section 4.5 are Table 5.
 
 The contrast and its interval are now defined in Section 3.5. A contrast is the
 mean over the 35 drifters of the paired difference in skill between two members
@@ -95,13 +101,28 @@ estimate changes.
 
 | Contrast | Mean | 95% CI | Drifters better |
 |---|---|---|---|
-| Canopy, no waves | +0.120 | +0.061 to +0.180 | 25 of 35 |
-| Canopy, waves | +0.114 | +0.057 to +0.169 | 27 |
-| Canopy, waves, canopy in SWAN | +0.137 | +0.084 to +0.194 | 27 |
-| Waves, bare | −0.022 | −0.044 to −0.002 | 14 |
-| Waves, canopy | −0.028 | −0.040 to −0.017 | 10 |
-| Waves, canopy in SWAN | −0.005 | −0.011 to −0.001 | 13 |
-| Canopy in SWAN, waves and canopy | +0.023 | +0.014 to +0.031 | 26 |
+| `-V` minus `--` | +0.120 | +0.061 to +0.180 | 25 of 35 |
+| `WV` minus `W-` | +0.114 | +0.057 to +0.169 | 27 |
+| `WVs` minus `W-` | +0.137 | +0.084 to +0.194 | 27 |
+| `W-` minus `--` | −0.022 | −0.044 to −0.002 | 14 |
+| `WV` minus `-V` | −0.028 | −0.040 to −0.017 | 10 |
+| `WVs` minus `-V` | −0.005 | −0.011 to −0.001 | 13 |
+| `WVs` minus `WV` | +0.023 | +0.014 to +0.031 | 26 |
+
+## Discussion and Conclusions
+
+The Discussion follows four steps: the findings, their context in other
+studies, the limitations and the work they leave open. The wave result has its
+own subsection, since the canopy in SWAN shows that most of the wave penalty
+under the canopy came from a wave field computed over a bare bed, and it is no
+longer listed as a limitation. The leaf-density runs, which are results, move to
+Section S4. Four references give the context of canopy flow and reconfiguration:
+Nepf and Vivoni (2000), Temmerman et al. (2005), Beudin et al. (2017) and Luhar
+and Nepf (2011). The work left open is a canopy momentum sink that varies with
+the local velocity in the three-dimensional solver, the canopy in both models in
+every vegetated member, and a mobile bed once bed change and turbidity are
+observed in the lagoon. The Conclusions answer the three objectives with
+numbers and close on one quantified statement.
 
 ## Figure S3 and the Marettimo anchor
 
@@ -186,7 +207,7 @@ in pale blue, land in white.
 
 | Figure | Script |
 |---|---|
-| 3, 4, 5, 7 | `plot_water_level_stations.py`, `plot_lagrangian_results.py`, `plot_drifter_trajectories_paper1.py`, `plot_layer_profile_lagoon.py`, with `STAGNONE_ENSEMBLE=ic3d STAGNONE_BED=fixed` |
-| 6 | `plot_attribution_2x2.py` (new), which also writes `data/processed/attribution_2x2_ic3d.csv` |
+| 3 to 6 and the tracks of Section S6 | `plot_water_level_stations.py`, `plot_lagrangian_results.py`, `plot_drifter_trajectories_paper1.py`, `plot_layer_profile_lagoon.py`, with `STAGNONE_ENSEMBLE=ic3d STAGNONE_BED=fixed` |
+| Table 4 and the deployment figure of Section S6 | `plot_attribution_2x2.py` (new), which writes `data/processed/attribution_2x2_ic3d.csv` |
 | 1, 2 | `plot_study_area_paper1.py`, `plot_seagrass_classification_paper1.py` |
 | S1–S7 | `plot_supplementary_figures.py` |
