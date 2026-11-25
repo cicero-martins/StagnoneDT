@@ -203,18 +203,43 @@ def fig_s3():
     monthly = delta.resample('1ME').mean()
     anchor = float(delta.mean())
     print(f'S3: {len(delta)} days, anchor {anchor:+.3f} m, monthly {monthly.min():+.3f} to {monthly.max():+.3f}')
-    fig, ax = plt.subplots(figsize=(11, 4.2))
-    ax.plot(delta.index, delta.values, color='#9b9893', lw=0.9, label='Daily difference')
-    ax.plot(monthly.index - pd.Timedelta(days=15), monthly.values, 'o-', color=INK, ms=7, lw=2,
-            mec=SURFACE, mew=1.2, label='Monthly mean', zorder=4)
-    ax.axhline(anchor, color=CANOPY, lw=2, ls='--', label=f'Anchor, {anchor:+.3f} m')
-    ax.axhspan(anchor - 0.07, anchor + 0.07, color=CANOPY, alpha=0.08, lw=0)
-    ax.axvspan(pd.Timestamp('2025-07-01'), pd.Timestamp('2025-07-10'), color='#efece6', zorder=0)
-    ax.text(pd.Timestamp('2025-07-05'), ax.get_ylim()[1], 'simulated\nwindow', ha='center', va='top',
-            fontsize=8.5, color=MUTED)
-    ax.set_ylabel('Gauge minus CMEMS sea surface height (m)', color=MUTED)
-    style(ax)
-    ax.legend(fontsize=9, frameon=False, loc='lower center', bbox_to_anchor=(0.5, 1.0), ncol=3)
+
+    # (b) the longer record, gauge minus the MED reanalysis shifted onto the
+    # level of the analysis-forecast product (analyse_marettimo_anchor_long.py),
+    # from after the sensor fault of August and September 2023. Days departing
+    # from a 15-day running median by more than 0.3 m are spikes of the raw
+    # 15 s stream and are left out.
+    long = pd.read_csv(PROC / 'marettimo_anchor_long_daily.csv', index_col=0, parse_dates=True)
+    lg = long['d_my'].loc['2023-10-15':].dropna()
+    lg = lg[(lg - lg.rolling(15, center=True, min_periods=5).median()).abs() <= 0.3]
+    lm = lg.resample('1ME').mean()
+    t = (lg.index - lg.index[0]).days.values
+    slope, icpt = np.polyfit(t, lg.values, 1)
+    print(f'S3b: {len(lg)} days, trend {slope * 365:+.3f} m per year')
+
+    fig, axes = plt.subplots(2, 1, figsize=(11, 7.6), gridspec_kw=dict(hspace=0.42))
+    for ax, d, m, title in ((axes[0], delta, monthly,
+                             '(a) Gauge minus analysis-forecast, the 384 days of the anchor'),
+                            (axes[1], lg, lm,
+                             '(b) Gauge minus reanalysis on the same level, October 2023 to January 2026')):
+        ax.plot(d.index, d.values, color='#9b9893', lw=0.9, label='Daily difference')
+        ax.plot(m.index - pd.Timedelta(days=15), m.values, 'o-', color=INK, ms=6, lw=1.8,
+                mec=SURFACE, mew=1.1, label='Monthly mean', zorder=4)
+        ax.axhline(anchor, color=CANOPY, lw=2, ls='--', label=f'Anchor, {anchor:+.3f} m')
+        ax.axhspan(anchor - 0.07, anchor + 0.07, color=CANOPY, alpha=0.08, lw=0)
+        ax.axvspan(pd.Timestamp('2025-07-01'), pd.Timestamp('2025-07-10'), color='#efece6', zorder=0)
+        ax.set_ylabel('Gauge minus CMEMS (m)', color=MUTED)
+        ax.set_title(title, loc='left', fontsize=11, color=INK)
+        style(ax)
+    axes[1].plot(lg.index, icpt + slope * t, color=BARE, lw=1.6,
+                 label=f'Linear trend, {slope * 365:+.2f} m per year')
+    axes[1].axvspan(pd.Timestamp('2025-01-01'), pd.Timestamp('2026-01-20'), color=CANOPY, alpha=0.05,
+                    zorder=0)
+    for ax in axes:
+        ax.text(pd.Timestamp('2025-07-05'), ax.get_ylim()[1], 'simulated\nwindow', ha='center',
+                va='top', fontsize=8.5, color=MUTED)
+    axes[0].legend(fontsize=9, frameon=False, loc='lower center', bbox_to_anchor=(0.5, 1.07), ncol=3)
+    axes[1].legend(handles=[axes[1].get_lines()[-1]], fontsize=9, frameon=False, loc='lower right')
     save(fig, 'figS3')
 
 
