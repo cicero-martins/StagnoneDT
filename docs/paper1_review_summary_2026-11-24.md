@@ -17,7 +17,9 @@ and the title names those two factors.
 
 | Part | 12 November | 24 November |
 |---|---|---|
-| Body, sections 1 to 6 (words) | 7978 | 4797 |
+| Pages, review-format PDF | 34 | 25 |
+| Pages, Supplementary Material | 17 | 14 |
+| Body, sections 1 to 6 (words) | 7978 | 4856 |
 | Abstract (words) | 250 | 245 |
 | Figures in the body | 9 | 6 |
 | Tables in the body | 3 | 5 |
@@ -27,17 +29,22 @@ The body count excludes floats, mathematics and comments.
 
 | Section | 12 November | 24 November |
 |---|---|---|
-| 1 Introduction | 761 | 591 |
+| 1 Introduction | 761 | 625 |
 | 2 Study area | 592 | 499 |
 | 3 Data and methods | 2115 | 1210 |
 | 4 Results | 2270 | 991 |
-| 5 Discussion | 1725 | 1219 |
+| 5 Discussion | 1725 | 1244 |
 | 6 Conclusions | 515 | 287 |
 
-The Introduction states the open problem as what earlier models of the
-Stagnone did not represent and gives the objectives in one sentence, and facts
-about the basin appear only in the Study Area. Every reference of 12 November
-is kept. Data and Methods leaves to the Supplementary Material the details it
+The Introduction builds on the earlier models of the Stagnone, presenting the
+canopy drag resolved over the plant height and the wave coupling as an
+extension of their three-dimensional description, and the drifters as carrying
+their evaluation, made against water level and in some studies velocity at
+fixed points, to transport itself. The objectives follow in one paragraph, and
+facts about the basin appear only in the Study Area. Of the references of
+12 November, Kjerfve (1994) is replaced by Newton et al. (2018), a review of
+the ecosystem services of coastal lagoons, fisheries and biodiversity among
+them. Data and Methods leaves to the Supplementary Material the details it
 already gives in full, the body figures float instead of being held in place,
 and Results begin on page 10 of the review-format PDF.
 
@@ -139,6 +146,29 @@ northern sub-basin; wind adds to exchange in lagoons with more than one inlet
 are no longer cited for the claim that water level constrains transport
 weakly, which they do not make. The parameters of *P. oceanica* are described
 as coming from flume experiments with artificial plants.
+
+Further corrections from the same reading:
+
+- Infantes et al. (2012) measured wave attenuation over meadows at 6.5 to
+  16.5 m depth, and the text now gives that depth instead of implying the
+  scale of the lagoon.
+- Turschwell et al. (2021) associate the most rapid seagrass declines with
+  destructive demersal fishing and degraded water quality, as the
+  Introduction now states.
+- Carniello et al. (2011) and Morote et al. (2025) show that wind waves set
+  the bed stress over the flats and resuspend sediment during storms, the
+  earlier wording, that waves govern sediment dynamics, going beyond them.
+- In Section S1 the partition size is set against the thresholds of Mogé
+  et al. (2019) as published, more than 25 000 cells per partition counted
+  over the layers, which the eight partitions meet with about 30 000, and
+  the 20 000 unknowns below which the linear solver stops scaling.
+- In Section 5.1 the absence of a layer of reduced flow under an equivalent
+  roughness is stated as an inference from the logarithmic profile over a
+  rough bed (Nepf 2012), in place of a bound on the surface-to-bed ratio
+  that the source does not give.
+- The trachytope formulation was checked against the D-Flow FM user manual,
+  which implements equation 74 of Baptist et al. (2007) as trachytope
+  formula 153 and cites the thesis of Baptist (2005) for it.
 
 ## Figure S3 and the Marettimo anchor
 
