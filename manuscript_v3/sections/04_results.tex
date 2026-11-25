@@ -72,7 +72,7 @@ separation at AltaVilaEst does not reflect the restart.
   \end{tabular}
 \end{table}
 
-\subsection{Lagrangian transport}
+\subsection{Lagrangian transport and process attribution}
 \label{sec:res_drifters}
 
 Thirty-five drifters over twelve deployments were scored against each member
@@ -142,55 +142,52 @@ Section~S6.
   \label{fig:tracks}
 \end{figure}
 
-\subsection{Process attribution}
-\label{sec:res_attribution}
+Table~\ref{tab:contrasts} gives the single-factor contrasts. Each pairs two
+members drifter by drifter, so the difficulty a drifter presents to every
+member, which spreads skill from 0.34 to 0.96 across the 35 drifters, cancels
+in the difference, and a contrast can clear zero where the intervals of the two
+member means overlap. The canopy raises skill by 0.120 in \texttt{{-}V} minus
+\texttt{{-}{-}} and by 0.114 in \texttt{WV} minus \texttt{W{-}}, with 25 and 27
+of the 35 drifters improving, and the two values agree within 0.006. Wave
+coupling lowers skill by 0.022 in \texttt{W{-}} minus \texttt{{-}{-}} and by
+0.028 in \texttt{WV} minus \texttt{{-}V}, about a fifth of the canopy effect.
+With the canopy also in the wave model, \texttt{WV}$^{\mathrm{s}}$ scores 0.023
+above \texttt{WV}, the wave contrast under the canopy becomes $-0.005$ and the
+canopy contrast with waves $+0.137$, and significant wave height over the
+vegetated points falls to a median of 0.36 of its value in \texttt{WV}
+(Section~S2).
 
-The two-factor design gives two single-factor contrasts per factor, each
-measuring one factor with the other held at one of its levels
-(Section~\ref{sec:methods_validation}). In the interaction plot of
-Figure~\ref{fig:attribution}a the rise from bare bed to canopy is the canopy
-effect and the gap between the two lines the wave effect, and
-Figure~\ref{fig:attribution}b gives the contrasts with their bootstrap
-intervals.
+The canopy contrast has the same sign under both wave treatments in ten of the
+twelve deployments, and is negative under both in deployments 4 and 11
+(Section~S6). Excluding deployment 4, the shortest record at 0.4~h, raises the
+two canopy contrasts to $+0.148$ and $+0.144$.
 
-The canopy raises skill by 0.120 (95\% CI $+0.061$ to $+0.180$) without wave
-coupling and by 0.114 ($+0.057$ to $+0.169$) with it, with 25 and 27 of the 35
-drifters improving. The two contrasts agree to within 0.006, so the canopy
-effect does not depend on the wave treatment, and the two lines of
-Figure~\ref{fig:attribution}a run nearly parallel.
-
-Wave coupling lowers skill by 0.022 ($-0.044$ to $-0.002$) without a canopy and
-by 0.028 ($-0.040$ to $-0.017$) with one, with 21 and 25 drifters worse, an
-effect about a fifth of that of the canopy. With the canopy also dissipating
-wave energy, \texttt{WV}$^{\mathrm{s}}$ scores 0.023 above \texttt{WV}
-($+0.014$ to $+0.031$), the wave contrast under the canopy falls to $-0.005$
-($-0.011$ to $-0.001$) and the canopy contrast with waves rises to $+0.137$
-($+0.084$ to $+0.194$), while significant wave height over the vegetated points
-falls to a median of 0.36 of its bare-bed value (Section~S2). Most of the wave
-penalty under the canopy therefore came from a wave field computed over a bare
-bed.
-
-The canopy contrast keeps the same sign under both wave treatments in ten of
-the twelve deployments (Figure~\ref{fig:attribution}c). Deployment 4, the
-shortest record and the one in which the bare members score higher, is
-retained, and excluding it raises the two canopy contrasts to $+0.148$ and
-$+0.144$ (Section~S6).
-
-\begin{figure}[H]
+\begin{table}[H]
   \centering
-  \includegraphics[width=\textwidth]{ensemble_attribution}
-  \caption{Process attribution over the 35 drifters. (a) Mean Liu--Weisberg
-  skill of the four members with 95\% bootstrap intervals, lines joining the
-  members of equal wave treatment, and \texttt{WV}$^{\mathrm{s}}$ as the open
-  square beside \texttt{WV}. (b) Single-factor contrasts, each the mean of the
-  per-drifter paired differences in skill, with 95\% percentile bootstrap
-  intervals from 4000 resamples, filled markers denoting intervals clear of
-  zero. (c) The canopy contrast by deployment, without and with wave coupling,
-  with the number of drifters per deployment in parentheses.}
-  \label{fig:attribution}
-\end{figure}
+  \caption{Single-factor contrasts in Liu--Weisberg skill over the 35
+  drifters. Each contrast is the mean of the per-drifter differences in skill
+  between the two members, given with the 95\% percentile bootstrap interval
+  of that mean from 4000 resamples and the number of drifters whose skill
+  rises.}
+  \label{tab:contrasts}
+  \begin{tabular}{llrcr}
+    \toprule
+    Factor & Contrast & Mean & 95\% interval & Drifters \\
+    \midrule
+    Canopy & \texttt{{-}V} minus \texttt{{-}{-}} & $+0.120$ & $+0.061$ to $+0.180$ & 25 \\
+           & \texttt{WV} minus \texttt{W{-}}     & $+0.114$ & $+0.057$ to $+0.169$ & 27 \\
+           & \texttt{WV}$^{\mathrm{s}}$ minus \texttt{W{-}} & $+0.137$ & $+0.084$ to $+0.194$ & 27 \\
+    \midrule
+    Wave coupling & \texttt{W{-}} minus \texttt{{-}{-}} & $-0.022$ & $-0.044$ to $-0.002$ & 14 \\
+           & \texttt{WV} minus \texttt{{-}V}     & $-0.028$ & $-0.040$ to $-0.017$ & 10 \\
+           & \texttt{WV}$^{\mathrm{s}}$ minus \texttt{{-}V} & $-0.005$ & $-0.011$ to $-0.001$ & 13 \\
+    \midrule
+    Canopy in SWAN & \texttt{WV}$^{\mathrm{s}}$ minus \texttt{WV} & $+0.023$ & $+0.014$ to $+0.031$ & 26 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
-\subsection{Three-dimensional structure}
+\subsection{Vertical structure}
 \label{sec:res_3d}
 
 Over the wet cells of the lagoon interior, inlets excluded, mean current speed
@@ -199,13 +196,13 @@ sets the shape of that profile (Figure~\ref{fig:profile}). Without a canopy,
 bed-layer speed is 0.032 to 0.035~\si{\metre\per\second} and surface-layer
 speed 0.065 to 0.069~\si{\metre\per\second}, for surface-to-bed ratios of 1.88
 and 2.14. With a canopy, bed-layer speed falls to 0.0093 to
-0.0095~\si{\metre\per\second} while surface speed falls much less, to 0.043 to
+0.0095~\si{\metre\per\second} while surface speed falls less, to 0.043 to
 0.047~\si{\metre\per\second}, and the ratio rises to 4.50 and 5.05. Wave
 coupling adds 0.26 to the ratio without a canopy and 0.55 with one, against a
 canopy contribution of $+2.62$ without waves and $+2.91$ with them.
 
 Bed shear stress averaged over the meadow on 8 July fell from 0.028 to
-0.0026~\si{\pascal} when the canopy was introduced, a factor of 11, whereas a
+0.0026~\si{\pascal} when the canopy was introduced, a factor of 11. A
 diagnostic run representing the same meadow as an equivalent bed roughness,
 through the trachytope formulation of \citet{Baptist2007}, raised it to
 0.043~\si{\pascal} over the same cells and times. Lagoon-mean surface speed
@@ -226,16 +223,34 @@ a distance.
 \subsection{Sensitivity to the initial condition and the discretisation}
 \label{sec:res_sensitivity}
 
-Started from a vertically uniform column instead of the stratified state, the
-bare members score 0.080 and 0.092 lower and the vegetated members 0.005 and
-0.018 lower, so that the canopy contrasts become $+0.195$ and $+0.188$. The
-uniform start raises the modelled mean water level at the gauges by 2 to 10~cm
-and changes anomaly RMSE by at most 4~mm and correlation by at most 0.03, and
-the canopy signature at AltaVilaEst is the same under both starts.
+Table~\ref{tab:sensitivity} gives the change in Liu--Weisberg skill under each
+test. The uniform start lowers the skill of the bare members by about five
+times as much as that of the vegetated members, so the canopy contrasts become
+$+0.195$ and $+0.188$. It also raises the modelled mean water level at the
+gauges by 2 to 10~cm, changes anomaly RMSE by at most 4~mm and leaves the
+canopy signature at AltaVilaEst unchanged. The discretisation tests change
+skill by less than 0.01 and water level by at most 2.4~mm, whereas the host and
+decomposition change skill by 0.034 under the Courant limit of the ensemble, a
+dependence the members share.
 
-The horizontal and vertical resolution, the time-step limit and the host and
-decomposition change skill by less than 0.01 under a Courant limit of 0.5 and
-water level by at most 2.4~mm (Section~S5). Under the Courant limit of 0.7 used
-by the ensemble, the uncoupled bare member scores $0.034 \pm 0.004$ lower on
-four partitions on a second computer than on eight on the server, a dependence
-that all members share.
+\begin{table}[H]
+  \centering
+  \caption{Change in mean Liu--Weisberg skill over the 35 drifters under each
+  sensitivity test. The discretisation and host tests were run on
+  \texttt{{-}{-}}, from the uniform start under a Courant limit of 0.5 except
+  where stated (Section~S5).}
+  \label{tab:sensitivity}
+  \begin{tabular}{llr}
+    \toprule
+    Test & Members & Change in skill \\
+    \midrule
+    Uniform initial column       & \texttt{{-}{-}}, \texttt{W{-}} & $-0.080$, $-0.092$ \\
+                                 & \texttt{{-}V}, \texttt{WV}     & $-0.005$, $-0.018$ \\
+    Cell edge 60, 30, 15~m       & \texttt{{-}{-}} & within $\pm 0.004$ \\
+    20 layers against 10, stratified start & \texttt{{-}{-}} & $+0.0003$ \\
+    Time step limited by vertical fluxes   & \texttt{{-}{-}} & $+0.0007$ \\
+    Host and decomposition       & \texttt{{-}{-}} & $+0.002$ \\
+    Host and decomposition, Courant 0.7 & \texttt{{-}{-}} & $-0.034$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
