@@ -91,7 +91,8 @@ Legenda de situação:
    - Baptist et al. 2007 não está na pasta. O manual do usuário do D-Flow FM
      atribui as fórmulas de trachytope 153 e 154 a Baptist, mas cita a tese de
      doutorado (Baptist 2005, *Modelling floodplain biogeomorphology*, TU Delft),
-     não o artigo de 2007. Ver a entrada de Baptist abaixo.
+     não o artigo de 2007. A tese foi baixada e contém a fórmula (eq. 4.143).
+     Ver a entrada de Baptist abaixo.
 
 ## Por referência
 
@@ -393,9 +394,18 @@ conferência abaixo usa o manual do usuário do D-Flow FM que vem com a instala�
 | p. 7, l. 132 | "The bed-roughness representation of vegetation (Baptist et al., 2007) [...] was not used, since a roughness acts at the bed" | manual do usuário, p. 236: tabela das fórmulas de trachytope, "FormNr 151 152 153 154 [...] Baptist 1 Baptist 2", "two on the work by Baptist (2005)"; p. 238: "The first implementation of the roughness predictor by Baptist (Baptist, 2005)"; "Both formulae by Baptist require vegetation height hv, density n, drag coefficient CD and alluvial bed roughness Cb" | Parcial (o manual cita a tese de 2005, não o artigo de 2007) |
 | p. 15, l. 236 | "...through the trachytope formulation of Baptist et al. (2007)" | idem; manual técnico, p. 154: "The second implementation of the Baptist vegetation formula (154) splits its effect over the bed roughness term and a flow resistance term" | Parcial (idem) |
 
-A tese de 2005 é a referência do manual para a fórmula. O artigo de 2007 a
-publica em periódico (o título, "On inducing equations for vegetation
-resistance", corresponde à dedução da fórmula), mas isso não foi conferido no
-texto. Há três opções: citar só a tese, como o manual; citar a tese e o artigo
-juntos; ou manter o artigo depois de conferir no PDF que a equação é a mesma
-das fórmulas 153 e 154.
+A tese de 2005 é a referência do manual para a fórmula e foi conferida
+(`reference/papers/Baptist2005_PhDthesis_floodplainBiogeomorphology.pdf`). A
+§4.6.8 (p. 74–75 da tese) deduz a rugosidade representativa da vegetação
+submersa por programação genética, a partir de Rodríguez Uthurburu (2004), e
+chega à eq. 4.143, Cr = (Cb⁻² + CD m D k / 2g)^(-1/2) + (√g/κ) ln(h/k). É a
+mesma expressão da eq. 13.32 do manual do usuário (fórmula 153). O artigo de
+2007 tem Babovic e Rodríguez Uthurburu entre os coautores e trata da mesma
+dedução por programação genética, mas o texto dele não foi conferido.
+
+A tese não tem DOI: não aparece no Crossref nem na DataCite. Identificadores:
+ISBN 90-407-2582-9 (página de créditos da tese) e
+https://resolver.tudelft.nl/uuid:b2739720-e2f6-40e2-b55f-1560f434cbee. O
+registro uuid:c79bd6f3-… do mesmo repositório está fora do ar (HTTP 403). A
+edição comercial (Delft Hydraulics Select Series 5/2005, DUP Science) tem ISBN
+90-407-2583-7.
