@@ -84,10 +84,14 @@ Legenda de situação:
      volume 12 é de 2012. O `.bib` mantém 2012, o ano do volume.
 4. **Conferidos só pelo resumo:** Dunic 2021, Turschwell 2021, Nepf e Vivoni
    2000, Luhar e Nepf 2011 e Booij 1999.
-5. **Sem PDF nem resumo:** Baptist 2007. Battjes e Stive 1985 também não está
-   na pasta: o arquivo `BattjesStive1985_...pdf` contém Battjes e Janssen 1978.
-   O γ = 0,73 foi conferido na documentação técnica do SWAN, que o atribui a
-   Battjes e Stive.
+5. **Conferidos por fonte secundária:**
+   - Battjes e Stive 1985 não está na pasta: o arquivo
+     `BattjesStive1985_...pdf` contém Battjes e Janssen 1978. O γ = 0,73 foi
+     conferido na documentação técnica do SWAN, que o atribui a Battjes e Stive.
+   - Baptist et al. 2007 não está na pasta. O manual do usuário do D-Flow FM
+     atribui as fórmulas de trachytope 153 e 154 a Baptist, mas cita a tese de
+     doutorado (Baptist 2005, *Modelling floodplain biogeomorphology*, TU Delft),
+     não o artigo de 2007. Ver a entrada de Baptist abaixo.
 
 ## Por referência
 
@@ -378,11 +382,20 @@ Legenda de situação:
 | --- | --- | --- | --- |
 | p. 2, l. 10 | "Global seagrass extent has fallen in all seven bioregions" | p. 3: "Our analysis included data from all 6 global seagrass bioregions"; resumo: "29% of the known areal extent has disappeared since seagrass areas were initially recorded in 1879" | Parcial (seis biorregiões e 29%; as sete biorregiões e os 19,1% vêm de Dunic, co-citado) |
 
-### Referência sem PDF
+### Baptist et al. 2007
 
-O DOI confere com o Crossref em título, ano, volume e páginas. A afirmação não
-foi conferida no texto.
+Sem PDF. O DOI confere com o Crossref em título, ano, volume e páginas. A
+conferência abaixo usa o manual do usuário do D-Flow FM que vem com a instalação
+(`bin/D-Flow_FM_User_Manual.pdf`, versão 2025, revisão 80596).
 
-| Referência | Posição | Uso |
-| --- | --- | --- |
-| Baptist et al. 2007 | p. 7, l. 132; p. 15, l. 236 | Representação da vegetação por rugosidade (trachytope) |
+| Manuscrito | Frase | Fonte | Situação |
+| --- | --- | --- | --- |
+| p. 7, l. 132 | "The bed-roughness representation of vegetation (Baptist et al., 2007) [...] was not used, since a roughness acts at the bed" | manual do usuário, p. 236: tabela das fórmulas de trachytope, "FormNr 151 152 153 154 [...] Baptist 1 Baptist 2", "two on the work by Baptist (2005)"; p. 238: "The first implementation of the roughness predictor by Baptist (Baptist, 2005)"; "Both formulae by Baptist require vegetation height hv, density n, drag coefficient CD and alluvial bed roughness Cb" | Parcial (o manual cita a tese de 2005, não o artigo de 2007) |
+| p. 15, l. 236 | "...through the trachytope formulation of Baptist et al. (2007)" | idem; manual técnico, p. 154: "The second implementation of the Baptist vegetation formula (154) splits its effect over the bed roughness term and a flow resistance term" | Parcial (idem) |
+
+A tese de 2005 é a referência do manual para a fórmula. O artigo de 2007 a
+publica em periódico (o título, "On inducing equations for vegetation
+resistance", corresponde à dedução da fórmula), mas isso não foi conferido no
+texto. Há três opções: citar só a tese, como o manual; citar a tese e o artigo
+juntos; ou manter o artigo depois de conferir no PDF que a equação é a mesma
+das fórmulas 153 e 154.
