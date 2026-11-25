@@ -116,21 +116,26 @@ difference between the two products over the 385 days on which both exist
 |---|---|
 | January to July 2023 | −0.16 to +0.28 m |
 | August and September 2023 | Sensor fault, values held at −1.000 m in 13% and 34% of the samples, and a change of level on recovery |
-| October 2023 to December 2024 | +0.24 to +0.42 m |
-| 2025, the anchor year | +0.36 and +0.37 m in January and February, +0.42 to +0.49 m afterwards |
+| October 2023 to 1 October 2024 | +0.29 m |
+| 2 October 2024 to 10 February 2025 | +0.41 m, then +0.34 m from December, after an intervention on the instrument on 1 October 2024 |
+| 11 February 2025 to 19 January 2026 | +0.46 m, trend +0.036 m per year, after a transition of about three weeks |
 
-From October 2023 to January 2026 the difference rises by 0.11 m per year, and
-January and February 2025 lie on that trend. The low values of early 2025 are
-therefore not a winter departure but the low end of a drift of the gauge
-datum. A longer averaging period would mix levels of a gauge whose datum has
-not been held, so the anchor remains the mean over the year that contains the
-simulation, +0.449 m, which also entered the forcing of every member. Over
-the simulated window the difference is +0.469 m, 0.020 m above the anchor, and
-excluding January and February 2025 would give +0.464 m.
+The difference holds at a succession of levels rather than drifting, and
+January and February 2025 belong mainly to the level that preceded the change
+of February 2025. The same months of 2024 lie 0.03 and 0.05 m below their own
+level, so a winter component of a few centimetres is possible. A longer
+averaging period would mix levels of a gauge whose datum has not been held.
+The anchor used, +0.449 m over the year that contains the simulation, entered
+the forcing of every member. Confined to the last level it would be +0.461 m
+(from 11 February 2025) or +0.464 m (from 1 March 2025, the gauge having no
+record after 19 January 2026), and over the simulated window the difference is
++0.469 m. The full record is in
+[`marettimo_gauge_record_2023_2026.md`](marettimo_gauge_record_2023_2026.md).
 
 Figure S3 now has two panels, (a) the 384 days of the anchor as before and (b)
-the reanalysis-based difference from October 2023 to January 2026 with its
-trend, and Section S3 states the comparison, the fault and the drift.
+the reanalysis-based difference from October 2023 to January 2026 with the
+levels of a piecewise-constant fit, and Section S3 states the comparison, the
+fault and the levels.
 
 ## Other corrections
 
