@@ -31,8 +31,10 @@ Legenda de situação:
    - Ingrassia et al. 2024: o primeiro autor é Emanuele, não Elisa (PDF e
      Crossref).
    - La Loggia et al. 2004 ganhou o DOI `10.1080/02757540410001689786`.
-   - Kjerfve 1994: o título do capítulo é "Coastal Lagoons". "Coastal Lagoon
-     Processes" é o título do livro.
+   - Kjerfve 1994 saiu. Em seu lugar entrou Newton et al. 2018 (DOI
+     `10.1016/j.jnc.2018.02.009`, conferido no Crossref), que sustenta pesca e
+     biodiversidade. O PDF, de acesso aberto, está em
+     `reference/papers/Newton2018_ecosystemServicesCoastalLagoons.pdf`.
 2. **Corrigidos em 25 nov. 2026, no texto.**
    - Os "2200 ha" de Ciraolo e De Marchis 2009 são a área da **reserva
      natural**, não da laguna. A Área de Estudo agora dá cerca de 20 km², a
@@ -58,25 +60,34 @@ Legenda de situação:
      (S4).
    - §5.4: os parâmetros de *P. oceanica* vêm de flumes com **plantas
      artificiais** (Ciraolo 2006; Prinos 2010), não de "outras pradarias".
+   - Turschwell et al. 2021 associam as perdas rápidas a pesca demersal
+     destrutiva e qualidade da água, não a desenvolvimento costeiro (que é o
+     fator mais citado em Dunic et al. 2021). A Introdução agora diz "destructive
+     demersal fishing and degraded water quality".
+   - Mogé et al. 2019 dão como regra prática **mais de ~25 000 células por
+     partição** (p. 15), contadas sobre as camadas nos casos 3D, e um limite de
+     escalabilidade do PETSc abaixo de ~20 000 incógnitas (p. 4). O S1 dizia que
+     3000 células por partição ficavam "acima de alguns milhares". Agora diz
+     que as ~30 000 células por partição nas dez camadas ficam acima da regra
+     prática, e que o sistema de nível d'água, com ~3000 incógnitas por partição,
+     fica abaixo do limite do PETSc.
+   - §5.2: Morote-Sánchez et al. 2025 só sustentam ressuspensão por ondas em
+     tempestades. O "waves govern bed stress and sediment resuspension" virou
+     "wind waves set the bed stress over the flats and resuspend sediment during
+     storms", que cobre Carniello (planícies de maré) e Morote (tempestades).
 3. **Ainda em aberto.**
-   - "all seven bioregions" (Introdução, p. 2, l. 10): Waycott et al. 2009
-     usam **seis** biorregiões. O "sete" só pode vir de Dunic et al. 2021, que
-     não tem PDF na pasta. Conferir em Dunic antes da submissão.
-   - "concentrate fisheries and biodiversity" (p. 2, l. 1): Carrasco 2016 só
-     sustenta os 13% da linha de costa. O resto depende de Kjerfve 1994, sem
-     PDF.
    - §5.1 (p. 17, l. 257): Nepf 2012 sustenta que o perfil sobre leito rugoso
      ou dossel esparso continua logarítmico. O limite da razão
      superfície/fundo "well below the values obtained here" é inferência do
      manuscrito, não de Nepf.
    - De Marchis et al. 2012: o Crossref registra 2011 (publicação online), e o
      volume 12 é de 2012. O `.bib` mantém 2012, o ano do volume.
-4. **Sem PDF na pasta:** Kjerfve 1994, Dunic 2021, Turschwell 2021, Carniello
-   2011, Morote-Sánchez 2025, Nepf e Vivoni 2000, Temmerman 2005, Beudin 2017,
-   Luhar e Nepf 2011, Baptist 2007, Booij 1999, Battjes e Stive 1985, Bouws e
-   Komen 1983, Dalrymple 1984, Suzuki 2012, Kernkamp 2011, Dagestad 2018,
-   Mogé 2019 e Deltares 2025. Os seis últimos são citações de método,
-   software ou manual.
+4. **Conferidos só pelo resumo:** Dunic 2021, Turschwell 2021, Nepf e Vivoni
+   2000, Luhar e Nepf 2011 e Booij 1999.
+5. **Sem PDF nem resumo:** Baptist 2007. Battjes e Stive 1985 também não está
+   na pasta: o arquivo `BattjesStive1985_...pdf` contém Battjes e Janssen 1978.
+   O γ = 0,73 foi conferido na documentação técnica do SWAN, que o atribui a
+   Battjes e Stive.
 
 ## Por referência
 
@@ -94,11 +105,43 @@ Legenda de situação:
 | p. 6, l. 101 | "...with depth-induced breaking" | título: "Energy loss and set-up due to breaking of random waves" | OK |
 | S p. 3, S2 (tabela) | "Depth-induced breaking, Battjes and Janssen (1978), α = 1.0" | idem | OK |
 
+### Battjes e Stive 1985
+
+| Manuscrito | Frase | Fonte | Situação |
+| --- | --- | --- | --- |
+| S p. 3, S2 (tabela) | "γ = 0.73 [...] the mean value of Battjes and Stive (1985) over laboratory and field data" | sem o artigo; documentação técnica do SWAN (Cycle III 40.51), p. 31: "Battjes and Stive (1985) re-analyzed wave data of a number of laboratory and field experiments and found values for the breaker parameter varying between 0.6 and 0.83 [...] with an average of 0.73" | OK (por fonte secundária) |
+
+### Beudin et al. 2017
+
+| Manuscrito | Frase | Fonte | Situação |
+| --- | --- | --- | --- |
+| p. 17, l. 263 | "...three-dimensional models that resolve the drag over the plant height have reproduced the same partition [...] in coupled wave, flow and vegetation systems" | título: "Development of a coupled wave-flow-vegetation interaction model"; p. 5: "The flow structure displays an S-shape with an inflection point near the top of the canopy" | OK |
+
+### Booij, Ris e Holthuijsen 1999
+
+| Manuscrito | Frase | Fonte | Situação |
+| --- | --- | --- | --- |
+| p. 6, l. 101 | "Waves were computed with SWAN" | resumo: "A third-generation numerical wave model to compute random, short-crested waves in coastal regions with shallow water and ambient currents (Simulating Waves Nearshore (SWAN))" | OK (resumo) |
+
+### Bouws e Komen 1983
+
+| Manuscrito | Frase | Fonte | Situação |
+| --- | --- | --- | --- |
+| S p. 3, S2 (tabela) | "JONSWAP bottom friction, 0.067 m² s⁻³ [...] value for wind sea rather than the lower value appropriate to swell" | p. 1656: "c₂ = 0.067 m² s⁻³ [...] nearly twice as large as the mean JONSWAP value (0.038)"; p. 1655: 0,038 é "the JONSWAP result for swell dissipation" (PDF escaneado, lido como imagem) | OK |
+
+### Carniello et al. 2011
+
+| Manuscrito | Frase | Fonte | Situação |
+| --- | --- | --- | --- |
+| p. 3, l. 32 | "Waves, which in comparably shallow Mediterranean lagoons alter bed stress and mobilise sediment" | título: "Modeling wind waves and tidal flows in shallow micro-tidal basins"; resumo: "sediment resuspension over tidal flats is mainly caused by wind-wave induced shear stresses"; caso: laguna de Veneza | OK |
+| p. 18, l. 286 | "...wind waves set the bed stress over the flats and resuspend sediment during storms" | idem | OK |
+| p. 19, l. 334 | "Waves govern the sediment dynamics of comparably shallow micro-tidal basins" | idem; resumo: "the crucial role of wind waves in shallow tidal basins" | OK |
+
 ### Carrasco et al. 2016
 
 | Manuscrito | Frase | Fonte | Situação |
 | --- | --- | --- | --- |
-| p. 2, l. 1 | "Coastal lagoons occupy roughly 13% of the global shoreline and concentrate fisheries and biodiversity" | p. 2: "About 32,000 lagoons are reported along 13% of the world's coastline" | Parcial (pesca e biodiversidade não aparecem) |
+| p. 2, l. 1 | "Coastal lagoons occupy roughly 13% of the global shoreline and concentrate fisheries and biodiversity" | p. 2: "About 32,000 lagoons are reported along 13% of the world's coastline" | OK para os 13% (pesca e biodiversidade vêm de Newton et al. 2018) |
 
 ### Cancemi et al. 2002
 
@@ -140,6 +183,19 @@ Legenda de situação:
 | --- | --- | --- | --- |
 | p. 4, l. 75 | "The submerged vegetation was first mapped from airborne hyperspectral imagery" | resumo: "to use hyperspectral MIVIS data to map the Posidonia oceanica prairies in a coastal lagoon (Stagnone di Marsala)" | OK ("first" não está na fonte, mas não há mapeamento anterior citado) |
 
+### Dagestad et al. 2018
+
+| Manuscrito | Frase | Fonte | Situação |
+| --- | --- | --- | --- |
+| p. 8, l. 151 | "...advected with OpenDrift" | resumo: "OpenDrift is an open-source Python-based framework for Lagrangian particle modelling" | OK (o artigo descreve Runge–Kutta de 2ª ordem, p. 6; o de 4ª ordem usado é de versão posterior do código, e a frase não o atribui ao artigo) |
+
+### Dalrymple et al. 1984
+
+| Manuscrito | Frase | Fonte | Situação |
+| --- | --- | --- | --- |
+| p. 6, l. 107 | "...the vegetation dissipation of Dalrymple et al. (1984)" | resumo: "a friction model for a spatial distribution of rigid vertical cylinders"; introdução: "large stands of seaweed [...] submerged trees" (PDF escaneado) | OK |
+| S p. 4, S2 | "Dissipation follows Dalrymple et al. (1984) in the implementation of Suzuki et al. (2012)" | idem | OK |
+
 ### De Marchis et al. 2012
 
 | Manuscrito | Frase | Fonte | Situação |
@@ -151,6 +207,12 @@ Legenda de situação:
 | p. 4, l. 64 | Vento no eixo leste–oeste, maré no norte–sul | p. 13: "north-south velocities are quite higher than east-west ones when tide effects only are considered"; o vento aumenta a componente leste–oeste | OK |
 | p. 17, l. 267 | "...established a wind-driven three-dimensional circulation with a near-bed return flow" | idem p. 2 | OK |
 
+### Deltares 2025 (Manual de Referência Técnica do D-Flow FM)
+
+| Manuscrito | Frase | Fonte | Situação |
+| --- | --- | --- | --- |
+| S p. 8, S5 | "...with the time step limited also by the vertical fluxes" | manual da instalação (`bin/D-Flow_FM_Technical_Reference_Manual.pdf`, versão 2025, revisão 80505, a mesma do `.bib`), p. 87: "For explicit vertical advection, the time step must also be restricted by vertical transport velocities" | OK |
+
 ### Di Marca 2009
 
 | Manuscrito | Frase | Fonte | Situação |
@@ -161,7 +223,7 @@ Legenda de situação:
 
 | Manuscrito | Frase | Fonte | Situação |
 | --- | --- | --- | --- |
-| p. 2, l. 10 | "...has fallen in all seven bioregions, by 19.1% of the surveyed area since 1880" | sem PDF | Não verificado (ver ponto de atenção 3) |
+| p. 2, l. 10 | "...has fallen in all seven bioregions, by 19.1% of the surveyed area since 1880" | resumo: "We found an overall trajectory of decline in all seven bioregions with a global net loss of 5602 km² (19.1% of surveyed meadow area) occurring since 1880" | OK (resumo) |
 
 ### Infantes et al. 2012
 
@@ -177,6 +239,12 @@ Legenda de situação:
 | p. 2, l. 22 | "...calibrated a depth-averaged model against water level and velocity with a uniform Gauckler–Strickler coefficient" | resumo: "a 2DH [...] unstructured mesh model, calibrated with data collected during the 2006 field campaign"; "NSE values up to 0.92 and 0.79 are reached with a Gauckler–Strickler coefficient equal to 20 m^1/3/s related to water depth and the Vy velocity component" | OK |
 | p. 7, l. 132 | "...the Gauckler–Strickler coefficient of 20 m^1/3 s⁻¹ calibrated for this lagoon" | idem | OK |
 | p. 17, l. 267 | "...calibrated a depth-averaged model in which an equivalent bed roughness is the consistent representation of the canopy" | idem | OK |
+
+### Kernkamp et al. 2011
+
+| Manuscrito | Frase | Fonte | Situação |
+| --- | --- | --- | --- |
+| p. 6, l. 89 | "...an unstructured finite-volume solver for the three-dimensional shallow-water equations" | resumo: "a shallow-water flow solver is presented, based on the finite-volume method on unstructured grids [...] estuaries, lakes and shelf breaks (3D)" | OK |
 
 ### La Loggia et al. 2004
 
@@ -194,6 +262,12 @@ Legenda de situação:
 | p. 3, l. 35 | "...where drifter trajectories offer a measure of transport with skill metrics of its own" | resumo: "A new skill score is proposed based on the cumulative Lagrangian separation distances normalized by the associated cumulative trajectory lengths" | OK |
 | p. 8, l. 156 | "...normalises the cumulative separation between modelled and observed positions by the observed path length" | idem | OK |
 
+### Luhar e Nepf 2011
+
+| Manuscrito | Frase | Fonte | Situação |
+| --- | --- | --- | --- |
+| p. 19, l. 322 | "...flexible blades reduce their effective length, and with it their drag, as the velocity increases" | resumo: "When the hydrodynamic forcing exceeds the restoring forces, the blades are pushed over by the flow, and the quadratic drag law no longer applies"; Beudin et al. 2017, p. 3, atribui a Luhar e Nepf o comprimento efetivo de lâmina | OK (resumo) |
+
 ### Maltese et al. 2025
 
 | Manuscrito | Frase | Fonte | Situação |
@@ -207,6 +281,20 @@ Legenda de situação:
 | Manuscrito | Frase | Fonte | Situação |
 | --- | --- | --- | --- |
 | p. 4, l. 66 | "...summer maxima reaching about 48, the northern sub-basin being saltier than the southern" | "in summer, the lagoon can reach hypersaline conditions, with salinity reaching maximum values of about 48 psu [...] with the north sub-basin being saltier than the south sub-basin" | OK |
+
+### Mogé et al. 2019
+
+| Manuscrito | Frase | Fonte | Situação |
+| --- | --- | --- | --- |
+| S p. 2, S1 | "...about 30 000 over the ten layers, which is above the 25 000 cells per partition [...] rule of thumb for good parallel efficiency" | p. 15: "As a rule-of-thumb, partitions should have more than ~25000 cells to get good parallel efficiency"; p. 2: o caso North_Sea_3D tem 25 vezes as células do 2D | OK |
+| S p. 2, S1 | "...below the 20 000 under which they report that the linear solver stops scaling" | p. 4: "a known scaling limit of PETSc [...] for local problem sizes smaller than ~20,000 unknowns" | OK |
+
+### Morote-Sánchez et al. 2025
+
+| Manuscrito | Frase | Fonte | Situação |
+| --- | --- | --- | --- |
+| p. 3, l. 32 | "Waves, which in comparably shallow Mediterranean lagoons alter bed stress and mobilise sediment" | título: "Waves in a temperate, microtidal and restricted Mediterranean coastal lagoon" (Mar Menor); resumo: "wave-induced orbital velocities can mobilize sediment resuspension during extreme events" | OK |
+| p. 18, l. 286 | "...resuspend sediment during storms" | resumo: "sediment resuspension is most significant during storms" | OK |
 
 ### Morris et al. 2008
 
@@ -225,6 +313,18 @@ Legenda de situação:
 | p. 7, l. 125 | "...drag per unit volume in the quadratic form of Nepf (2012)" | p. 3: "often represented by a quadratic drag law" | OK |
 | p. 17, l. 257 | "A rougher bed acts through a logarithmic profile, whose surface-to-bed ratio is bounded well below the values obtained here" | resumo: "Near sparse submerged canopies, the bed roughness and near-bed turbulence are enhanced, but the velocity profile remains logarithmic" | Parcial (o limite da razão é inferência do manuscrito) |
 | p. 17, l. 263 | "The reduced flow within a submerged canopy and the faster flow above it are established in laboratory flows" | p. 7, idem l. 31 | OK |
+
+### Nepf e Vivoni 2000
+
+| Manuscrito | Frase | Fonte | Situação |
+| --- | --- | --- | --- |
+| p. 17, l. 263 | "The reduced flow within a submerged canopy and the faster flow above it are established in laboratory flows" | resumo: flume com vegetação modelo; na parte inferior do dossel, "the momentum budget is a simple balance of vegetative drag and pressure gradient", e no topo do dossel submerso aparece uma "vertical exchange zone" com produção de turbulência por cisalhamento | Parcial (o resumo não descreve o perfil de velocidade; Nepf 2012, co-citado, sustenta a frase) |
+
+### Newton et al. 2018
+
+| Manuscrito | Frase | Fonte | Situação |
+| --- | --- | --- | --- |
+| p. 2, l. 1 | "Coastal lagoons occupy roughly 13% of the global shoreline and concentrate fisheries and biodiversity" | resumo: lagunas "support important habitats such as wetlands, mangroves, salt-marshes and seagrass meadows, as well as a rich biodiversity"; p. 1: "Coastal lagoons occur along 13% of the coastlines of all continents"; "economic sectors such as fisheries and aquaculture" | OK |
 
 ### Niedda e Greppi 2007
 
@@ -248,6 +348,24 @@ Legenda de situação:
 | p. 3, l. 35 | "...skill metrics of its own" | resumo: "The Skill Score (SS), based on the Normalized Cumulative Lagrangian Separation [...] is a commonly used metric" | OK |
 | p. 8, l. 156 | "...whose sensitivity to the normalisation in coastal applications is discussed" | título: "Sensitivity of Skill Score Metric to Validate Lagrangian Simulations in Coastal Areas" | OK |
 
+### Suzuki et al. 2012
+
+| Manuscrito | Frase | Fonte | Situação |
+| --- | --- | --- | --- |
+| p. 6, l. 107; S p. 4, S2 | "...as implemented in SWAN by Suzuki et al. (2012)" | resumo: "the implementation of the Mendez and Losada formulation in a full spectrum model SWAN, with an extension to include a vertical layer schematization for the vegetation" | OK |
+
+### Temmerman et al. 2005
+
+| Manuscrito | Frase | Fonte | Situação |
+| --- | --- | --- | --- |
+| p. 17, l. 263 | "...have reproduced the same partition in tidal marshes" | resumo: modelo 3D que inclui "three-dimensional (3-D) effects of vegetation on the flow (drag and turbulence)"; p. 12, §29: "we can distinguish two vertical zones (Figure 4a): (1) within the vegetation canopy, flow velocities are reduced owing to friction; and (2) once the water level exceeds the height of the vegetation canopy, maximum flow velocities are simulated above the canopy" (PDF impresso da página web, lido como imagem) | OK |
+
+### Turschwell et al. 2021
+
+| Manuscrito | Frase | Fonte | Situação |
+| --- | --- | --- | --- |
+| p. 2, l. 11 | "...the most rapid declines are associated with destructive demersal fishing and degraded water quality" | resumo: "Rapidly declining trajectories of seagrass meadow extent (>25% loss from 2000 to 2010) were most strongly associated with high pressures from destructive demersal fishing and poor water quality" | OK (resumo) |
+
 ### Umgiesser et al. 2014
 
 | Manuscrito | Frase | Fonte | Situação |
@@ -258,31 +376,13 @@ Legenda de situação:
 
 | Manuscrito | Frase | Fonte | Situação |
 | --- | --- | --- | --- |
-| p. 2, l. 10 | "Global seagrass extent has fallen in all seven bioregions" | p. 3: "Our analysis included data from all 6 global seagrass bioregions"; resumo: "29% of the known areal extent has disappeared since seagrass areas were initially recorded in 1879" | Parcial (seis biorregiões; os 19,1% são de Dunic) |
+| p. 2, l. 10 | "Global seagrass extent has fallen in all seven bioregions" | p. 3: "Our analysis included data from all 6 global seagrass bioregions"; resumo: "29% of the known areal extent has disappeared since seagrass areas were initially recorded in 1879" | Parcial (seis biorregiões e 29%; as sete biorregiões e os 19,1% vêm de Dunic, co-citado) |
 
-### Referências sem PDF
+### Referência sem PDF
 
-O DOI de cada uma confere com o Crossref em título, ano, volume e páginas. As
-afirmações não foram conferidas no texto.
+O DOI confere com o Crossref em título, ano, volume e páginas. A afirmação não
+foi conferida no texto.
 
 | Referência | Posição | Uso |
 | --- | --- | --- |
-| Kjerfve 1994 | p. 2, l. 1 | Lagunas, pesca e biodiversidade |
-| Dunic et al. 2021 | p. 2, l. 10 | 19,1% da área perdida desde 1880 |
-| Turschwell et al. 2021 | p. 2, l. 10 | Perdas mais rápidas onde há desenvolvimento costeiro |
-| Carniello et al. 2011 | p. 3, l. 32; p. 18, l. 286; p. 19, l. 334 | Ondas, tensão no fundo e ressuspensão em bacias rasas |
-| Morote-Sánchez et al. 2025 | p. 3, l. 32; p. 18, l. 286 | Idem, laguna mediterrânea micromareal |
-| Nepf e Vivoni 2000 | p. 17, l. 263 | Escoamento reduzido no dossel e acelerado acima, em laboratório |
-| Temmerman et al. 2005 | p. 17, l. 263 | Modelo 3D com arrasto de vegetação em marisma |
-| Beudin et al. 2017 | p. 17, l. 263 | Modelo acoplado onda–corrente–vegetação |
-| Luhar e Nepf 2011 | p. 19, l. 322 | Reconfiguração de lâminas flexíveis com a velocidade |
 | Baptist et al. 2007 | p. 7, l. 132; p. 15, l. 236 | Representação da vegetação por rugosidade (trachytope) |
-| Booij et al. 1999 | p. 6, l. 101 | SWAN |
-| Battjes e Stive 1985 | S p. 3, S2 | γ = 0,73 |
-| Bouws e Komen 1983 | S p. 3, S2 | Atrito JONSWAP para mar de vento |
-| Dalrymple et al. 1984 | p. 6, l. 107; S p. 4, S2 | Dissipação por vegetação |
-| Suzuki et al. 2012 | p. 6, l. 107; S p. 4, S2 | Implementação no SWAN |
-| Kernkamp et al. 2011 | p. 6, l. 89 | D-Flow FM |
-| Dagestad et al. 2018 | p. 8, l. 151 | OpenDrift |
-| Mogé 2019 | S p. 2, S1 | Partições e custo de comunicação |
-| Deltares 2025 | S p. 8, S5 | Limite de passo pelos fluxos verticais |
