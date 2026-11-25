@@ -213,9 +213,9 @@ def fig_s3():
     lg = long['d_my'].loc['2023-10-15':].dropna()
     lg = lg[(lg - lg.rolling(15, center=True, min_periods=5).median()).abs() <= 0.3]
     lm = lg.resample('1ME').mean()
-    t = (lg.index - lg.index[0]).days.values
-    slope, icpt = np.polyfit(t, lg.values, 1)
-    print(f'S3b: {len(lg)} days, trend {slope * 365:+.3f} m per year')
+    from plot_marettimo_gauge_record import segments
+    levels, _ = segments(lg)
+    print('S3b levels:', [(str(a.date()), str(b.date()), round(m, 3)) for a, b, m in levels])
 
     fig, axes = plt.subplots(2, 1, figsize=(11, 7.6), gridspec_kw=dict(hspace=0.42))
     for ax, d, m, title in ((axes[0], delta, monthly,
@@ -231,15 +231,19 @@ def fig_s3():
         ax.set_ylabel('Gauge minus CMEMS (m)', color=MUTED)
         ax.set_title(title, loc='left', fontsize=11, color=INK)
         style(ax)
-    axes[1].plot(lg.index, icpt + slope * t, color=BARE, lw=1.6,
-                 label=f'Linear trend, {slope * 365:+.2f} m per year')
+    for k, (a, b, m) in enumerate(levels):
+        axes[1].plot([a, b], [m, m], color=BARE, lw=2.4, solid_capstyle='butt', zorder=5,
+                     label='Piecewise-constant fit' if k == 0 else None)
+        axes[1].text(a + (b - a) / 2, m + 0.025, f'{m:+.3f}', color=BARE, ha='center', fontsize=8.5,
+                     zorder=6, bbox=dict(fc='white', ec='none', alpha=0.7, pad=0.5))
     axes[1].axvspan(pd.Timestamp('2025-01-01'), pd.Timestamp('2026-01-20'), color=CANOPY, alpha=0.05,
                     zorder=0)
     for ax in axes:
         ax.text(pd.Timestamp('2025-07-05'), ax.get_ylim()[1], 'simulated\nwindow', ha='center',
                 va='top', fontsize=8.5, color=MUTED)
     axes[0].legend(fontsize=9, frameon=False, loc='lower center', bbox_to_anchor=(0.5, 1.07), ncol=3)
-    axes[1].legend(handles=[axes[1].get_lines()[-1]], fontsize=9, frameon=False, loc='lower right')
+    axes[1].legend(handles=[h for h in axes[1].get_lines() if h.get_label() == 'Piecewise-constant fit'],
+                   fontsize=9, frameon=False, loc='lower right')
     save(fig, 'figS3')
 
 
