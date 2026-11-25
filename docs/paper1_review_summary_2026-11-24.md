@@ -17,7 +17,7 @@ and the title names those two factors.
 
 | Part | 12 November | 24 November |
 |---|---|---|
-| Body, sections 1 to 6 (words) | 7978 | 5017 |
+| Body, sections 1 to 6 (words) | 7978 | 4797 |
 | Abstract (words) | 250 | 245 |
 | Figures in the body | 9 | 6 |
 | Tables in the body | 3 | 5 |
@@ -27,18 +27,19 @@ The body count excludes floats, mathematics and comments.
 
 | Section | 12 November | 24 November |
 |---|---|---|
-| 1 Introduction | 761 | 743 |
-| 2 Study area | 592 | 595 |
+| 1 Introduction | 761 | 591 |
+| 2 Study area | 592 | 499 |
 | 3 Data and methods | 2115 | 1210 |
 | 4 Results | 2270 | 991 |
-| 5 Discussion | 1725 | 1190 |
-| 6 Conclusions | 515 | 288 |
+| 5 Discussion | 1725 | 1219 |
+| 6 Conclusions | 515 | 287 |
 
-The Introduction and Study Area keep the text of 12 November, with the bed
-mobility removed from the aspects, the design and the objectives. Data and
-Methods leaves to the Supplementary Material the details it already gives in
-full, the body figures float instead of being held in place, and Results begin
-at the top of page 11 of the review-format PDF.
+The Introduction states the open problem as what earlier models of the
+Stagnone did not represent and gives the objectives in one sentence, and facts
+about the basin appear only in the Study Area. Every reference of 12 November
+is kept. Data and Methods leaves to the Supplementary Material the details it
+already gives in full, the body figures float instead of being held in place,
+and Results begin on page 10 of the review-format PDF.
 
 Removed with the mobile bed are the silt parameter sets, the restart segments
 that traced the mobile-bed gain, the Sentinel-2 comparison (body Figure 9,
@@ -123,6 +124,21 @@ the local velocity in the three-dimensional solver, the canopy in both models in
 every vegetated member, and a mobile bed once bed change and turbidity are
 observed in the lagoon. The Conclusions answer the three objectives with
 numbers and close on one quantified statement.
+
+## Citations checked against their sources
+
+Every citing sentence was read against the source PDF, and every DOI against
+Crossref ([`paper1_citation_map.md`](paper1_citation_map.md)). Two DOIs
+resolved to other papers (Carrasco et al. 2016 and Ciraolo et al. 2006) and
+are corrected, as is the first name of Ingrassia et al. (2024). In the text,
+the lagoon area is about 20 km² (La Loggia et al. 2004), the 2200 ha of Ciraolo
+and De Marchis (2009) being the natural reserve; the tide is given as an
+excursion of 0.30 m; Santa Maria lies in the north and the atolls in the
+northern sub-basin; wind adds to exchange in lagoons with more than one inlet
+(Umgiesser et al. 2014); and Liu and Weisberg (2011) and Révelard et al. (2021)
+are no longer cited for the claim that water level constrains transport
+weakly, which they do not make. The parameters of *P. oceanica* are described
+as coming from flume experiments with artificial plants.
 
 ## Figure S3 and the Marettimo anchor
 
