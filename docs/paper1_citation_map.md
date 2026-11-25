@@ -84,15 +84,10 @@ Legenda de situação:
      volume 12 é de 2012. O `.bib` mantém 2012, o ano do volume.
 4. **Conferidos só pelo resumo:** Dunic 2021, Turschwell 2021, Nepf e Vivoni
    2000, Luhar e Nepf 2011 e Booij 1999.
-5. **Conferidos por fonte secundária:**
-   - Battjes e Stive 1985 não está na pasta: o arquivo
-     `BattjesStive1985_...pdf` contém Battjes e Janssen 1978. O γ = 0,73 foi
-     conferido na documentação técnica do SWAN, que o atribui a Battjes e Stive.
-   - Baptist et al. 2007 não está na pasta. O manual do usuário do D-Flow FM
-     atribui as fórmulas de trachytope 153 e 154 a Baptist, mas cita a tese de
-     doutorado (Baptist 2005, *Modelling floodplain biogeomorphology*, TU Delft),
-     não o artigo de 2007. A tese foi baixada e contém a fórmula (eq. 4.143).
-     Ver a entrada de Baptist abaixo.
+5. **Conferido por fonte secundária:** Battjes e Stive 1985 não está na
+   pasta (o arquivo `BattjesStive1985_...pdf` contém Battjes e Janssen 1978). O
+   γ = 0,73 foi conferido na documentação técnica do SWAN, que o atribui a
+   Battjes e Stive.
 
 ## Por referência
 
@@ -385,27 +380,22 @@ Legenda de situação:
 
 ### Baptist et al. 2007
 
-Sem PDF. O DOI confere com o Crossref em título, ano, volume e páginas. A
-conferência abaixo usa o manual do usuário do D-Flow FM que vem com a instalação
-(`bin/D-Flow_FM_User_Manual.pdf`, versão 2025, revisão 80596).
+PDF em `reference/papers/Baptist_etal2007EquationsforvegetationresistanceJHR.pdf`.
+As páginas são as do periódico (J. Hydraul. Res. 45(4), 435–450).
 
 | Manuscrito | Frase | Fonte | Situação |
 | --- | --- | --- | --- |
-| p. 7, l. 132 | "The bed-roughness representation of vegetation (Baptist et al., 2007) [...] was not used, since a roughness acts at the bed" | manual do usuário, p. 236: tabela das fórmulas de trachytope, "FormNr 151 152 153 154 [...] Baptist 1 Baptist 2", "two on the work by Baptist (2005)"; p. 238: "The first implementation of the roughness predictor by Baptist (Baptist, 2005)"; "Both formulae by Baptist require vegetation height hv, density n, drag coefficient CD and alluvial bed roughness Cb" | Parcial (o manual cita a tese de 2005, não o artigo de 2007) |
-| p. 15, l. 236 | "...through the trachytope formulation of Baptist et al. (2007)" | idem; manual técnico, p. 154: "The second implementation of the Baptist vegetation formula (154) splits its effect over the bed roughness term and a flow resistance term" | Parcial (idem) |
+| p. 7, l. 132 | "The bed-roughness representation of vegetation (Baptist et al., 2007) [...] was not used, since a roughness acts at the bed" | p. 444, eq. 74: Cr = (1/Cb² + CD m D k/2g)^(-1/2) + (√g/κ) ln(h/k), um Chézy representativo que soma a resistência do fluxo dentro da vegetação ao perfil logarítmico acima dela; p. 435: "the description of vegetation-induced roughness" | OK |
+| p. 15, l. 236 | "...through the trachytope formulation of Baptist et al. (2007)" | eq. 74, como acima; o manual do usuário do D-Flow FM (versão 2025, revisão 80596) implementa essa expressão como eq. 13.32, fórmula de trachytope 153 (p. 236–238), e o manual técnico descreve a segunda implementação, a 154 (p. 154) | OK |
 
-A tese de 2005 é a referência do manual para a fórmula e foi conferida
+O manual do D-Flow FM atribui as fórmulas 153 e 154 à tese de Baptist (2005),
+*Modelling floodplain biogeomorphology*, TU Delft, que também foi conferida
 (`reference/papers/Baptist2005_PhDthesis_floodplainBiogeomorphology.pdf`). A
-§4.6.8 (p. 74–75 da tese) deduz a rugosidade representativa da vegetação
-submersa por programação genética, a partir de Rodríguez Uthurburu (2004), e
-chega à eq. 4.143, Cr = (Cb⁻² + CD m D k / 2g)^(-1/2) + (√g/κ) ln(h/k). É a
-mesma expressão da eq. 13.32 do manual do usuário (fórmula 153). O artigo de
-2007 tem Babovic e Rodríguez Uthurburu entre os coautores e trata da mesma
-dedução por programação genética, mas o texto dele não foi conferido.
+eq. 4.143 da tese (§4.6.8) é a eq. 74 do artigo, e as duas derivam do mesmo
+trabalho de programação genética de Rodríguez Uthurburu (2004), coautor do
+artigo. Citar o artigo de 2007 é consistente com o manual.
 
-A tese não tem DOI: não aparece no Crossref nem na DataCite. Identificadores:
-ISBN 90-407-2582-9 (página de créditos da tese) e
+A tese não tem DOI (não aparece no Crossref nem na DataCite). Identificadores:
+ISBN 90-407-2582-9 e
 https://resolver.tudelft.nl/uuid:b2739720-e2f6-40e2-b55f-1560f434cbee. O
-registro uuid:c79bd6f3-… do mesmo repositório está fora do ar (HTTP 403). A
-edição comercial (Delft Hydraulics Select Series 5/2005, DUP Science) tem ISBN
-90-407-2583-7.
+registro uuid:c79bd6f3-… do mesmo repositório está fora do ar (HTTP 403).
