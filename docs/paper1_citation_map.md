@@ -75,11 +75,16 @@ Legenda de situação:
      tempestades. O "waves govern bed stress and sediment resuspension" virou
      "wind waves set the bed stress over the flats and resuspend sediment during
      storms", que cobre Carniello (planícies de maré) e Morote (tempestades).
-3. **Ainda em aberto.**
+3. **Decisões registradas.**
    - §5.1 (p. 17, l. 257): Nepf 2012 sustenta que o perfil sobre leito rugoso
-     ou dossel esparso continua logarítmico. O limite da razão
-     superfície/fundo "well below the values obtained here" é inferência do
-     manuscrito, não de Nepf.
+     continua logarítmico. A frase dizia que esse perfil limita a razão
+     superfície/fundo "well below the values obtained here", o que Nepf não
+     afirma e o que nem vale em geral (num perfil logarítmico a razão cresce sem
+     limite quando a altura de rugosidade se aproxima da altura da camada de
+     fundo). A frase agora apresenta só a forma do perfil como inferência
+     ("from which it follows that an equivalent roughness retards the column
+     through a single profile anchored at the bed, with no layer of reduced flow
+     beneath faster flow"), sem limite numérico.
    - De Marchis et al. 2012: o Crossref registra 2011 (publicação online), e o
      volume 12 é de 2012. O `.bib` mantém 2012, o ano do volume.
 4. **Conferidos só pelo resumo:** Dunic 2021, Turschwell 2021, Nepf e Vivoni
@@ -311,7 +316,7 @@ Legenda de situação:
 | p. 2, l. 7 | "...a drag that modifies near-bed turbulence and the vertical velocity structure" | p. 4: "the production of turbulence by the canopy exceeds the production by the bed shear over most of the flow depth" | OK |
 | p. 3, l. 31 | "...acts on the shape of the velocity profile as well as on its magnitude" | p. 7: "the velocity within the canopy is always less than that over a bare bed" | OK |
 | p. 7, l. 125 | "...drag per unit volume in the quadratic form of Nepf (2012)" | p. 3: "often represented by a quadratic drag law" | OK |
-| p. 17, l. 257 | "A rougher bed acts through a logarithmic profile, whose surface-to-bed ratio is bounded well below the values obtained here" | resumo: "Near sparse submerged canopies, the bed roughness and near-bed turbulence are enhanced, but the velocity profile remains logarithmic" | Parcial (o limite da razão é inferência do manuscrito) |
+| p. 17, l. 257 | "Over a rough bed the velocity profile remains logarithmic, from which it follows that an equivalent roughness retards the column through a single profile anchored at the bed" | resumo: "Near sparse submerged canopies, the bed roughness and near-bed turbulence are enhanced, but the velocity profile remains logarithmic" | OK (a fonte sustenta a premissa; a consequência está escrita como inferência) |
 | p. 17, l. 263 | "The reduced flow within a submerged canopy and the faster flow above it are established in laboratory flows" | p. 7, idem l. 31 | OK |
 
 ### Nepf e Vivoni 2000
