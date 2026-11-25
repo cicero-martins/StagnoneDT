@@ -104,9 +104,13 @@ where the Courant limit binds. Initial conditions were ramped over the first
 hour.
 
 The domain was decomposed into eight partitions and run under MPI. Eight
-partitions leave about 3000 cells each, above the few thousand below which the
-communication cost of the parallel solver begins to dominate for meshes of this
-size \citep{Moge2019}. All members were run on the same 48-core Linux server
+partitions leave about 3000 horizontal cells each, or about 30\,000 over the
+ten layers, which is above the 25\,000 cells per partition that
+\citet{Moge2019} give as a rule of thumb for good parallel efficiency of D-Flow
+FM, counted over the layers as in their three-dimensional test cases. The
+water-level system is solved per horizontal cell, and at about 3000 unknowns
+per partition it lies below the 20\,000 under which they report that the linear
+solver stops scaling. All members were run on the same 48-core Linux server
 with the same decomposition, where a coupled nine-day member completed in four
 and a half to six hours of wall-clock time and an uncoupled member in under
 three.
