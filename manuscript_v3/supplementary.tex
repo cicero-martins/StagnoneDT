@@ -128,11 +128,13 @@ settings and their grounds.
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{figS2}
-  \caption{SWAN computational grids over the hydrodynamic mesh, in grey. (a)
-  Outer grid of $69 \times 54$ points and inner grid of $121 \times 221$
-  points nested over the lagoon, with every fourth line of the outer grid and
-  every tenth line of the inner grid drawn. (b) Lagoon and inlets, with every
-  line of the inner grid drawn.}
+  \caption{SWAN computational grids over the water faces of the hydrodynamic
+  mesh. (a) Outer grid of $69 \times 54$ points and inner grid of
+  $121 \times 221$ points nested over the lagoon, with every fourth line of
+  the outer grid and every tenth line of the inner grid drawn. (b) The inner
+  grid with every fifth line drawn. (c) The North Mouth, with every line of
+  the inner grid over the faces of the hydrodynamic mesh. The red boxes give
+  the extent of the next panel.}
   \label{fig:s_swan}
 \end{figure}
 
@@ -209,38 +211,28 @@ the CMEMS rest-state reference the remaining $-0.358$~m. The monthly means of
 that difference range from $+0.361$ to $+0.505$~m, so a residual of about
 0.07~m either side of the annual value is not removed by a constant anchor,
 which bounds the accuracy of the reference level the model can be held to
-(Fig.~\ref{fig:s_offset}a).
+(Fig.~\ref{fig:s_offset}).
 
-The analysis-forecast product starts in November 2024, so the record before
-2025 was compared with the MED reanalysis, shifted by $+0.060$~m, the mean
-difference between the two products over the 385 days on which both exist,
-with a standard deviation of 0.041~m. The gauge drifted by several decimetres
-in the first half of 2023, stopped recording valid levels in August and
-September 2023, and from October 2023 the difference holds at a succession of
-levels (Fig.~\ref{fig:s_offset}b), $+0.29$~m to 1~October 2024, $+0.41$ and
-then $+0.34$~m after an intervention on the instrument on that date, and
-$+0.46$~m from February 2025, with a transition of about three weeks and a
-trend of $+0.036$~m per year thereafter. The lower values of January and
-February 2025 therefore belong mainly to the preceding level, the same months
-of 2024 lying 0.03 and 0.05~m below their own. A longer averaging period would
-mix the levels of a gauge whose datum has not been held, and the anchor is
-taken over the year that contains the simulation. Over the simulated window
-the difference is $+0.469$~m, 0.020~m above the anchor, and confined to the
-last level, from 11~February 2025, the anchor would be $+0.461$~m.
+The gauge record before 2025 was not used, since it contains a sensor fault in
+August and September 2023 and changes of level that follow interventions on
+the instrument, and the anchor is restricted to the year that contains the
+simulation. Over that year the gauge held its datum against the three lagoon
+gauges, which record from 12~April 2025. The daily difference between
+Marettimo and each of them varies with a standard deviation of about 0.025~m
+in monthly mean, with no step and with trends of $-0.043$ to $+0.036$~m per
+year that differ in sign between stations. Anchors taken over parts of the
+year lie between $+0.449$ and $+0.464$~m, the latter from March 2025, and the
+difference over the simulated window is $+0.469$~m, all within the residual
+stated above.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{figS3}
   \caption{Difference between the water level at the Marettimo gauge and the
-  CMEMS sea surface height interpolated to the gauge, as daily and monthly
-  means. (a) The analysis-forecast product over the 384 aligned days, whose
-  mean of $+0.449$~m is the anchor of the boundary offset. (b) The reanalysis,
-  shifted onto the level of the analysis-forecast product, from the end of the
-  gauge fault of 2023 to January 2026, with the levels of a piecewise-constant
-  fit and the 384 days of (a) shaded. Days departing from a 15-day running median by more than 0.3~m,
-  spikes of the raw record, are omitted. The horizontal band spans 0.07~m
-  either side of the anchor, and the narrow vertical band marks the simulated
-  window.}
+  CMEMS sea surface height interpolated to the gauge, as daily means over the
+  384 aligned days, with the monthly means and the mean of $+0.449$~m taken as
+  the anchor of the boundary offset. The horizontal band spans 0.07~m either
+  side of the anchor, and the vertical band marks the simulated window.}
   \label{fig:s_offset}
 \end{figure}
 

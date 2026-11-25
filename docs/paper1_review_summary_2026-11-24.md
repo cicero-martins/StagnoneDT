@@ -132,10 +132,40 @@ record after 19 January 2026), and over the simulated window the difference is
 +0.469 m. The full record is in
 [`marettimo_gauge_record_2023_2026.md`](marettimo_gauge_record_2023_2026.md).
 
-Figure S3 now has two panels, (a) the 384 days of the anchor as before and (b)
-the reanalysis-based difference from October 2023 to January 2026 with the
-levels of a piecewise-constant fit, and Section S3 states the comparison, the
-fault and the levels.
+Over the year of the anchor, the gauge was also compared with the three lagoon
+gauges, which record from 12 April 2025
+(`check_marettimo_vs_lagoon_gauges.py`). Each lagoon gauge has its own local
+datum, so a steady difference indicates that neither instrument moved.
+
+| Marettimo minus | Days | Trend (m per year) | Std of monthly means (m) |
+|---|---|---|---|
+| North Mouth | 279 | +0.036 | 0.025 |
+| South Mouth | 283 | −0.015 | 0.025 |
+| AltaVilaEst | 281 | −0.043 | 0.027 |
+
+No step appears and the trends differ in sign, so Marettimo held its datum
+from April 2025 to January 2026, the period that contains the simulation. The
+change of February 2025 precedes the lagoon records and remains without an
+independent check.
+
+In the manuscript, Figure S3 keeps the 384 days of the anchor, and Section S3
+states that the record before 2025 was not used because of the fault of 2023
+and the changes of level that follow interventions on the instrument, gives
+the comparison with the lagoon gauges, and bounds the anchor by the values
+over parts of 2025, +0.449 to +0.464 m, and over the simulated window,
++0.469 m, all within the residual of 0.07 m. The full record stays in the
+document above rather than in the Supplementary Material. The word "seasonal"
+leaves the residual of Section 3.3, since the residual is not shown to be
+seasonal.
+
+## Figure S2
+
+Panel (b) drew every line of the inner SWAN grid over the lagoon window, which
+cut the grid and filled the lagoon with lines. The figure now has three panels:
+(a) the whole domain as before, (b) the whole inner grid at every fifth line,
+and (c) the North Mouth with every inner line over the faces of the flow mesh,
+where the two resolutions can be compared cell by cell. Water faces are drawn
+in pale blue, land in white.
 
 ## Other corrections
 
