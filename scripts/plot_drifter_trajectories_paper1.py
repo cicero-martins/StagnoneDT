@@ -56,14 +56,30 @@ if SUFFIX:
 else:
     MEMBERS = [('v04AE', 'Bare (W-M)', '#eb6834'),
                ('v04AE_veg_waves_dm', 'Canopy (WVM)', '#4a3aa7')]
+# The supplementary version draws every member of the fixed-bed design and the
+# member with the canopy also in SWAN, as (tag, label, colour, line style).
+# Colour carries the canopy and line style the wave treatment, as in Figure 4.
+MEMBERS_ALL = [
+    (TAG.get('nowaves'), '--', '#eb6834', (0, (3, 1.6))),
+    (TAG.get('nodm'), 'W-', '#eb6834', '-'),
+    (TAG.get('nowaves_veg'), '-V', '#4a3aa7', (0, (3, 1.6))),
+    (TAG.get('nodm_veg'), 'WV', '#4a3aa7', '-'),
+    ('arm_vwf_swan', 'WV$^{\\mathrm{s}}$', '#9b8fd9', (0, (1, 1.2))),
+]
+# The deployments of the body figure. 1 and 2 show the bare member falling
+# short of the observed path, 5 a case in which the bare member ends nearer the
+# observed endpoint, and 9 and 11 the southward drift that both members follow.
+SELECTED = [1, 2, 5, 9, 11]
 PAD_FRAC = 0.16
+# Deployment 1 ends against the eastern shore, which the tight panel cut off.
+PAD_EXTRA = {1: 0.55}
 # The locator panel: the central lagoon, where every release lies.
 LOCATOR = dict(lon=(12.428, 12.497), lat=(37.838, 37.912))
 # Label offsets in points. Releases 1, 5 and 6 lie within 150 m of one another,
 # as do 3 and 10, so the labels are placed by hand rather than by a rule.
 LABEL_AT = {1: (4, -10), 2: (9, -3), 3: (9, -4), 4: (-9, 0), 5: (-9, -4),
             6: (-9, 4), 7: (0, 9), 8: (-9, 0), 9: (-9, 0), 10: (-9, 5),
-            11: (9, 0), 12: (0, 9)}
+            11: (10, 5), 12: (0, 9)}
 
 
 def parse_ldb(path):
@@ -137,8 +153,10 @@ def clip_track(sim, dep, did, t0, t1):
     return s[s.time >= start]
 
 
-def locator(ax, obs, land, coast):
-    """Every observed track in grey and every release numbered."""
+def locator(ax, obs, land, coast, deps=None):
+    """Observed tracks in grey and releases numbered, for the deployments given."""
+    if deps is not None:
+        obs = obs[obs.deploy.isin(deps)]
     for p in land:
         ax.fill(p[:, 0], p[:, 1], color=LAND, ec='none', zorder=1)
     for p in coast:
@@ -169,12 +187,90 @@ def locator(ax, obs, land, coast):
         s_.set_color(GRID)
 
 
+def draw_panel(ax, dep, did, obs, sims, members, land, coast):
+    """One deployment: the observed track of drifter did and the members given.
+
+    members is a list of (tag, label, colour, line style).
+    """
+    o = obs[(obs.deploy == dep) & (obs.source == did)].sort_values('time')
+    t0, t1 = o.time.min(), o.time.max()
+    tracks = {m[0]: clip_track(sims[m[0]], dep, did, t0, t1) for m in members}
+
+    xs = [o.lon.values] + [g.lon.values for g in tracks.values() if len(g) > 1]
+    ys = [o.lat.values] + [g.lat.values for g in tracks.values() if len(g) > 1]
+    lo, la = np.concatenate(xs), np.concatenate(ys)
+    cx, cy = (lo.min() + lo.max()) / 2, (la.min() + la.max()) / 2
+    asp = 1.0 / np.cos(np.radians(cy))
+    half = max((lo.max() - lo.min()) / 2,
+               (la.max() - la.min()) * asp / 2) * (1 + PAD_FRAC + PAD_EXTRA.get(dep, 0.0))
+    ax.set_xlim(cx - half, cx + half)
+    ax.set_ylim(cy - half / asp, cy + half / asp)
+
+    for p in land:
+        ax.fill(p[:, 0], p[:, 1], color=LAND, ec='none', zorder=1)
+    for p in coast:
+        ax.plot(p[:, 0], p[:, 1], '-', color=LAND_EDGE, lw=0.5, zorder=2)
+
+    ax.plot(o.lon, o.lat, '-', color=INK, lw=2.6, zorder=6, solid_capstyle='round')
+    for z, (k, _, col, ls) in enumerate(members, start=4):
+        g = tracks[k]
+        if len(g) < 2:
+            continue
+        ax.plot(g.lon, g.lat, color=col, ls=ls, lw=2.0, zorder=z / 10 + 4,
+                alpha=0.95, solid_capstyle='round')
+        ax.plot(g.lon.iloc[-1], g.lat.iloc[-1], 's', ms=6, mfc=col,
+                mec='white', mew=1.2, zorder=z / 10 + 7)
+    ax.plot(o.lon.iloc[0], o.lat.iloc[0], 'o', ms=7, mfc='white', mec=INK,
+            mew=1.8, zorder=9)
+    ax.plot(o.lon.iloc[-1], o.lat.iloc[-1], 's', ms=6.5, mfc=INK,
+            mec='white', mew=1.2, zorder=9)
+
+    # panel extents differ by an order of magnitude across deployments,
+    # 0.4 h against 7.2 h, so a fixed bar runs off the short ones
+    span = hav(cx - half, cy, cx + half, cy)
+    bar = max([b for b in (50, 100, 200, 500, 1000) if b <= 0.40 * span],
+              default=50)
+    fr = bar / span
+    x0, y0 = cx - half * 0.90, cy + half / asp * 0.87
+    ax.plot([x0, x0 + fr * 2 * half], [y0, y0], '-', color=INK, lw=1.8,
+            zorder=9, solid_capstyle='butt')
+    ax.text(x0 + fr * half, y0, f'{bar} m', fontsize=7, color=INK,
+            ha='center', va='bottom', zorder=9)
+    hrs = (t1 - t0).total_seconds() / 3600
+    ax.set_title(f'Deployment {dep}   ({hrs:.1f} h)', loc='left',
+                 fontsize=9.5, color=INK, pad=4)
+    ax.set_xticks([]); ax.set_yticks([])
+    ax.set_facecolor(SURFACE)
+    # the unclipped Sicily coastline in every panel made the PDF 8 MB;
+    # land and coast are rasterised, the tracks stay vector
+    ax.set_rasterization_zorder(3)
+    for s_ in ax.spines.values():
+        s_.set_color(GRID)
+
+
+def legend(fig, members, ncol, y):
+    h = [Line2D([], [], color=INK, lw=2.6, label='Observed')]
+    h += [Line2D([], [], color=c, ls=ls, lw=2.0, label=l) for _, l, c, ls in members]
+    h += [Line2D([], [], ls='none', marker='o', mfc='white', mec=INK, mew=1.8,
+                 ms=7, label='Release'),
+          Line2D([], [], ls='none', marker='s', mfc=MUTED, mec='white', mew=1.2,
+                 ms=6.5, label='End of scored window')]
+    fig.legend(handles=h, loc='lower center', ncol=ncol, frameon=False,
+               fontsize=9, bbox_to_anchor=(0.5, y))
+
+
+def save(fig, name):
+    for ext in ('png', 'pdf'):
+        p = FIG / f'{name}.{ext}'
+        fig.savefig(p, bbox_inches='tight', facecolor=SURFACE)
+        print(f'wrote {p}')
+    plt.close(fig)
+
+
 def main():
     mpl.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 9})
 
     obs = pd.read_csv(PROC / 'drifter_tracks_Jul2025.csv', parse_dates=['time'])
-    sims = {k: pd.read_csv(PROC / f'drifter_sim_{k}.csv', parse_dates=['time'])
-            for k, _, _ in MEMBERS}
     full = pd.read_csv(PROC / f'drifter_metrics_{MEMBERS[-1][0]}.csv')
     deploys = sorted(full.deploy.unique())
 
@@ -182,90 +278,38 @@ def main():
     land += parse_ldb(MODEL / 'sicily2.ldb')
     coast = split_long_segments(land)
 
-    # The co-author could not place deployments 3 and 4 from their own panels,
-    # whose extents are a few hundred metres. A locator panel on the left
-    # numbers every release on the lagoon, and each panel keeps its number.
-    fig = plt.figure(figsize=(14.6, 8.8), dpi=300)
+    # Body figure: the five deployments of SELECTED and the wave-coupled pair
+    # that differs only in the canopy, with a locator panel in the first cell.
+    pair = [(k, l, c, '-') for k, l, c in MEMBERS]
+    tags = {m[0] for m in pair}
+    if SUFFIX:
+        tags |= {m[0] for m in MEMBERS_ALL}
+    sims = {k: pd.read_csv(PROC / f'drifter_sim_{k}.csv', parse_dates=['time'])
+            for k in tags}
+
+    fig, axes = plt.subplots(2, 3, figsize=(11.6, 8.4), dpi=300)
     fig.patch.set_facecolor(SURFACE)
-    gs = fig.add_gridspec(3, 5, width_ratios=[1.55, 1, 1, 1, 1])
-    axes = np.array([[fig.add_subplot(gs[r, c + 1]) for c in range(4)]
-                     for r in range(3)])
-    locator(fig.add_subplot(gs[:, 0]), obs, land, coast)
+    locator(axes[0, 0], obs, land, coast, deps=SELECTED)
+    for ax, dep in zip(axes.ravel()[1:], SELECTED):
+        draw_panel(ax, dep, pick_drifter(full, dep), obs, sims, pair, land, coast)
+    legend(fig, pair, 5, -0.012)
+    fig.subplots_adjust(left=0.012, right=0.988, top=0.965, bottom=0.06,
+                        wspace=0.06, hspace=0.14)
+    save(fig, 'drifter_trajectories')
 
+    if not SUFFIX:
+        return
+    # Supplementary figure: every deployment and every member. The drifter is
+    # the same as in the body figure, the median-skill drifter under WV.
+    fig, axes = plt.subplots(3, 4, figsize=(14.0, 11.2), dpi=300)
+    fig.patch.set_facecolor(SURFACE)
     for ax, dep in zip(axes.ravel(), deploys):
-        did = pick_drifter(full, dep)
-        o = obs[(obs.deploy == dep) & (obs.source == did)].sort_values('time')
-        t0, t1 = o.time.min(), o.time.max()
-        tracks = {k: clip_track(sims[k], dep, did, t0, t1)
-                  for k, _, _ in MEMBERS}
-
-        xs = [o.lon.values] + [g.lon.values for g in tracks.values() if len(g) > 1]
-        ys = [o.lat.values] + [g.lat.values for g in tracks.values() if len(g) > 1]
-        lo, la = np.concatenate(xs), np.concatenate(ys)
-        cx, cy = (lo.min() + lo.max()) / 2, (la.min() + la.max()) / 2
-        asp = 1.0 / np.cos(np.radians(cy))
-        half = max((lo.max() - lo.min()) / 2,
-                   (la.max() - la.min()) * asp / 2) * (1 + PAD_FRAC)
-        ax.set_xlim(cx - half, cx + half)
-        ax.set_ylim(cy - half / asp, cy + half / asp)
-
-        for p in land:
-            ax.fill(p[:, 0], p[:, 1], color=LAND, ec='none', zorder=1)
-        for p in coast:
-            ax.plot(p[:, 0], p[:, 1], '-', color=LAND_EDGE, lw=0.5, zorder=2)
-
-        ax.plot(o.lon, o.lat, '-', color=INK, lw=2.6, zorder=6,
-                solid_capstyle='round')
-        for (k, _, col), z in zip(MEMBERS, (4, 5)):
-            g = tracks[k]
-            if len(g) < 2:
-                continue
-            ax.plot(g.lon, g.lat, '-', color=col, lw=2.0, zorder=z, alpha=0.95,
-                    solid_capstyle='round')
-            ax.plot(g.lon.iloc[-1], g.lat.iloc[-1], 's', ms=6, mfc=col,
-                    mec='white', mew=1.2, zorder=z + 3)
-        ax.plot(o.lon.iloc[0], o.lat.iloc[0], 'o', ms=7, mfc='white', mec=INK,
-                mew=1.8, zorder=9)
-        ax.plot(o.lon.iloc[-1], o.lat.iloc[-1], 's', ms=6.5, mfc=INK,
-                mec='white', mew=1.2, zorder=9)
-
-        # panel extents differ by an order of magnitude across deployments,
-        # 0.4 h against 7.2 h, so a fixed bar runs off the short ones
-        span = hav(cx - half, cy, cx + half, cy)
-        bar = max([b for b in (50, 100, 200, 500, 1000) if b <= 0.40 * span],
-                  default=50)
-        fr = bar / span
-        x0, y0 = cx - half * 0.90, cy + half / asp * 0.87
-        ax.plot([x0, x0 + fr * 2 * half], [y0, y0], '-', color=INK, lw=1.8,
-                zorder=9, solid_capstyle='butt')
-        ax.text(x0 + fr * half, y0, f'{bar} m', fontsize=7, color=INK,
-                ha='center', va='bottom', zorder=9)
-        hrs = (t1 - t0).total_seconds() / 3600
-        ax.set_title(f'Deployment {dep}   ({hrs:.1f} h)', loc='left',
-                     fontsize=9.5, color=INK, pad=4)
-        ax.set_xticks([]); ax.set_yticks([])
-        ax.set_facecolor(SURFACE)
-        # the unclipped Sicily coastline in every panel made the PDF 8 MB;
-        # land and coast are rasterised, the tracks stay vector
-        ax.set_rasterization_zorder(3)
-        for s_ in ax.spines.values():
-            s_.set_color(GRID)
-
-    h = [Line2D([], [], color=INK, lw=2.6, label='Observed')]
-    h += [Line2D([], [], color=c, lw=2.0, label=l) for _, l, c in MEMBERS]
-    h += [Line2D([], [], ls='none', marker='o', mfc='white', mec=INK, mew=1.8,
-                 ms=7, label='Release'),
-          Line2D([], [], ls='none', marker='s', mfc=MUTED, mec='white', mew=1.2,
-                 ms=6.5, label='End of scored window')]
-    fig.legend(handles=h, loc='lower center', ncol=5, frameon=False,
-               fontsize=9, bbox_to_anchor=(0.5, -0.012))
+        draw_panel(ax, dep, pick_drifter(full, dep), obs, sims, MEMBERS_ALL,
+                   land, coast)
+    legend(fig, MEMBERS_ALL, 8, -0.008)
     fig.subplots_adjust(left=0.012, right=0.988, top=0.965, bottom=0.05,
-                        wspace=0.06, hspace=0.16)
-    for ext in ('png', 'pdf'):
-        p = FIG / f'drifter_trajectories.{ext}'
-        fig.savefig(p, bbox_inches='tight', facecolor=SURFACE)
-        print(f'wrote {p}')
-    plt.close(fig)
+                        wspace=0.06, hspace=0.14)
+    save(fig, 'drifter_trajectories_all')
 
 
 if __name__ == '__main__':

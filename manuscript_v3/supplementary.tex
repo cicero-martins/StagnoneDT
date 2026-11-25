@@ -402,7 +402,7 @@ on the server, with all 35 drifters worse. Under a limit of 0.5 the same
 comparison gave $+0.002 \pm 0.001$ on the present mesh and no difference on the
 60~m quadtree mesh.
 
-\section{Restart segments and deployment 4}
+\section{Restart segments and drifter trajectories}
 \label{sec:s_extra}
 
 A segment of the uncoupled bare member, restarted on 7~July from the uniform
@@ -410,6 +410,27 @@ start without any other change, reproduces the continuous member. At
 AltaVilaEst its anomaly RMSE is 0.0508~m against 0.0510~m, with a correlation
 of 0.82 in both, the other two stations agree within 0.4~mm, and its
 Liu--Weisberg skill is 0.540 against 0.539.
+
+The tracks of every member in each of the twelve deployments are given in
+Figure~\ref{fig:s_tracks}, for the median-skill drifter of each deployment
+under \texttt{WV}, the drifter drawn in Figure~5 of the main text. In most
+deployments the three vegetated members end close to one another, as do the
+two bare members, and the separation between the two groups exceeds that
+within each.
+
+%% Produced by scripts/plot_drifter_trajectories_paper1.py
+%% (STAGNONE_ENSEMBLE=ic3d STAGNONE_BED=fixed), drifter_trajectories_all
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figS_tracks}
+  \caption{Observed and simulated trajectories in the twelve deployments, for
+  the four members of the factorial and \texttt{WV}$^{\mathrm{s}}$. Colour
+  gives the canopy treatment and line style the wave treatment, the dotted line
+  marking \texttt{WV}$^{\mathrm{s}}$. Circles mark the release and squares the
+  end of the scored window, each track being clipped to the interval its
+  drifter was in the water. Each panel carries its own scale bar.}
+  \label{fig:s_tracks}
+\end{figure}
 
 Deployment 4 is the one deployment that argues against the canopy, its bare
 members scoring 0.68 and 0.69 against 0.48 and 0.50 for its vegetated ones. It is also a sampling outlier, 0.4~hours in the water over 162~m of
