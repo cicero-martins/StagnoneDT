@@ -1,103 +1,120 @@
 \section{Discussion}
 \label{sec:discussion}
 
-\subsection{Vertical placement of the canopy drag}
+\subsection{Canopy drag and Lagrangian transport}
 
-Of the two processes examined, the seagrass canopy controls transport in this
-basin, with an effect about five times that of wave coupling and the same under
-both wave treatments. The mechanism the model offers is vertical rather than
-frictional, since introducing the canopy removes momentum from the lower part
-of the water column without removing a proportionate amount from the upper
-part, more than doubling the ratio of surface to bed speed. Such a profile is
-the signature of a canopy shear layer rather than of a rougher bed, which acts
-through a logarithmic profile whose surface-to-bed ratio is bounded well below
-the value obtained here \citep{Nepf2012}, and the bed shear stress confirms the
-distinction by its sign, falling under the canopy where an equivalent bed
-roughness raises it over the same cells. A surface drifter samples the top of
-that profile, so a treatment that reshapes the profile relocates the drifter
-even where it changes the depth-averaged transport little.
+Of the two processes examined, the seagrass canopy controls Lagrangian
+transport in this basin, raising Liu--Weisberg skill by 0.114 to 0.120, about
+five times the effect of wave coupling and by the same amount under both wave
+treatments. The model places the mechanism in the vertical structure of the
+flow, since introducing the canopy removes momentum from the lower part of the
+water column and much less from the upper part, and the ratio of surface to bed
+speed more than doubles. A rougher bed acts through a logarithmic profile, whose
+surface-to-bed ratio is bounded well below the values obtained here
+\citep{Nepf2012}, and the bed shear stress separates the two representations
+by its sign, since it falls under the canopy and rises over the same cells when
+the meadow is an equivalent bed roughness. A surface drifter samples the top of
+the profile, so a treatment that reshapes the profile relocates the drifter even
+where the depth-averaged transport changes little.
 
-The result stands in a complementary relation to the two earlier models of this
-basin. In the depth-averaged framework of \citet{Ingrassia2024} an equivalent
-bed roughness is the appropriate representation of a canopy, since there is no
-vertical profile for the canopy to shape, and the three-dimensional circulation
-established by \citet{DeMarchis2012} is what motivates a three-dimensional
-solver here. The present work quantifies what a canopy formulation resolving
-the drag over the vertical extent of the plants adds in a basin of this depth.
-Its parameters were taken from published measurement and not adjusted against
-any observation, so the improvement follows from where the drag is applied
-rather than from how it was tuned.
+The reduced flow within a submerged canopy and the faster flow above it are
+established in laboratory flows \citep{NepfVivoni2000, Nepf2012}, and
+three-dimensional models that resolve the drag over the plant height have
+reproduced the same partition in tidal marshes \citep{Temmerman2005} and in
+coupled wave, flow and vegetation systems \citep{Beudin2017}. In the Stagnone,
+\citet{DeMarchis2012} established a wind-driven three-dimensional circulation
+with a near-bed return flow, with the meadow represented through roughness
+heights by seagrass class, and \citet{Ingrassia2024} calibrated a
+depth-averaged model in which an equivalent bed roughness is the consistent
+representation of the canopy, there being no vertical profile for the canopy
+to shape. The present ensemble measures what a drag resolved over the plant
+height contributes to the transport of a surface tracer in a basin of this
+depth. Its parameters were taken from published measurements and not adjusted
+to any observation, so the gain in skill follows from where the drag is placed
+in the column and not from calibration.
 
-A start from a uniform offshore column lowers the skill of the bare members by
-0.08 and 0.09 and that of the vegetated members by at most 0.02
-(Section~\ref{sec:res_sensitivity}), so the canopy contrast grows from about
-0.12 to about 0.19 when the start is wrong. An error elsewhere in the model
-thus degrades the bare configurations and leaves the vegetated ones nearly
-unaffected, and the magnitude of a canopy contrast depends on what else the
-model gets wrong, even where its sign does not.
+The two canopy contrasts differ by 0.006 between the wave treatments, so the
+apparent effect of the canopy does not depend on how the waves are
+represented. It does depend on the state the model reaches. From a vertically
+uniform start the bare members lose 0.08 and 0.09 in skill and the vegetated
+members at most 0.02, and the canopy contrast grows from about 0.12 to about
+0.19. An error elsewhere in the model thus degrades the bare configurations and
+leaves the vegetated ones nearly unaffected, and the size of a canopy contrast
+reflects what else the model gets wrong, even where its sign does not.
+
+\subsection{Wave coupling over a vegetated bed}
+
+When the wave model sees a bare bed, wave coupling lowers skill by 0.022 to
+0.028, and when the canopy also dissipates wave energy, by 0.005, with
+significant wave height over the meadow reduced to about a third. Most of the wave penalty
+under the canopy therefore follows from a wave field computed over a bed
+without vegetation. Seagrass attenuates waves in this species and at this scale
+\citep{Infantes2012, Prinos2010}, and in comparably shallow Mediterranean
+lagoons waves govern bed stress and sediment resuspension \citep{Carniello2011,
+Morote2025}. In a basin whose floor is largely meadow, a wave model run over a
+bare bed overstates the wave forcing that reaches the flow, and the canopy
+contrast with the canopy in both models, $+0.137$, is the estimate consistent
+with that physics. The apparent effect of the waves thus depends on how the
+canopy is represented, whereas the apparent effect of the canopy does not
+depend on the waves.
 
 \subsection{Information carried by each gauge position}
 
 Water level separated the members by the canopy at AltaVilaEst, by wave
-coupling at the North Mouth and by neither at the South Mouth. In a micro-tidal
-basin with two open connections, agreement at the inlet gauges establishes the
-offshore forcing, the datum and the exchange through the mouths, the wave
-contribution at the North Mouth being the one dynamic effect that reaches them,
-whereas the level in the interior is set by what the water does on its way in,
-which is where the canopy acts. Water level is therefore not inherently
-insensitive to the canopy, since the one gauge sited inside the vegetated basin
-identified the same factor as the drifters and ranked the members the same
-way. Together with the drifter result, the gauge result refines the argument that water
-level constrains transport weakly and that Lagrangian observations form a
-distinct constraint \citep{Liu2011, Revelard2021}. For a basin of this type the
-question is less whether to validate on water level than where to site the
-instrument meant to discriminate, and the interior of the vegetated compartment
-is a more informative position for that purpose than the inlet.
+coupling at the North Mouth and by neither at the South Mouth. In a
+micro-tidal basin with two open connections, the level at the inlets is set
+mostly by the offshore forcing, the datum and the exchange through the mouths.
+The wave contribution at the North Mouth is the one effect of the design that
+reaches an inlet. The level in the interior depends on the flow between the
+mouths and the gauge, which crosses the meadow. Water level is therefore not
+inherently insensitive to the canopy, since the gauge inside the vegetated
+basin separated the members into the same two groups as the drifters.
+Together with the drifter result, this qualifies the argument that water level
+constrains transport weakly and that Lagrangian observations form a distinct
+constraint \citep{Liu2011, Revelard2021}. The constraint water level provides
+depends on where it is measured, and in a basin of this type the interior of
+the vegetated compartment discriminates between model formulations where the
+inlets do not.
 
-\subsection{Limitations}
+\subsection{Limitations and further work}
 \label{sec:disc_limits}
 
-\textbf{Wave dissipation by the canopy.} In the four members of the factorial
-the canopy does not reach the wave model, because the coupling passes a bed
-roughness field to the spectral model while the canopy enters the momentum
-equation of the flow. Seagrass meadows attenuate waves, in this species and at
-this scale \citep{Infantes2012, Prinos2010}, and \texttt{WV}$^{\mathrm{s}}$
-shows that the omission accounts for most of the wave penalty under the canopy
-and that including it enlarges the canopy contrast with waves, from $+0.114$ to
-$+0.137$. That member is a single configuration, built through an adjustment of
-the wave input described in Section~S2, and the profile diagnostics of
-Section~\ref{sec:res_3d} were not repeated for it.
+The record covers two days of water level and thirty-four hours of drifter
+observations within one summer, and the vegetated members are three-day restart
+segments, so seasonal behaviour, storm conditions and the winter state of the
+meadow lie outside the design. The stratified start is a single profile applied
+over the domain, and the contrasts may still carry part of a start-up
+adjustment, whose size the uniform start bounds. The solution also depends on
+the host and decomposition at the Courant limit of the ensemble, by 0.034 in
+skill, a dependence all members share.
 
-\textbf{Canopy reconfiguration.} Three one-day runs restarted from the
-stratified state of 8 July and differing only in leaf density set the bending
-response of the canopy. With leaves of 900~kg~m$^{-3}$ the depth-averaged speed
-over the meadow is 8 to 13\% higher than under a rigid canopy of the same
-height, and leaves of 1020~kg~m$^{-3}$ bend further and leave the
-900~kg~m$^{-3}$ run 13 to 20\% slower, since water over the meadow close to
-1028~kg~m$^{-3}$ leaves the denser leaf about a sixteenth of the buoyancy of
-the lighter one. A 13\% change in a value taken from a published table thus
-moves the velocity field by as much or more. The flume measurements of
-\citet{CiraoloFerreri2006} describe reconfiguration through a friction factor,
-available in this solver only in its depth-averaged mode, and the two were not
-compared.
+The canopy parameters come from published measurements in other meadows, and
+those of \emph{C.\ nodosa} from a flume study of plants collected elsewhere,
+although that species carries only about 1.5\% of the canopy frontal area. The
+bending response is sensitive to the leaf density, a change from 900 to
+1020~kg~m$^{-3}$ altering the depth-averaged speed over the meadow by 13 to
+20\% (Section~S4), so measurements of leaf density, canopy height and
+deflection in this lagoon would constrain the result more directly than any
+adjustment of the model. In the three-dimensional solver the drag responds to
+the flow only through the bending angle, with a drag coefficient fixed at the
+rigid-cylinder value, whereas flexible blades reduce their effective length,
+and with it their drag, as the velocity increases \citep{LuharNepf2011}. The
+reconfiguration measured for \emph{P.\ oceanica} by \citet{CiraoloFerreri2006}
+is expressed as a friction factor, available in this solver only in its
+depth-averaged mode. A momentum sink that varies with the local velocity
+through the effective blade length, resolved over the vertical, would carry
+that response into a three-dimensional model.
 
-\textbf{Fixed bed.} Waves govern the sediment dynamics of comparably shallow
-micro-tidal basins \citep{Carniello2011}, but no repeated bathymetric survey or
-in-situ turbidity record is available here to constrain the sediment
-parameters, so the bed is fixed in every member and morphodynamic coupling lies
-outside the present design.
+The canopy entered the wave model in one member, through an adjustment of the
+wave input described in Section~S2, since the coupling passes the wave model a
+bed roughness and not the canopy, and the profile diagnostics of
+Section~\ref{sec:res_3d} were not repeated for it. A factorial with the canopy
+in both models in every vegetated member would test whether the wave
+contribution under a vegetated bed differs from the $-0.005$ found here.
 
-\textbf{Window, restart segments and initial condition.} The record covers two
-days of water level and thirty-four hours of drifter observations within one
-summer season, and the vegetated members are three-day restart segments, so
-seasonal behaviour and storm conditions lie outside what the design addresses.
-The stratified start is a single profile applied over the domain and leaves out
-the horizontal structure of the CMEMS field, so the canopy contrasts may still
-carry part of a start-up adjustment, whose size the uniform start bounds. The
-solution also depends on the host and decomposition at the Courant limit of the
-ensemble, by 0.034 in skill, which all members share.
-
-\textbf{\emph{Cymodocea nodosa} parameters.} The \emph{C.\ nodosa} parameters
-come from a flume study of plants collected elsewhere, no measurement of that
-species in this lagoon being available. The species carries about 1.5\% of the
-canopy frontal area in the model, which bounds the consequence.
+Waves govern the sediment dynamics of comparably shallow micro-tidal basins
+\citep{Carniello2011}, and a mobile bed would add the interaction of waves,
+canopy and sediment to the design. No repeated bathymetric survey or in-situ
+turbidity record is available to constrain the sediment parameters of this
+lagoon, so the bed is fixed in every member, and morphodynamic coupling awaits
+observations of bed change and suspended sediment in the basin.
