@@ -29,8 +29,7 @@ depth-averaged model in which an equivalent bed roughness is the consistent
 representation of the canopy, there being no vertical profile for the canopy
 to shape. The present ensemble measures what a drag resolved over the plant
 height contributes to the transport of a surface tracer in a basin of this
-depth. Its parameters were taken from published measurements and not adjusted
-to any observation, so the gain in skill follows from where the drag is placed
+depth. Its parameters were not adjusted to any observation, so the gain in skill follows from where the drag is placed
 in the column and not from calibration.
 
 The two canopy contrasts differ by 0.006 between the wave treatments, so the
@@ -79,23 +78,27 @@ inlets do not.
 \subsection{Limitations and further work}
 \label{sec:disc_limits}
 
-The record covers two days of water level and thirty-four hours of drifter
-observations within one summer, and the vegetated members are three-day restart
-segments, so seasonal behaviour, storm conditions and the winter state of the
-meadow lie outside the design. The stratified start is a single profile applied
+The members cover nine days of July 2025 and are scored over the last two,
+the window that the three-day vegetated segments share once their first day is
+discarded, against water level and thirty-four hours of drifter tracks, so
+seasonal behaviour, storm conditions and the winter state of the meadow lie
+outside the design. The stratified start is a single profile applied
 over the domain, and the contrasts may still carry part of a start-up
 adjustment, whose size the uniform start bounds. The solution also depends on
 the host and decomposition at the Courant limit of the ensemble, by 0.034 in
 skill, a dependence all members share.
 
-The canopy parameters come from published measurements in other meadows, and
-those of \emph{C.\ nodosa} from a flume study of plants collected elsewhere,
-although that species carries only about 1.5\% of the canopy frontal area. The
-bending response is sensitive to the leaf density, a change from 900 to
-1020~kg~m$^{-3}$ altering the depth-averaged speed over the meadow by 13 to
-20\% (Section~S4), so measurements of leaf density, canopy height and
-deflection in this lagoon would constrain the result more directly than any
-adjustment of the model. In the three-dimensional solver the drag responds to
+The geometry of \emph{P.\ oceanica} comes from flume experiments with
+artificial plants built to reproduce its leaves \citep{CiraoloFerreri2006,
+Prinos2010}, the first of them undertaken for this lagoon, and that of
+\emph{C.\ nodosa} from a flume study of plants collected in a tidal lagoon
+near C\'adiz \citep{Morris2008}, a species that carries only about 1.5\% of
+the canopy frontal area. No measurement of leaf density, canopy height or
+deflection exists for the meadows of the Stagnone, and the bending response
+is sensitive to the leaf density, a change from 900 to 1020~kg~m$^{-3}$
+altering the depth-averaged speed over the meadow by 13 to 20\%
+(Section~S4), so such measurements would constrain the result more directly
+than any adjustment of the model. In the three-dimensional solver the drag responds to
 the flow only through the bending angle, with a drag coefficient fixed at the
 rigid-cylinder value, whereas flexible blades reduce their effective length,
 and with it their drag, as the velocity increases \citep{LuharNepf2011}. The
