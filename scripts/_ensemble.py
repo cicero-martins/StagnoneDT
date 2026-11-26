@@ -153,7 +153,10 @@ if ENSEMBLE == 'ic3d':
 BED = os.environ.get('STAGNONE_BED', 'all')
 assert BED in ('all', 'fixed'), BED
 if BED == 'fixed':
-    MEMBERS = [m for m in MEMBERS if m[5] == 'fixed']
+    # Bare members first, then vegetated, so the canopy step separates the two
+    # halves of every axis that lists the members.
+    MEMBERS = sorted((m for m in MEMBERS if m[5] == 'fixed'),
+                     key=lambda m: (m[4] == 'vegetated', m[3]))
 FIGSUB = SUFFIX.lstrip('_') + ('_fixed' if BED == 'fixed' else '')
 
 KEYS = [m[0] for m in MEMBERS]
@@ -171,6 +174,16 @@ CODE = {k: (('W' if f['waves'] else '-')
         for k, f in FACTORS.items()}
 CODE_KEY = ('W wave coupling    V seagrass canopy'
             + ('' if BED == 'fixed' else '    M mobile bed'))
+
+# The two-factor design of the revised Paper 1 names its members instead: REF
+# carries the reference forcing (water level, wind, pressure, evaporation),
+# and WAV and VEG name what is added to it. The slot code stays for the
+# three-factor figures.
+NAMES = {'--': 'REF', 'W-': 'WAV', '-V': 'VEG', 'WV': 'WAV+VEG'}
+if BED == 'fixed':
+    CODE = {k: NAMES[c] for k, c in CODE.items()}
+    CODE_KEY = 'REF reference forcing    WAV wave coupling    VEG seagrass canopy'
+SWAN_NAME = 'WAV+VEG$^{\\mathrm{s}}$'
 
 # Every single-factor contrast the closed factorial supports: four per factor,
 # one for each combination of the two factors held fixed. Written as

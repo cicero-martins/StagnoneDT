@@ -1,8 +1,8 @@
 contrast,code,treated,control,mean,lo,hi,n_better,n_worse,clear_of_zero
-"Canopy, no waves",-V minus --,nowaves_veg,nowaves,0.1199,0.0605,0.1800,25,10,True
-"Canopy, waves",WV minus W-,nodm_veg,nodm,0.1140,0.0574,0.1694,27,8,True
-"Canopy, waves, canopy in SWAN",WVs minus W-,swan,nodm,0.1369,0.0839,0.1941,27,8,True
-"Waves, bare",W- minus --,nodm,nowaves,-0.0222,-0.0436,-0.0021,14,21,True
-"Waves, canopy",WV minus -V,nodm_veg,nowaves_veg,-0.0281,-0.0398,-0.0165,10,25,True
-"Waves, canopy in SWAN",WVs minus -V,swan,nowaves_veg,-0.0052,-0.0106,-0.0006,13,22,True
-"Canopy in SWAN, waves and canopy",WVs minus WV,swan,nodm_veg,0.0230,0.0142,0.0313,26,9,True
+"Canopy, no waves",VEG minus REF,nowaves_veg,nowaves,0.1199,0.0605,0.1800,25,10,True
+"Canopy, waves",WAV+VEG minus WAV,nodm_veg,nodm,0.1140,0.0574,0.1694,27,8,True
+"Canopy, waves, canopy in SWAN",WAV+VEGs minus WAV,swan,nodm,0.1369,0.0839,0.1941,27,8,True
+"Waves, bare",WAV minus REF,nodm,nowaves,-0.0222,-0.0436,-0.0021,14,21,True
+"Waves, canopy",WAV+VEG minus VEG,nodm_veg,nowaves_veg,-0.0281,-0.0398,-0.0165,10,25,True
+"Waves, canopy in SWAN",WAV+VEGs minus VEG,swan,nowaves_veg,-0.0052,-0.0106,-0.0006,13,22,True
+"Canopy in SWAN, waves and canopy",WAV+VEGs minus WAV+VEG,swan,nodm_veg,0.0230,0.0142,0.0313,26,9,True

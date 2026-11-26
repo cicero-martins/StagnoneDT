@@ -39,7 +39,8 @@ FIG.mkdir(parents=True, exist_ok=True)
 # The wave-coupled vegetated member with the canopy also in the wave model,
 # a segment from the same restart as nodm_veg (dwaves_vegetation_iveg_wrapper).
 SWAN_TAG = 'arm_vwf_swan'
-CODE2 = dict(nowaves='--', nowaves_veg='-V', nodm='W-', nodm_veg='WV', swan='WVs')
+CODE2 = dict(nowaves='REF', nowaves_veg='VEG', nodm='WAV', nodm_veg='WAV+VEG',
+             swan='WAV+VEGs')
 
 SURFACE, INK, MUTED, GRID = '#ffffff', '#1b1b1b', '#6b6b6b', '#e8e7e4'
 C_BARE, C_VEG, C_VEG_LIGHT = '#eb6834', '#4a3aa7', '#9b8fd9'
@@ -114,8 +115,8 @@ def main():
     # Supplementary figure: the canopy contrast deployment by deployment.
     fig, ax = plt.subplots(figsize=(10.5, 3.6), dpi=300)
     deps = sorted(d['deploy'].unique())
-    for lab, a, b, col, off in (('-V minus --', 'nowaves_veg', 'nowaves', C_VEG_LIGHT, -0.19),
-                                ('WV minus W-', 'nodm_veg', 'nodm', C_VEG, 0.19)):
+    for lab, a, b, col, off in (('VEG minus REF', 'nowaves_veg', 'nowaves', C_VEG_LIGHT, -0.19),
+                                ('WAV+VEG minus WAV', 'nodm_veg', 'nodm', C_VEG, 0.19)):
         v = [(d.loc[d.deploy == dp, a] - d.loc[d.deploy == dp, b]).mean() for dp in deps]
         ax.bar(np.arange(len(deps)) + off, v, width=0.36, color=col, edgecolor='white',
                lw=0.6, label=lab, zorder=3)

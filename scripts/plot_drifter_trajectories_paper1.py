@@ -60,11 +60,11 @@ else:
 # member with the canopy also in SWAN, as (tag, label, colour, line style).
 # Colour carries the canopy and line style the wave treatment, as in Figure 4.
 MEMBERS_ALL = [
-    (TAG.get('nowaves'), '--', '#eb6834', (0, (3, 1.6))),
-    (TAG.get('nodm'), 'W-', '#eb6834', '-'),
-    (TAG.get('nowaves_veg'), '-V', '#4a3aa7', (0, (3, 1.6))),
-    (TAG.get('nodm_veg'), 'WV', '#4a3aa7', '-'),
-    ('arm_vwf_swan', 'WV$^{\\mathrm{s}}$', '#9b8fd9', (0, (1, 1.2))),
+    (TAG.get('nowaves'), 'REF', '#eb6834', (0, (3, 1.6))),
+    (TAG.get('nodm'), 'WAV', '#eb6834', '-'),
+    (TAG.get('nowaves_veg'), 'VEG', '#4a3aa7', (0, (3, 1.6))),
+    (TAG.get('nodm_veg'), 'WAV+VEG', '#4a3aa7', '-'),
+    ('arm_vwf_swan', 'WAV+VEG$^{\\mathrm{s}}$', '#9b8fd9', (0, (1, 1.2))),
 ]
 # The deployments of the body figure. 1 and 2 show the bare member falling
 # short of the observed path, 5 a case in which the bare member ends nearer the
