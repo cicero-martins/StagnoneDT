@@ -77,7 +77,7 @@ included the mobile-bed members. The canopy contrasts under that start remain
 | Figure S3 and anchor, negative departure in early 2025 | *See the section below* |
 | Figure S4, surface values | Coloured marker at the adopted surface values, 25.8 °C and 37.5, with the value written beside it |
 | Figure 2c, "trachytope" | Panel and caption read "bed cover class per flow link" |
-| Section 3.6, member code | "whose slots mark wave coupling (W) and seagrass canopy (V), carrying the letter where the factor is active and a dash where it is not", followed by an example: W- is the member forced by water level, wind, atmospheric pressure and evaporation, with wave coupling active and without a canopy. The code has two slots since the bed slot left with the mobile bed |
+| Section 3.6, member code | The slot code (`--`, `-V`, `W-`, `WV`) is replaced by names. REF is the reference member, forced by water level, wind, atmospheric pressure and evaporation; WAV adds wave coupling, VEG the seagrass canopy and WAV+VEG both, and WAV+VEGˢ carries the canopy also in the wave model. The names replace the codes in the text, Tables 2 to 5 and Figures 4 to 6, S7 and S8, and the members are listed bare first (REF, WAV, VEG, WAV+VEG) |
 | Figure 5, deployments 3 and 4 | Five deployments, 1, 2, 5, 9 and 11, with a first panel numbering their releases and a wider extent on deployment 1. The tracks of all five members in all twelve deployments are a new figure in Section S6 |
 | Figure 6 and Section 4.3 | Folded into Section 4.2, see below |
 | Figure 7b, "x" on the multipliers | Removed, the axis label giving the ratio |
@@ -93,8 +93,7 @@ contrasts add is their uncertainty. Pairing by drifter removes the difficulty a
 drifter presents to every member, which spreads skill from 0.34 to 0.96, and
 the wave effect of about −0.02 clears zero only in the paired form, the
 intervals of the member means overlapping. The contrasts are therefore Table 4
-of Section 4.2, named in member codes (`-V` minus `--`, `WV` minus `W-`, and so
-on), and the canopy contrast by deployment is a figure in Section S6. The
+of Section 4.2, named by member (VEG − REF, WAV+VEG − WAV, and so on), and the canopy contrast by deployment is a figure in Section S6. The
 sensitivity tests of the former Section 4.5 are Table 5.
 
 The contrast and its interval are now defined in Section 3.5. A contrast is the
@@ -109,13 +108,13 @@ estimate changes.
 
 | Contrast | Mean | 95% CI | Drifters better |
 |---|---|---|---|
-| `-V` minus `--` | +0.120 | +0.061 to +0.180 | 25 of 35 |
-| `WV` minus `W-` | +0.114 | +0.057 to +0.169 | 27 |
-| `WVs` minus `W-` | +0.137 | +0.084 to +0.194 | 27 |
-| `W-` minus `--` | −0.022 | −0.044 to −0.002 | 14 |
-| `WV` minus `-V` | −0.028 | −0.040 to −0.017 | 10 |
-| `WVs` minus `-V` | −0.005 | −0.011 to −0.001 | 13 |
-| `WVs` minus `WV` | +0.023 | +0.014 to +0.031 | 26 |
+| VEG − REF | +0.120 | +0.061 to +0.180 | 25 of 35 |
+| WAV+VEG − WAV | +0.114 | +0.057 to +0.169 | 27 |
+| WAV+VEGˢ − WAV | +0.137 | +0.084 to +0.194 | 27 |
+| WAV − REF | −0.022 | −0.044 to −0.002 | 14 |
+| WAV+VEG − VEG | −0.028 | −0.040 to −0.017 | 10 |
+| WAV+VEGˢ − VEG | −0.005 | −0.011 to −0.001 | 13 |
+| WAV+VEGˢ − WAV+VEG | +0.023 | +0.014 to +0.031 | 26 |
 
 ## Discussion and Conclusions
 
