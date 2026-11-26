@@ -24,7 +24,7 @@ bare members 0.048 and 0.054~m with correlations of 0.79 and 0.81. There the
 bare members overshoot the range of the observed anomaly and run ahead of it,
 most visibly on the falling limb of 9 July, while the vegetated ones track both
 amplitude and phase (Figure~\ref{fig:wl}a). With the canopy also in the wave
-model, \texttt{WV}$^{\mathrm{s}}$ gives an anomaly RMSE of 0.026~m and a
+model, WAV+VEG$^{\mathrm{s}}$ gives an anomaly RMSE of 0.026~m and a
 correlation of 0.94 at AltaVilaEst, and 0.038~m at the North Mouth, the value
 of the uncoupled members. A segment restarted without any change reproduces its
 continuous member in water level and drifter skill (Section~S6), so the
@@ -46,28 +46,29 @@ separation at AltaVilaEst does not reflect the restart.
 \begin{table}[H]
   \centering
   \caption{Water level skill by member and station, 8--10 July 2025.
-  $\mathrm{RMSE}^2 = \mathrm{bias}^2 + \mathrm{RMSE}_{\mathrm{anom}}^2$. Members
-  are coded by wave coupling (W) and seagrass canopy (V). All values in metres
+  $\mathrm{RMSE}^2 = \mathrm{bias}^2 + \mathrm{RMSE}_{\mathrm{anom}}^2$. REF is
+  the reference forcing, WAV adds wave coupling and VEG the seagrass canopy
+  (Section~\ref{sec:methods_experiments}). All values in metres
   except the dimensionless ratios.}
   \label{tab:wl}
   \begin{tabular}{llrrrrr}
     \toprule
     Station & Member & RMSE & Bias & RMSE$_{\mathrm{anom}}$ & $r$ & $\sigma_m/\sigma_o$ \\
     \midrule
-    North Mouth & \texttt{{-}{-}} & 0.052 & $+0.035$ & 0.039 & 0.89 & 1.20 \\
-                & \texttt{{-}V}   & 0.050 & $+0.033$ & 0.038 & 0.90 & 1.22 \\
-                & \texttt{W{-}}   & 0.065 & $+0.059$ & 0.027 & 0.94 & 1.08 \\
-                & \texttt{WV}     & 0.059 & $+0.051$ & 0.031 & 0.92 & 1.09 \\
+    North Mouth & REF & 0.052 & $+0.035$ & 0.039 & 0.89 & 1.20 \\
+                & WAV   & 0.065 & $+0.059$ & 0.027 & 0.94 & 1.08 \\
+                & VEG   & 0.050 & $+0.033$ & 0.038 & 0.90 & 1.22 \\
+                & WAV+VEG     & 0.059 & $+0.051$ & 0.031 & 0.92 & 1.09 \\
     \midrule
-    South Mouth & \texttt{{-}{-}} & 0.050 & $-0.043$ & 0.025 & 0.95 & 1.20 \\
-                & \texttt{{-}V}   & 0.057 & $-0.051$ & 0.025 & 0.95 & 1.16 \\
-                & \texttt{W{-}}   & 0.028 & $-0.015$ & 0.024 & 0.94 & 1.06 \\
-                & \texttt{WV}     & 0.035 & $-0.025$ & 0.025 & 0.93 & 1.02 \\
+    South Mouth & REF & 0.050 & $-0.043$ & 0.025 & 0.95 & 1.20 \\
+                & WAV   & 0.028 & $-0.015$ & 0.024 & 0.94 & 1.06 \\
+                & VEG   & 0.057 & $-0.051$ & 0.025 & 0.95 & 1.16 \\
+                & WAV+VEG     & 0.035 & $-0.025$ & 0.025 & 0.93 & 1.02 \\
     \midrule
-    AltaVilaEst & \texttt{{-}{-}} & 0.076 & $+0.053$ & 0.054 & 0.81 & 1.37 \\
-                & \texttt{{-}V}   & 0.049 & $+0.040$ & 0.028 & 0.94 & 1.18 \\
-                & \texttt{W{-}}   & 0.097 & $+0.085$ & 0.048 & 0.79 & 1.18 \\
-                & \texttt{WV}     & 0.070 & $+0.067$ & 0.021 & 0.95 & 1.01 \\
+    AltaVilaEst & REF & 0.076 & $+0.053$ & 0.054 & 0.81 & 1.37 \\
+                & WAV   & 0.097 & $+0.085$ & 0.048 & 0.79 & 1.18 \\
+                & VEG   & 0.049 & $+0.040$ & 0.028 & 0.94 & 1.18 \\
+                & WAV+VEG     & 0.070 & $+0.067$ & 0.021 & 0.95 & 1.01 \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -92,18 +93,19 @@ the wave-coupled vegetated member scores 0.734.
   simulated over observed path length. Heading error is the mean angular
   difference between simulated and observed step directions, computed on
   eleven deployments since deployment 4 has too few positions to form the
-  three step bearings it requires. \texttt{WV}$^{\mathrm{s}}$ carries the
-  canopy in the wave model as well.}
+  three step bearings it requires. REF is the reference forcing, WAV adds
+  wave coupling, VEG the seagrass canopy, and WAV+VEG$^{\mathrm{s}}$ carries
+  the canopy in the wave model as well.}
   \label{tab:lagrangian}
-  \begin{tabular}{lccrrrr}
+  \begin{tabular}{lrrrr}
     \toprule
-    Member & Waves & Canopy & LW skill & Endpoint (m) & Path & Heading \\
+    Member & LW skill & Endpoint (m) & Path & Heading \\
     \midrule
-    \texttt{{-}{-}} & no  & no  & 0.619 & 478 & 0.80 & 11.2$^\circ$ \\
-    \texttt{{-}V}   & no  & yes & \textbf{0.739} & \textbf{327} & 0.88 & 8.5$^\circ$ \\
-    \texttt{W{-}}   & yes & no  & 0.597 & 481 & 0.83 & 10.4$^\circ$ \\
-    \texttt{WV}     & yes & yes & 0.711 & 335 & \textbf{0.94} & \textbf{8.4}$^\circ$ \\
-    \texttt{WV}$^{\mathrm{s}}$ & yes & yes & 0.734 & 337 & 0.89 & \textbf{8.4}$^\circ$ \\
+    REF     & 0.619 & 478 & 0.80 & 11.2$^\circ$ \\
+    WAV     & 0.597 & 481 & 0.83 & 10.4$^\circ$ \\
+    VEG     & \textbf{0.739} & \textbf{327} & 0.88 & 8.5$^\circ$ \\
+    WAV+VEG & 0.711 & 335 & \textbf{0.94} & \textbf{8.4}$^\circ$ \\
+    WAV+VEG$^{\mathrm{s}}$ & 0.734 & 337 & 0.89 & \textbf{8.4}$^\circ$ \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -131,11 +133,11 @@ Section~S6.
   \centering
   \includegraphics[width=\textwidth]{drifter_trajectories}
   \caption{Observed and simulated drifter trajectories for the two
-  wave-coupled members that differ only in the canopy, \texttt{W{-}} and
-  \texttt{WV}, in five of the twelve deployments. The first panel numbers the
+  wave-coupled members that differ only in the canopy, WAV and
+  WAV+VEG, in five of the twelve deployments. The first panel numbers the
   release of each of the five over the observed tracks of their drifters. Each
   deployment panel shows the
-  median-skill drifter of that deployment under \texttt{WV}, with circles
+  median-skill drifter of that deployment under WAV+VEG, with circles
   marking the release and squares the end of the scored window, each track
   clipped to the interval its drifter was in the water. Panel extents differ,
   so each carries its own scale bar.}
@@ -146,15 +148,15 @@ Table~\ref{tab:contrasts} gives the single-factor contrasts. Each pairs two
 members drifter by drifter, so the difficulty a drifter presents to every
 member, which spreads skill from 0.34 to 0.96 across the 35 drifters, cancels
 in the difference, and a contrast can clear zero where the intervals of the two
-member means overlap. The canopy raises skill by 0.120 in \texttt{{-}V} minus
-\texttt{{-}{-}} and by 0.114 in \texttt{WV} minus \texttt{W{-}}, with 25 and 27
+member means overlap. The canopy raises skill by 0.120 in VEG minus
+REF and by 0.114 in WAV+VEG minus WAV, with 25 and 27
 of the 35 drifters improving, and the two values agree within 0.006. Wave
-coupling lowers skill by 0.022 in \texttt{W{-}} minus \texttt{{-}{-}} and by
-0.028 in \texttt{WV} minus \texttt{{-}V}, about a fifth of the canopy effect.
-With the canopy also in the wave model, \texttt{WV}$^{\mathrm{s}}$ scores 0.023
-above \texttt{WV}, the wave contrast under the canopy becomes $-0.005$ and the
+coupling lowers skill by 0.022 in WAV minus REF and by
+0.028 in WAV+VEG minus VEG, about a fifth of the canopy effect.
+With the canopy also in the wave model, WAV+VEG$^{\mathrm{s}}$ scores 0.023
+above WAV+VEG, the wave contrast under the canopy becomes $-0.005$ and the
 canopy contrast with waves $+0.137$, and significant wave height over the
-vegetated points falls to a median of 0.36 of its value in \texttt{WV}
+vegetated points falls to a median of 0.36 of its value in WAV+VEG
 (Section~S2).
 
 The canopy contrast has the same sign under both wave treatments in ten of the
@@ -174,15 +176,15 @@ two canopy contrasts to $+0.148$ and $+0.144$.
     \toprule
     Factor & Contrast & Mean & 95\% interval & Drifters \\
     \midrule
-    Canopy & \texttt{{-}V} minus \texttt{{-}{-}} & $+0.120$ & $+0.061$ to $+0.180$ & 25 \\
-           & \texttt{WV} minus \texttt{W{-}}     & $+0.114$ & $+0.057$ to $+0.169$ & 27 \\
-           & \texttt{WV}$^{\mathrm{s}}$ minus \texttt{W{-}} & $+0.137$ & $+0.084$ to $+0.194$ & 27 \\
+    Canopy & VEG $-$ REF & $+0.120$ & $+0.061$ to $+0.180$ & 25 \\
+           & WAV+VEG $-$ WAV     & $+0.114$ & $+0.057$ to $+0.169$ & 27 \\
+           & WAV+VEG$^{\mathrm{s}}$ $-$ WAV & $+0.137$ & $+0.084$ to $+0.194$ & 27 \\
     \midrule
-    Wave coupling & \texttt{W{-}} minus \texttt{{-}{-}} & $-0.022$ & $-0.044$ to $-0.002$ & 14 \\
-           & \texttt{WV} minus \texttt{{-}V}     & $-0.028$ & $-0.040$ to $-0.017$ & 10 \\
-           & \texttt{WV}$^{\mathrm{s}}$ minus \texttt{{-}V} & $-0.005$ & $-0.011$ to $-0.001$ & 13 \\
+    Wave coupling & WAV $-$ REF & $-0.022$ & $-0.044$ to $-0.002$ & 14 \\
+           & WAV+VEG $-$ VEG     & $-0.028$ & $-0.040$ to $-0.017$ & 10 \\
+           & WAV+VEG$^{\mathrm{s}}$ $-$ VEG & $-0.005$ & $-0.011$ to $-0.001$ & 13 \\
     \midrule
-    Canopy in SWAN & \texttt{WV}$^{\mathrm{s}}$ minus \texttt{WV} & $+0.023$ & $+0.014$ to $+0.031$ & 26 \\
+    Canopy in SWAN & WAV+VEG$^{\mathrm{s}}$ $-$ WAV+VEG & $+0.023$ & $+0.014$ to $+0.031$ & 26 \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -237,20 +239,20 @@ dependence the members share.
   \centering
   \caption{Change in mean Liu--Weisberg skill over the 35 drifters under each
   sensitivity test. The discretisation and host tests were run on
-  \texttt{{-}{-}}, from the uniform start under a Courant limit of 0.5 except
+  REF, from the uniform start under a Courant limit of 0.5 except
   where stated (Section~S5).}
   \label{tab:sensitivity}
   \begin{tabular}{llr}
     \toprule
     Test & Members & Change in skill \\
     \midrule
-    Uniform initial column       & \texttt{{-}{-}}, \texttt{W{-}} & $-0.080$, $-0.092$ \\
-                                 & \texttt{{-}V}, \texttt{WV}     & $-0.005$, $-0.018$ \\
-    Cell edge 60, 30, 15~m       & \texttt{{-}{-}} & within $\pm 0.004$ \\
-    20 layers against 10, stratified start & \texttt{{-}{-}} & $+0.0003$ \\
-    Time step limited by vertical fluxes   & \texttt{{-}{-}} & $+0.0007$ \\
-    Host and decomposition       & \texttt{{-}{-}} & $+0.002$ \\
-    Host and decomposition, Courant 0.7 & \texttt{{-}{-}} & $-0.034$ \\
+    Uniform initial column       & REF, WAV & $-0.080$, $-0.092$ \\
+                                 & VEG, WAV+VEG     & $-0.005$, $-0.018$ \\
+    Cell edge 60, 30, 15~m       & REF & within $\pm 0.004$ \\
+    20 layers against 10, stratified start & REF & $+0.0003$ \\
+    Time step limited by vertical fluxes   & REF & $+0.0007$ \\
+    Host and decomposition       & REF & $+0.002$ \\
+    Host and decomposition, Courant 0.7 & REF & $-0.034$ \\
     \bottomrule
   \end{tabular}
 \end{table}

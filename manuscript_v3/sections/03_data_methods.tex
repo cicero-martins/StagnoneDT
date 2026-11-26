@@ -147,21 +147,18 @@ percentile bootstrap interval from 4000 resamples of the 35 differences.
 
 Four members form a complete factorial in wave coupling and seagrass canopy,
 and share the window, the initial condition, the forcing, the mesh and the
-output, every 600~s at the stations and every 1800~s on the grid. Members are
-identified by a two-slot code whose slots mark wave coupling (\texttt{W}) and
-seagrass canopy (\texttt{V}), carrying the letter where the factor is active
-and a dash where it is not, which gives \texttt{{-}{-}}, \texttt{{-}V},
-\texttt{W{-}} and \texttt{WV}. Every member is forced by water level, wind,
-atmospheric pressure and evaporation, and \texttt{W{-}}, for example, is the
-member with that forcing, with wave coupling active and without a canopy.
+output, every 600~s at the stations and every 1800~s on the grid. The
+reference member, REF, is forced by water level, wind, atmospheric pressure
+and evaporation over a bed without canopy. WAV adds wave coupling to that
+forcing, VEG adds the seagrass canopy, and WAV+VEG adds both.
 
 Each vegetated member is a three-day segment restarted on 7~July from the bare
 member with the same wave treatment, so the two members of a pair share the
 first six days and differ by the canopy over the scored window. The
 wave-coupled vegetated member was repeated from the same restart with the
-canopy also in the wave model, coded \texttt{WV}$^{\mathrm{s}}$. The bed is
+canopy also in the wave model, named WAV+VEG$^{\mathrm{s}}$. The bed is
 fixed in every member. The four members were also run from a vertically
 uniform column, at 24~$^\circ$C and 37.5 outside the lagoon and the same
 hypersaline value inside it, and the horizontal and vertical resolution, the
-time-step limit and the host and decomposition were tested on \texttt{{-}{-}}
+time-step limit and the host and decomposition were tested on REF
 (Section~S5).
