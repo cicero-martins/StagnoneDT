@@ -70,6 +70,10 @@ MEMBERS_ALL = [
 # short of the observed path, 5 a case in which the bare member ends nearer the
 # observed endpoint, and 9 and 11 the southward drift that both members follow.
 SELECTED = [1, 2, 5, 9, 11]
+# One colour per selected deployment, shared by its release in the locator
+# panel and in its own panel. The hues avoid the orange and purple of the
+# members and the black of the observed track.
+DEP_COLOR = {1: '#2a9d8f', 2: '#3a86ff', 5: '#e0b100', 9: '#d6458f', 11: '#6b8e23'}
 PAD_FRAC = 0.16
 # Deployment 1 ends against the eastern shore, which the tight panel cut off.
 PAD_EXTRA = {1: 0.55}
@@ -168,7 +172,8 @@ def locator(ax, obs, land, coast, deps=None):
     cy = rel.lat.mean()
     asp = 1.0 / np.cos(np.radians(cy))
     for dep, row in rel.iterrows():
-        ax.plot(row.lon, row.lat, 'o', ms=5.5, mfc='white', mec=INK, mew=1.4, zorder=6)
+        ax.plot(row.lon, row.lat, 'o', ms=7, mfc=DEP_COLOR.get(int(dep), 'white'),
+                mec=INK, mew=1.2, zorder=6)
         ax.annotate(str(int(dep)), (row.lon, row.lat), xytext=LABEL_AT.get(int(dep), (9, 0)),
                     textcoords='offset points', fontsize=8.5, color=INK, ha='center',
                     va='center', zorder=7)
@@ -187,7 +192,7 @@ def locator(ax, obs, land, coast, deps=None):
         s_.set_color(GRID)
 
 
-def draw_panel(ax, dep, did, obs, sims, members, land, coast):
+def draw_panel(ax, dep, did, obs, sims, members, land, coast, release='white'):
     """One deployment: the observed track of drifter did and the members given.
 
     members is a list of (tag, label, colour, line style).
@@ -220,8 +225,8 @@ def draw_panel(ax, dep, did, obs, sims, members, land, coast):
                 alpha=0.95, solid_capstyle='round')
         ax.plot(g.lon.iloc[-1], g.lat.iloc[-1], 's', ms=6, mfc=col,
                 mec='white', mew=1.2, zorder=z / 10 + 7)
-    ax.plot(o.lon.iloc[0], o.lat.iloc[0], 'o', ms=7, mfc='white', mec=INK,
-            mew=1.8, zorder=9)
+    ax.plot(o.lon.iloc[0], o.lat.iloc[0], 'o', ms=8, mfc=release, mec=INK,
+            mew=1.6, zorder=9)
     ax.plot(o.lon.iloc[-1], o.lat.iloc[-1], 's', ms=6.5, mfc=INK,
             mec='white', mew=1.2, zorder=9)
 
@@ -248,11 +253,11 @@ def draw_panel(ax, dep, did, obs, sims, members, land, coast):
         s_.set_color(GRID)
 
 
-def legend(fig, members, ncol, y):
+def legend(fig, members, ncol, y, release='Release'):
     h = [Line2D([], [], color=INK, lw=2.6, label='Observed')]
     h += [Line2D([], [], color=c, ls=ls, lw=2.0, label=l) for _, l, c, ls in members]
     h += [Line2D([], [], ls='none', marker='o', mfc='white', mec=INK, mew=1.8,
-                 ms=7, label='Release'),
+                 ms=7, label=release),
           Line2D([], [], ls='none', marker='s', mfc=MUTED, mec='white', mew=1.2,
                  ms=6.5, label='End of scored window')]
     fig.legend(handles=h, loc='lower center', ncol=ncol, frameon=False,
@@ -291,8 +296,9 @@ def main():
     fig.patch.set_facecolor(SURFACE)
     locator(axes[0, 0], obs, land, coast, deps=SELECTED)
     for ax, dep in zip(axes.ravel()[1:], SELECTED):
-        draw_panel(ax, dep, pick_drifter(full, dep), obs, sims, pair, land, coast)
-    legend(fig, pair, 5, -0.012)
+        draw_panel(ax, dep, pick_drifter(full, dep), obs, sims, pair, land, coast,
+                   release=DEP_COLOR[dep])
+    legend(fig, pair, 5, -0.012, release='Release, coloured by deployment')
     fig.subplots_adjust(left=0.012, right=0.988, top=0.965, bottom=0.06,
                         wspace=0.06, hspace=0.14)
     save(fig, 'drifter_trajectories')
