@@ -70,15 +70,20 @@ MEMBERS_ALL = [
 # short of the observed path, 5 a case in which the bare member ends nearer the
 # observed endpoint, and 9 and 11 the southward drift that both members follow.
 SELECTED = [1, 2, 5, 9, 11]
-# One colour per selected deployment, shared by its release in the locator
-# panel and in its own panel. The hues avoid the orange and purple of the
-# members and the black of the observed track.
-DEP_COLOR = {1: '#2a9d8f', 2: '#3a86ff', 5: '#e0b100', 9: '#d6458f', 11: '#6b8e23'}
+# One colour per deployment, shared by its release in the locator panel and in
+# its own panel, in the body figure and in the supplementary one alike. The
+# hues avoid the orange and purple of the members and the black of the
+# observed track.
+DEP_COLOR = {1: '#2a9d8f', 2: '#3a86ff', 3: '#8ecae6', 4: '#c1121f',
+             5: '#e0b100', 6: '#57cc99', 7: '#8d6e63', 8: '#f4a3c4',
+             9: '#d6458f', 10: '#1d3557', 11: '#6b8e23', 12: '#bfd200'}
 PAD_FRAC = 0.16
 # Deployment 1 ends against the eastern shore, which the tight panel cut off.
 PAD_EXTRA = {1: 0.55}
 # The locator panel: the central lagoon, where every release lies.
 LOCATOR = dict(lon=(12.428, 12.497), lat=(37.838, 37.912))
+# The supplementary locator shows only the releases, so it closes on them.
+LOCATOR_RELEASES = dict(lon=(12.438, 12.488), lat=(37.858, 37.899))
 # Label offsets in points. Releases 1, 5 and 6 lie within 150 m of one another,
 # as do 3 and 10, so the labels are placed by hand rather than by a rule.
 LABEL_AT = {1: (4, -10), 2: (9, -3), 3: (9, -4), 4: (-9, 0), 5: (-9, -4),
@@ -157,8 +162,12 @@ def clip_track(sim, dep, did, t0, t1):
     return s[s.time >= start]
 
 
-def locator(ax, obs, land, coast, deps=None):
-    """Observed tracks in grey and releases numbered, for the deployments given."""
+def locator(ax, obs, land, coast, deps=None, faint=False, ext=LOCATOR):
+    """Observed tracks in grey and releases numbered, for the deployments given.
+
+    faint draws the tracks barely visible, for the panel of all twelve
+    deployments, in which the tracks overlap and the releases carry the panel.
+    """
     if deps is not None:
         obs = obs[obs.deploy.isin(deps)]
     for p in land:
@@ -167,7 +176,8 @@ def locator(ax, obs, land, coast, deps=None):
         ax.plot(p[:, 0], p[:, 1], '-', color=LAND_EDGE, lw=0.6, zorder=2)
     for _, g in obs.groupby(['deploy', 'source']):
         g = g.sort_values('time')
-        ax.plot(g.lon, g.lat, '-', color='#a9a6a0', lw=0.9, zorder=3)
+        ax.plot(g.lon, g.lat, '-', color='#e4e2dd' if faint else '#a9a6a0',
+                lw=0.7 if faint else 0.9, zorder=3)
     rel = obs.sort_values('time').groupby('deploy')[['lon', 'lat']].first()
     cy = rel.lat.mean()
     asp = 1.0 / np.cos(np.radians(cy))
@@ -177,11 +187,11 @@ def locator(ax, obs, land, coast, deps=None):
         ax.annotate(str(int(dep)), (row.lon, row.lat), xytext=LABEL_AT.get(int(dep), (9, 0)),
                     textcoords='offset points', fontsize=8.5, color=INK, ha='center',
                     va='center', zorder=7)
-    ax.set_xlim(*LOCATOR['lon']); ax.set_ylim(*LOCATOR['lat'])
+    ax.set_xlim(*ext['lon']); ax.set_ylim(*ext['lat'])
     ax.set_aspect(asp)
     # 1 km scale bar, bottom left
     km = 1000.0 / hav(12.45, cy, 12.46, cy) * 0.01
-    x0, y0 = LOCATOR['lon'][0] + 0.004, LOCATOR['lat'][0] + 0.004
+    x0, y0 = ext['lon'][0] + 0.003, ext['lat'][0] + 0.003
     ax.plot([x0, x0 + km], [y0, y0], '-', color=INK, lw=2.0, zorder=9, solid_capstyle='butt')
     ax.text(x0 + km / 2, y0 + 0.0008, '1 km', fontsize=8, ha='center', va='bottom', color=INK)
     ax.set_title('Releases', loc='left', fontsize=9.5, color=INK, pad=4)
@@ -253,15 +263,19 @@ def draw_panel(ax, dep, did, obs, sims, members, land, coast, release='white'):
         s_.set_color(GRID)
 
 
-def legend(fig, members, ncol, y, release='Release'):
+def handles(members, release='Release'):
     h = [Line2D([], [], color=INK, lw=2.6, label='Observed')]
     h += [Line2D([], [], color=c, ls=ls, lw=2.0, label=l) for _, l, c, ls in members]
     h += [Line2D([], [], ls='none', marker='o', mfc='white', mec=INK, mew=1.8,
                  ms=7, label=release),
           Line2D([], [], ls='none', marker='s', mfc=MUTED, mec='white', mew=1.2,
                  ms=6.5, label='End of scored window')]
-    fig.legend(handles=h, loc='lower center', ncol=ncol, frameon=False,
-               fontsize=9, bbox_to_anchor=(0.5, y))
+    return h
+
+
+def legend(fig, members, ncol, y, release='Release'):
+    fig.legend(handles=handles(members, release), loc='lower center', ncol=ncol,
+               frameon=False, fontsize=9, bbox_to_anchor=(0.5, y))
 
 
 def save(fig, name):
@@ -307,14 +321,21 @@ def main():
         return
     # Supplementary figure: every deployment and every member. The drifter is
     # the same as in the body figure, the median-skill drifter under WV.
-    fig, axes = plt.subplots(3, 4, figsize=(14.0, 11.2), dpi=300)
+    # The first cell locates every release, the tracks barely drawn, and the
+    # three cells left after the twelve deployments hold the legend.
+    fig, axes = plt.subplots(4, 4, figsize=(14.0, 14.6), dpi=300)
     fig.patch.set_facecolor(SURFACE)
-    for ax, dep in zip(axes.ravel(), deploys):
+    cells = axes.ravel()
+    locator(cells[0], obs, land, coast, faint=True, ext=LOCATOR_RELEASES)
+    for ax, dep in zip(cells[1:], deploys):
         draw_panel(ax, dep, pick_drifter(full, dep), obs, sims, MEMBERS_ALL,
-                   land, coast)
-    legend(fig, MEMBERS_ALL, 8, -0.008)
-    fig.subplots_adjust(left=0.012, right=0.988, top=0.965, bottom=0.05,
-                        wspace=0.06, hspace=0.14)
+                   land, coast, release=DEP_COLOR[dep])
+    for ax in cells[1 + len(deploys):]:
+        ax.axis('off')
+    cells[-2].legend(handles=handles(MEMBERS_ALL, 'Release, coloured by deployment'),
+                     loc='center', ncol=2, frameon=False, fontsize=10)
+    fig.subplots_adjust(left=0.012, right=0.988, top=0.972, bottom=0.012,
+                        wspace=0.06, hspace=0.12)
     save(fig, 'drifter_trajectories_all')
 
 
